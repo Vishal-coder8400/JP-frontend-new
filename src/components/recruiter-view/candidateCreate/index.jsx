@@ -50,7 +50,7 @@ const Index = () => {
     <div className="w-full self-stretch lg:px-36 lg:py-20 p-[20px] lg:pt-0 inline-flex flex-col justify-start items-end lg:gap-10 gap-[15px]">
       <div className="w-full inline-flex justify-start items-start gap-8">
         <div className="flex-1 inline-flex flex-col justify-start items-start gap-7">
-          <div className="self-stretch justify-start text-gray-900 lg:text-3xl text-[20px] font-bold leading-loose">
+          <div className="self-stretch justify-start text-gray-900 lg:text-3xl text-lg font-bold leading-loose">
             Candidate Creation
           </div>
         </div>

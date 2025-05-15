@@ -23,8 +23,8 @@ const Index = () => {
       <div className="w-1/2 max-sm:w-full lg:flex lg:items-center lg:justify-end lg:pr-[100px]">
         <div className="w-full max-w-[554px] bg-neutral-50 rounded-tl-[28.91px] rounded-tr-[28.91px] flex flex-col gap-[25px] p-[20px] lg:p-[47px]">
           <div className="flex flex-col gap-0">
-            <div className="text-black text-[15px]">WELCOME BACK</div>
-            <div className="text-black text-[30px] font-medium">
+            <div className="text-black text-base">WELCOME BACK</div>
+            <div className="text-black text-3xl font-medium">
               Log In to your Account
             </div>
           </div>
@@ -52,11 +52,11 @@ const Index = () => {
                     className="cursor-pointer w-[20px] h-[20px]"
                   />
                 </div>
-                <label htmlFor="terms" className="text-[15px] text-black">
+                <label htmlFor="terms" className="text-base text-black">
                   Remember me
                 </label>
               </div>
-              <Link className="text-[#424242] text-[15px] font-medium">
+              <Link className="text-[#424242] text-base font-medium">
                 Forget Password?
               </Link>
             </div>
@@ -70,7 +70,7 @@ const Index = () => {
               )}
             </Button>
           </form>
-          <div className="flex items-center justify-center text-[15px] text-[#212121]">
+          <div className="flex items-center justify-center text-base text-[#212121]">
             New User?
             <Link
               to={"/recruiter/profile-setup/basic-details"}
@@ -95,7 +95,7 @@ const Index = () => {
                   className="w-full h-full object-cover"
                 />
                 {item.text && (
-                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white text-center text-xs p-2">
+                  <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white text-center text-md p-2">
                     {item.text}
                   </div>
                 )}

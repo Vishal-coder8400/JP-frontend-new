@@ -30,7 +30,7 @@ const Index = ({ applicants }) => {
             <Input
               type="search"
               placeholder="Enter job title, company, location"
-              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-[13px] placeholder:text-[#A3A3A3]"
+              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-sm placeholder:text-[#A3A3A3]"
             />
             <div className="absolute left-[12px] top-1/2 transform -translate-y-1/2">
               <SearchIcon className="h-[18px] w-[18px]" />
@@ -64,7 +64,7 @@ const Index = ({ applicants }) => {
             <Input
               type="search"
               placeholder="Enter job title, company, location"
-              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-[13px] placeholder:text-[#A3A3A3]"
+              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-sm placeholder:text-[#A3A3A3]"
             />
             <div className="absolute left-[12px] top-1/2 transform -translate-y-1/2">
               <SearchIcon className="h-[18px] w-[18px]" />

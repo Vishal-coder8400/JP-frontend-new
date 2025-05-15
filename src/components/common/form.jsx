@@ -49,7 +49,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
           )
         ),
       className:
-        "flex placeholder:translate-y-[1px] items-center justify-center text-black text-xxs focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]",
+        "flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]",
     };
 
     switch (getControlItem.componentType) {
@@ -91,7 +91,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9B959F] text-xs"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9B959F] text-md"
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
@@ -154,7 +154,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
                   : selectedValue.toString() || ""
               }
             >
-              <SelectTrigger className="w-full flex placeholder:translate-y-[1px] items-center text-black text-xxs focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[20px] px-[16px] placeholder:text-[#9B959F]">
+              <SelectTrigger className="w-full flex placeholder:translate-y-[1px] items-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[20px] px-[16px] placeholder:text-[#9B959F]">
                 <SelectValue placeholder={getControlItem.label} />
               </SelectTrigger>
               <SelectContent className={"bg-white"}>
@@ -198,7 +198,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
                       : `${getControlItem.name}_other`]: e.target.value,
                   }))
                 }
-                className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-xxs focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+                className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
               />
             )}
 
@@ -214,7 +214,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
                     medicalDetails: e.target.value,
                   }))
                 }
-                className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-xxs focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+                className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
               />
             )}
           </div>
@@ -248,9 +248,9 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
             />
             <Label
               htmlFor={getControlItem.name}
-              className="flex items-center justify-between border border-[#E2E2E2] w-full rounded-[4px] py-[13.5px] px-[16px] cursor-pointer z-10"
+              className="flex items-center justify-between border border-[#E2E2E2] w-full rounded-[4px] py-[9px] px-[16px] cursor-pointer z-10"
             >
-              <span className="text-[#9B959F] text-xxs">
+              <span className="text-[#9B959F] text-base">
                 {getControlItem.placeholder || "Upload File"}
               </span>
               <span className="flex justify-center items-center">
@@ -364,7 +364,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
                   >
                     <div className={`flex flex-col gap-[8px]`}>
                       {item.label && (
-                        <Label className="text-xxs text-[#20102B] font-medium">
+                        <Label className="text-base text-[#20102B] font-medium">
                           {i >= 0 ? `${item.label} - ${i + 1}` : item.label}
                         </Label>
                       )}
@@ -378,7 +378,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
             return (
               <div key={controlItem.name} className="flex flex-col gap-[8px]">
                 {controlItem.label && (
-                  <Label className="text-xxs text-[#20102B] font-medium">
+                  <Label className="text-base text-[#20102B] font-semibold">
                     {controlItem.label}
                   </Label>
                 )}

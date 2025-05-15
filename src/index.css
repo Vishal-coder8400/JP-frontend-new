@@ -8,6 +8,47 @@
   --text-s: 20px;
   --text-md: 32px;
   --text-lg: 64px; */
+  /* Font Sizes */
+  --text-xxs: 0.625rem; /* 10px */
+  --text-xs: 0.75rem; /* 12px */
+  --text-sm: 0.8125rem; /* 13px */
+  --text-base: 0.875rem; /* 14px */
+  --text-md: 1rem; /* 16px */
+  --text-md2: 1.125rem; /* 18px */
+  --text-lg: 1.25rem; /* 20px */
+  --text-xl: 1.5rem; /* 24px */
+  --text-2xl: 1.875rem; /* 30px */
+  --text-3xl: 2rem; /* 32px */
+  --text-4xl: 2.5rem; /* 40px */
+  --text-5xl: 3rem; /* 48px */
+  --text-6xl: 3.5rem; /* 56px */
+  --text-7xl: 4rem; /* 64px */
+
+  /* Line Heights */
+  --leading-tight: 1.25; /* Tight */
+  --leading-snug: 1.375; /* Snug */
+  --leading-normal: 1.5; /* Normal */
+  --leading-relaxed: 1.625; /* Relaxed */
+  --leading-loose: 2; /* Loose */
+
+  /* Font Weights */
+  --font-weight-thin: 100;
+  --font-weight-extralight: 200;
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+  --font-weight-black: 900;
+
+  /* Letter Spacing */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
   --color-custom-purple: rgba(125, 90, 226, 0.1);
 }
 @layer base {
@@ -28,6 +69,12 @@
 }
 :root {
   font-family: var(--font-family-primary);
+  font-size: 15px;
+}
+@media (max-width: 480px) {
+  :root {
+    font-size: 17px; /* Tablets */
+  }
 }
 .bg-gradient-radial {
   background: radial-gradient(
@@ -106,8 +153,7 @@
   }
 
   /* Hover State */
-  .calendar
-    button:hover:not([disabled]):not([aria-selected]) {
+  .calendar button:hover:not([disabled]):not([aria-selected]) {
     background-color: hsl(var(--muted));
     color: white;
   }

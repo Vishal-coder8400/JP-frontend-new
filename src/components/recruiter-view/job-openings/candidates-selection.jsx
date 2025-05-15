@@ -30,7 +30,7 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
             <Input
               type="search"
               placeholder="Enter job title, company, location"
-              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-[13px] placeholder:text-[#A3A3A3]"
+              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-sm placeholder:text-[#A3A3A3]"
             />
             <div className="absolute left-[12px] top-1/2 transform -translate-y-1/2">
               <SearchIcon className="h-[18px] w-[18px]" />
@@ -44,7 +44,7 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
                 <div className="w-4 h-4">
                   <BlackBag className="h-full w-full" />
                 </div>
-                <div className="justify-center text-zinc-600 text-[12px] font-medium capitalize">
+                <div className="justify-center text-zinc-600 text-xs font-medium capitalize">
                   Applied For
                 </div>
               </div>
@@ -57,7 +57,7 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
                 <div className="w-4 h-4">
                   <BlackBag className="h-full w-full" />
                 </div>
-                <div className="justify-center text-zinc-600 text-[12px] font-medium capitalize">
+                <div className="justify-center text-zinc-600 text-xs font-medium capitalize">
                   Experience
                 </div>
               </div>
@@ -70,7 +70,7 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
                 <div className="w-4 h-4">
                   <BlackBag className="h-full w-full" />
                 </div>
-                <div className="justify-center text-zinc-600 text-[12px] font-medium capitalize">
+                <div className="justify-center text-zinc-600 text-xs font-medium capitalize">
                   Skills
                 </div>
               </div>
@@ -81,19 +81,19 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
           <Table className="w-full border border-[#DADADA] rounded-[8px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="px-[16px] py-[12px] w-[292px] text-[13px] text-[#101018] font-semibold">
+                <TableHead className="px-[16px] py-[12px] w-[292px] text-sm text-[#101018] font-semibold">
                   Owner
                 </TableHead>
-                <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                   Applied for
                 </TableHead>
-                <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                   Skills
                 </TableHead>
-                <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                   Experience
                 </TableHead>
-                <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                   Last Update
                 </TableHead>
               </TableRow>
@@ -116,7 +116,7 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
                       <div className="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
                         {item.name}
                       </div>
-                      <div className="self-stretch justify-start text-[#6E6E71] text-[12px] font-normal leading-none">
+                      <div className="self-stretch justify-start text-[#6E6E71] text-xs font-normal leading-none">
                         {item.areaOfExpertise}
                       </div>
                     </div>
@@ -172,7 +172,7 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
               <Input
                 type="search"
                 placeholder="Enter job title, company, location"
-                className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[1.5px] focus:border-[#4E2FC0] placeholder:text-[13px] placeholder:text-[#A3A3A3]"
+                className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[1.5px] focus:border-[#4E2FC0] placeholder:text-sm placeholder:text-[#A3A3A3]"
               />
               <div className="absolute left-[12px] top-1/2 transform -translate-y-1/2">
                 <SearchIcon className="h-[18px] w-[18px]" />
@@ -187,19 +187,19 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
           <Table className="w-full border border-[#DADADA] rounded-[8px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="px-[16px] py-[12px] w-[292px] text-[13px] text-[#101018] font-semibold">
+                <TableHead className="px-[16px] py-[12px] w-[292px] text-sm text-[#101018] font-semibold">
                   Owner
                 </TableHead>
-                <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                   Applied for
                 </TableHead>
-                <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                   Skills
                 </TableHead>
-                <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                   Experience
                 </TableHead>
-                <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                   Last Update
                 </TableHead>
               </TableRow>
@@ -222,7 +222,7 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
                       <div className="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
                         {item.name}
                       </div>
-                      <div className="self-stretch justify-start text-[#6E6E71] text-[12px] font-normal leading-none">
+                      <div className="self-stretch justify-start text-[#6E6E71] text-xs font-normal leading-none">
                         {item.areaOfExpertise}
                       </div>
                     </div>

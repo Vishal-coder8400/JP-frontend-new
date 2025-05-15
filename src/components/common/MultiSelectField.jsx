@@ -48,7 +48,7 @@ export default function MultiSelectField({
             {value.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center gap-1 bg-gray-200 text-xs rounded-full px-2 py-1"
+                className="flex items-center gap-1 bg-gray-200 text-sm rounded-full px-2 py-1"
               >
                 {item.label}
                 <X
@@ -68,7 +68,7 @@ export default function MultiSelectField({
                 }, 150);
               }}
               placeholder="Select options..."
-              className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-xxs focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+              className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
             />
           </div>
         </div>

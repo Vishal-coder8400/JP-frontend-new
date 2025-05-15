@@ -16,7 +16,7 @@ const JobDescription = ({ setOpen1, setOpen }) => {
               <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
                 <div className="flex flex-col justify-start items-start gap-1">
                   <div className="inline-flex justify-start items-center gap-3">
-                    <div className="justify-start text-neutral-900 text-[18px] font-normal leading-relaxed">
+                    <div className="justify-start text-neutral-900 text-md2 font-normal leading-relaxed">
                       The Company
                     </div>
                   </div>
@@ -25,7 +25,7 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                       Business Development Intern
                     </div>
                     <div className="px-1.5 py-0.5 bg-violet-500/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
-                      <div className="justify-start text-violet-500 text-xs font-medium leading-none">
+                      <div className="justify-start text-violet-500 text-md font-medium leading-none">
                         2 applied
                       </div>
                     </div>
@@ -271,7 +271,7 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                     Business Development Intern
                   </div>
                   <div className="px-1.5 py-0.5 bg-violet-500/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
-                    <div className="justify-start text-violet-500 text-xs font-medium leading-none">
+                    <div className="justify-start text-violet-500 text-md font-medium leading-none">
                       2 applied
                     </div>
                   </div>

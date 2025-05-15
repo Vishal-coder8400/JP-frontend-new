@@ -28,7 +28,7 @@ const CandidateReleventDetails = () => {
     <div className="self-stretch lg:px-36 lg:py-20 p-[20px] inline-flex flex-col justify-start items-end lg:gap-10 gap-[15px]">
       <div className="w-full inline-flex justify-start items-start gap-8">
         <div className="flex-1 inline-flex flex-col justify-start items-start gap-7">
-          <div className="self-stretch justify-start text-gray-900 lg:text-3xl text-[20px] font-bold leading-loose">
+          <div className="self-stretch justify-start text-gray-900 lg:text-3xl text-lg font-bold leading-loose">
             Candidate's relevant work experience
           </div>
         </div>
@@ -157,7 +157,7 @@ const CandidateReleventDetails = () => {
                       }))
                     }
                     type="number"
-                    className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-xxs focus:outline-none focus-visible:ring-0 focus:border-0 focus:border-black rounded-[4px]  py-[10px] px-[16px] placeholder:text-[#9B959F] h-full"
+                    className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-0 focus:border-black rounded-[4px]  py-[10px] px-[16px] placeholder:text-[#9B959F] h-full"
                   />
                 </div>
               </div>

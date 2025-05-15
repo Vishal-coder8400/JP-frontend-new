@@ -90,7 +90,7 @@ const Index = () => {
             <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
               Matches & Submissions
             </div>
-            <div className="justify-start text-zinc-500 text-xs font-medium leading-tight">
+            <div className="justify-start text-zinc-500 text-md font-medium leading-tight">
               View All
             </div>
           </div>
@@ -99,7 +99,7 @@ const Index = () => {
             <Input
               type="search"
               placeholder="Enter job title, company, location"
-              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-[13px] placeholder:text-[#A3A3A3]"
+              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-sm placeholder:text-[#A3A3A3]"
             />
             <div className="absolute left-[12px] top-1/2 transform -translate-y-1/2">
               <SearchIcon className="h-[18px] w-[18px]" />
@@ -109,26 +109,26 @@ const Index = () => {
             <Table className="w-full border border-[#DADADA] rounded-[8px]">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="px-[16px] py-[12px] w-[292px] text-[13px] text-[#101018] font-semibold">
+                  <TableHead className="px-[16px] py-[12px] w-[292px] text-sm text-[#101018] font-semibold">
                     Owner
                   </TableHead>
-                  <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                  <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                     Applied for
                   </TableHead>
-                  <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                  <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                     Company
                   </TableHead>
-                  <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                  <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                     Submission Date
                   </TableHead>
-                  <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                  <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                     Status
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((item) => (
-                  <TableRow key={item.name}>
+                {data.map((item, i) => (
+                  <TableRow key={i}>
                     <TableCell className="px-[16px] py-[12px] flex gap-[10px]">
                       <Button
                         onClick={() => setOpen2(true)}
@@ -144,7 +144,7 @@ const Index = () => {
                         <div class="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
                           {item.name}
                         </div>
-                        <div className="self-stretch justify-start text-[#6E6E71] text-[12px] font-normal leading-none">
+                        <div className="self-stretch justify-start text-[#6E6E71] text-xs font-normal leading-none">
                           {item.role}
                         </div>
                       </div>
@@ -166,7 +166,7 @@ const Index = () => {
                     </TableCell>
                     <TableCell className="px-[16px] py-[12px]">
                       <div className="px-2 py-1 bg-amber-600/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
-                        <div className="justify-start text-amber-600 text-xs font-medium leading-none">
+                        <div className="justify-start text-amber-600 text-md font-medium leading-none">
                           Pending
                         </div>
                       </div>
@@ -185,7 +185,7 @@ const Index = () => {
             <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
               Matches & Submissions
             </div>
-            <div className="justify-start text-zinc-500 text-xs font-medium leading-tight">
+            <div className="justify-start text-zinc-500 text-md font-medium leading-tight">
               View All
             </div>
           </div>
@@ -194,7 +194,7 @@ const Index = () => {
             <Input
               type="search"
               placeholder="Enter job title, company, location"
-              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[1.5px] focus:border-[#4E2FC0] placeholder:text-[13px] placeholder:text-[#A3A3A3]"
+              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[1.5px] focus:border-[#4E2FC0] placeholder:text-sm placeholder:text-[#A3A3A3]"
             />
             <div className="absolute left-[12px] top-1/2 transform -translate-y-1/2">
               <SearchIcon className="h-[18px] w-[18px]" />
@@ -204,26 +204,26 @@ const Index = () => {
             <Table className="w-full border border-[#DADADA] rounded-[8px]">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="px-[16px] py-[12px] w-[292px] text-[13px] text-[#101018] font-semibold">
+                  <TableHead className="px-[16px] py-[12px] w-[292px] text-sm text-[#101018] font-semibold">
                     Owner
                   </TableHead>
-                  <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                  <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                     Applied for
                   </TableHead>
-                  <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                  <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                     Company
                   </TableHead>
-                  <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                  <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                     Submission Date
                   </TableHead>
-                  <TableHead className="px-[16px] py-[12px] w-[164px] text-[13px] text-[#101018] font-semibold">
+                  <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                     Status
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((item) => (
-                  <TableRow key={item.name}>
+                {data.map((item,i) => (
+                  <TableRow key={i}>
                     <TableCell className="px-[16px] py-[12px] flex gap-[10px]">
                       <Button
                         onClick={() => setOpen2(true)}
@@ -239,7 +239,7 @@ const Index = () => {
                         <div class="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
                           {item.name}
                         </div>
-                        <div className="self-stretch justify-start text-[#6E6E71] text-[12px] font-normal leading-none">
+                        <div className="self-stretch justify-start text-[#6E6E71] text-xs font-normal leading-none">
                           {item.role}
                         </div>
                       </div>
@@ -261,7 +261,7 @@ const Index = () => {
                     </TableCell>
                     <TableCell className="px-[16px] py-[12px]">
                       <div className="px-2 py-1 bg-amber-600/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
-                        <div className="justify-start text-amber-600 text-xs font-medium leading-none">
+                        <div className="justify-start text-amber-600 text-md font-medium leading-none">
                           Pending
                         </div>
                       </div>

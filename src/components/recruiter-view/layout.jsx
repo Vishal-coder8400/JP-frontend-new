@@ -54,8 +54,8 @@ const Layout = () => {
     <main className="w-full min-h-screen flex flex-col lg:flex-row">
       <Navbar />
       {/* desktop-view */}
-      <aside className="fixed top-[84px] left-0 h-[calc(100vh-84px)] hidden w-[338px] bg-[#141E2B] lg:flex flex-col overflow-hidden">
-        <div className="p-[24px] flex flex-col gap-[37px] overflow-y-auto scrollbar-hide scroll-smooth">
+      <aside className="fixed top-[80px] left-0 h-[calc(100vh-80px)] hidden w-[338px] bg-[#141E2B] lg:flex flex-col overflow-hidden">
+        <div className="p-[24px] flex flex-col gap-[35px] overflow-y-auto scrollbar-hide scroll-smooth">
           {/* Profile Card */}
           <div className="relative overflow-hidden flex flex-col gap-[16px] px-[20px] py-[45px] rounded-[16px] border-[#474747] border min-h-[265px]">
             <div className="absolute inset-0 bg-noise-pattern bg-cover mix-blend-soft-light"></div>
@@ -74,10 +74,10 @@ const Layout = () => {
               </div>
             </div>
             <div className="flex flex-col gap-[6px] items-center justify-center z-10 ">
-              <div className="text-[#fff] text-xs font-medium">
+              <div className="text-[#fff] text-md font-medium">
                 {user?.name}
               </div>
-              <div className="text-[#A2A2A2] text-xxs font-medium text-center">
+              <div className="text-[#A2A2A2] text-base font-medium text-center">
                 Continue your journey and achieve Your Target
               </div>
             </div>
@@ -96,7 +96,7 @@ const Layout = () => {
                 <div className="flex items-center justify-center">
                   {item.icon}
                 </div>
-                <div className="text-white text-[18px] ">{item.name}</div>
+                <div className="text-white text-md2 ">{item.name}</div>
               </Link>
             ))}
           </div>

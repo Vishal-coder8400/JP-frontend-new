@@ -16,7 +16,7 @@ const CandidateProfile = () => {
             <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
               <div className="flex flex-col justify-start items-start gap-1">
                 <div className="inline-flex justify-start items-center gap-3">
-                  <div className="justify-start text-neutral-900 text-[18px] font-normal leading-relaxed">
+                  <div className="justify-start text-neutral-900 text-md2 font-normal leading-relaxed">
                     Aspiring Product Designer
                   </div>
                 </div>
@@ -25,7 +25,7 @@ const CandidateProfile = () => {
                     Heeral Nant
                   </div>
                   <div className="px-1.5 py-0.5 bg-amber-600/10 rounded-[3px] flex justify-start items-center gap-1 overflow-hidden">
-                    <div className="justify-start text-amber-600 text-[12px] font-medium leading-none">
+                    <div className="justify-start text-amber-600 text-xs font-medium leading-none">
                       Pending
                     </div>
                   </div>
@@ -118,10 +118,10 @@ const CandidateProfile = () => {
                       <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                         The Company
                       </div>
-                      <div className="justify-start text-zinc-400 text-[13px] font-semibold leading-3">
+                      <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                         Dec 2023 - Feb 2024 · 3 mos
                       </div>
-                      <div className="justify-start text-zinc-400 text-[13px] font-semibold leading-3">
+                      <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                         Chicago, USA
                       </div>
                     </div>
@@ -138,10 +138,10 @@ const CandidateProfile = () => {
                       <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                         The Company
                       </div>
-                      <div className="justify-start text-zinc-400 text-[13px] font-semibold leading-3">
+                      <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                         Dec 2023 - Feb 2024 · 3 mos
                       </div>
-                      <div className="justify-start text-zinc-400 text-[13px] font-semibold leading-3">
+                      <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                         Chicago, USA
                       </div>
                     </div>
@@ -158,10 +158,10 @@ const CandidateProfile = () => {
                       <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                         The Company
                       </div>
-                      <div className="justify-start text-zinc-400 text-[13px] font-semibold leading-3">
+                      <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                         Dec 2023 - Feb 2024 · 3 mos
                       </div>
-                      <div className="justify-start text-zinc-400 text-[13px] font-semibold leading-3">
+                      <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                         Chicago, USA
                       </div>
                     </div>
@@ -185,7 +185,7 @@ const CandidateProfile = () => {
                       <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                         Harvard University
                       </div>
-                      <div className="justify-start text-zinc-400 text-[13px] font-semibold leading-3">
+                      <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                         Aug 2020 - Feb 2022 · 2 Yrs
                       </div>
                     </div>
@@ -202,7 +202,7 @@ const CandidateProfile = () => {
                       <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                         Harvard University
                       </div>
-                      <div className="justify-start text-zinc-400 text-[13px] font-semibold leading-3">
+                      <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                         Aug 2020 - Feb 2022 · 2 Yrs
                       </div>
                     </div>
@@ -301,7 +301,7 @@ const CandidateProfile = () => {
                       Heeral Nant
                     </div>
                     <div className="px-1.5 py-0.5 bg-amber-600/10 rounded-[3px] flex justify-start items-center gap-1 overflow-hidden">
-                      <div className="justify-start text-amber-600 text-xs font-medium leading-none">
+                      <div className="justify-start text-amber-600 text-md font-medium leading-none">
                         Pending
                       </div>
                     </div>
@@ -373,16 +373,16 @@ const CandidateProfile = () => {
                         src="https://placehold.co/32x32"
                       />
                       <div className="flex-1 inline-flex flex-col justify-start items-start gap-2.5">
-                        <div className="justify-start text-neutral-900 text-xs font-medium leading-none">
+                        <div className="justify-start text-neutral-900 text-md font-medium leading-none">
                           Business Development Intern
                         </div>
                         <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                           The Company
                         </div>
-                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                           Dec 2023 - Feb 2024 · 3 mos
                         </div>
-                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                           Chicago, USA
                         </div>
                       </div>
@@ -393,16 +393,16 @@ const CandidateProfile = () => {
                         src="https://placehold.co/32x32"
                       />
                       <div className="flex-1 inline-flex flex-col justify-start items-start gap-2.5">
-                        <div className="justify-start text-neutral-900 text-xs font-medium leading-none">
+                        <div className="justify-start text-neutral-900 text-md font-medium leading-none">
                           Business Development Intern
                         </div>
                         <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                           The Company
                         </div>
-                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                           Dec 2023 - Feb 2024 · 3 mos
                         </div>
-                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                           Chicago, USA
                         </div>
                       </div>
@@ -413,16 +413,16 @@ const CandidateProfile = () => {
                         src="https://placehold.co/32x32"
                       />
                       <div className="flex-1 inline-flex flex-col justify-start items-start gap-2.5">
-                        <div className="justify-start text-neutral-900 text-xs font-medium leading-none">
+                        <div className="justify-start text-neutral-900 text-md font-medium leading-none">
                           Business Development Intern
                         </div>
                         <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                           The Company
                         </div>
-                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                           Dec 2023 - Feb 2024 · 3 mos
                         </div>
-                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                           Chicago, USA
                         </div>
                       </div>
@@ -446,7 +446,7 @@ const CandidateProfile = () => {
                         <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                           Harvard University
                         </div>
-                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                           Aug 2020 - Feb 2022 · 2 Yrs
                         </div>
                       </div>
@@ -463,7 +463,7 @@ const CandidateProfile = () => {
                         <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                           Harvard University
                         </div>
-                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
                           Aug 2020 - Feb 2022 · 2 Yrs
                         </div>
                       </div>

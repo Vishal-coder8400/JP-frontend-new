@@ -38,14 +38,14 @@ const SectoralDetails = () => {
     mutate(payload);
   };
   return (
-    <div className="w-full self-stretch lg:px-36 lg:py-24 p-[20px] inline-flex flex-col justify-start items-start lg:gap-7 gap-[18px]">
-      <div className="w-full flex justify-start items-start gap-7">
-        <div className="justify-start text-gray-900 lg:text-3xl text-[20px] font-bold leading-loose">
+    <div className="w-full self-stretch lg:px-36 lg:py-14 p-[20px] inline-flex flex-col justify-start items-start lg:gap-2 gap-[10px]">
+      <div className="w-full flex justify-start items-start gap-3">
+        <div className="justify-start text-gray-900 lg:text-3xl text-lg font-bold leading-loose">
           Recruiter Profile Setup
         </div>
       </div>
-      <div className="w-full h-14 flex flex-col justify-start items-start lg:gap-8 gap-[15px]">
-        <div className="justify-start text-gray-900 lg:text-xl text-[16px] font-bold leading-tight">
+      <div className="w-full h-14 flex flex-col justify-start items-start lg:gap-4 gap-[15px]">
+        <div className="justify-start text-gray-900 lg:text-xl text-md font-bold leading-tight">
           Almost there – 50% completed!
         </div>
         <div className="self-stretch inline-flex justify-start items-start gap-2">

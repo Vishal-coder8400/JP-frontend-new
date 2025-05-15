@@ -8,7 +8,7 @@ const HeroProfile = () => {
   return (
     <Fragment>
       <div className="hidden lg:flex flex-col gap-[30px]">
-        <div className="text-[32px] text-[#171923] font-bold">
+        <div className="text-3xl text-[#171923] font-bold">
           Hello, {user?.name}
         </div>
         <div className="flex items-center justify-between">
@@ -16,13 +16,13 @@ const HeroProfile = () => {
             <div className="flex justify-center items-center w-[39px] h-[39px] overflow-hidden rounded-[6px]">
               <img src="" alt="" className="h-full w-full bg-black" />
             </div>
-            <div className="text-[#141414] text-s ">Uber India</div>
+            <div className="text-[#141414] text-lg">Uber India</div>
           </div>
           <div className="relative w-3/4 flex items-center justify-center">
             <Input
               type="search"
               placeholder="Enter job title, company, location"
-              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-[13px] placeholder:text-[#A3A3A3]"
+              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-sm placeholder:text-[#A3A3A3]"
             />
             <div className="absolute left-[12px] top-1/2 transform -translate-y-1/2">
               <SearchIcon className="h-[18px] w-[18px]" />
@@ -46,7 +46,7 @@ const HeroProfile = () => {
           <Input
             type="search"
             placeholder="Enter job title, company, location"
-            className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[1.5px] focus:border-[#4E2FC0] placeholder:text-[13px] placeholder:text-[#A3A3A3]"
+            className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[1.5px] focus:border-[#4E2FC0] placeholder:text-sm placeholder:text-[#A3A3A3]"
           />
           <div className="absolute left-[12px] top-1/2 transform -translate-y-1/2">
             <SearchIcon className="h-[18px] w-[18px]" />

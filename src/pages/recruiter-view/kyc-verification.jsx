@@ -5,7 +5,6 @@ import { Button } from "../../components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useKycDetails } from "../../hooks/useProfile";
 
-
 const KycVerification = () => {
   const [formData, setFormData] = useState({
     panDetails: {
@@ -30,18 +29,18 @@ const KycVerification = () => {
   const onSubmit = (e) => {
     e.preventDefault();
     mutate(formData);
-  }; 
+  };
   return (
     <div className="w-full self-stretch p-[20px] lg:px-36 lg:py-20 inline-flex flex-col justify-start items-start gap-[18px] lg:gap-7">
       <div className="w-full flex flex-col justify-start items-start gap-8">
         <div className="flex flex-col justify-start items-start gap-7">
-          <div className="justify-start text-gray-900 text-[18px] lg:text-3xl font-bold leading-loose">
+          <div className="justify-start text-gray-900 text-md2 lg:text-3xl font-bold leading-loose">
             Recruiter Profile Setup
           </div>
         </div>
       </div>
       <div className="w-full flex flex-col justify-start items-start gap-8">
-        <div className="justify-start text-gray-900 text-[14px] lg:text-xl font-bold leading-tight">
+        <div className="justify-start text-gray-900 text-base lg:text-xl font-bold leading-tight">
           Almost there – 25% completed!
         </div>
         <div className="self-stretch inline-flex justify-start items-start gap-2">
