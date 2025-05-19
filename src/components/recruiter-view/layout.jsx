@@ -57,7 +57,7 @@ const Layout = () => {
       <aside className="fixed top-[80px] left-0 h-[calc(100vh-80px)] hidden w-[338px] bg-[#141E2B] lg:flex flex-col overflow-hidden">
         <div className="p-[24px] flex flex-col gap-[35px] overflow-y-auto scrollbar-hide scroll-smooth">
           {/* Profile Card */}
-          <div className="relative overflow-hidden flex flex-col gap-[16px] px-[20px] py-[45px] rounded-[16px] border-[#474747] border min-h-[265px]">
+          <div className="relative overflow-hidden flex flex-col gap-[16px] px-[20px] py-[45px] rounded-[16px] border-[#474747] border min-h-[230px]">
             <div className="absolute inset-0 bg-noise-pattern bg-cover mix-blend-soft-light"></div>
             <div className="absolute inset-0 bg-gradient-radial from-[#6945ED] to-[#1E2D42]"></div>
             <div className="flex gap-[33px] z-10 items-center justify-center">
