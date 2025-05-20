@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import Confetti from "react-confetti";
 import { Link } from "react-router-dom";
 import { useWindowSize } from "react-use";
+import useAuthStore from "../../stores/useAuthStore";
 
 const Congratulation = () => {
   const { width, height } = useWindowSize();
   const [showConfetti, setShowConfetti] = useState(false);
-
+  const { user } = useAuthStore();
   useEffect(() => {
     setShowConfetti(true);
   }, []);
@@ -35,7 +36,7 @@ const Congratulation = () => {
                 Congratulations, You’re In!
               </div>
               <div className="self-stretch text-center justify-start text-gray-900 text-2xl font-bold leading-loose">
-                Welcome aboard, John
+                Welcome aboard, {user?.name}
               </div>
               <div className="self-stretch text-center justify-start text-neutral-900 text-base font-normal leading-snug">
                 Your journey towards exciting opportunities starts now. Let’s
