@@ -1,11 +1,10 @@
-import React, { useState } from "react";
-import { Button } from "../../components/ui/button";
-import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import CommonForm from "../../components/common/form";
 import { referenceFields, sectoralFieldsForm2 } from "../../config";
 import { useSectoralDetails } from "../../hooks/recruiter/useProfile";
 import { z } from "zod";
 import { validateFormData } from "../../utils/objectUtils";
+import ButtonComponent from "../../components/common/button";
 
 const referenceSchema = z.object({
   name: z.string().min(1, "Reference name is required"),
@@ -124,17 +123,10 @@ const QualificationDetails = () => {
           ))}
         </div>
         <div className="self-stretch flex flex-col justify-end items-end gap-2.5">
-          <Button className="cursor-pointer w-64 px-5 py-2.5 bg-[#6945ED] rounded-3xl inline-flex justify-center items-center gap-2.5">
-            <div className="justify-start text-white text-sm font-medium capitalize">
-              {isPending ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="animate-spin h-2 w-2" /> Please wait
-                </span>
-              ) : (
-                "Save & Update Profile"
-              )}
-            </div>
-          </Button>
+          <ButtonComponent
+            isPending={isPending}
+            buttonText={"Save & Update Profile"}
+          />
         </div>
       </form>
     </div>

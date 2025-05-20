@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import CommonForm from "../../components/common/form";
 import { basicInformation, recruiterSignUp } from "../../config";
-import { Button } from "../../components/ui/button";
 import { Slate, Upload } from "../../utils/icon";
 import { useRegister } from "../../hooks/recruiter/useAuth";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 import { z } from "zod";
 import { validateFormData } from "../../utils/objectUtils";
+import ButtonComponent from "../../components/common/button";
 
 const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$/;
 
@@ -148,17 +146,10 @@ const BasicDetails = () => {
               </div>
             </div>
             <div className="self-stretch flex flex-col justify-end items-end gap-2.5">
-              <Button className="cursor-pointer w-64 px-5 py-2.5 bg-[#6945ED] rounded-3xl inline-flex justify-center items-center gap-2.5">
-                <div className="justify-start text-white text-sm font-medium capitalize">
-                  {isPending ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <Loader2 className="animate-spin h-2 w-2" /> Please wait
-                    </span>
-                  ) : (
-                    "Save & Update Profile"
-                  )}
-                </div>
-              </Button>
+              <ButtonComponent
+                isPending={isPending}
+                buttonText={"Save & Update Profile"}
+              />
             </div>
           </form>
         </div>

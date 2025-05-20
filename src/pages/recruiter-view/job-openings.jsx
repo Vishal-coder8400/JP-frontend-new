@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import JobOpeningComponent from "../../components/recruiter-view/job-openings";
 import JobDescription from "../../components/recruiter-view/job-openings/job-description";
 import { Sheet, SheetContent } from "@/components/ui/sheet";

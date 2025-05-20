@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { Input } from "../../ui/input";
 import { BlackBag, FilterIcon, SearchIcon } from "../../../utils/icon";
 import {

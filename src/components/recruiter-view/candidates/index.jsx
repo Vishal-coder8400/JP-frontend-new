@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import HeroProfile from "../common/hero-profile";
 import { Input } from "../../ui/input";
 import { SearchIcon } from "../../../utils/icon";
@@ -6,7 +6,6 @@ import CandidateSelection from "../job-openings/candidates-selection";
 import { Link } from "react-router-dom";
 
 const Index = ({ applicants }) => {
-
   return (
     <Fragment>
       <div className="hidden lg:flex flex-col gap-[51px]">

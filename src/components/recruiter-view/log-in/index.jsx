@@ -54,7 +54,10 @@ const Index = ({
                 Forget Password?
               </Link>
             </div>
-            <Button className="cursor-pointer h-[50px] rounded-[10px] bg-[#6945ED] text-white font-bold py-[9px] px-[58px] flex">
+            <Button
+              disabled={isPending}
+              className="cursor-pointer h-[50px] rounded-[10px] bg-[#6945ED] text-white font-bold py-[9px] px-[58px] flex"
+            >
               {isPending ? (
                 <span className="flex items-center justify-center gap-2">
                   <Loader2 className="animate-spin h-2 w-2" /> Please wait

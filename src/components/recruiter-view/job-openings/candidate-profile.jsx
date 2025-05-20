@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { ClockIcon, LocationIcon } from "../../../utils/icon";
 import useJobSeekerProfileStore from "../../../stores/useJobSeekerProfileStore";
 import {

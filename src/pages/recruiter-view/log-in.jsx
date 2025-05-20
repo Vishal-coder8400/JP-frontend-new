@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Navbar from "../../components/recruiter-view/navbar";
 import LogInComponent from "../../components/recruiter-view/log-in";
 import { useLogin } from "../../hooks/recruiter/useAuth";

@@ -1,13 +1,11 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import HeroProfile from "../common/hero-profile";
 import { Input } from "../../ui/input";
 import { SearchIcon } from "../../../utils/icon";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -222,7 +220,7 @@ const Index = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((item,i) => (
+                {data.map((item, i) => (
                   <TableRow key={i}>
                     <TableCell className="px-[16px] py-[12px] flex gap-[10px]">
                       <Button

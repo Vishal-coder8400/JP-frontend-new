@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import { Fragment } from "react";
 import { Button } from "../../ui/button";
 
 const JobDescription = ({ setOpen1, setOpen }) => {

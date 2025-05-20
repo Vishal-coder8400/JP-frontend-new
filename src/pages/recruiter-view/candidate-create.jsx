@@ -1,4 +1,3 @@
-import React from "react";
 import CandidateCreation from "../../components/recruiter-view/candidateCreate";
 
 const CandidateCreate = () => {
