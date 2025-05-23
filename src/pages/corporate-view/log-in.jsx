@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLogin } from "../../hooks/corporate/useAuth";
-import Navbar from "../../components/recruiter-view/navbar";
 import LogInComponent from "../../components/recruiter-view/log-in";
 
 const CorporateLogIn = () => {
@@ -17,7 +16,6 @@ const CorporateLogIn = () => {
   };
   return (
     <div className="flex flex-col w-full">
-      <Navbar />
       <LogInComponent
         formData={formData}
         handleSubmit={handleSubmit}

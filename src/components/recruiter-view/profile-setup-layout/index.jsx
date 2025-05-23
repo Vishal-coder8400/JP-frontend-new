@@ -1,10 +1,7 @@
-import { useState } from "react";
 import Navbar from "../navbar";
 import { Outlet } from "react-router-dom";
 
 const Index = () => {
-  const [formData, setFormData] = useState([]);
-  const handleUpdateStatus = () => {};
   return (
     <main className="w-full h-full flex flex-col lg:flex-row">
       <Navbar />

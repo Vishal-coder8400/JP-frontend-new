@@ -1,5 +1,5 @@
 import { Route, Routes } from "react-router-dom";
-import RecruiterLayout from "./components/recruiter-view/layout";
+import Layout from "./components/recruiter-view/layout";
 import ProfileSetupLayout from "./components/recruiter-view/profile-setup-layout";
 import JobOpenings from "./pages/recruiter-view/job-openings";
 import Candidates from "./pages/recruiter-view/candidates";
@@ -11,7 +11,6 @@ import SectoralDetails from "./pages/recruiter-view/sectoral-details";
 import QualificationDetails from "./pages/recruiter-view/qualification-details";
 import useAuthStore from "./stores/useAuthStore";
 import ScrollToTop from "./components/common/scrollToTop";
-import Congratulation from "./pages/recruiter-view/congratulation";
 import CheckAuth from "./components/common/checkAuth";
 import CandidateReleventDetails from "./pages/recruiter-view/candidate-releventDetails";
 import RecruiterLogin from "./pages/recruiter-view/log-in";
@@ -19,7 +18,12 @@ import CorporateLogIn from "./pages/corporate-view/log-in";
 import RecruiterDashboard from "./pages/recruiter-view/dashboard";
 import CorporateDashboard from "./pages/corporate-view/dashboard";
 import { useGetUserProfile as useGetRecruiterUserProfile } from "./hooks/recruiter/useProfile";
-import { useEffect } from "react";
+import { useGetCorporateUserProfile } from "./hooks/corporate/useProfile";
+import CorporateBasicDetails from "./pages/corporate-view/basic-details";
+import DynamicCheckAuthWrapper from "./components/common/dynamicCheckAuthWrapper";
+import FinalSetup from "./pages/corporate-view/final-setup";
+import Analytics from "./pages/corporate-view/analytics";
+import Listing from "./pages/corporate-view/listing";
 
 function App() {
   const token =
@@ -35,6 +39,20 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route
+          path="/"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetRecruiterUserProfile}
+              allowedRoles={["recruiter", "corporate"]}
+            >
+              <CorporateDashboard />
+            </CheckAuth>
+          }
+        />
+        <Route element={<ProfileSetupLayout />}>
+          <Route path="congratulation" element={<DynamicCheckAuthWrapper />} />
+        </Route>
+        <Route
           path="/recruiter/profile-setup"
           element={
             <CheckAuth
@@ -47,7 +65,6 @@ function App() {
         >
           <Route path="basic-details" element={<BasicDetails />} />
           <Route path="kyc-verification" element={<KycVerification />} />
-          <Route path="congratulation" element={<Congratulation />} />
           <Route path="sectoral-details" element={<SectoralDetails />} />
           <Route
             path="qualification-details"
@@ -61,7 +78,7 @@ function App() {
               fetchProfileHook={useGetRecruiterUserProfile}
               allowedRoles={["recruiter"]}
             >
-              <RecruiterLayout />
+              <Layout />
             </CheckAuth>
           }
         >
@@ -83,51 +100,73 @@ function App() {
           />
         </Route>
         <Route
-          path="/recruiter/log-in"
+          path="/recruiter"
           element={
             <CheckAuth
               fetchProfileHook={useGetRecruiterUserProfile}
               allowedRoles={["recruiter"]}
             >
-              <RecruiterLogin />
+              <ProfileSetupLayout />
             </CheckAuth>
           }
-        />
+        >
+          <Route path="log-in" element={<RecruiterLogin />} />
+        </Route>
         <Route
-          path="/corporate/log-in"
+          path="/corporate/profile-setup"
           element={
             <CheckAuth
-              fetchProfileHook={useGetRecruiterUserProfile}
+              fetchProfileHook={useGetCorporateUserProfile}
               allowedRoles={["corporate"]}
             >
-              <CorporateLogIn />
+              <ProfileSetupLayout />
             </CheckAuth>
           }
-        />
+        >
+          <Route path="basic-details" element={<CorporateBasicDetails />} />
+        </Route>
         <Route
-          path="/corporate/dashboard"
+          path="/corporate"
           element={
             <CheckAuth
-              fetchProfileHook={useGetRecruiterUserProfile}
+              fetchProfileHook={useGetCorporateUserProfile}
               allowedRoles={["corporate"]}
             >
-              <CorporateDashboard />
+              <ProfileSetupLayout />
             </CheckAuth>
           }
-        />
-
+        >
+          <Route path="log-in" element={<CorporateLogIn />} />
+        </Route>
         <Route
-          path="/"
+          path="/corporate"
           element={
             <CheckAuth
-              fetchProfileHook={useGetRecruiterUserProfile}
-              allowedRoles={["recruiter", "recruiter"]}
+              fetchProfileHook={useGetCorporateUserProfile}
+              allowedRoles={["corporate"]}
             >
-              <CorporateDashboard />
+              <Layout />
             </CheckAuth>
           }
-        />
+        >
+          <Route path="dashboard" element={<CorporateDashboard />} />
+          <Route path="job-posting/analytics" element={<Analytics />} />
+          <Route path="job-posting/listing" element={<Listing />} />
+        </Route>
         <Route
+          path="/corporate/profile-setup"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetCorporateUserProfile}
+              allowedRoles={["corporate"]}
+            >
+              <ProfileSetupLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="final-setup" element={<FinalSetup />} />
+        </Route>
+        {/* <Route
           path="*"
           element={
             <CheckAuth
@@ -137,7 +176,7 @@ function App() {
               <CorporateDashboard />
             </CheckAuth>
           }
-        />
+        /> */}
       </Routes>
     </div>
   );

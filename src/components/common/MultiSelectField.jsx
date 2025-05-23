@@ -57,19 +57,37 @@ export default function MultiSelectField({
                 />
               </div>
             ))}
-            <Input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onFocus={() => setOpen(true)}
-              onBlur={() => {
-                setTimeout(() => {
-                  setOpen(false);
-                }, 150);
-              }}
-              placeholder="Select options..."
-              className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
-            />
+            <div className="relative flex items-center justify-center w-full">
+              <Input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onFocus={() => setOpen(true)}
+                onBlur={() => {
+                  setTimeout(() => {
+                    setOpen(false);
+                  }, 150);
+                }}
+                placeholder="Select options..."
+                className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+              />
+              <span className="absolute right-4 top-1/2 -translate-y-1/2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="10"
+                  height="6"
+                  viewBox="0 0 10 6"
+                  fill="none"
+                >
+                  <path
+                    d="M0.5 0.75L5 5.25L9.5 0.75"
+                    stroke="#20102B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+            </div>
           </div>
         </div>
 

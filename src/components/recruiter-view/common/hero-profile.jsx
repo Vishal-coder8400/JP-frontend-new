@@ -9,9 +9,9 @@ const HeroProfile = () => {
     <Fragment>
       <div className="hidden lg:flex flex-col gap-[30px]">
         <div className="text-3xl text-[#171923] font-bold">
-          Hello, {user?.name}
+          Hello, {user?.name || user?.basicInformation?.companyName}
         </div>
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <div className="flex items-center gap-[12px]">
             <div className="flex justify-center items-center w-[39px] h-[39px] overflow-hidden rounded-[6px]">
               <img src="" alt="" className="h-full w-full bg-black" />
@@ -28,11 +28,11 @@ const HeroProfile = () => {
               <SearchIcon className="h-[18px] w-[18px]" />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
       <div className="lg:hidden self-stretch inline-flex justify-between items-center">
         <div className="justify-start text-gray-900 text-xl font-bold leading-tight">
-          Hello, {user?.name}
+          Hello, {user?.name || user?.basicInformation?.companyName}
         </div>
         <div className="flex justify-start items-center gap-3">
           <img className="w-7 h-7 rounded" src="https://placehold.co/28x28" />

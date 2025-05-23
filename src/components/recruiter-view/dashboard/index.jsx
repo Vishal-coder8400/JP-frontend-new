@@ -28,8 +28,6 @@ const Index = () => {
                 <div className="self-stretch inline-flex justify-start items-start gap-2">
                   <div className="flex-1 h-2 bg-lime-600 rounded-xl" />
                   <div className="flex-1 h-2 bg-lime-600 rounded-xl" />
-                  <div className="flex-1 h-2 bg-lime-600 rounded-xl" />
-                  <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
                   <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
                   <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
                 </div>

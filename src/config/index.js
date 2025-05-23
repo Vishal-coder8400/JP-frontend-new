@@ -77,7 +77,6 @@ export const KycVerificationDetails = [
     ],
   },
 ];
-
 export const basicInformation = [
   {
     row: [
@@ -109,7 +108,7 @@ export const basicInformation = [
   },
 
   {
-    name: "phone.number",
+    name: "phone",
     label: "Contact Information",
     placeholder: "Ex. XXXXX XXXXX",
     componentType: "phone",
@@ -196,460 +195,6 @@ export const recruiterSignUp = [
     type: "password",
   },
 ];
-
-export const CandidateFormFields = [
-  {
-    row: [
-      {
-        name: "candidateName",
-        label: "Candidate Name",
-        placeholder: "e.g. Jason Wild",
-        componentType: "input",
-        type: "text",
-      },
-      {
-        name: "profilePicture",
-        label: "",
-        placeholder: "Profile Picture",
-        componentType: "file",
-        type: "file",
-      },
-    ],
-  },
-  {
-    name: "phoneNumber",
-    label: "Contact Information",
-    placeholder: "Ex. XXXXX XXXXX",
-    componentType: "phone", // Custom component with country code
-    type: "tel",
-  },
-  {
-    name: "email",
-    label: "",
-    placeholder: "E-mail ID",
-    componentType: "input",
-    type: "email",
-  },
-  {
-    name: "bio",
-    label: "Bio",
-    placeholder: "Tell us about you",
-    componentType: "textarea",
-  },
-  {
-    name: "primaryAddress",
-    label: "Address",
-    placeholder: "Enter Primary Address",
-    componentType: "input",
-    type: "text",
-  },
-  {
-    row: [
-      {
-        name: "city",
-        label: "",
-        placeholder: "Enter City",
-        componentType: "input",
-        type: "text",
-      },
-      {
-        name: "pincode",
-        label: "",
-        placeholder: "Enter Pincode",
-        componentType: "input",
-        type: "text",
-      },
-    ],
-  },
-  {
-    name: "languages",
-    label: "Languages",
-    placeholder: "Select all the languages you speak",
-    componentType: "select",
-    options: [], // Fill this dynamically
-  },
-  {
-    name: "sector",
-    label: "Current Sector",
-    placeholder: "IT or Non-IT",
-    componentType: "select",
-    options: [
-      { id: "it", label: "IT" },
-      { id: "non-it", label: "NON-IT" },
-    ],
-  },
-];
-export const candidateForm1 = [
-  {
-    name: "cancelChequeUpload",
-    label: "",
-    placeholder: "Cancel Cheque Upload",
-    componentType: "file",
-    type: "file",
-    collapsible: true,
-  },
-  {
-    name: "aadharCardNumber",
-    label: "",
-    placeholder: "Aadhar Card Number",
-    componentType: "file",
-    type: "file",
-    collapsible: true,
-  },
-  {
-    name: "panCardUpload",
-    label: "",
-    placeholder: "PAN Card Upload",
-    componentType: "file",
-    type: "file",
-    collapsible: true,
-  },
-  {
-    name: "accountNumber",
-    label: "Account Number",
-    placeholder: "Account Number",
-    componentType: "input",
-    type: "number",
-  },
-  {
-    row: [
-      {
-        name: "branchName",
-        label: "Branch Name",
-        placeholder: "Branch Name",
-        componentType: "input",
-        type: "text",
-      },
-      {
-        name: "ifscCode",
-        label: "IFSC Code",
-        placeholder: "IFSC Code",
-        componentType: "input",
-        type: "text",
-      },
-    ],
-  },
-];
-export const educationFields = [
-  {
-    name: "institution",
-    placeholder: "Enter the name",
-    componentType: "input",
-    type: "text",
-    label: "Institution",
-  },
-  {
-    name: "location",
-    placeholder: "Location",
-    componentType: "select",
-    label: "Location",
-    type: "text",
-    options: [
-      // Example options, add as needed
-      { id: "delhi", label: "Delhi" },
-      { id: "mumbai", label: "Mumbai" },
-    ],
-  },
-  {
-    name: "fieldOfStudy",
-    placeholder: "Eg. Bachelor of Design",
-    componentType: "input",
-    type: "text",
-    label: "Field of Study",
-  },
-  {
-    row: [
-      {
-        label: "Starting Year",
-        name: "startYear",
-        placeholder: "Select Date",
-        componentType: "calendar",
-      },
-      {
-        label: "Ending Year",
-        name: "endYear",
-        placeholder: "Select Date",
-        componentType: "calendar",
-      },
-    ],
-  },
-];
-export const academicsAchievementFields = [
-  {
-    name: "title",
-    placeholder: "Enter Title",
-    componentType: "input",
-    type: "text",
-    label: "Title",
-  },
-  {
-    name: "issuer",
-    placeholder: "Enter Issuer",
-    componentType: "input",
-    label: "Issuer",
-    type: "text",
-  },
-  {
-    name: "startYear",
-    placeholder: "Select Date",
-    componentType: "calendar",
-  },
-];
-export const professionFields = [
-  {
-    name: "location",
-    placeholder: "Frontline, Mid-Level, Expert",
-    componentType: "select",
-    label: "Experience Level",
-    type: "text",
-    options: [
-      // Example options, add as needed
-      { id: "delhi", label: "Delhi" },
-      { id: "mumbai", label: "Mumbai" },
-    ],
-  },
-  {
-    name: "currentSector",
-    placeholder: "IT or Non-IT",
-    componentType: "select",
-    label: "IT or Non-IT",
-    type: "text",
-    options: [
-      // Example options, add as needed
-      { id: "delhi", label: "Delhi" },
-      { id: "mumbai", label: "Mumbai" },
-    ],
-  },
-  {
-    name: "linkedInProfile",
-    placeholder: "Enter URL",
-    componentType: "input",
-    label: "LinkedIn Profile",
-    type: "text",
-  },
-  {
-    name: "workExperience",
-    placeholder: "Position in Last Organization",
-    componentType: "input",
-    label: "Work Experience",
-    type: "text",
-  },
-  {
-    name: "employmentType",
-    placeholder: "Employment Type",
-    componentType: "select",
-    label: "Employment Type",
-    type: "text",
-    options: [
-      // Example options, add as needed
-      { id: "delhi", label: "Delhi" },
-      { id: "mumbai", label: "Mumbai" },
-    ],
-  },
-  {
-    row: [
-      {
-        label: "Starting Year",
-        name: "startYear",
-        placeholder: "Select Date",
-        componentType: "calendar",
-      },
-      {
-        label: "Ending Year",
-        name: "endYear",
-        placeholder: "Select Date",
-        componentType: "calendar",
-      },
-    ],
-  },
-  {
-    name: "location",
-    placeholder: "e.g., Chicago, USA",
-    componentType: "input",
-    label: "Location",
-    type: "text",
-  },
-];
-export const preferencesFields = [
-  {
-    name: "employmentType",
-    placeholder: "Enter the role you’re looking for",
-    componentType: "select",
-    label: "Role Looking for",
-    type: "text",
-    options: [
-      // Example options, add as needed
-      { id: "delhi", label: "Delhi" },
-      { id: "mumbai", label: "Mumbai" },
-    ],
-  },
-  {
-    name: "location",
-    placeholder: "Top 3 Preferences",
-    componentType: "input",
-    label: "Preferred work location",
-    type: "text",
-  },
-];
-export const intershipsFields = [
-  {
-    name: "location",
-    placeholder: "Position in Last Organization",
-    componentType: "input",
-    label: "Internship Title",
-    type: "text",
-  },
-  {
-    name: "employmentType",
-    placeholder: "Employment Type",
-    componentType: "select",
-    label: "Employment Type",
-    type: "text",
-    options: [
-      // Example options, add as needed
-      { id: "delhi", label: "Delhi" },
-      { id: "mumbai", label: "Mumbai" },
-    ],
-  },
-  {
-    row: [
-      {
-        label: "Starting Year",
-        name: "startYear",
-        placeholder: "Select Date",
-        componentType: "calendar",
-      },
-      {
-        label: "Ending Year",
-        name: "endYear",
-        placeholder: "Select Date",
-        componentType: "calendar",
-      },
-    ],
-  },
-  {
-    name: "location",
-    placeholder: "e.g., Chicago, USA",
-    componentType: "input",
-    label: "Location",
-    type: "text",
-  },
-];
-export const projectsFields = [
-  {
-    name: "location",
-    placeholder: "Enter Project Title",
-    componentType: "input",
-    label: "Project Title",
-    type: "text",
-  },
-  {
-    name: "",
-    label: "Description",
-    placeholder: "Enter Description",
-    componentType: "textarea",
-    type: "text",
-  },
-  {
-    row: [
-      {
-        label: "Starting Year",
-        name: "startYear",
-        placeholder: "Select Date",
-        componentType: "calendar",
-      },
-      {
-        label: "Ending Year",
-        name: "endYear",
-        placeholder: "Select Date",
-        componentType: "calendar",
-      },
-    ],
-  },
-];
-export const certificatesFields = [
-  {
-    name: "location",
-    placeholder: "Enter the name",
-    componentType: "input",
-    label: "Title",
-    type: "text",
-  },
-  {
-    name: "location",
-    placeholder: "Enter the name",
-    componentType: "input",
-    label: "Issuing Organization",
-    type: "text",
-  },
-  {
-    name: "location",
-    placeholder: "Enter the Credential URL",
-    componentType: "input",
-    label: "Credential URL",
-    type: "text",
-  },
-  {
-    row: [
-      {
-        label: "Starting Year",
-        name: "startYear",
-        placeholder: "Select Date",
-        componentType: "calendar",
-      },
-      {
-        label: "Ending Year",
-        name: "endYear",
-        placeholder: "Select Date",
-        componentType: "calendar",
-      },
-    ],
-  },
-];
-export const awardsFields = [
-  {
-    name: "location",
-    placeholder: "Enter the name",
-    componentType: "input",
-    label: "Title",
-    type: "text",
-  },
-  {
-    name: "issuer",
-    placeholder: "Enter Issuer",
-    componentType: "input",
-    label: "Issuer",
-    type: "text",
-  },
-  {
-    label: "Issue Date",
-    name: "endYear",
-    placeholder: "Select Date",
-    componentType: "calendar",
-  },
-];
-export const clubFields = [
-  {
-    name: "location",
-    placeholder: "Enter the name",
-    componentType: "input",
-    label: "Title",
-    type: "text",
-  },
-  {
-    name: "issuer",
-    placeholder: "Enter Issuer",
-    componentType: "input",
-    label: "Institution",
-    type: "text",
-  },
-  {
-    label: "Joining Date",
-    name: "endYear",
-    placeholder: "Select Date",
-    componentType: "calendar",
-  },
-];
 export const LoginFields = [
   {
     name: "email",
@@ -666,7 +211,6 @@ export const LoginFields = [
     type: "password",
   },
 ];
-
 export const sectoralFieldsForm = [
   {
     name: "sectorSpecialization",
@@ -723,10 +267,21 @@ export const sectoralFieldsForm = [
 ];
 export const sectoralFieldsForm2 = [
   {
-    name: "latestQualification",
-    label: "Latest Qualification Proof Document",
-    componentType: "file",
-    placeholder: "Upload supporting document",
+    row: [
+      {
+        name: "joinReason",
+        label: "Latest Qualification",
+        componentType: "input",
+        placeholder: "Experience",
+        width: "2/4",
+      },
+      {
+        name: "latestQualification",
+        label: "",
+        componentType: "file",
+        placeholder: "Upload supporting document",
+      },
+    ],
   },
 
   {
@@ -819,7 +374,6 @@ export const referenceFields = [
     ],
   },
 ];
-
 export const candiadateCreationformControls = [
   {
     row: [
@@ -946,7 +500,6 @@ export const highestQualification = [
     ],
   },
 ];
-
 export const releventCandidateProfessionalDetails = [
   {
     name: "currentIndustry",
@@ -1025,5 +578,270 @@ export const workingExperience = [
         componentType: "calendar",
       },
     ],
+  },
+];
+export const basicCorporateInformation = [
+  {
+    row: [
+      {
+        name: "basicInformation.companyName",
+        label: "Company Name",
+        placeholder: "e.g. Google",
+        componentType: "input",
+        type: "text",
+        width: "2/3",
+      },
+      {
+        name: "basicInformation.companyLogo",
+        label: "Company Logo",
+        placeholder: "",
+        componentType: "file",
+        type: "file",
+        width: "1/3",
+      },
+    ],
+  },
+  {
+    name: "basicInformation.companyContactNumber",
+    label: "Company Contact Number",
+    placeholder: "Ex. XXXXX XXXXX",
+    componentType: "phone",
+    type: "number",
+    width: "full",
+  },
+  {
+    name: "basicInformation.companyEmail",
+    label: "Company Email Id",
+    placeholder: "Enter your Email Id",
+    componentType: "input",
+    type: "email",
+    width: "full",
+  },
+  {
+    name: "basicInformation.password",
+    label: "Password",
+    placeholder: "Enter your password",
+    componentType: "input",
+    type: "password",
+    width: "full",
+  },
+  {
+    name: "basicInformation.confirmPassword",
+    label: "Confirm Password",
+    placeholder: "Confirm Password",
+    componentType: "input",
+    type: "password",
+    width: "full",
+  },
+];
+export const basicInformationControls = [
+  {
+    name: "basicInformation.websiteURL",
+    label: "Website URL",
+    componentType: "input",
+    type: "text",
+    placeholder: "Enter Website URL",
+  },
+  {
+    name: "basicInformation.companyType",
+    label: "Company Type",
+    componentType: "select",
+    placeholder: "Select a type",
+    options: [
+      { id: "privateCompany", label: "Private company" },
+      { id: "proprietorship", label: "Proprietorship" },
+      { id: "individual", label: "Individual" },
+    ],
+  },
+];
+export const spocInformationControls = [
+  {
+    name: "spocInformation.fullName",
+    label: "Full Name",
+    componentType: "input",
+    type: "text",
+    placeholder: "Enter your Full Name", // Adjusted to a more appropriate placeholder
+  },
+  {
+    name: "spocInformation.contactNumber",
+    label: "Contact Number",
+    componentType: "phone",
+    placeholder: "Ex. XXXXXXXXXX",
+  },
+  {
+    name: "spocInformation.email",
+    label: "Email ID",
+    componentType: "input",
+    type: "email",
+    placeholder: "Enter the Email id",
+  },
+];
+export const corporateFormControls = [
+  {
+    label: "Current Address",
+    name: "currentAddress",
+    placeholder: "Enter Permanent Address",
+    componentType: "textarea",
+  },
+  {
+    row: [
+      {
+        label: "",
+        name: "city",
+        placeholder: "Enter City",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        label: "",
+        name: "state",
+        placeholder: "Enter State",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        label: "",
+        name: "pincode",
+        placeholder: "Enter Pincode",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  {
+    label: "Industry Type",
+    name: "industryType",
+    placeholder: "Select a type",
+    componentType: "select",
+    options: [
+      { id: "manufacturing", label: "Manufacturing" },
+      { id: "services", label: "Services" },
+      { id: "trading", label: "Trading" },
+      { id: "other", label: "Other" },
+    ],
+  },
+  {
+    row: [
+      {
+        label: "PAN Card No.",
+        name: "panCardNumber",
+        placeholder: "Enter PAN Card Number",
+        componentType: "input",
+        type: "text",
+        value: "MBBPS6808E", // Pre-filled as per screenshot
+      },
+      {
+        label: "",
+        name: "panCardFile",
+        placeholder: "Upload PAN",
+        componentType: "file",
+      },
+    ],
+  },
+  {
+    label: "GSTIN",
+    name: "gstin",
+    placeholder: "Enter GSTIN",
+    componentType: "input",
+    type: "text",
+    value: "42AALCA2030B01830", // Pre-filled as per screenshot
+  },
+];
+export const formControlsBankDetails = [
+  {
+    label: "Bank Name",
+    name: "bankName",
+    placeholder: "Enter Bank Name",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    label: "Bank Account No.",
+    name: "bankAccountNumber",
+    placeholder: "Account No.",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    label: "IFSC Code",
+    name: "ifscCode",
+    placeholder: "IFSC Code",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    label: "Cancel Cheque / Account Statement",
+    name: "chequeOrStatementFile",
+    placeholder: "Upload Cheque / Statement",
+    componentType: "file",
+  },
+];
+export const formControlsForIndividual = [
+  {
+    label: "Current Address",
+    name: "currentAddress",
+    placeholder: "Enter Permanent Address",
+    componentType: "textarea",
+  },
+  {
+    row: [
+      {
+        label: "City",
+        name: "city",
+        placeholder: "Enter City",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        label: "State",
+        name: "state",
+        placeholder: "Enter State",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        label: "Pincode",
+        name: "pincode",
+        placeholder: "Enter Pincode",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  {
+    label: "GSTIN",
+    name: "gstin",
+    placeholder: "Enter GSTIN",
+    componentType: "input",
+    type: "text",
+    value: "ads1023230391830", // Pre-filled as per screenshot
+  },
+  {
+    label: "PAN Card No.",
+    name: "panCardNumber",
+    placeholder: "Enter PAN Card Number",
+    componentType: "input",
+    type: "text",
+    value: "MBBPS6808E", // Pre-filled as per screenshot
+  },
+  {
+    label: "",
+    name: "panCardFile",
+    placeholder: "Upload PAN",
+    componentType: "file",
+  },
+  {
+    label: "Aadhar Card No.",
+    name: "aadharCardNumber",
+    placeholder: "Enter Aadhar Card Number",
+    componentType: "input",
+    type: "text",
+    value: "64271 2281 238972", // Pre-filled as per screenshot
+  },
+  {
+    label: "",
+    name: "aadharCardFile",
+    placeholder: "Upload Aadhar",
+    componentType: "file",
   },
 ];

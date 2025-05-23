@@ -60,8 +60,12 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
 
     switch (getControlItem.componentType) {
       case "phone":
+        const phoneObject = getNestedValue(formData, nameWithIndex) || {
+          number: "",
+          countryCode: "",
+        };
         const fullNumber =
-          (formData.phone.countryCode || "") + (formData.phone.number || "");
+          (phoneObject.countryCode || "") + (phoneObject.number || "");
 
         return (
           <PhoneInput
@@ -70,13 +74,12 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
             onChange={(value, countryData) => {
               const dialCode = "+" + countryData.dialCode;
               const number = value.slice(countryData.dialCode.length);
-              setFormData((prev) => ({
-                ...prev,
-                phone: {
+              setFormData((prev) =>
+                setNestedValue(prev, nameWithIndex, {
                   countryCode: dialCode,
                   number: number,
-                },
-              }));
+                })
+              );
             }}
             inputClass="!w-full !h-[44px] !rounded-[4px] !px-[16px] !text-sm !border !border-[#E2E2E2] !placeholder:text-[#9B959F] focus:!ring-1 focus:!ring-black focus:!outline-none"
             buttonClass="!border-r !border-[#E2E2E2] !bg-white"
@@ -110,10 +113,11 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
       case "select":
         const isMedicalProblemField =
           getControlItem.name === "hasMedicalProblem";
-        const medicalDetailsValue = formData?.medicalProblemDetails || "";
+        const medicalDetailsValue =
+          getNestedValue(formData, "medicalProblemDetails") || "";
 
-        const isOtherEnabled = getControlItem.showOtherInput; // decide if "Other" should show input field
-        const selectedValue = formData?.[getControlItem.name] ?? "";
+        const isOtherEnabled = getControlItem.showOtherInput; // Decide if "Other" should show input field
+        const selectedValue = getNestedValue(formData, nameWithIndex) ?? ""; // Dynamically get the value
 
         const shouldShowOtherInput =
           otherSelections?.[getControlItem.name] ?? false;
@@ -123,22 +127,32 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
             <Select
               onValueChange={(val) => {
                 setFormData((prev) => {
-                  const updated = { ...prev };
+                  let updated = { ...prev };
 
                   if (isOtherEnabled && val === "other") {
                     // "Other" is selected — keep the field empty or use existing value
                     if (getControlItem.inlineOther) {
-                      updated[getControlItem.name] = ""; // override same field (like jobSource)
+                      updated = setNestedValue(updated, nameWithIndex, ""); // Override same field (like jobSource)
                     } else {
-                      updated[getControlItem.name] = "other";
+                      updated = setNestedValue(updated, nameWithIndex, "other");
                     }
                   } else {
-                    updated[getControlItem.name] = getControlItem.forceNumber
-                      ? Number(val)
-                      : val;
+                    updated = setNestedValue(
+                      updated,
+                      nameWithIndex,
+                      getControlItem.forceNumber ? Number(val) : val
+                    );
 
                     if (!getControlItem.inlineOther) {
-                      delete updated[`${getControlItem.name}_other`]; // clean up other field
+                      // Clean up other field if it exists
+                      const otherFieldPath = `${nameWithIndex}_other`;
+                      const existingOtherValue = getNestedValue(
+                        updated,
+                        otherFieldPath
+                      );
+                      if (existingOtherValue !== undefined) {
+                        delete getNestedValue(updated, otherFieldPath);
+                      }
                     }
                   }
 
@@ -189,16 +203,19 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
                 placeholder="Please specify"
                 value={
                   getControlItem.inlineOther
-                    ? formData?.[getControlItem.name] || ""
-                    : formData?.[`${getControlItem.name}_other`] || ""
+                    ? getNestedValue(formData, nameWithIndex) || ""
+                    : getNestedValue(formData, `${nameWithIndex}_other`) || ""
                 }
                 onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    [getControlItem.inlineOther
-                      ? getControlItem.name
-                      : `${getControlItem.name}_other`]: e.target.value,
-                  }))
+                  setFormData((prev) =>
+                    setNestedValue(
+                      prev,
+                      getControlItem.inlineOther
+                        ? nameWithIndex
+                        : `${nameWithIndex}_other`,
+                      e.target.value
+                    )
+                  )
                 }
                 className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
               />
@@ -211,17 +228,19 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
                 placeholder="Specify the medical problem"
                 value={medicalDetailsValue}
                 onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    medicalProblemDetails: e.target.value,
-                  }))
+                  setFormData((prev) =>
+                    setNestedValue(
+                      prev,
+                      "medicalProblemDetails",
+                      e.target.value
+                    )
+                  )
                 }
                 className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
               />
             )}
           </div>
         );
-
       case "textarea":
         return (
           <Textarea

@@ -1,8 +1,9 @@
-import React from "react";
+import useAuthStore from "../../stores/useAuthStore";
 import { BurgerIcon, GearIcon } from "../../utils/icon";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
+  const { user } = useAuthStore();
   return (
     <div className="fixed top-0 right-0 left-0 bg-[#141E2B] w-full flex items-center justify-center z-50">
       <div className="w-full flex justify-between items-center lg:py-[24px] lg:px-[167px] py-[16px] px-[24px]">
@@ -10,7 +11,7 @@ const Navbar = () => {
           Company
         </div>
         <div className="lg:flex items-center gap-[24px] text-[#F4F4F4] text-base font-medium hidden ">
-          <Link to={"/recruiter/dashboard"} className="cursor-pointer">
+          <Link to={`/${user?.role}/dashboard`} className="cursor-pointer">
             Dashboard
           </Link>
           <span className="cursor-pointer">Applied Job/Internship</span>

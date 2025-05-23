@@ -13,54 +13,45 @@ const CheckAuth = ({ allowedRoles = [], fetchProfileHook, children }) => {
     setRefetchProfile,
     token,
   } = useAuthStore();
+  const userRole = user?.role;
+  console.log(isAuthenticated, user, token, userRole);
   const profile = fetchProfileHook
     ? fetchProfileHook({
-        enabled:
-          isAuthenticated &&
-          (!user || refetchProfile) &&
-          allowedRoles.includes("recruiter"),
+        enabled: isAuthenticated && (!user || refetchProfile),
       })
     : null;
   useEffect(() => {
     if (profile?.status === "success") {
-      setUser(profile?.data?.data);
+      setUser({ ...profile.data?.data });
       setIsAuthenticated(true);
-      if (refetchProfile) {
-        setRefetchProfile(false);
-      }
+      if (refetchProfile) setRefetchProfile(false);
     }
-  }, [
-    profile?.status,
-    profile?.data?.data,
-    setUser,
-    refetchProfile,
-    setRefetchProfile,
-  ]);
-  const role = user?.role;
+  }, [profile?.status]);
 
-  const isLoading = profile?.isLoading;
-  // console.log(isAuthenticated, user, token, role);
-  const isLoginOrRegisterRoute =
-    location.pathname.includes("/log-in") ||
-    location.pathname.includes("/basic-details");
+  const isLoading = profile?.isLoading || (!user && isAuthenticated);
+  const isLoginOrRegisterRoute = ["/log-in", "/basic-details"].some((path) =>
+    location.pathname.includes(path)
+  );
 
-  if (isLoading && !user) return <div>Loading...</div>;
+  if (isLoading || (isAuthenticated && !userRole)) {
+    return <div>Loading...</div>;
+  }
 
   if (location.pathname === "/") {
-    return isAuthenticated ? (
-      <Navigate to={`/${role}/dashboard`} replace />
+    return isAuthenticated && userRole ? (
+      <Navigate to={`/${userRole}/dashboard`} replace />
     ) : (
       <Navigate to={`/${allowedRoles[0]}/log-in`} replace />
     );
   }
 
-  if (isAuthenticated && isLoginOrRegisterRoute && !isLoading && role) {
-    // console.log("first");
-    return <Navigate to={`/${role}/dashboard`} replace />;
+  if (isAuthenticated && isLoginOrRegisterRoute && userRole) {
+    console.log("first");
+    return <Navigate to={`/${userRole}/dashboard`} replace />;
   }
 
-  if (!isAuthenticated && !isLoginOrRegisterRoute && !isLoading) {
-    // console.log("second");
+  if (!isAuthenticated && !isLoginOrRegisterRoute) {
+    console.log("second");
     return (
       <Navigate
         to={`/${allowedRoles[0]}/log-in`}
@@ -72,12 +63,10 @@ const CheckAuth = ({ allowedRoles = [], fetchProfileHook, children }) => {
 
   if (
     isAuthenticated &&
-    allowedRoles?.length &&
-    !allowedRoles.includes(role) &&
-    !isLoading &&
-    role
+    allowedRoles.length &&
+    !allowedRoles.includes(userRole)
   ) {
-    // console.log("third");
+    console.log("third");
     return <Navigate to="/unauthorized" replace />;
   }
 

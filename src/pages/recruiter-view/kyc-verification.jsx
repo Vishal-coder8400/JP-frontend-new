@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CommonForm from "../../components/common/form";
-import { KycVerificationDetails, recruiterSignUp } from "../../config";
+import { KycVerificationDetails } from "../../config";
 import { useKycDetails } from "../../hooks/recruiter/useProfile";
 import { z } from "zod";
 import { validateFormData } from "../../utils/objectUtils";

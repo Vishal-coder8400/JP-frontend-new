@@ -13,7 +13,7 @@ const JobCard = ({ setOpen }) => {
   return (
     <Fragment>
       {/* //desktop-view */}
-      <div className="hidden lg:flex items-center justify-between rounded-[8px] p-[24px] border border-[#dadada]">
+      <div className="hidden lg:flex items-center justify-between rounded-[8px] p-[24px] border border-[#dadada] w-full">
         <div className="flex flex-col gap-[12px]">
           <div className="flex flex-col gap-[4px]">
             <div className="flex items-center gap-[10px]">

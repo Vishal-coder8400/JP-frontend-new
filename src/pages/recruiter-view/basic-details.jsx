@@ -7,8 +7,6 @@ import { z } from "zod";
 import { validateFormData } from "../../utils/objectUtils";
 import ButtonComponent from "../../components/common/button";
 
-const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>]).{6,}$/;
-
 const formSchema = z
   .object({
     firstName: z.string().min(1, "First name is required"),
@@ -16,12 +14,12 @@ const formSchema = z
     email: z.string().email("Invalid email address"),
     password: z
       .string()
-      .min(6, "Password must be at least 6 characters")
+      .min(8, "Password must be at least 8 characters")
       .regex(
-        passwordRegex,
-        "Password must include at least one special character"
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
       ),
-    confirmPassword: z.string(),
+    confirmPassword: z.string().min(1, "confirm password field is required"),
     profileImage: z.string().url("Must be a valid URL").optional(),
     phone: z.object({
       number: z.union([z.number(), z.string()]), // Accept number or string
@@ -67,7 +65,7 @@ const BasicDetails = () => {
     },
     resume: "https://example.com/resume.pdf",
   });
-
+  console.log(formData);
   const { mutate, isPending, isError, error } = useRegister();
 
   const onSubmit = (e) => {

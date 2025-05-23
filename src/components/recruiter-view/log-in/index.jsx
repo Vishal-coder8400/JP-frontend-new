@@ -13,7 +13,7 @@ const Index = ({
   signUpLink,
 }) => {
   return (
-    <div className="flex max-sm:flex-col max-sm:gap-[40px] justify-between p-[20px] pt-[100px] max-sm:p-[24px] max-sm:pt-[100px] w-full pb-[90px] items-center">
+    <div className="flex max-sm:flex-col max-sm:gap-[40px] justify-between p-[20px] pt-[60px] max-sm:p-[24px] max-sm:pt-[100px] w-full pb-[90px] items-center">
       <div className="w-1/2 max-sm:w-full lg:flex lg:items-center lg:justify-end lg:pr-[100px]">
         <div className="w-full max-w-[554px] bg-neutral-50 rounded-tl-[28.91px] rounded-tr-[28.91px] flex flex-col gap-[25px] p-[20px] lg:p-[47px]">
           <div className="flex flex-col gap-0">
@@ -75,13 +75,13 @@ const Index = ({
           </div>
         </div>
       </div>
-      <div className="w-1/2 max-sm:w-full">
-        <div className="bg-[#ccc] rounded-[24px] sm:max-w-[622px] w-full flex items-center justify-center py-[12px] px-[15px]">
+      <div className="w-[50%] max-sm:w-full flex justify-center items-end">
+        <div className="bg-[#ccc] rounded-[24px] sm:max-w-[622px] w-full lg:w-[75%] flex items-center justify-center py-[12px] px-[15px]">
           <div className="grid grid-cols-2 grid-rows-4 gap-[10px] w-full h-full">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((item, index) => (
               <div
                 key={index}
-                className="relative max-w-[289.646px] max-sm:max-w-[187.151px] w-full h-[214.61px] max-sm:h-[138.667px] rounded-[15px] overflow-hidden bg-black"
+                className="relative max-w-[287px] max-sm:max-w-[187.151px] w-full h-[170.61px] max-sm:h-[138.667px] rounded-[15px] overflow-hidden bg-black"
               >
                 <img
                   src={item.imageUrl}

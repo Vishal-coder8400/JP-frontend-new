@@ -36,7 +36,8 @@ const Congratulation = () => {
                 Congratulations, You’re In!
               </div>
               <div className="self-stretch text-center justify-start text-gray-900 text-lg lg:text-2xl font-bold leading-loose">
-                Welcome aboard, {user?.name}
+                Welcome aboard,{" "}
+                {user?.name || user?.basicInformation?.companyName}
               </div>
               <div className="self-stretch text-center justify-start text-neutral-900 text-base font-normal leading-snug">
                 Your journey towards exciting opportunities starts now. Let’s
@@ -46,7 +47,7 @@ const Congratulation = () => {
           </div>
           <div className="flex flex-col justify-start items-end gap-10">
             <Link
-              to={"/recruiter/dashboard"}
+              to={`/${user?.role}/dashboard`}
               className="w-64 px-5 py-2.5 bg-violet-600 rounded-3xl inline-flex justify-center items-center gap-2.5"
             >
               <div className="justify-start text-white text-sm font-medium capitalize">

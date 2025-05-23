@@ -550,3 +550,18 @@ export const LogoutIcon = (props) => (
     />
   </svg>
 );
+export const CursorIcon = (props) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+    viewBox="0 0 20 21"
+    fill="none"
+  >
+    <path
+      d="M2.5 9.66675L18.3333 2.16675L10.8333 18.0001L9.16667 11.3334L2.5 9.66675Z"
+      stroke="white"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
