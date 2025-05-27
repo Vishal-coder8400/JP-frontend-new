@@ -5,6 +5,7 @@ export const KycVerificationDetails = [
     placeholder: "Cancel Cheque Upload",
     componentType: "file",
     type: "file",
+    formats: "JPG, PNG, PDF.",
   },
   {
     name: "panDetails.number",
@@ -19,6 +20,7 @@ export const KycVerificationDetails = [
     placeholder: "PAN Card Upload",
     componentType: "file",
     type: "file",
+    formats: "JPG, PNG, PDF.",
   },
   {
     name: "aadharDetails.number",
@@ -33,6 +35,7 @@ export const KycVerificationDetails = [
     placeholder: "Aadhar Card Upload",
     componentType: "file",
     type: "file",
+    formats: "JPG, PNG, PDF.",
   },
   {
     name: "bankDetails.accountNumber",
@@ -103,6 +106,7 @@ export const basicInformation = [
         componentType: "file",
         type: "file",
         width: "1/3",
+        formats: "JPG, PNG, PDF.",
       },
     ],
   },
@@ -134,35 +138,15 @@ export const basicInformation = [
         width: "1/3",
       },
       {
+        name: "currentAddress.state",
+        label: "",
+        placeholder: "Enter State",
+        componentType: "input",
+        type: "text",
+        width: "1/3",
+      },
+      {
         name: "currentAddress.pincode",
-        label: "",
-        placeholder: "Enter Pincode",
-        componentType: "input",
-        type: "text",
-        width: "1/3",
-      },
-    ],
-  },
-  {
-    name: "permanentAddress.address",
-    label: "Permanent Address",
-    placeholder: "Enter Primary Address",
-    componentType: "textarea",
-    type: "text",
-    width: "full",
-  },
-  {
-    row: [
-      {
-        name: "permanentAddress.city",
-        label: "",
-        placeholder: "Enter City",
-        componentType: "input",
-        type: "text",
-        width: "1/3",
-      },
-      {
-        name: "permanentAddress.pincode",
         label: "",
         placeholder: "Enter Pincode",
         componentType: "input",
@@ -256,6 +240,7 @@ export const sectoralFieldsForm = [
     label: "Relieving Letter",
     componentType: "file",
     placeholder: "Upload relieving letter",
+    formats: "JPG, PNG, PDF.",
   },
 
   {
@@ -264,24 +249,57 @@ export const sectoralFieldsForm = [
     componentType: "input",
     type: "url",
   },
-];
-export const sectoralFieldsForm2 = [
+  {
+    name: "permanentAddress.address",
+    label: "Permanent Address",
+    placeholder: "Enter Primary Address",
+    componentType: "textarea",
+    type: "text",
+    width: "full",
+  },
   {
     row: [
       {
-        name: "joinReason",
-        label: "Latest Qualification",
+        name: "permanentAddress.city",
+        label: "",
+        placeholder: "Enter City",
         componentType: "input",
-        placeholder: "Experience",
-        width: "2/4",
+        type: "text",
+        width: "1/3",
       },
       {
-        name: "latestQualification",
+        name: "permanentAddress.state",
         label: "",
-        componentType: "file",
-        placeholder: "Upload supporting document",
+        placeholder: "Enter State",
+        componentType: "input",
+        type: "text",
+        width: "1/3",
+      },
+      {
+        name: "permanentAddress.pincode",
+        label: "",
+        placeholder: "Enter Pincode",
+        componentType: "input",
+        type: "text",
+        width: "1/3",
       },
     ],
+  },
+];
+export const sectoralFieldsForm2 = [
+  {
+    name: "",
+    label: "Latest Qualification",
+    componentType: "input",
+    placeholder: "Experience",
+    width: "2/4",
+  },
+  {
+    name: "latestQualification",
+    label: "",
+    componentType: "file",
+    placeholder: "Upload supporting document",
+    formats: "JPG, PNG, PDF.",
   },
 
   {
@@ -389,6 +407,7 @@ export const candiadateCreationformControls = [
         label: "Profile Picture",
         componentType: "file",
         placeholder: "Upload image",
+        formats: "JPG, PNG, PDF.",
       },
     ],
   },
@@ -522,7 +541,8 @@ export const releventCandidateProfessionalDetails = [
           id: i.toString(),
           label: `${i} Year${i === 1 ? "" : "s"}`,
         })),
-        forceNumber: true,
+
+        placeholder: "Select",
       },
       {
         name: "totalExperienceInMonth",
@@ -532,7 +552,7 @@ export const releventCandidateProfessionalDetails = [
           id: i.toString(),
           label: `${i} Month${i === 1 ? "" : "s"}`,
         })),
-        forceNumber: true,
+        placeholder: "Select",
       },
     ],
   },
@@ -598,6 +618,7 @@ export const basicCorporateInformation = [
         componentType: "file",
         type: "file",
         width: "1/3",
+        formats: "JPG, PNG, PDF.",
       },
     ],
   },
@@ -735,6 +756,7 @@ export const corporateFormControls = [
         name: "panCardFile",
         placeholder: "Upload PAN",
         componentType: "file",
+        formats: "JPG, PNG, PDF.",
       },
     ],
   },
@@ -774,6 +796,7 @@ export const formControlsBankDetails = [
     name: "chequeOrStatementFile",
     placeholder: "Upload Cheque / Statement",
     componentType: "file",
+    formats: "JPG, PNG, PDF.",
   },
 ];
 export const formControlsForIndividual = [
@@ -829,6 +852,7 @@ export const formControlsForIndividual = [
     name: "panCardFile",
     placeholder: "Upload PAN",
     componentType: "file",
+    formats: "JPG, PNG, PDF.",
   },
   {
     label: "Aadhar Card No.",
@@ -843,5 +867,160 @@ export const formControlsForIndividual = [
     name: "aadharCardFile",
     placeholder: "Upload Aadhar",
     componentType: "file",
+    formats: "JPG, PNG, PDF.",
+  },
+];
+export const jobOpeningFilters = [
+  {
+    label: "Job Type",
+    componentType: "select",
+    placeholder: "Choose Job Type",
+    name: "jobType",
+    options: [
+      {
+        id: "active",
+        label: "Active",
+      },
+      { id: "ended", label: "Ended" },
+    ],
+  },
+  {
+    label: "Select Date",
+    componentType: "calendar",
+    placeholder: "Select Date",
+    name: "sortBy",
+  },
+];
+export const CandidatesFilters = [
+  {
+    label: "Application Date",
+    componentType: "calendar",
+    placeholder: "Application Date",
+    name: "sortBy",
+  },
+  ,
+  {
+    label: "Designation",
+    componentType: "multi-select",
+    placeholder: "Choose Designation",
+    name: "designation",
+    options: [
+      {
+        id: "active",
+        label: "Active",
+      },
+      { id: "ended", label: "Ended" },
+    ],
+  },
+  {
+    label: "Job Location",
+    componentType: "multi-select",
+    placeholder: "Enter City",
+    name: "jobLocation",
+    options: [
+      {
+        id: "active",
+        label: "Active",
+      },
+      { id: "ended", label: "Ended" },
+    ],
+  },
+  {
+    label: "Gender Preference",
+    componentType: "select",
+    placeholder: "Select Gender",
+    name: "gender",
+    options: [
+      {
+        id: "male",
+        label: "Male",
+      },
+      { id: "female", label: "Female" },
+    ],
+  },
+  {
+    label: "Current Organization",
+    componentType: "multi-select",
+    placeholder: "Enter Current Organization",
+    name: "currentOrganisation",
+    options: [
+      {
+        id: "active",
+        label: "Active",
+      },
+      { id: "ended", label: "Ended" },
+    ],
+  },
+  {
+    label: "Experience Level",
+    componentType: "select",
+    placeholder: "Select Experience",
+    name: "experienceLevel",
+    options: [
+      {
+        id: "male",
+        label: "Male",
+      },
+      { id: "female", label: "Female" },
+    ],
+  },
+  {
+    label: "Department/Functional Area",
+    componentType: "multi-select",
+    placeholder: "Enter Functional Area",
+    name: "departmentArea",
+    options: [
+      {
+        id: "active",
+        label: "Active",
+      },
+      { id: "ended", label: "Ended" },
+    ],
+  },
+  {
+    label: "Degree",
+    componentType: "multi-select",
+    placeholder: "Enter Degree",
+    name: "degree",
+    options: [
+      {
+        id: "active",
+        label: "Active",
+      },
+      { id: "ended", label: "Ended" },
+    ],
+  },
+  {
+    name: "salaryRange",
+    componentType: "salary-range",
+    label: "Salary Range",
+    min: 5,
+    max: 50,
+  },
+  {
+    label: "Notice Period",
+    componentType: "select",
+    placeholder: "Select Notice Period",
+    name: "noticePeriod",
+    options: [
+      {
+        id: "male",
+        label: "Male",
+      },
+      { id: "female", label: "Female" },
+    ],
+  },
+  {
+    label: "Industry",
+    componentType: "multi-select",
+    placeholder: "Enter Industry",
+    name: "industry",
+    options: [
+      {
+        id: "active",
+        label: "Active",
+      },
+      { id: "ended", label: "Ended" },
+    ],
   },
 ];

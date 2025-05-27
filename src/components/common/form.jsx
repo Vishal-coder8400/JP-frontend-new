@@ -137,11 +137,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
                       updated = setNestedValue(updated, nameWithIndex, "other");
                     }
                   } else {
-                    updated = setNestedValue(
-                      updated,
-                      nameWithIndex,
-                      getControlItem.forceNumber ? Number(val) : val
-                    );
+                    updated = setNestedValue(updated, nameWithIndex, val);
 
                     if (!getControlItem.inlineOther) {
                       // Clean up other field if it exists
@@ -167,7 +163,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
               value={
                 isOtherEnabled && shouldShowOtherInput
                   ? "other"
-                  : selectedValue.toString() || ""
+                  : selectedValue || ""
               }
             >
               <SelectTrigger className="w-full flex placeholder:translate-y-[1px] items-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[20px] px-[16px] placeholder:text-[#9B959F]">
@@ -252,32 +248,39 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
 
       case "file":
         return (
-          <div className="relative w-full cursor-pointer">
-            <Input
-              id={getControlItem.name}
-              type="file"
-              className="absolute inset-0 opacity-0 cursor-pointer z-0 h-full w-full"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  setFormData((prev) => ({
-                    ...prev,
-                    [getControlItem.name]: file,
-                  }));
-                }
-              }}
-            />
-            <Label
-              htmlFor={getControlItem.name}
-              className="flex items-center justify-between border border-[#E2E2E2] w-full rounded-[4px] py-[9px] px-[16px] cursor-pointer z-10"
-            >
-              <span className="text-[#9B959F] text-base">
-                {getControlItem.placeholder || "Upload File"}
-              </span>
-              <span className="flex justify-center items-center">
-                <Plus className="h-[15px] w-[15px]" />
-              </span>
-            </Label>
+          <div className="relative">
+            {" "}
+            <div className="relative w-full cursor-pointer">
+              <Input
+                id={getControlItem.name}
+                type="file"
+                className="absolute inset-0 opacity-0 cursor-pointer z-0 h-full w-full"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      [getControlItem.name]: file,
+                    }));
+                  }
+                }}
+              />
+              <Label
+                htmlFor={getControlItem.name}
+                className="flex items-center justify-between border border-[#E2E2E2] w-full rounded-[4px] py-[9px] px-[16px] cursor-pointer z-10"
+              >
+                <span className="text-[#9B959F] text-base">
+                  {getControlItem.placeholder || "Upload File"}
+                </span>
+                <span className="flex justify-center items-center">
+                  <Plus className="h-[15px] w-[15px]" />
+                </span>
+              </Label>
+            </div>
+            <div className="absolute bottom-[-15px] left-0 text-xs text-[#655F5F]">
+              Supported formats: {getControlItem.formats}{" "}
+              <span>Max size: 5MB.</span>
+            </div>
           </div>
         );
 
@@ -289,7 +292,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
             <PopoverTrigger asChild>
               <div
                 onClick={() => setIsOpen(true)}
-                className="self-stretch h-11 px-4 py-2.5 bg-white rounded outline outline-neutral-200 inline-flex justify-start items-center gap-2 cursor-pointer"
+                className="self-stretch px-4 py-2.5 bg-white rounded outline outline-neutral-200 inline-flex justify-start items-center gap-2 cursor-pointer"
               >
                 <div className="flex-1 self-stretch flex justify-start items-start gap-2.5">
                   <div className="flex-1 justify-start text-neutral-400 text-sm font-normal leading-normal">
@@ -384,7 +387,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
                 {controlItem.row.map((item) => (
                   <div
                     key={item.name}
-                    className=" gap-[8px] flex-1/3 lg:flex-1"
+                    className={`gap-[8px] flex-1/3 lg:flex-1`}
                   >
                     <div className={`flex flex-col gap-[8px]`}>
                       {item.label && (

@@ -11,6 +11,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "../../ui/button";
+import SearchComponent from "../../common/searchComponent";
+import { Checkbox } from "../../ui/checkbox";
 
 const Index = () => {
   const data = [
@@ -88,25 +90,21 @@ const Index = () => {
             <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
               Matches & Submissions
             </div>
-            <div className="justify-start text-zinc-500 text-md font-medium leading-tight">
-              View All
+            <div className="cursor-pointer px-5 py-4 bg-gray-900 rounded-3xl gap-2.5">
+              <div className="justify-start text-white text-sm font-semibold leading-none">
+                Delete Candidate
+              </div>
             </div>
           </div>
-          <div className="self-stretch h-0 outline outline-1 outline-offset-[-0.50px] outline-neutral-200"></div>
-          <div className="relative flex items-center justify-center w-full">
-            <Input
-              type="search"
-              placeholder="Enter job title, company, location"
-              className="appearance-none p-[12px] pl-[35px] rounded-[69px] border border-[#6945ED] focus-visible:ring-0 focus:border-[2px] focus:border-[#4E2FC0] placeholder:text-sm placeholder:text-[#A3A3A3]"
-            />
-            <div className="absolute left-[12px] top-1/2 transform -translate-y-1/2">
-              <SearchIcon className="h-[18px] w-[18px]" />
-            </div>
-          </div>
+          <div className="self-stretch h-0 outline-1 outline-offset-[-0.50px] outline-neutral-200"></div>
+          <SearchComponent />
           <div className="w-full overflow-hidden">
             <Table className="w-full border border-[#DADADA] rounded-[8px]">
               <TableHeader>
                 <TableRow>
+                  <TableHead className="[&:has([role=checkbox])]:border-none px-[16px] py-[12px] w-[50px] text-sm text-[#101018] font-semibold">
+                    <Checkbox className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[16px] w-[16px] rounded-[2px] flex items-center justify-center cursor-pointer" />
+                  </TableHead>
                   <TableHead className="px-[16px] py-[12px] w-[292px] text-sm text-[#101018] font-semibold">
                     Owner
                   </TableHead>
@@ -127,6 +125,9 @@ const Index = () => {
               <TableBody>
                 {data.map((item, i) => (
                   <TableRow key={i}>
+                    <TableCell className="w-[50px] px-[16px] py-[12px]">
+                      <Checkbox className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[16px] w-[16px] rounded-[2px] flex items-center justify-center cursor-pointer" />
+                    </TableCell>
                     <TableCell className="px-[16px] py-[12px] flex gap-[10px]">
                       <Button
                         onClick={() => setOpen2(true)}
@@ -202,6 +203,9 @@ const Index = () => {
             <Table className="w-full border border-[#DADADA] rounded-[8px]">
               <TableHeader>
                 <TableRow>
+                  <TableHead className="[&:has([role=checkbox])]:border-none px-[16px] py-[12px] w-[50px] text-sm text-[#101018] font-semibold flex">
+                    <Checkbox className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[20px] w-[20px] rounded-[2px] flex items-center justify-center cursor-pointer" />
+                  </TableHead>
                   <TableHead className="px-[16px] py-[12px] w-[292px] text-sm text-[#101018] font-semibold">
                     Owner
                   </TableHead>
@@ -222,6 +226,9 @@ const Index = () => {
               <TableBody>
                 {data.map((item, i) => (
                   <TableRow key={i}>
+                    <TableCell className="w-[50px] px-[16px] py-[12px]">
+                      <Checkbox className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[20px] w-[20px] rounded-[2px] flex items-center justify-center cursor-pointer" />
+                    </TableCell>
                     <TableCell className="px-[16px] py-[12px] flex gap-[10px]">
                       <Button
                         onClick={() => setOpen2(true)}

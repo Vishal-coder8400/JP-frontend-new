@@ -2,6 +2,8 @@ import { Fragment } from "react";
 import { ClockIcon, LocationIcon } from "../../../utils/icon";
 import useJobSeekerProfileStore from "../../../stores/useJobSeekerProfileStore";
 import {
+  formatDate,
+  formatExperience,
   formatIndianNumber,
   formatToMonthYear,
   getDurationBetweenDates,
@@ -9,13 +11,14 @@ import {
 
 const CandidateProfile = () => {
   const { jobSeekerProfile } = useJobSeekerProfileStore();
+  console.log(jobSeekerProfile);
   return (
     <Fragment>
-      <div className="hidden w-full min-h-screen self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 lg:inline-flex flex-col justify-start items-start gap-4">
-        <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
-          <div className="w-16 h-16 relative rounded overflow-hidden">
+      <div className="min-h-screen w-full hidden self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 lg:inline-flex flex-col justify-start items-start gap-4">
+        <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
+          <div className="size-16 relative rounded-sm overflow-hidden">
             <img
-              className="w-16 h-16 left-0 top-0 absolute object-cover"
+              className="size-16 left-0 top-0 absolute object-cover overflow-hidden"
               src={jobSeekerProfile?.profilePicture}
               alt={jobSeekerProfile?.name}
             />
@@ -24,7 +27,7 @@ const CandidateProfile = () => {
             <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
               <div className="flex flex-col justify-start items-start gap-1">
                 <div className="inline-flex justify-start items-center gap-3">
-                  <div className="justify-start text-neutral-900 text-md2 font-normal leading-relaxed">
+                  <div className="justify-start text-neutral-900 text-lg font-normal leading-relaxed">
                     {jobSeekerProfile?.areaOfExpertise}
                   </div>
                 </div>
@@ -32,51 +35,31 @@ const CandidateProfile = () => {
                   <div className="justify-start text-neutral-900 text-2xl font-medium leading-9">
                     {jobSeekerProfile?.name}
                   </div>
-                  <div
-                    className={`px-1.5 py-0.5 ${
-                      jobSeekerProfile?.status === "active"
-                        ? "bg-[#54C4131A]"
-                        : "bg-amber-600/10"
-                    } rounded-[3px] flex justify-start items-center gap-1 overflow-hidden`}
-                  >
-                    <div
-                      className={`justify-start ${
-                        jobSeekerProfile?.status === "active"
-                          ? "text-[#54C413]"
-                          : "text-amber-600"
-                      }  text-xs font-medium leading-none`}
-                    >
-                      {jobSeekerProfile?.status}
+                  {/* <div className="px-1.5 py-0.5 bg-amber-600/10 rounded-[3px] flex justify-start items-center gap-1 overflow-hidden">
+                    <div className="justify-start text-amber-600 text-xs font-medium leading-none">
+                      Pending
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
               <div className="self-stretch py-0.5 inline-flex justify-start items-center gap-6">
                 <div className="flex justify-start items-center gap-1.5">
-                  <div className="w-4 h-4 relative">
-                    <div className="w-2.5 h-px left-[3px] top-[14px] absolute bg-neutral-900/70" />
-                    <div className="w-[5px] h-[5px] left-[5.50px] top-[4px] absolute bg-neutral-900/70" />
-                    <div className="w-2.5 h-3.5 left-[2.50px] top-[1px] absolute bg-neutral-900/70" />
+                  <div className="size-4 relative">
+                    <LocationIcon className="h-full w-full" />
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                    Brussels
+                    {jobSeekerProfile?.permanentAddress?.city}
                   </div>
                 </div>
-                <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
+                <div className="size-0.5 bg-neutral-900/70 rounded-full" />
                 <div className="flex justify-start items-center gap-1.5">
-                  <div className="w-4 h-4 relative">
-                    <div className="w-3 h-3 left-[1.50px] top-[1.50px] absolute bg-neutral-900/70" />
-                    <div className="w-1 h-1 left-[7.50px] top-[4px] absolute bg-neutral-900/70" />
+                  <div className="size-4 relative">
+                    <ClockIcon className="h-full w-full" />
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                    {(jobSeekerProfile?.totalExperience > 0 ||
-                      jobSeekerProfile?.totalExperienceInMonth > 0) && (
-                      <>
-                        {jobSeekerProfile?.totalExperience > 0 &&
-                          `${jobSeekerProfile?.totalExperience} years `}
-                        {jobSeekerProfile?.totalExperienceInMonth > 0 &&
-                          `${jobSeekerProfile?.totalExperienceInMonth} months`}
-                      </>
+                    {formatExperience(
+                      jobSeekerProfile?.totalExperience,
+                      jobSeekerProfile?.totalExperienceInMonth
                     )}
                   </div>
                 </div>
@@ -84,12 +67,12 @@ const CandidateProfile = () => {
             </div>
           </div>
           <div className="w-40 inline-flex flex-col justify-center items-start gap-2.5">
-            <div className="self-stretch px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5">
+            <div className="self-stretch px-5 py-2.5 rounded-3xl outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5">
               <div className="justify-start text-black text-sm font-medium capitalize">
                 Match to Job
               </div>
             </div>
-            <div className="self-stretch px-5 py-2.5 bg-black rounded-3xl outline outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5">
+            <div className="self-stretch px-5 py-2.5 bg-black rounded-3xl outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5">
               <div className="justify-start text-white text-sm font-medium capitalize">
                 Send to Employer
               </div>
@@ -97,31 +80,183 @@ const CandidateProfile = () => {
           </div>
         </div>
         <div className="self-stretch flex flex-col justify-start items-start gap-4 overflow-hidden">
-          <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
+          <div className="self-stretch inline-flex justify-start items-start gap-4">
+            <div className="self-stretch px-6 py-4 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center gap-4">
+              <div className="min-w-[130px] flex flex-col justify-center items-center gap-1.5">
+                <div className="justify-center text-zinc-500 text-sm font-normal leading-normal">
+                  Location
+                </div>
+                <div className="justify-start text-gray-900 text-sm font-normal leading-normal">
+                  {jobSeekerProfile?.currentAddress?.city}
+                </div>
+              </div>
+            </div>
+            <div className="px-6 py-4 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center gap-4">
+              <div className="min-w-[150px] flex flex-col justify-center items-start gap-1.5">
+                <div className="justify-start text-zinc-500 text-sm font-normal leading-normal">
+                  Current Employment
+                </div>
+                <div className="justify-start text-gray-900 text-sm font-normal leading-normal">
+                  Product Designer
+                </div>
+                <div className=" inline-flex justify-start items-center gap-3">
+                  <img
+                    className="size-6 rounded-sm"
+                    src="https://placehold.co/24x24"
+                  />
+                  <div className="justify-start text-neutral-900 text-sm font-normal leading-normal">
+                    Uber India
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex-1 px-6 py-4 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-1 outline-offset-[-1px] outline-zinc-300 flex justify-start items-center gap-4">
+              <div className="inline-flex flex-col justify-center items-start gap-1.5">
+                <div className="justify-start text-zinc-500 text-sm font-normal leading-normal">
+                  Contact Information
+                </div>
+                <div className="inline-flex justify-start items-center gap-3">
+                  <div className="flex justify-start items-center gap-2.5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                    >
+                      <g clip-path="url(#clip0_1167_6472)">
+                        <path
+                          d="M12.8328 9.86989V11.6199C12.8335 11.7824 12.8002 11.9432 12.7351 12.092C12.6701 12.2409 12.5746 12.3745 12.4549 12.4843C12.3352 12.5941 12.1938 12.6778 12.04 12.7298C11.8861 12.7819 11.723 12.8012 11.5612 12.7866C9.76617 12.5915 8.04193 11.9781 6.52701 10.9957C5.11758 10.1001 3.92263 8.90516 3.02701 7.49573C2.04117 5.97393 1.42766 4.24131 1.23618 2.43823C1.2216 2.27692 1.24077 2.11434 1.29247 1.96084C1.34417 1.80735 1.42726 1.6663 1.53646 1.54667C1.64566 1.42705 1.77857 1.33147 1.92672 1.26603C2.07488 1.20059 2.23505 1.16671 2.39701 1.16656H4.14701C4.43011 1.16377 4.70456 1.26402 4.91921 1.44862C5.13386 1.63322 5.27406 1.88957 5.31368 2.16989C5.38754 2.72993 5.52453 3.27982 5.72201 3.80906C5.8005 4.01785 5.81748 4.24476 5.77096 4.46291C5.72443 4.68105 5.61635 4.88129 5.45951 5.03989L4.71868 5.78073C5.54909 7.24113 6.75828 8.45032 8.21868 9.28073L8.95951 8.53989C9.11812 8.38306 9.31835 8.27497 9.5365 8.22845C9.75465 8.18192 9.98156 8.19891 10.1903 8.27739C10.7196 8.47488 11.2695 8.61186 11.8295 8.68573C12.1129 8.7257 12.3717 8.86843 12.5567 9.08677C12.7417 9.3051 12.8399 9.58381 12.8328 9.86989Z"
+                          stroke="#6945ED"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_1167_6472">
+                          <rect width="14" height="14" fill="white" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </div>
+                  <div className="justify-start text-neutral-900 text-sm font-normal leading-normal">
+                    {jobSeekerProfile?.phone?.countryCode}
+                    {jobSeekerProfile?.phone?.number}
+                  </div>
+                </div>
+                <div className="inline-flex justify-start items-center gap-3">
+                  <div className="flex justify-start items-center gap-2.5">
+                    <div className="size-3.5 relative overflow-hidden">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                      >
+                        <path
+                          d="M2.33366 2.33325H11.667C12.3087 2.33325 12.8337 2.85825 12.8337 3.49992V10.4999C12.8337 11.1416 12.3087 11.6666 11.667 11.6666H2.33366C1.69199 11.6666 1.16699 11.1416 1.16699 10.4999V3.49992C1.16699 2.85825 1.69199 2.33325 2.33366 2.33325Z"
+                          stroke="#6945ED"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M12.8337 3.5L7.00033 7.58333L1.16699 3.5"
+                          stroke="#6945ED"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="justify-start text-neutral-900 text-sm font-normal leading-normal">
+                    {jobSeekerProfile?.email}
+                  </div>
+                </div>
+              </div>
+              <div className="h-20 inline-flex flex-col justify-end items-start gap-1.5">
+                <div className="inline-flex justify-start items-center gap-3">
+                  <div className="size-4 relative overflow-hidden">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                    >
+                      <path
+                        d="M12.6667 2.66675H3.33333C2.59695 2.66675 2 3.2637 2 4.00008V13.3334C2 14.0698 2.59695 14.6667 3.33333 14.6667H12.6667C13.403 14.6667 14 14.0698 14 13.3334V4.00008C14 3.2637 13.403 2.66675 12.6667 2.66675Z"
+                        stroke="#6945ED"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M10.667 1.33325V3.99992"
+                        stroke="#6945ED"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M5.33301 1.33325V3.99992"
+                        stroke="#6945ED"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M2 6.66675H14"
+                        stroke="#6945ED"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <div className="justify-start text-neutral-900 text-sm font-normal leading-normal">
+                    {formatDate(jobSeekerProfile?.dob)}
+                  </div>
+                </div>
+                <div className="inline-flex justify-start items-center gap-3">
+                  <img className="size-4" src="https://placehold.co/16x16" />
+                  <div className="justify-start text-neutral-900 text-sm font-normal leading-normal">
+                    {jobSeekerProfile?.gender}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
             <div className="flex-1 inline-flex flex-col justify-center items-start gap-8">
-              <div className="self-stretch justify-start">
-                <span class="text-neutral-900 text-base font-semibold leading-snug">
-                  Summary
-                  <br />
-                </span>
-                <span class="text-neutral-900 text-base font-normal leading-snug">
-                  {jobSeekerProfile?.about}
-                </span>
+              <div className="self-stretch inline-flex justify-start items-start gap-8">
+                <div className="flex-1 justify-start">
+                  <span class="text-neutral-900 text-base font-semibold leading-snug">
+                    Summary
+                    <br />
+                  </span>
+                  <span class="text-neutral-900 text-base font-normal leading-snug">
+                    {jobSeekerProfile?.about}
+                  </span>
+                </div>
+                <div className="w-64 h-36 relative bg-neutral-200 rounded-lg outline-1 outline-offset-[-1px] outline-[#6945ED] overflow-hidden">
+                  <div className="w-40 px-5 py-2.5 left-[51px] top-[51px] absolute bg-[#6945ED] rounded-3xl inline-flex justify-center items-center gap-2.5">
+                    <div className="justify-start text-white text-sm font-medium capitalize">
+                      PDF Viewer
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="inline-flex justify-start items-start gap-4">
-                <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-black flex justify-start items-start gap-2.5">
+                <div className="px-5 py-2.5 rounded-3xl outline-1 outline-offset-[-1px] outline-black flex justify-start items-start gap-2.5">
                   <div className="justify-start text-black text-sm font-medium capitalize">
                     Current CTC:{" "}
                     {formatIndianNumber(jobSeekerProfile?.currentSalary)}
                   </div>
                 </div>
-                <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-violet-600 flex justify-start items-start gap-2.5">
-                  <div className="justify-start text-violet-600 text-sm font-medium capitalize">
+                <div className="px-5 py-2.5 rounded-3xl outline-1 outline-offset-[-1px] outline-[#6945ED] flex justify-start items-start gap-2.5">
+                  <div className="justify-start text-[#6945ED] text-sm font-medium capitalize">
                     Expected CTC:{" "}
                     {formatIndianNumber(jobSeekerProfile?.expectedSalary)}
                   </div>
                 </div>
-                <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-black flex justify-start items-start gap-2.5">
+                <div className="px-5 py-2.5 rounded-3xl outline-1 outline-offset-[-1px] outline-black flex justify-start items-start gap-2.5">
                   <div className="justify-start text-black text-sm font-medium capitalize">
                     Notice Period: {jobSeekerProfile?.noticePeriod} Days
                   </div>
@@ -135,10 +270,10 @@ const CandidateProfile = () => {
                   {jobSeekerProfile?.experienceDetails?.map((item, i) => (
                     <div
                       key={i}
-                      className="p-3 rounded-lg outline outline-offset-[-1px] outline-zinc-300 flex justify-start items-start gap-5 overflow-hidden"
+                      className="p-3 rounded-lg outline-1 outline-offset-[-1px] outline-zinc-300 flex justify-start items-start gap-5 overflow-hidden"
                     >
                       <img
-                        className="w-8 h-8 relative rounded"
+                        className="size-8 relative rounded-sm"
                         src="https://placehold.co/32x32"
                       />
                       <div className="inline-flex flex-col justify-start items-start gap-2.5">
@@ -148,7 +283,7 @@ const CandidateProfile = () => {
                         <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
                           {item?.companyName}
                         </div>
-                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
                           {formatToMonthYear(item?.startDate)} -{" "}
                           {formatToMonthYear(item?.endDate)} ·{" "}
                           {getDurationBetweenDates(
@@ -156,7 +291,7 @@ const CandidateProfile = () => {
                             item?.endDate
                           )}
                         </div>
-                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
                           Chicago, USA
                         </div>
                       </div>
@@ -170,22 +305,19 @@ const CandidateProfile = () => {
                 </div>
                 <div className="inline-flex justify-start items-start gap-5">
                   {jobSeekerProfile?.education?.map((item, i) => (
-                    <div
-                      key={i}
-                      className="p-3 rounded-lg outline outline-offset-[-1px] outline-zinc-300 flex justify-start items-start gap-5 overflow-hidden"
-                    >
+                    <div className="p-3 rounded-lg outline-1 outline-offset-[-1px] outline-zinc-300 flex justify-start items-start gap-5 overflow-hidden">
                       <img
-                        className="w-8 h-8 relative rounded"
+                        className="size-8 relative rounded-sm"
                         src="https://placehold.co/32x32"
                       />
                       <div className="inline-flex flex-col justify-start items-start gap-2.5">
                         <div className="justify-start text-neutral-900 text-base font-medium leading-tight">
-                          {item?.degree}
+                          {item.degree}
                         </div>
                         <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
-                          {item?.institution}
+                          {item.institution}
                         </div>
-                        <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
+                        <div className="justify-start text-zinc-400 text-xs font-semibold leading-3">
                           {formatToMonthYear(item?.startDate)} -{" "}
                           {formatToMonthYear(item?.endDate)} ·{" "}
                           {getDurationBetweenDates(
@@ -206,7 +338,7 @@ const CandidateProfile = () => {
                   {jobSeekerProfile?.skills?.map((item, i) => (
                     <div
                       key={i}
-                      className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5"
+                      className="px-5 py-2.5 rounded-3xl outline-1 outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5"
                     >
                       <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
                         {item}
@@ -220,7 +352,7 @@ const CandidateProfile = () => {
         </div>
       </div>
       <div className="lg:hidden w-full p-6 h-dvh overflow-y-auto bg-white inline-flex flex-col justify-start items-start gap-6">
-        <div className="self-stretch p-6  rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4">
+        <div className="self-stretch rounded-lg outline-zinc-300 flex flex-col justify-start items-start gap-4">
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-6">
             <div className="self-stretch inline-flex justify-between items-center gap-6">
               <div className="w-16 h-16 relative rounded overflow-hidden">
@@ -247,15 +379,15 @@ const CandidateProfile = () => {
               <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
                 <div className="flex flex-col justify-start items-start gap-1">
                   <div className="inline-flex justify-start items-center gap-3">
-                    <div className="justify-start text-neutral-900 text-lg font-normal leading-relaxed">
+                    <div className="justify-start text-neutral-900 text-md2 font-normal leading-relaxed">
                       {jobSeekerProfile?.areaOfExpertise}
                     </div>
                   </div>
                   <div className="inline-flex justify-start items-center gap-7">
-                    <div className="justify-start text-neutral-900 text-2xl font-medium leading-9">
+                    <div className="justify-start text-neutral-900 text-xl font-medium leading-9">
                       {jobSeekerProfile?.name}
                     </div>
-                    <div
+                    {/* <div
                       className={`px-1.5 py-0.5 ${
                         jobSeekerProfile?.status === "active"
                           ? "bg-[#54C4131A]"
@@ -267,11 +399,11 @@ const CandidateProfile = () => {
                           jobSeekerProfile?.status === "active"
                             ? "text-[#54C413]"
                             : "text-amber-600"
-                        } text-md font-medium leading-none`}
+                        } text-sm font-medium leading-none`}
                       >
                         {jobSeekerProfile?.status}
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className="self-stretch py-0.5 inline-flex justify-start items-center gap-6">
@@ -280,7 +412,7 @@ const CandidateProfile = () => {
                       <LocationIcon className="h-full w-full" />
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      Brussels
+                      {jobSeekerProfile?.permanentAddress?.city}
                     </div>
                   </div>
                   <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
@@ -289,14 +421,9 @@ const CandidateProfile = () => {
                       <ClockIcon className="h-full w-full" />
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      {(jobSeekerProfile?.totalExperience > 0 ||
-                        jobSeekerProfile?.totalExperienceInMonth > 0) && (
-                        <>
-                          {jobSeekerProfile?.totalExperience > 0 &&
-                            `${jobSeekerProfile?.totalExperience} years `}
-                          {jobSeekerProfile?.totalExperienceInMonth > 0 &&
-                            `${jobSeekerProfile?.totalExperienceInMonth} months`}
-                        </>
+                      {formatExperience(
+                        jobSeekerProfile?.totalExperience,
+                        jobSeekerProfile?.totalExperienceInMonth
                       )}
                     </div>
                   </div>
@@ -308,7 +435,7 @@ const CandidateProfile = () => {
             <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
               <div className="flex-1 inline-flex flex-col justify-center items-start gap-8">
                 <div className="self-stretch justify-start">
-                  <span class="text-neutral-900 text-base font-semibold leading-snug">
+                  <span class="text-neutral-900 text-[15px] font-semibold leading-snug">
                     Summary
                     <br />
                   </span>
@@ -336,7 +463,7 @@ const CandidateProfile = () => {
                   </div>
                 </div>
                 <div className="self-stretch flex flex-col justify-start items-start gap-2.5">
-                  <div className="self-stretch justify-start text-neutral-900 text-base font-semibold leading-snug">
+                  <div className="self-stretch justify-start text-neutral-900 text-[15px] font-semibold leading-snug">
                     Work Experience
                   </div>
                   <div className="self-stretch flex flex-col justify-start items-start gap-5">
@@ -350,10 +477,10 @@ const CandidateProfile = () => {
                           src="https://placehold.co/32x32"
                         />
                         <div className="flex-1 inline-flex flex-col justify-start items-start gap-2.5">
-                          <div className="justify-start text-neutral-900 text-md font-medium leading-none">
+                          <div className="justify-start text-neutral-900 text-sm font-medium leading-none">
                             Business Development Intern
                           </div>
-                          <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
+                          <div className="justify-start text-neutral-900 text-base font-normal leading-none">
                             {item?.companyName}
                           </div>
                           <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">
@@ -387,10 +514,10 @@ const CandidateProfile = () => {
                           src="https://placehold.co/32x32"
                         />
                         <div className="inline-flex flex-col justify-start items-start gap-2.5">
-                          <div className="self-stretch justify-start text-neutral-900 text-base font-medium leading-tight">
+                          <div className="self-stretch justify-start text-neutral-900 text-sm font-medium leading-tight">
                             {item?.degree}
                           </div>
-                          <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
+                          <div className="justify-start text-neutral-900 text-base font-normal leading-none">
                             {item?.institution}
                           </div>
                           <div className="justify-start text-zinc-400 text-sm font-semibold leading-3">

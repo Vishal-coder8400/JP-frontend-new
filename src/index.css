@@ -180,4 +180,16 @@
   .calendar .calendar-nav button {
     color: black;
   }
+  .custom-command-item > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px;
+  }
+  .custom-command-item > div > div {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 4px 0px;
+  }
 }

@@ -1,31 +1,45 @@
 import { Fragment } from "react";
 import { Button } from "../../ui/button";
+import useJobPostStore from "../../../stores/useJobPostStore";
+import {
+  CalenderIcon,
+  ClockIcon,
+  CurrencyIcon,
+  LocationIcon,
+} from "../../../utils/icon";
+import { formatSalaryRange, timeAgo } from "../../../utils/objectUtils";
 
 const JobDescription = ({ setOpen1, setOpen }) => {
+  const { jobPost } = useJobPostStore();
   return (
     <Fragment>
       {/* desktop-view */}
-      <div className="hidden p-6 w-full bg-white outline outline-offset-[-1px] outline-neutral-400 lg:inline-flex flex-col justify-start items-center overflow-hidden min-h-screen">
+      <div
+        aria-labelledby="dialog-title"
+        aria-describedby="dialog-desc"
+        className="hidden p-6 w-full bg-white outline outline-offset-[-1px] outline-neutral-400 lg:inline-flex flex-col justify-start items-center overflow-hidden min-h-screen"
+      >
         <div className="self-stretch flex-1 flex flex-col justify-start items-start gap-8">
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
             <img
-              className="w-16 h-16 relative rounded"
-              src="https://placehold.co/72x72"
+              className="w-16 h-16 relative rounded object-cover overflow-hidden"
+              src={jobPost?.companyDetails?.comapnyName}
+              alt={jobPost?.companyDetails?.companyName}
             />
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-3">
               <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
                 <div className="flex flex-col justify-start items-start gap-1">
                   <div className="inline-flex justify-start items-center gap-3">
                     <div className="justify-start text-neutral-900 text-md2 font-normal leading-relaxed">
-                      The Company
+                      {jobPost?.companyDetails?.companyName}
                     </div>
                   </div>
                   <div className="flex flex-col justify-start items-start gap-3">
-                    <div className="justify-start text-neutral-900 text-2xl font-medium leading-9">
-                      Business Development Intern
+                    <div className="justify-start text-neutral-900 text-xl font-medium leading-9">
+                      {jobPost?.jobTitle}
                     </div>
-                    <div className="px-1.5 py-0.5 bg-violet-500/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
-                      <div className="justify-start text-violet-500 text-md font-medium leading-none">
+                    <div className="px-1.5 py-0.5 bg-[#7D5AE21A] rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
+                      <div className="justify-start text-[#7D5AE2] text-xs font-medium leading-none">
                         2 applied
                       </div>
                     </div>
@@ -34,44 +48,40 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                 <div className="self-stretch py-0.5 inline-flex justify-start items-center gap-5 flex-wrap content-center">
                   <div className="flex justify-start items-center gap-1.5">
                     <div className="w-4 h-4 relative">
-                      <div className="w-2.5 h-px left-[3px] top-[14px] absolute bg-neutral-900/70" />
-                      <div className="w-[5px] h-[5px] left-[5.50px] top-[4px] absolute bg-neutral-900/70" />
-                      <div className="w-2.5 h-3.5 left-[2.50px] top-[1px] absolute bg-neutral-900/70" />
+                      <LocationIcon className="h-full w-full" />
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      Brussels
+                      {jobPost?.location}
                     </div>
                   </div>
                   <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
                   <div className="flex justify-start items-center gap-1.5">
                     <div className="w-4 h-4 relative">
-                      <div className="w-3 h-3 left-[1.50px] top-[1.50px] absolute bg-neutral-900/70" />
-                      <div className="w-1 h-1 left-[7.50px] top-[4px] absolute bg-neutral-900/70" />
+                      <ClockIcon className="h-full w-full" />
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      Full time
+                      {jobPost?.jobType}
                     </div>
                   </div>
                   <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
                   <div className="flex justify-start items-center gap-1.5">
                     <div className="w-4 h-4 relative">
-                      <div className="w-px h-3.5 left-[7.50px] top-[1px] absolute bg-neutral-900/70" />
-                      <div className="w-2 h-2.5 left-[3.50px] top-[2.50px] absolute bg-neutral-900/70" />
+                      <CurrencyIcon className="h-full w-full" />
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      50-55k
+                      {formatSalaryRange(
+                        jobPost?.salaryRange?.min,
+                        jobPost?.salaryRange?.max
+                      )}
                     </div>
                   </div>
                   <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
                   <div className="flex justify-start items-center gap-1.5">
                     <div className="w-4 h-4 relative">
-                      <div className="w-3 h-3 left-[2px] top-[2px] absolute bg-neutral-900/70" />
-                      <div className="w-px h-[3px] left-[10.50px] top-[1px] absolute bg-neutral-900/70" />
-                      <div className="w-px h-[3px] left-[4.50px] top-[1px] absolute bg-neutral-900/70" />
-                      <div className="w-3 h-px left-[2px] top-[5px] absolute bg-neutral-900/70" />
+                      <CalenderIcon className="h-full w-full" />
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      29 min ago
+                      {timeAgo(jobPost?.createdAt)}
                     </div>
                   </div>
                 </div>
@@ -83,14 +93,14 @@ const JobDescription = ({ setOpen1, setOpen }) => {
               }}
               className="cursor-pointer px-5 py-2.5 bg-gray-900 rounded-3xl flex justify-center items-center gap-2.5"
             >
-              <div className="justify-start text-white text-sm font-medium capitalize">
+              <div className="justify-start text-white text-base font-medium capitalize">
                 Apply For Candidate
               </div>
             </Button>
           </div>
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-8">
-              <div className="self-stretch justify-start text-neutral-900 text-xl font-semibold leading-tight">
+              <div className="self-stretch justify-start text-neutral-900 text-lg font-semibold leading-tight">
                 About the job
               </div>
               <div className="self-stretch justify-start">
@@ -177,38 +187,23 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                   Looking forward to seeing some great applications!
                 </span>
               </div>
-              <div className="w-80 inline-flex justify-start items-start gap-3 flex-wrap content-start">
-                <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5">
-                  <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                    Equipment Sales
+              <div className="w-full inline-flex justify-start items-start gap-3 flex-wrap content-start">
+                {jobPost?.requiredSkills?.map((item, i) => (
+                  <div
+                    key={i}
+                    className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5"
+                  >
+                    <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
+                      {item}
+                    </div>
                   </div>
-                </div>
-                <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5">
-                  <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                    Sales
-                  </div>
-                </div>
-                <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5">
-                  <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                    Field Sales
-                  </div>
-                </div>
-                <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5">
-                  <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                    Sales and marketing
-                  </div>
-                </div>
-                <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5">
-                  <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                    Client aquisition
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-8">
-              <div className="self-stretch justify-start text-neutral-900 text-xl font-semibold leading-tight">
+              <div className="self-stretch justify-start text-neutral-900 text-lg font-semibold leading-tight">
                 About the Company
               </div>
               <div className="self-stretch justify-start">
@@ -257,21 +252,22 @@ const JobDescription = ({ setOpen1, setOpen }) => {
       <div className="lg:hidden h-[100dvh] overflow-y-auto bg-white w-full p-6 inline-flex flex-col justify-start items-start gap-6">
         <div className="self-stretch p-6  rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
           <img
-            className="w-12 h-12 relative rounded"
-            src="https://placehold.co/48x48"
+            className="w-12 h-12 relative rounded object-cover overflow-hidden"
+            src={jobPost?.companyDetails?.comapnyName}
+            alt={jobPost?.companyDetails?.companyName}
           />
           <div className="flex-1 inline-flex flex-col justify-start items-start gap-3">
             <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
               <div className="self-stretch flex flex-col justify-start items-start gap-1">
-                <div className="justify-start text-neutral-900 text-base font-normal leading-snug">
-                  The Company
+                <div className="justify-start text-neutral-900 text-[15px] font-normal">
+                  {jobPost?.companyDetails?.companyName}
                 </div>
                 <div className="self-stretch flex flex-col justify-start items-start gap-3">
-                  <div className="self-stretch justify-start text-neutral-900 text-xl font-medium leading-loose">
-                    Business Development Intern
+                  <div className="self-stretch justify-start text-neutral-900 text-lg font-medium">
+                    {jobPost?.jobTitle}
                   </div>
-                  <div className="px-1.5 py-0.5 bg-violet-500/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
-                    <div className="justify-start text-violet-500 text-md font-medium leading-none">
+                  <div className="px-1.5 py-0.5 bg-[#7D5AE21A] rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
+                    <div className="justify-start text-[#7D5AE2] text-xs font-medium leading-none">
                       2 applied
                     </div>
                   </div>
@@ -280,44 +276,40 @@ const JobDescription = ({ setOpen1, setOpen }) => {
               <div className="self-stretch py-0.5 inline-flex justify-start items-center gap-5 flex-wrap content-center">
                 <div className="flex justify-start items-center gap-1.5">
                   <div className="w-4 h-4 relative">
-                    <div className="w-2.5 h-px left-[3px] top-[14px] absolute bg-neutral-900/70" />
-                    <div className="w-[5px] h-[5px] left-[5.50px] top-[4px] absolute bg-neutral-900/70" />
-                    <div className="w-2.5 h-3.5 left-[2.50px] top-[1px] absolute bg-neutral-900/70" />
+                    <LocationIcon className="h-full w-full" />
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                    Brussels
+                    {jobPost?.location}
                   </div>
                 </div>
                 <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
                 <div className="flex justify-start items-center gap-1.5">
                   <div className="w-4 h-4 relative">
-                    <div className="w-3 h-3 left-[1.50px] top-[1.50px] absolute bg-neutral-900/70" />
-                    <div className="w-1 h-1 left-[7.50px] top-[4px] absolute bg-neutral-900/70" />
+                    <ClockIcon className="h-full w-full" />
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                    Full time
+                    {jobPost?.jobType}
                   </div>
                 </div>
                 <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
                 <div className="flex justify-start items-center gap-1.5">
                   <div className="w-4 h-4 relative">
-                    <div className="w-px h-3.5 left-[7.50px] top-[1px] absolute bg-neutral-900/70" />
-                    <div className="w-2 h-2.5 left-[3.50px] top-[2.50px] absolute bg-neutral-900/70" />
+                    <CurrencyIcon className="h-full w-full" />
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                    50-55k
+                    {formatSalaryRange(
+                      jobPost?.salaryRange?.min,
+                      jobPost?.salaryRange?.max
+                    )}
                   </div>
                 </div>
                 <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
                 <div className="flex justify-start items-center gap-1.5">
                   <div className="w-4 h-4 relative">
-                    <div className="w-3 h-3 left-[2px] top-[2px] absolute bg-neutral-900/70" />
-                    <div className="w-px h-[3px] left-[10.50px] top-[1px] absolute bg-neutral-900/70" />
-                    <div className="w-px h-[3px] left-[4.50px] top-[1px] absolute bg-neutral-900/70" />
-                    <div className="w-3 h-px left-[2px] top-[5px] absolute bg-neutral-900/70" />
+                    <CalenderIcon className="h-full w-full" />
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                    29 min ago
+                    {timeAgo(jobPost?.createdAt)}
                   </div>
                 </div>
               </div>
@@ -333,16 +325,16 @@ const JobDescription = ({ setOpen1, setOpen }) => {
           </div>
         </div>
         <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
-          <div className="flex-1 inline-flex flex-col justify-start items-start gap-8">
-            <div className="self-stretch justify-start text-neutral-900 text-xl font-semibold leading-tight">
+          <div className="flex-1 inline-flex flex-col justify-start items-start gap-4">
+            <div className="self-stretch justify-start text-neutral-900 text-lg font-semibold leading-tight">
               About the job
             </div>
             <div className="self-stretch justify-start">
-              <span class="text-neutral-900/70 text-base font-bold leading-normal">
+              <span className="text-neutral-900/70 text-base font-bold leading-normal">
                 Job description
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-normal leading-normal">
+              <span className="text-neutral-900/70 text-base font-normal leading-normal">
                 Job Overview:
                 <br />
                 Jayant Fitness is looking for a dynamic and results-driven
@@ -352,12 +344,12 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                 deals, and building long-term relationships with clients.
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-bold leading-normal">
+              <span className="text-neutral-900/70 text-base font-bold leading-normal">
                 <br />
                 Key Responsibilities:
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-normal leading-normal">
+              <span className="text-neutral-900/70 text-base font-normal leading-normal">
                 Identify and develop new business opportunities in corporate
                 offices, real estate developers, and commercial spaces.
                 <br />
@@ -380,24 +372,24 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                 intelligence.
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-bold leading-normal">
+              <span className="text-neutral-900/70 text-base font-bold leading-normal">
                 <br />
                 Education
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-normal leading-normal">
+              <span className="text-neutral-900/70 text-base font-normal leading-normal">
                 UG: Any Graduate
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-bold leading-normal">
+              <span className="text-neutral-900/70 text-base font-bold leading-normal">
                 <br />
                 Other Details
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-normal leading-normal">
+              <span className="text-neutral-900/70 text-base font-normal leading-normal">
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-normal leading-normal">
+              <span className="text-neutral-900/70 text-base font-normal leading-normal">
                 Location : In-office role in HSR, Bengaluru
                 <br />
                 Stipend : 35K INR/month
@@ -411,7 +403,7 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                 exponentially increase your chances to land an interview
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-normal leading-normal">
+              <span className="text-neutral-900/70 text-base font-normal leading-normal">
                 <br />
                 For additional information, you can reach out to me at
                 anesh@stimuler.tech
@@ -420,42 +412,27 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                 Looking forward to seeing some great applications!
               </span>
             </div>
-            <div className="self-stretch inline-flex justify-start items-start gap-3 flex-wrap content-start">
-              <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5">
-                <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                  Equipment Sales
+            <div className="w-full self-stretch inline-flex justify-start items-start gap-3 flex-wrap content-start">
+              {jobPost?.requiredSkills?.map((item, i) => (
+                <div
+                  key={i}
+                  className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5"
+                >
+                  <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
+                    {item}
+                  </div>
                 </div>
-              </div>
-              <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5">
-                <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                  Sales
-                </div>
-              </div>
-              <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5">
-                <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                  Field Sales
-                </div>
-              </div>
-              <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5">
-                <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                  Sales and marketing
-                </div>
-              </div>
-              <div className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5">
-                <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                  Client aquisition
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
-        <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
-          <div className="flex-1 inline-flex flex-col justify-start items-start gap-8">
-            <div className="self-stretch justify-start text-neutral-900 text-xl font-semibold leading-tight">
+        <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-8">
+          <div className="flex-1 inline-flex flex-col justify-start items-start gap-4">
+            <div className="self-stretch justify-start text-neutral-900 text-lg font-semibold leading-tight">
               About the Company
             </div>
             <div className="self-stretch justify-start">
-              <span class="text-neutral-900/70 text-base font-normal leading-normal">
+              <span className="text-neutral-900/70 text-base font-normal leading-normal">
                 Stimuler has helped over 3.5 Million people improve their
                 conversational skills using its Audio AI technology. Our AI
                 engines listen, provide detailed feedback on essential speech
@@ -465,15 +442,15 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                 till date.
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-bold leading-normal">
+              <span className="text-neutral-900/70 text-base font-bold leading-normal">
                 {" "}
                 Company Info:
                 <br />
               </span>
-              <span class="text-neutral-900/70 text-base font-bold leading-normal">
+              <span className="text-neutral-900/70 text-base font-bold leading-normal">
                 Address:{" "}
               </span>
-              <span class="text-neutral-900/70 text-base font-normal leading-normal">
+              <span className="text-neutral-900/70 text-base font-normal leading-normal">
                 Jayanagar, Bangalore, Karnataka, India
               </span>
             </div>

@@ -80,69 +80,71 @@ const Layout = () => {
     <main className="w-full min-h-screen flex flex-col lg:flex-row">
       <Navbar />
       {/* desktop-view */}
-      <aside className="fixed top-[80px] left-0 h-[calc(100vh-80px)] hidden w-[318px] bg-[#141E2B] lg:flex flex-col overflow-hidden">
-        <div className="p-[24px] flex flex-col gap-[35px] overflow-y-auto scrollbar-hide scroll-smooth">
-          {/* Profile Card */}
-          <div className="self-stretch px-5 py-4 relative bg-slate-800 rounded-lg inline-flex justify-center items-center gap-4">
-            <img
-              className="size-12 rounded-full border border-black object-cover"
-              src={user?.profileImage || user?.basicInformation?.companyLogo}
-              alt={user?.name || user?.basicInformation?.companyName}
-            />
-            <div className="flex-1 inline-flex flex-col justify-start items-center gap-1.5">
-              <div className="self-stretch text-center justify-start text-white text-base font-medium capitalize">
-                {user?.name || user?.basicInformation?.companyName}
+      <div className="lg:w-[calc(100%-calc(100%-338px))]">
+        <aside className="fixed top-[80px] left-0 h-[calc(100vh-80px)] hidden w-[338px] bg-[#141E2B] lg:flex flex-col overflow-hidden">
+          <div className="p-[24px] flex flex-col gap-[35px] overflow-y-auto scrollbar-hide scroll-smooth">
+            {/* Profile Card */}
+            <div className="self-stretch px-5 py-4 relative bg-slate-800 rounded-lg inline-flex justify-center items-center gap-4">
+              <img
+                className="size-12 rounded-full border border-black object-cover"
+                src={user?.profileImage || user?.basicInformation?.companyLogo}
+                alt={user?.name || user?.basicInformation?.companyName}
+              />
+              <div className="flex-1 inline-flex flex-col justify-start items-center gap-1.5">
+                <div className="self-stretch text-center justify-start text-white text-base font-medium capitalize">
+                  {user?.name || user?.basicInformation?.companyName}
+                </div>
+                <div className="self-stretch text-center justify-start text-neutral-400 text-xs font-medium capitalize">
+                  continue your journey and <br />
+                  achieve Your Target
+                </div>
               </div>
-              <div className="self-stretch text-center justify-start text-neutral-400 text-xs font-medium capitalize">
-                continue your journey and <br />
-                achieve Your Target
+              <div className="size-2.5 left-[52px] top-[59px] absolute bg-lime-600 rounded-full" />
+            </div>
+            <div className="size- inline-flex flex-col justify-start items-start gap-2.5">
+              <div className="justify-start text-stone-500 text-xs font-semibold leading-none tracking-widest">
+                MENU
               </div>
+              <div className="w-full h-0 outline-1 outline-offset-[-0.50px] outline-stone-500"></div>
             </div>
-            <div className="size-2.5 left-[52px] top-[59px] absolute bg-lime-600 rounded-full" />
+            <div className="flex flex-col gap-[19px]">
+              {dashboardMenu.map((item, index) => {
+                let link = item.link;
+                if (link === "/corporate/job-posting/analytics") {
+                  link = "/corporate/job-posting";
+                }
+                return (
+                  <Link
+                    to={item.link}
+                    key={index}
+                    className={`flex gap-[24px] px-[20px] py-[10px] ${
+                      location.pathname.includes(link)
+                        ? "rounded-[1.125rem] bg-[#6945ED]"
+                        : ""
+                    }`}
+                  >
+                    <div className="flex items-center justify-center">
+                      {item.icon}
+                    </div>
+                    <div className="text-white text-md2 ">{item.name}</div>
+                  </Link>
+                );
+              })}
+            </div>
+            <Button
+              onClick={logOut}
+              className="cursor-pointer self-stretch px-5 py-2.5 rounded inline-flex justify-start items-center gap-6"
+            >
+              <div className="w-5 h-5 relative overflow-hidden">
+                <LogoutIcon className="h-full w-full" />
+              </div>
+              <div className="justify-start text-red-400 text-lg font-normal leading-relaxed">
+                Logout
+              </div>
+            </Button>
           </div>
-          <div className="size- inline-flex flex-col justify-start items-start gap-2.5">
-            <div className="justify-start text-stone-500 text-xs font-semibold leading-none tracking-widest">
-              MENU
-            </div>
-            <div className="w-full h-0 outline-1 outline-offset-[-0.50px] outline-stone-500"></div>
-          </div>
-          <div className="flex flex-col gap-[19px]">
-            {dashboardMenu.map((item, index) => {
-              let link = item.link;
-              if (link === "/corporate/job-posting/analytics") {
-                link = "/corporate/job-posting";
-              }
-              return (
-                <Link
-                  to={item.link}
-                  key={index}
-                  className={`flex gap-[24px] px-[20px] py-[10px] ${
-                    location.pathname.includes(link)
-                      ? "rounded-[1.125rem] bg-[#6945ED]"
-                      : ""
-                  }`}
-                >
-                  <div className="flex items-center justify-center">
-                    {item.icon}
-                  </div>
-                  <div className="text-white text-md2 ">{item.name}</div>
-                </Link>
-              );
-            })}
-          </div>
-          <Button
-            onClick={logOut}
-            className="cursor-pointer self-stretch px-5 py-2.5 rounded inline-flex justify-start items-center gap-6"
-          >
-            <div className="w-5 h-5 relative overflow-hidden">
-              <LogoutIcon className="h-full w-full" />
-            </div>
-            <div className="justify-start text-red-400 text-lg font-normal leading-relaxed">
-              Logout
-            </div>
-          </Button>
-        </div>
-      </aside>
+        </aside>
+      </div>
 
       {/* mobile-view */}
       <div className="lg:hidden w-full p-6 pt-[84px] bg-gray-900 border-r border-zinc-300 inline-flex flex-col justify-start items-start gap-4 overflow-hidden">
@@ -193,7 +195,7 @@ const Layout = () => {
           ))}
         </div>
       </div>
-      <section className="lg:ml-[338px] flex-1 flex-col flex lg:py-[47px] lg:px-[78px] lg:pl-[54px]">
+      <section className="lg:w-[calc(100%-338px)] flex-col flex lg:py-[47px] lg:px-[58px]">
         <Outlet />
       </section>
     </main>

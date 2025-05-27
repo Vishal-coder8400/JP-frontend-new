@@ -6,7 +6,7 @@ import { validateFormData } from "../../utils/objectUtils";
 
 const loginSchema = z.object({
   email: z.string().min(1, "Email is required").email("Enter a valid email"),
-  password: z.string(),
+  password: z.string().min(1,"Password is Required"),
   rememberme: z.boolean(),
 });
 

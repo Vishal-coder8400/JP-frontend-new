@@ -28,11 +28,7 @@ const formSchema = z
     currentAddress: z.object({
       address: z.string().min(1, "Current address is required"),
       city: z.string().min(1, "City is required"),
-      pincode: z.string().min(1, "Pincode is required"),
-    }),
-    permanentAddress: z.object({
-      address: z.string().min(1, "Permanent address is required"),
-      city: z.string().min(1, "City is required"),
+      state: z.string().min(1, "State is required"),
       pincode: z.string().min(1, "Pincode is required"),
     }),
     resume: z.string().url("Must be a valid URL").optional(),
@@ -57,15 +53,11 @@ const BasicDetails = () => {
       address: "",
       city: "",
       pincode: "",
-    },
-    permanentAddress: {
-      address: "",
-      city: "",
-      pincode: "",
+      state: "",
     },
     resume: "https://example.com/resume.pdf",
   });
-  console.log(formData);
+
   const { mutate, isPending, isError, error } = useRegister();
 
   const onSubmit = (e) => {

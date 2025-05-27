@@ -13,7 +13,7 @@ export const useKycDetails = () => {
     onSuccess: (data) => {
       toast.success(data.data.message);
       setRefetchProfile(true);
-      navigate("/recruiter/profile-setup/congratulation");
+      navigate("/congratulation");
     },
     onError: (error) => {
       toast.error(error.response.data.message, {});
@@ -25,7 +25,7 @@ export const useSectoralDetails = () => {
   const { setRefetchProfile } = useAuthStore();
   return useMutation({
     mutationFn: sectoralDetails,
-    onSuccess: async (data, variables) => {
+    onSuccess: (data, variables) => {
       toast.success(data.data.message);
       setRefetchProfile(true);
       if (variables.sectorSpecialization) {

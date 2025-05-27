@@ -21,6 +21,13 @@ const formSchema = z.object({
     .array(z.string().min(1))
     .length(2, "Exactly 2 experience levels are required"),
 
+  permanentAddress: z.object({
+    address: z.string().min(1, "Permanent address is required"),
+    city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
+    pincode: z.string().min(1, "Pincode is required"),
+  }),
+
   lastOrganization: z.object({
     name: z.string().min(1, "Organization name is required"),
     position: z.string().min(1, "Position is required"),
@@ -46,6 +53,12 @@ const SectoralDetails = () => {
       position: "",
       employmentType: "",
       startYear: 0,
+    },
+    permanentAddress: {
+      address: "",
+      city: "",
+      pincode: "",
+      state: "",
     },
     relievingLetter: "https://example.com/relieving-letter.pdf",
     linkedinProfile: "",

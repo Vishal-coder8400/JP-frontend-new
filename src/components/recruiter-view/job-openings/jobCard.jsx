@@ -8,8 +8,19 @@ import {
   RightArrow,
 } from "../../../utils/icon";
 import { Button } from "../../ui/button";
+import {
+  formatSalaryRange,
+  isTodayOrFuture,
+  timeAgo,
+} from "../../../utils/objectUtils";
+import useJobPostStore from "../../../stores/useJobPostStore";
 
-const JobCard = ({ setOpen }) => {
+const JobCard = ({ setOpen, item }) => {
+  const { setJobPost } = useJobPostStore();
+  const handleJob = (job) => {
+    setJobPost(job);
+    setOpen(true);
+  };
   return (
     <Fragment>
       {/* //desktop-view */}
@@ -17,11 +28,19 @@ const JobCard = ({ setOpen }) => {
         <div className="flex flex-col gap-[12px]">
           <div className="flex flex-col gap-[4px]">
             <div className="flex items-center gap-[10px]">
-              <div className="h-[24px] w-[24px] rounded-[4px] bg-[#6945ED]"></div>
-              <div className="text-[#141414] text-md">The Company</div>
+              <div className="h-[24px] w-[24px] rounded-[4px] overflow-hidden">
+                <img
+                  src={item.companyDetails.companyLogo}
+                  alt={item.companyDetails.companyName}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <div className="text-[#141414] text-md">
+                {item.companyDetails.companyName}
+              </div>
             </div>
             <div className="text-[#141414] text-lg font-medium">
-              Business Development Intern
+              {item.jobTitle}
             </div>
           </div>
           <div className="flex items-center justify-start">
@@ -35,36 +54,46 @@ const JobCard = ({ setOpen }) => {
             <div className="flex items-center justify-center">
               <LocationIcon className="h-[16px] w-[16px]" />
             </div>
-            <div className="text-[#141414] text-sm">Brussels</div>
+            <div className="text-[#141414] text-sm">{item.location}</div>
           </div>
           <div className="flex gap-[6px] items-center">
             <div className="flex items-center justify-center">
               <ClockIcon className="h-[16px] w-[16px]" />
             </div>
-            <div className="text-[#141414] text-sm">Brussels</div>
+            <div className="text-[#141414] text-sm">{item.jobType}</div>
           </div>
           <div className="flex gap-[6px] items-center">
             <div className="flex items-center justify-center">
               <CurrencyIcon className="h-[16px] w-[16px]" />
             </div>
-            <div className="text-[#141414] text-sm">Brussels</div>
+            <div className="text-[#141414] text-sm">
+              {formatSalaryRange(item.salaryRange.min, item.salaryRange.max)}
+            </div>
           </div>
           <div className="flex gap-[6px] items-center">
             <div className="flex items-center justify-center">
               <CalenderIcon className="h-[16px] w-[16px]" />
             </div>
-            <div className="text-[#141414] text-sm">Brussels</div>
+            <div className="text-[#141414] text-sm">
+              {timeAgo(item.createdAt)}
+            </div>
           </div>
         </div>
         <div className="flex flex-col gap-[11px]">
-          <div className="flex items-center justify-center gap-[13px] rounded-[8px] border border-[#54C413] px-[12px] py-[8px]">
-            <span className="text-[#54C413] text-sm">Active</span>
-            <span className="flex items-center justify-center">
-              <Fill className="h-[10px] w-[10px]" />
-            </span>
-          </div>
+          {isTodayOrFuture(item.applicationDeadline) ? (
+            <div className="flex items-center justify-center gap-[13px] rounded-[8px] border border-[#54C413] px-[12px] py-[8px]">
+              <span className="text-[#54C413] text-sm">Active</span>
+              <span className="flex items-center justify-center">
+                <Fill className="h-[10px] w-[10px]" />
+              </span>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center px-[12px] py-[9px] rounded-[8px] outline-1 outline-offset-[-1px] outline-stone-300">
+              <div className="text-stone-300 text-sm leading-tight">Ended</div>
+            </div>
+          )}
           <Button
-            onClick={() => setOpen(true)}
+            onClick={() => handleJob(item)}
             className="cursor-pointer flex items-center justify-center gap-[4px] rounded-[8px] bg-[#6945ED] px-[12px] py-[8px]"
           >
             <div className="text-[#fff] text-sm">View Details</div>
@@ -84,33 +113,42 @@ const JobCard = ({ setOpen }) => {
                   <CalenderIcon className="w-full h-full" />
                 </div>
                 <div className="justify-start text-neutral-900/70 text-base font-normal leading-none">
-                  29 min ago
+                  {timeAgo(item.createdAt)}
                 </div>
               </div>
-              <div className="px-3 py-2 rounded-lg outline outline-offset-[-1px] outline-lime-600 flex justify-center items-center gap-3">
-                <div className="justify-start text-lime-600 text-base font-normal leading-none">
-                  Active
+              {isTodayOrFuture(item.applicationDeadline) ? (
+                <div className="px-3 py-2 rounded-lg outline outline-offset-[-1px] outline-lime-600 flex justify-center items-center gap-3">
+                  <div className="justify-start text-lime-600 text-base font-normal leading-none">
+                    Active
+                  </div>
+                  <div className="w-2.5 h-2.5 bg-lime-600 rounded-full" />
                 </div>
-                <div className="w-2.5 h-2.5 bg-lime-600 rounded-full" />
-              </div>
+              ) : (
+                <div className="flex items-center justify-center px-3 py-2 rounded-lg outline-1 outline-offset-[-1px] outline-stone-300">
+                  <div className="text-stone-300 text-base leading-none">
+                    Ended
+                  </div>
+                </div>
+              )}
             </div>
             <div className="self-stretch flex flex-col justify-center items-start gap-3.5">
               <div className="flex flex-col justify-start items-start gap-1">
                 <div className="inline-flex justify-center items-center gap-2.5">
                   <img
-                    className="w-4 h-4 relative rounded"
-                    src="https://placehold.co/16x16"
+                    className="w-4 h-4 relative rounded object-cover overflow-hidden"
+                    src={item.companyDetails.companyLogo}
+                    alt={item.companyDetails.companyName}
                   />
-                  <div className="justify-start text-neutral-900 text-md font-normal leading-none">
-                    The Company
+                  <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
+                    {item.companyDetails.companyName}
                   </div>
                 </div>
                 <div className="flex flex-col justify-start items-start gap-3">
-                  <div className="justify-start text-neutral-900 text-sm font-medium leading-none">
-                    Business Development Intern
+                  <div className="justify-start text-neutral-900 text-md font-medium leading-none">
+                    {item.jobTitle}
                   </div>
                   <div className="px-1.5 py-0.5 bg-violet-500/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
-                    <div className="justify-start text-violet-500 text-sm font-medium leading-none">
+                    <div className="justify-start text-[#6945ED] text-sm font-medium leading-none">
                       2 applied
                     </div>
                   </div>
@@ -121,28 +159,29 @@ const JobCard = ({ setOpen }) => {
               <div className="flex justify-center items-center gap-1.5">
                 <LocationIcon className="h-[14px] w-[14px]" />
                 <div className="justify-start text-neutral-900/70 text-sm font-normal leading-none">
-                  Brussels
+                  {item.location}
                 </div>
               </div>
               <div className="flex justify-start items-center gap-1.5">
                 <ClockIcon className="h-[14px] w-[14px]" />
                 <div className="justify-start text-neutral-900/70 text-sm font-normal leading-none">
-                  Full time
+                  {item.jobType}
                 </div>
               </div>
               <div className="flex justify-start items-center gap-1.5">
                 <CurrencyIcon className="h-[14px] w-[14px]" />
                 <div className="justify-start text-neutral-900/70 text-sm font-normal leading-none">
-                  50-55k
+                  {formatSalaryRange(
+                    item.salaryRange.min,
+                    item.salaryRange.max
+                  )}
                 </div>
               </div>
             </div>
           </div>
           <Button
-            onClick={() => {
-              setOpen(true);
-            }}
-            className="px-3 py-2 bg-violet-600 rounded-lg outline outline-offset-[-1px] outline-violet-600 inline-flex justify-center items-center gap-1"
+            onClick={() => handleJob(item)}
+            className="px-3 py-2 bg-[#6945ED] rounded-lg outline outline-offset-[-1px] outline-[#6945ED] inline-flex justify-center items-center gap-1"
           >
             <div className="justify-start text-white text-base font-normal leading-tight">
               View Details

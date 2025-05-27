@@ -45,13 +45,6 @@ const formDataSchema = z.object({
     .number()
     .min(0, "Expected salary must be a non-negative number"),
 
-  password: z
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .regex(
-      /[!@#$%^&*(),.?":{}|<>]/,
-      "Password must contain at least one special character"
-    ),
   currentIndustry: z.string().min(1, "Current Sector is required"),
   experienceDetails: z
     .array(experienceDetailSchema)
@@ -64,8 +57,8 @@ const CandidateReleventDetails = () => {
     email: jobSeekerProfile?.email,
     password: jobSeekerProfile?.password,
     noticePeriod: 0,
-    totalExperience: 0,
-    totalExperienceInMonth: 0,
+    totalExperience: "0",
+    totalExperienceInMonth: "0",
     currentSalary: 0,
     currentIndustry: "",
     expectedSalary: 0,
@@ -82,7 +75,12 @@ const CandidateReleventDetails = () => {
   const { mutate, isPending } = useCreateApplicant();
   const onSubmit = (e) => {
     e.preventDefault();
-    const isValid = validateFormData(formDataSchema, formData);
+    const payload = {
+      ...formData,
+      totalExperience: Number(formData.totalExperience),
+      totalExperienceInMonth: Number(formData.totalExperienceInMonth),
+    };
+    const isValid = validateFormData(formDataSchema, payload);
     if (!isValid) return;
     mutate(formData);
   };

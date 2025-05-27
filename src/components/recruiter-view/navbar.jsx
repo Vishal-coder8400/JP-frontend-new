@@ -11,7 +11,10 @@ const Navbar = () => {
           Company
         </div>
         <div className="lg:flex items-center gap-[24px] text-[#F4F4F4] text-base font-medium hidden ">
-          <Link to={`/${user?.role}/dashboard`} className="cursor-pointer">
+          <Link
+            to={`/${user?.role || "recruiter"}/dashboard`}
+            className="cursor-pointer"
+          >
             Dashboard
           </Link>
           <span className="cursor-pointer">Applied Job/Internship</span>

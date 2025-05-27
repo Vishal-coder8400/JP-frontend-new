@@ -87,3 +87,75 @@ export const validateFormData = (validationSchema, formData) => {
 
   return true;
 };
+export const formatSalaryRange = (minSalary, maxSalary) => {
+  const min = Number(minSalary);
+  const max = Number(maxSalary);
+
+  if (isNaN(min) || isNaN(max)) return "";
+
+  if (max >= 10000000) {
+    // Crores
+    return `${(min / 10000000).toFixed(1)}-${(max / 10000000).toFixed(1)}Cr`;
+  } else if (max >= 100000) {
+    // Lakhs
+    return `${(min / 100000).toFixed(1)}-${(max / 100000).toFixed(1)}L`;
+  } else {
+    // Thousands
+    return `${Math.floor(min / 1000)}-${Math.floor(max / 1000)}k`;
+  }
+};
+export const timeAgo = (dateString) => {
+  const now = new Date();
+  const past = new Date(dateString);
+  const diffInSeconds = Math.floor((now - past) / 1000);
+
+  if (isNaN(diffInSeconds)) return "";
+
+  const minutes = Math.floor(diffInSeconds / 60);
+  const hours = Math.floor(diffInSeconds / 3600);
+  const days = Math.floor(diffInSeconds / 86400);
+
+  if (diffInSeconds < 60) return "just now";
+  if (minutes < 60) return `${minutes} min ago`;
+  if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  if (days === 1) return "yesterday";
+  if (days < 7) return `${days} day${days > 1 ? "s" : ""} ago`;
+
+  return past.toLocaleDateString(); // fallback to actual date
+};
+export const isTodayOrFuture = (dateString) => {
+  const inputDate = new Date(dateString);
+  const today = new Date();
+
+  // Normalize both to midnight to compare only the date
+  inputDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  return inputDate >= today;
+};
+export function formatExperience(years, months) {
+  const totalMonths = years * 12 + months;
+
+  if (totalMonths < 12) {
+    return "Less than 1 year";
+  }
+
+  const fullYears = Math.floor(totalMonths / 12);
+  const remainingMonths = totalMonths % 12;
+
+  // If 6+ months extra, show .5+
+  if (remainingMonths >= 6) {
+    return `${fullYears}.5+ years`;
+  }
+
+  return fullYears === 1 ? "1 year" : `${fullYears}+ years`;
+}
+export function formatDate(dateValue) {
+  const date = new Date(dateValue);
+
+  const day = date.getDate();
+  const month = date.toLocaleString("en-US", { month: "short" }); // "Jan", "Feb", etc.
+  const year = date.getFullYear();
+
+  return `${day} ${month}, ${year}`;
+}

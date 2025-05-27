@@ -14,20 +14,23 @@ const CheckAuth = ({ allowedRoles = [], fetchProfileHook, children }) => {
     token,
   } = useAuthStore();
   const userRole = user?.role;
-  console.log(isAuthenticated, user, token, userRole);
+  // console.log(isAuthenticated, user, token, userRole, refetchProfile);
+  const shouldFetchProfile = isAuthenticated && (refetchProfile || !user);
   const profile = fetchProfileHook
     ? fetchProfileHook({
-        enabled: isAuthenticated && (!user || refetchProfile),
+        enabled: shouldFetchProfile,
       })
     : null;
   useEffect(() => {
-    if (profile?.status === "success") {
-      setUser({ ...profile.data?.data });
+    if (profile?.status === "success" && !profile.isLoading) {
+      // console.log(profile.data?.data);
+      setUser(profile.data.data);
       setIsAuthenticated(true);
       if (refetchProfile) setRefetchProfile(false);
     }
-  }, [profile?.status]);
-
+    // console.log("useEffect");
+  }, [profile?.status, profile?.data?.data]);
+  // console.log(user, "late");
   const isLoading = profile?.isLoading || (!user && isAuthenticated);
   const isLoginOrRegisterRoute = ["/log-in", "/basic-details"].some((path) =>
     location.pathname.includes(path)

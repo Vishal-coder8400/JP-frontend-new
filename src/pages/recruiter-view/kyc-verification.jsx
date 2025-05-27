@@ -55,7 +55,7 @@ const KycVerification = () => {
       accountHolderName: "",
       bankName: "",
       ifscCode: "",
-      accountType: "saving",
+      accountType: "",
     },
     cancelChequeOrPassbookImage: "http://example.com/path/to/cheque-image.jpg",
   });
