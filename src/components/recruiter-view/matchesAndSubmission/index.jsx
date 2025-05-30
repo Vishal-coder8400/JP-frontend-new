@@ -181,11 +181,13 @@ const Index = () => {
         <HeroProfile />
         <div className="p-6 w-full bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4 overflow-hidden">
           <div className="self-stretch inline-flex justify-between items-center">
-            <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
+            <div className="justify-start text-gray-900 text-lg font-semibold leading-tight">
               Matches & Submissions
-            </div>
-            <div className="justify-start text-zinc-500 text-md font-medium leading-tight">
-              View All
+            </div>{" "}
+            <div className="cursor-pointer px-1 py-3 bg-gray-900 rounded-3xl gap-2.5 ">
+              <div className="text-center text-white text-sm font-semibold leading-none">
+                Delete Candidate
+              </div>
             </div>
           </div>
           <div className="self-stretch h-0 outline outline-offset-[-0.50px] outline-neutral-200"></div>

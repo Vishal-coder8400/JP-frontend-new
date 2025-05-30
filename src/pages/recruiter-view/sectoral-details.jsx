@@ -6,6 +6,7 @@ import { useSectorOptions } from "../../hooks/recruiter/useSectoralOption";
 import { z } from "zod";
 import { validateFormData } from "../../utils/objectUtils";
 import ButtonComponent from "../../components/common/button";
+import { useUpload } from "../../hooks/common/useUpload";
 
 const formSchema = z.object({
   sectorSpecialization: z
@@ -35,7 +36,10 @@ const formSchema = z.object({
     startYear: z.number().int(),
   }),
 
-  relievingLetter: z.string().url("Relieving letter must be a valid URL"),
+  relievingLetter: z
+    .string()
+    .min(1, "Relieving Letter is required")
+    .url("Relieving letter must be a valid URL"),
 
   linkedinProfile: z
     .string()
@@ -60,7 +64,7 @@ const SectoralDetails = () => {
       pincode: "",
       state: "",
     },
-    relievingLetter: "https://example.com/relieving-letter.pdf",
+    relievingLetter: "",
     linkedinProfile: "",
   });
   const { data: sectorOptions = [], isLoading, error } = useSectorOptions();
@@ -70,6 +74,7 @@ const SectoralDetails = () => {
       : field
   );
   const { mutate, isPending } = useSectoralDetails();
+  const { mutate: UploadImage } = useUpload();
   const onSubmit = (e) => {
     e.preventDefault();
     const payload = {
@@ -82,6 +87,17 @@ const SectoralDetails = () => {
     const isValid = validateFormData(formSchema, payload);
     if (!isValid) return;
     mutate(payload);
+  };
+  const handleUpload = (file, callback) => {
+    UploadImage(file, {
+      onSuccess: (data) => {
+        const fileUrl = data?.data?.fileUrl;
+        const fileName = data?.data?.fileName;
+        if (callback) {
+          callback(fileUrl, fileName);
+        }
+      },
+    });
   };
   return (
     <div className="w-full self-stretch lg:px-36 lg:py-14 p-[20px] inline-flex flex-col justify-start items-start lg:gap-2 gap-[10px]">
@@ -110,6 +126,7 @@ const SectoralDetails = () => {
             formControls={updatedFields}
             formData={formData}
             setFormData={setFormData}
+            handleUpload={handleUpload}
           />
         </div>
         <div className="self-stretch flex flex-col justify-end items-end gap-2.5">

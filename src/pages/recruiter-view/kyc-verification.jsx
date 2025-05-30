@@ -5,6 +5,7 @@ import { useKycDetails } from "../../hooks/recruiter/useProfile";
 import { z } from "zod";
 import { validateFormData } from "../../utils/objectUtils";
 import ButtonComponent from "../../components/common/button";
+import { useUpload } from "../../hooks/common/useUpload";
 
 const formSchema = z.object({
   panDetails: z.object({
@@ -13,7 +14,10 @@ const formSchema = z.object({
       .min(1, "PAN number is required")
       // PAN format: 5 letters, 4 digits, 1 letter (e.g. ABCDE1234F)
       .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN number format"),
-    image: z.string().url("PAN image must be a valid URL"),
+    image: z
+      .string()
+      .min(1, "Image is required")
+      .url("PAN image must be a valid URL"),
   }),
   aadharDetails: z.object({
     number: z
@@ -21,7 +25,10 @@ const formSchema = z.object({
       .min(1, "Aadhar number is required")
       // Aadhar: 12 digits exactly
       .regex(/^\d{12}$/, "Aadhar number must be 12 digits"),
-    image: z.string().url("Aadhar image must be a valid URL"),
+    image: z
+      .string()
+      .min(1, "PAN number is required")
+      .url("Aadhar image must be a valid URL"),
   }),
   bankDetails: z.object({
     accountNumber: z.string().min(1, "Account number is required"),
@@ -37,18 +44,21 @@ const formSchema = z.object({
       "Account type must be saving or current"
     ),
   }),
-  cancelChequeOrPassbookImage: z.string().url("Must be a valid URL"),
+  cancelChequeOrPassbookImage: z
+    .string()
+    .min(1, "PAN number is required")
+    .url("Must be a valid URL"),
 });
 
 const KycVerification = () => {
   const [formData, setFormData] = useState({
     panDetails: {
       number: "",
-      image: "http://example.com/path/to/pan-image.jpg",
+      image: "",
     },
     aadharDetails: {
       number: "",
-      image: "http://example.com/path/to/aadhar-image.jpg",
+      image: "",
     },
     bankDetails: {
       accountNumber: "",
@@ -57,9 +67,10 @@ const KycVerification = () => {
       ifscCode: "",
       accountType: "",
     },
-    cancelChequeOrPassbookImage: "http://example.com/path/to/cheque-image.jpg",
+    cancelChequeOrPassbookImage: "",
   });
   const { mutate, isPending, isError, error } = useKycDetails();
+  const { mutate: UploadImage } = useUpload();
 
   const onSubmit = (e) => {
     e.preventDefault();
@@ -67,6 +78,18 @@ const KycVerification = () => {
     if (!isValid) return;
     mutate(formData);
   };
+  const handleUpload = (file, callback) => {
+    UploadImage(file, {
+      onSuccess: (data) => {
+        const fileUrl = data?.data?.fileUrl;
+        const fileName = data?.data?.fileName;
+        if (callback) {
+          callback(fileUrl, fileName);
+        }
+      },
+    });
+  };
+
   return (
     <div className="w-full self-stretch p-[20px] lg:px-36 lg:py-20 inline-flex flex-col justify-start items-start gap-[18px] lg:gap-7">
       <div className="w-full flex flex-col justify-start items-start gap-8">
@@ -105,6 +128,7 @@ const KycVerification = () => {
                   formControls={KycVerificationDetails}
                   formData={formData}
                   setFormData={setFormData}
+                  handleUpload={handleUpload}
                 />
               </div>
             </div>

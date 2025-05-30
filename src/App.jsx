@@ -24,6 +24,7 @@ import DynamicCheckAuthWrapper from "./components/common/dynamicCheckAuthWrapper
 import FinalSetup from "./pages/corporate-view/final-setup";
 import Analytics from "./pages/corporate-view/analytics";
 import Listing from "./pages/corporate-view/listing";
+import ResumeFiltering from "./pages/corporate-view/resume-filtering";
 
 function App() {
   const token =
@@ -152,6 +153,7 @@ function App() {
           <Route path="dashboard" element={<CorporateDashboard />} />
           <Route path="job-posting/analytics" element={<Analytics />} />
           <Route path="job-posting/listing" element={<Listing />} />
+          <Route path="resume-filtering" element={<ResumeFiltering />} />
         </Route>
         <Route
           path="/corporate/profile-setup"

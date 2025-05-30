@@ -269,7 +269,7 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
       <div
         className={`lg:hidden w-full bg-white overflow-y-auto ${
           show ? "p-6 min-h-dvh" : ""
-        } inline-flex flex-col justify-center items-center gap-4 pb-20`}
+        } inline-flex flex-col justify-center items-center gap-4`}
       >
         {show && (
           <div className="w-full flex items-center justify-between">

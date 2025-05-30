@@ -66,16 +66,24 @@ const Index = ({ applicants, formData, setFormData, setOpen2 }) => {
       <div className="w-full p-[24px] lg:hidden inline-flex flex-col justify-start items-start gap-6">
         <HeroProfile />
         <div className="w-full p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4 overflow-hidden">
-          <Link
-            to="/recruiter/candidates/candidate-create"
-            className="px-5 py-4 bg-gray-900 rounded-3xl inline-flex justify-center items-center gap-2.5"
-          >
-            <div className="justify-start text-white text-sm font-semibold leading-none">
-              Create Candidate
+          <div className="flex items-center justify-between w-full">
+            <Link
+              to="/recruiter/candidates/candidate-create"
+              className="px-5 py-4 bg-gray-900 rounded-3xl inline-flex justify-center items-center gap-2.5"
+            >
+              <div className="justify-start text-white text-sm font-semibold leading-none">
+                Create Candidate
+              </div>
+            </Link>
+            <div className="px-5 py-4 bg-gray-900 rounded-3xl inline-flex justify-center items-center gap-2.5">
+              <div className="justify-start text-white text-sm font-semibold leading-none">
+                Delete Candidate
+              </div>
             </div>
-          </Link>
+          </div>
+
           <div className="self-stretch inline-flex justify-start items-center">
-            <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
+            <div className="justify-start text-gray-900 text-lg font-semibold leading-tight">
               Candidates Management
             </div>
           </div>
@@ -85,6 +93,7 @@ const Index = ({ applicants, formData, setFormData, setOpen2 }) => {
             show={false}
             button={false}
             applicants={applicants}
+            setOpen2={setOpen2}
           />
         </div>
       </div>

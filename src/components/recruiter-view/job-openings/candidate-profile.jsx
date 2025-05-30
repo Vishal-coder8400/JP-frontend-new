@@ -8,10 +8,11 @@ import {
   formatToMonthYear,
   getDurationBetweenDates,
 } from "../../../utils/objectUtils";
+import { useLocation } from "react-router-dom";
 
 const CandidateProfile = () => {
   const { jobSeekerProfile } = useJobSeekerProfileStore();
-  console.log(jobSeekerProfile);
+  const location = useLocation();
   return (
     <Fragment>
       <div className="min-h-screen w-full hidden self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 lg:inline-flex flex-col justify-start items-start gap-4">
@@ -66,18 +67,38 @@ const CandidateProfile = () => {
               </div>
             </div>
           </div>
-          <div className="w-40 inline-flex flex-col justify-center items-start gap-2.5">
-            <div className="self-stretch px-5 py-2.5 rounded-3xl outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5">
-              <div className="justify-start text-black text-sm font-medium capitalize">
-                Match to Job
+          {!location.pathname.includes("corporate") ? (
+            <div className="w-40 inline-flex flex-col justify-center items-start gap-2.5">
+              <div className="self-stretch px-5 py-2.5 rounded-3xl outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5">
+                <div className="justify-start text-black text-sm font-medium capitalize">
+                  Match to Job
+                </div>
+              </div>
+              <div className="self-stretch px-5 py-2.5 bg-black rounded-3xl outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5">
+                <div className="justify-start text-white text-sm font-medium capitalize">
+                  Send to Employer
+                </div>
               </div>
             </div>
-            <div className="self-stretch px-5 py-2.5 bg-black rounded-3xl outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5">
-              <div className="justify-start text-white text-sm font-medium capitalize">
-                Send to Employer
+          ) : (
+            <div className="w-40 inline-flex flex-col justify-center items-start gap-2.5">
+              <div className="self-stretch px-5 py-2.5 bg-lime-600 rounded-3xl inline-flex justify-center items-center gap-2.5">
+                <div className="justify-start text-white text-sm font-medium capitalize">
+                  Request Interview
+                </div>
+              </div>
+              <div className="self-stretch px-5 py-2.5 bg-rose-600 rounded-3xl inline-flex justify-center items-center gap-2.5">
+                <div className="justify-start text-white text-sm font-medium capitalize">
+                  Reject
+                </div>
+              </div>
+              <div className="self-stretch px-5 py-2.5 bg-black rounded-3xl outline outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5">
+                <div className="justify-start text-white text-sm font-medium capitalize">
+                  Hold
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
         <div className="self-stretch flex flex-col justify-start items-start gap-4 overflow-hidden">
           <div className="self-stretch inline-flex justify-start items-start gap-4">

@@ -6,8 +6,10 @@ import {
 } from "../../../config";
 import { useCreateApplicant } from "../../../hooks/recruiter/useApplicant";
 import { z } from "zod";
-import { validateFormData } from "../../../utils/objectUtils";
+import { setNestedValue, validateFormData } from "../../../utils/objectUtils";
 import ButtonComponent from "../../common/button";
+import { useUpload } from "../../../hooks/common/useUpload";
+import { Input } from "../../ui/input";
 
 const educationSchema = z.object({
   degree: z.string().min(1, "Degree is required"),
@@ -20,7 +22,10 @@ const educationSchema = z.object({
 const formDataSchema = z.object({
   name: z.string().min(1, "Name is required"),
 
-  profilePicture: z.string().url("Profile picture must be a valid URL"),
+  profilePicture: z
+    .string()
+    .min(1, "Profile Image is Required")
+    .url("Profile picture must be a valid URL"),
 
   phone: z.object({
     number: z
@@ -36,24 +41,17 @@ const formDataSchema = z.object({
   currentAddress: z.object({
     address: z.string().min(1, "Current address is required"),
     city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
     pincode: z
       .string()
       .min(6, "Pincode must be 6 digits")
       .max(6, "Pincode must be 6 digits")
       .regex(/^\d+$/, "Pincode must contain only digits"),
   }),
-
-  password: z
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .regex(
-      /[!@#$%^&*(),.?":{}|<>]/,
-      "Password must contain at least one special character"
-    ),
-
   permanentAddress: z.object({
     address: z.string().min(1, "Permanent address is required"),
     city: z.string().min(1, "City is required"),
+    state: z.string().min(1, "State is required"),
     pincode: z
       .string()
       .min(6, "Pincode must be 6 digits")
@@ -69,14 +67,16 @@ const formDataSchema = z.object({
 
   currentWorkingStatus: z.string().min(1, "Current working status is required"),
 
-  resume: z.string().url("Resume must be a valid URL"),
+  resume: z
+    .string()
+    .min(1, "Resume is Required")
+    .url("Resume must be a valid URL"),
 });
 
 const Index = () => {
   const [formData, setFormData] = useState({
     name: "",
-    profilePicture: "https://example.com/profile.jpg",
-
+    profilePicture: "",
     phone: {
       number: "",
       countryCode: "",
@@ -86,11 +86,12 @@ const Index = () => {
       address: "",
       city: "",
       pincode: "",
+      state: "",
     },
-    password: "peeyush@123",
     permanentAddress: {
       address: "",
       city: "",
+      state: "",
       pincode: "",
     },
     gender: "",
@@ -106,12 +107,39 @@ const Index = () => {
     currentWorkingStatus: "",
     resume: "https://example.com/resume.pdf",
   });
+  const [fileName, setFileName] = useState("");
+
+  console.log(formData);
   const { mutate, isPending } = useCreateApplicant();
+  const { mutate: UploadImage } = useUpload();
+
   const onSubmit = (e) => {
     e.preventDefault();
     const isValid = validateFormData(formDataSchema, formData);
     if (!isValid) return;
     mutate(formData);
+  };
+  const handleUpload = (file, callback) => {
+    UploadImage(file, {
+      onSuccess: (data) => {
+        const fileUrl = data?.data?.fileUrl;
+        const fileName = data?.data?.fileName;
+        if (callback) {
+          callback(fileUrl, fileName);
+        }
+      },
+    });
+  };
+  const handleUpload2 = (file, callback) => {
+    UploadImage(file, {
+      onSuccess: (data) => {
+        const fileUrl = data?.data?.fileUrl;
+        const fileName = data?.data?.fileName;
+        if (callback) {
+          callback(fileUrl, fileName);
+        }
+      },
+    });
   };
   return (
     <div className="w-full self-stretch lg:px-36 lg:py-20 p-[20px] lg:pt-0 inline-flex flex-col justify-start items-end lg:gap-10 gap-[15px]">
@@ -139,6 +167,7 @@ const Index = () => {
                 formControls={candiadateCreationformControls}
                 formData={formData}
                 setFormData={setFormData}
+                handleUpload={handleUpload}
               />
             </div>
             <div className="w-full">
@@ -238,7 +267,7 @@ const Index = () => {
                 </div>
                 <div className="self-stretch flex flex-col justify-center items-center gap-4">
                   <div className="self-stretch h-32 relative bg-white rounded-lg outline-[1.50px] outline-offset-[-1.50px] outline-gray-200 overflow-hidden">
-                    <div className="lg:left-[269.50px] lg:top-[30px] left-[68px] top-[25px] absolute inline-flex flex-col justify-start items-center gap-1">
+                    <div className="lg:left-1/2 lg:top-1/2 lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 absolute inline-flex flex-col justify-start items-center gap-1">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         width="44"
@@ -259,20 +288,45 @@ const Index = () => {
                         />
                       </svg>
                       <div className="justify-start text-gray-900 lg:text-base text-sm font-medium leading-normal">
-                        No files Uploaded yet!
+                        {fileName ? fileName : "No files Uploaded yet!"}
                       </div>
                     </div>
                   </div>
                   <div className="self-stretch flex flex-col justify-start items-center gap-2">
-                    <div className="w-60 inline-flex justify-start items-start">
+                    <div className="relative w-60 inline-flex justify-start items-start">
                       <div className="flex-1 px-4 py-2.5 bg-[#6945ED1A] rounded-[100px] shadow-[0px_1px_2px_0px_rgba(5,32,81,0.05)] outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2.5">
                         <div className="justify-center text-[#6945ED] text-base font-semibold leading-normal">
-                          Upload
+                          {fileName ? "Uploaded" : "Upload"}
                         </div>
                       </div>
+                      <Input
+                        type="file"
+                        accept="application/pdf"
+                        className="absolute inset-0 opacity-0 cursor-pointer z-0 h-full w-full"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const isValidSize = file.size <= 5 * 1024 * 1024;
+                          if (!file.type === "application/pdf") {
+                            alert("Only PDF files are allowed.");
+                            return;
+                          }
+
+                          if (!isValidSize) {
+                            alert("File must be smaller than 5MB.");
+                            return;
+                          }
+                          handleUpload2(file, (uploadedFileUrl, fileName) => {
+                            setFormData((prev) =>
+                              setNestedValue(prev, "resume", uploadedFileUrl)
+                            );
+                            setFileName(fileName);
+                          });
+                        }}
+                      />
                     </div>
                     <div className="justify-start text-stone-500 text-sm font-normal leading-tight">
-                      Format: pdf, docx, doc & Max file size: 25 MB
+                      Format: pdf & Max file size: 5 MB
                     </div>
                   </div>
                 </div>

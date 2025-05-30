@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import JobCard from "./jobCard";
 import HeroProfile from "../common/hero-profile";
 import SearchComponent from "../../common/searchComponent";

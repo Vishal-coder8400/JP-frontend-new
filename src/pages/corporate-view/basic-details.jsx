@@ -9,6 +9,7 @@ import {
 import { z } from "zod";
 import { validateFormData } from "../../utils/objectUtils";
 import { useCorporateRegister } from "../../hooks/corporate/useAuth";
+import { useUpload } from "../../hooks/common/useUpload";
 
 // Define the schema for the phone number object (used in both companyContactNumber and contactNumber)
 const phoneNumberSchema = z.object({
@@ -77,7 +78,7 @@ const CorporateBasicDetails = () => {
   const [formData, setFormData] = useState({
     basicInformation: {
       companyName: "",
-      companyLogo: "https://example.com/logo.png",
+      companyLogo: "",
       companyContactNumber: {
         number: "",
         countryCode: "",
@@ -98,6 +99,18 @@ const CorporateBasicDetails = () => {
     },
   });
   const { mutate, isPending, isError, error } = useCorporateRegister();
+  const { mutate: UploadImage } = useUpload();
+  const handleUpload = (file, callback) => {
+    UploadImage(file, {
+      onSuccess: (data) => {
+        const fileUrl = data?.data?.fileUrl;
+        const fileName = data?.data?.fileName;
+        if (callback) {
+          callback(fileUrl, fileName);
+        }
+      },
+    });
+  };
   const onSubmit = (e) => {
     e.preventDefault();
     const isValid = validateFormData(formDataSchema, formData);
@@ -111,13 +124,13 @@ const CorporateBasicDetails = () => {
     >
       <div className="w-full flex flex-col justify-start items-start gap-8">
         <div className="self-stretch flex flex-col justify-start items-start gap-7">
-          <div className="self-stretch justify-start text-gray-900 text-md2 lg:text-3xl font-bold leading-loose">
+          <div className="self-stretch justify-start text-gray-900 text-lg lg:text-3xl font-bold leading-loose">
             Corporate Profile Setup
           </div>
         </div>
       </div>
-      <div className="w-full inline-flex justify-start items-start gap-12">
-        <div className="flex-1 inline-flex flex-col justify-center items-start gap-11">
+      <div className="w-full inline-flex lg:flex-row flex-col justify-start items-start gap-[40px] lg:gap-12">
+        <div className="flex-1 lg:w-1/2 inline-flex flex-col justify-center items-start gap-11">
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4">
             <div className="self-stretch inline-flex justify-start items-start gap-60">
               <div className="justify-start text-gray-900 text-lg font-semibold leading-tight">
@@ -130,6 +143,7 @@ const CorporateBasicDetails = () => {
                 formControls={basicCorporateInformation}
                 formData={formData}
                 setFormData={setFormData}
+                handleUpload={handleUpload}
               />
             </div>
           </div>
@@ -149,7 +163,7 @@ const CorporateBasicDetails = () => {
             </div>
           </div>
         </div>
-        <div className="w-[555px] p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4">
+        <div className="lg:w-1/2 w-full p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4">
           <div className="self-stretch inline-flex justify-start items-start gap-60">
             <div className="justify-start text-gray-900 text-lg font-semibold leading-tight">
               SPOC Information

@@ -30,17 +30,17 @@ const JobCard = ({ setOpen, item }) => {
             <div className="flex items-center gap-[10px]">
               <div className="h-[24px] w-[24px] rounded-[4px] overflow-hidden">
                 <img
-                  src={item.companyDetails.companyLogo}
-                  alt={item.companyDetails.companyName}
+                  src={item?.companyDetails?.companyLogo}
+                  alt={item?.companyDetails?.companyName}
                   className="h-full w-full object-cover"
                 />
               </div>
               <div className="text-[#141414] text-md">
-                {item.companyDetails.companyName}
+                {item?.companyDetails?.companyName}
               </div>
             </div>
             <div className="text-[#141414] text-lg font-medium">
-              {item.jobTitle}
+              {item?.jobTitle}
             </div>
           </div>
           <div className="flex items-center justify-start">
@@ -54,20 +54,20 @@ const JobCard = ({ setOpen, item }) => {
             <div className="flex items-center justify-center">
               <LocationIcon className="h-[16px] w-[16px]" />
             </div>
-            <div className="text-[#141414] text-sm">{item.location}</div>
+            <div className="text-[#141414] text-sm">{item?.location}</div>
           </div>
           <div className="flex gap-[6px] items-center">
             <div className="flex items-center justify-center">
               <ClockIcon className="h-[16px] w-[16px]" />
             </div>
-            <div className="text-[#141414] text-sm">{item.jobType}</div>
+            <div className="text-[#141414] text-sm">{item?.jobType}</div>
           </div>
           <div className="flex gap-[6px] items-center">
             <div className="flex items-center justify-center">
               <CurrencyIcon className="h-[16px] w-[16px]" />
             </div>
             <div className="text-[#141414] text-sm">
-              {formatSalaryRange(item.salaryRange.min, item.salaryRange.max)}
+              {formatSalaryRange(item?.salaryRange?.min, item?.salaryRange?.max)}
             </div>
           </div>
           <div className="flex gap-[6px] items-center">
@@ -75,12 +75,12 @@ const JobCard = ({ setOpen, item }) => {
               <CalenderIcon className="h-[16px] w-[16px]" />
             </div>
             <div className="text-[#141414] text-sm">
-              {timeAgo(item.createdAt)}
+              {timeAgo(item?.createdAt)}
             </div>
           </div>
         </div>
         <div className="flex flex-col gap-[11px]">
-          {isTodayOrFuture(item.applicationDeadline) ? (
+          {isTodayOrFuture(item?.applicationDeadline) ? (
             <div className="flex items-center justify-center gap-[13px] rounded-[8px] border border-[#54C413] px-[12px] py-[8px]">
               <span className="text-[#54C413] text-sm">Active</span>
               <span className="flex items-center justify-center">
@@ -113,10 +113,10 @@ const JobCard = ({ setOpen, item }) => {
                   <CalenderIcon className="w-full h-full" />
                 </div>
                 <div className="justify-start text-neutral-900/70 text-base font-normal leading-none">
-                  {timeAgo(item.createdAt)}
+                  {timeAgo(item?.createdAt)}
                 </div>
               </div>
-              {isTodayOrFuture(item.applicationDeadline) ? (
+              {isTodayOrFuture(item?.applicationDeadline) ? (
                 <div className="px-3 py-2 rounded-lg outline outline-offset-[-1px] outline-lime-600 flex justify-center items-center gap-3">
                   <div className="justify-start text-lime-600 text-base font-normal leading-none">
                     Active
@@ -136,16 +136,16 @@ const JobCard = ({ setOpen, item }) => {
                 <div className="inline-flex justify-center items-center gap-2.5">
                   <img
                     className="w-4 h-4 relative rounded object-cover overflow-hidden"
-                    src={item.companyDetails.companyLogo}
-                    alt={item.companyDetails.companyName}
+                    src={item?.companyDetails?.companyLogo}
+                    alt={item?.companyDetails?.companyName}
                   />
                   <div className="justify-start text-neutral-900 text-sm font-normal leading-none">
-                    {item.companyDetails.companyName}
+                    {item?.companyDetails?.companyName}
                   </div>
                 </div>
                 <div className="flex flex-col justify-start items-start gap-3">
                   <div className="justify-start text-neutral-900 text-md font-medium leading-none">
-                    {item.jobTitle}
+                    {item?.jobTitle}
                   </div>
                   <div className="px-1.5 py-0.5 bg-violet-500/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
                     <div className="justify-start text-[#6945ED] text-sm font-medium leading-none">
@@ -159,21 +159,21 @@ const JobCard = ({ setOpen, item }) => {
               <div className="flex justify-center items-center gap-1.5">
                 <LocationIcon className="h-[14px] w-[14px]" />
                 <div className="justify-start text-neutral-900/70 text-sm font-normal leading-none">
-                  {item.location}
+                  {item?.location}
                 </div>
               </div>
               <div className="flex justify-start items-center gap-1.5">
                 <ClockIcon className="h-[14px] w-[14px]" />
                 <div className="justify-start text-neutral-900/70 text-sm font-normal leading-none">
-                  {item.jobType}
+                  {item?.jobType}
                 </div>
               </div>
               <div className="flex justify-start items-center gap-1.5">
                 <CurrencyIcon className="h-[14px] w-[14px]" />
                 <div className="justify-start text-neutral-900/70 text-sm font-normal leading-none">
                   {formatSalaryRange(
-                    item.salaryRange.min,
-                    item.salaryRange.max
+                    item?.salaryRange?.min,
+                    item?.salaryRange?.max
                   )}
                 </div>
               </div>

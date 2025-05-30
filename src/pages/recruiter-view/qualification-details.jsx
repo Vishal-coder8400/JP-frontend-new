@@ -5,6 +5,7 @@ import { useSectoralDetails } from "../../hooks/recruiter/useProfile";
 import { z } from "zod";
 import { validateFormData } from "../../utils/objectUtils";
 import ButtonComponent from "../../components/common/button";
+import { useUpload } from "../../hooks/common/useUpload";
 
 const referenceSchema = z.object({
   name: z.string().min(1, "Reference name is required"),
@@ -19,7 +20,10 @@ const referenceSchema = z.object({
 
 const formDataSchema = z
   .object({
-    latestQualification: z.string().url("Must be a valid URL"),
+    latestQualification: z
+      .string()
+      .min(1, "Qualification PDF is required")
+      .url("Must be a valid URL"),
     joinReason: z.string().min(1, "Join reason is required"),
     monthlyClosures: z
       .number()
@@ -50,7 +54,7 @@ const formDataSchema = z
 
 const QualificationDetails = () => {
   const [formData, setFormData] = useState({
-    latestQualification: "https://example.com/qualification.pdf",
+    latestQualification: "",
     joinReason: "",
     monthlyClosures: 0,
     jobSource: "",
@@ -74,6 +78,8 @@ const QualificationDetails = () => {
     medicalProblemDetails: "",
   });
   const { mutate, isPending } = useSectoralDetails();
+  const { mutate: UploadImage } = useUpload();
+
   const onSubmit = (e) => {
     e.preventDefault();
     const payLoad = {
@@ -83,6 +89,17 @@ const QualificationDetails = () => {
     const isValid = validateFormData(formDataSchema, payLoad);
     if (!isValid) return;
     mutate(payLoad);
+  };
+  const handleUpload = (file, callback) => {
+    UploadImage(file, {
+      onSuccess: (data) => {
+        const fileUrl = data?.data?.fileUrl;
+        const fileName = data?.data?.fileName;
+        if (callback) {
+          callback(fileUrl, fileName);
+        }
+      },
+    });
   };
   return (
     <div className="w-full self-stretch lg:px-36 lg:py-14 p-[20px] inline-flex flex-col justify-start items-start lg:gap-2 gap-[10px]">
@@ -111,6 +128,7 @@ const QualificationDetails = () => {
             formControls={sectoralFieldsForm2}
             formData={formData}
             setFormData={setFormData}
+            handleUpload={handleUpload}
           />
           {formData.references.map((item, index) => (
             <CommonForm

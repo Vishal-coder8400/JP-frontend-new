@@ -26,7 +26,13 @@ import {
   workingExperience,
 } from "../../config";
 
-export default function CommonForm({ formControls, formData, setFormData, i }) {
+export default function CommonForm({
+  formControls,
+  formData,
+  setFormData,
+  i,
+  handleUpload,
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const [otherSelections, setOtherSelections] = useState({});
   function renderInputsByComponentType(getControlItem, i, formType = null) {
@@ -247,30 +253,69 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
         );
 
       case "file":
+        const [fileNames, setFileNames] = useState("");
+
+        const acceptType =
+          getControlItem.accept === "image"
+            ? "image/*"
+            : getControlItem.accept === "pdf"
+            ? "application/pdf"
+            : "";
         return (
           <div className="relative">
-            {" "}
             <div className="relative w-full cursor-pointer">
               <Input
                 id={getControlItem.name}
                 type="file"
+                accept={acceptType}
                 className="absolute inset-0 opacity-0 cursor-pointer z-0 h-full w-full"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
-                  if (file) {
-                    setFormData((prev) => ({
-                      ...prev,
-                      [getControlItem.name]: file,
-                    }));
+                  if (!file) return;
+
+                  const isImage = file.type.startsWith("image/");
+                  const isPdf = file.type === "application/pdf";
+                  const isValidSize = file.size <= 5 * 1024 * 1024;
+
+                  let isValidType = false;
+
+                  if (getControlItem.accept === "image") {
+                    isValidType = isImage;
+                  } else if (getControlItem.accept === "pdf") {
+                    isValidType = isPdf;
                   }
+
+                  if (!isValidType) {
+                    alert(
+                      getControlItem.accept === "image"
+                        ? "Only image files are allowed."
+                        : "Only PDF files are allowed."
+                    );
+                    return;
+                  }
+
+                  if (!isValidSize) {
+                    alert("File must be smaller than 5MB.");
+                    return;
+                  }
+                  handleUpload(file, (uploadedFileUrl, fileName) => {
+                    setFormData((prev) =>
+                      setNestedValue(prev, nameWithIndex, uploadedFileUrl)
+                    );
+                    setFileNames(fileName);
+                  });
                 }}
               />
               <Label
                 htmlFor={getControlItem.name}
                 className="flex items-center justify-between border border-[#E2E2E2] w-full rounded-[4px] py-[9px] px-[16px] cursor-pointer z-10"
               >
-                <span className="text-[#9B959F] text-base">
-                  {getControlItem.placeholder || "Upload File"}
+                <span
+                  className={`${
+                    fileNames === "" ? "text-[#9B959F]" : "text-black"
+                  } text-base`}
+                >
+                  {fileNames || getControlItem.placeholder || "Upload File"}
                 </span>
                 <span className="flex justify-center items-center">
                   <Plus className="h-[15px] w-[15px]" />
@@ -278,8 +323,9 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
               </Label>
             </div>
             <div className="absolute bottom-[-15px] left-0 text-xs text-[#655F5F]">
-              Supported formats: {getControlItem.formats}{" "}
-              <span>Max size: 5MB.</span>
+              Supported formats:{" "}
+              {getControlItem.accept === "image" ? "Images only" : "PDF only"},{" "}
+              Max size: 5MB.
             </div>
           </div>
         );
@@ -387,7 +433,7 @@ export default function CommonForm({ formControls, formData, setFormData, i }) {
                 {controlItem.row.map((item) => (
                   <div
                     key={item.name}
-                    className={`gap-[8px] flex-1/3 lg:flex-1`}
+                    className={`gap-[8px] flex-2/3 lg:flex-1`}
                   >
                     <div className={`flex flex-col gap-[8px]`}>
                       {item.label && (

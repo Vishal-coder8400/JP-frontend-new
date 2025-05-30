@@ -1,11 +1,11 @@
 export const KycVerificationDetails = [
   {
-    name: "cancelChequeUpload",
+    name: "cancelChequeOrPassbookImage",
     label: "",
     placeholder: "Cancel Cheque Upload",
     componentType: "file",
     type: "file",
-    formats: "JPG, PNG, PDF.",
+    accept: "image",
   },
   {
     name: "panDetails.number",
@@ -15,12 +15,12 @@ export const KycVerificationDetails = [
     type: "text",
   },
   {
-    name: "panCardUpload",
+    name: "panDetails.image",
     label: "",
     placeholder: "PAN Card Upload",
     componentType: "file",
     type: "file",
-    formats: "JPG, PNG, PDF.",
+    accept: "image",
   },
   {
     name: "aadharDetails.number",
@@ -30,12 +30,12 @@ export const KycVerificationDetails = [
     type: "text",
   },
   {
-    name: "aadharCardUpload",
+    name: "aadharDetails.image",
     label: "",
     placeholder: "Aadhar Card Upload",
     componentType: "file",
     type: "file",
-    formats: "JPG, PNG, PDF.",
+    accept: "image",
   },
   {
     name: "bankDetails.accountNumber",
@@ -106,7 +106,7 @@ export const basicInformation = [
         componentType: "file",
         type: "file",
         width: "1/3",
-        formats: "JPG, PNG, PDF.",
+        accept: "image",
       },
     ],
   },
@@ -240,7 +240,7 @@ export const sectoralFieldsForm = [
     label: "Relieving Letter",
     componentType: "file",
     placeholder: "Upload relieving letter",
-    formats: "JPG, PNG, PDF.",
+    accept: "pdf",
   },
 
   {
@@ -299,7 +299,7 @@ export const sectoralFieldsForm2 = [
     label: "",
     componentType: "file",
     placeholder: "Upload supporting document",
-    formats: "JPG, PNG, PDF.",
+    accept: "pdf",
   },
 
   {
@@ -407,7 +407,7 @@ export const candiadateCreationformControls = [
         label: "Profile Picture",
         componentType: "file",
         placeholder: "Upload image",
-        formats: "JPG, PNG, PDF.",
+        accept: "image",
       },
     ],
   },
@@ -445,6 +445,14 @@ export const candiadateCreationformControls = [
         width: "1/3",
       },
       {
+        name: "currentAddress.state",
+        label: "",
+        placeholder: "Enter State",
+        componentType: "input",
+        type: "text",
+        width: "1/3",
+      },
+      {
         name: "currentAddress.pincode",
         label: "",
         placeholder: "Enter Pincode",
@@ -468,6 +476,14 @@ export const candiadateCreationformControls = [
         name: "permanentAddress.city",
         label: "",
         placeholder: "Enter City",
+        componentType: "input",
+        type: "text",
+        width: "1/3",
+      },
+      {
+        name: "permanentAddress.state",
+        label: "",
+        placeholder: "Enter State",
         componentType: "input",
         type: "text",
         width: "1/3",
@@ -618,7 +634,7 @@ export const basicCorporateInformation = [
         componentType: "file",
         type: "file",
         width: "1/3",
-        formats: "JPG, PNG, PDF.",
+        accept:"image"
       },
     ],
   },

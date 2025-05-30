@@ -8,9 +8,11 @@ import {
   LocationIcon,
 } from "../../../utils/icon";
 import { formatSalaryRange, timeAgo } from "../../../utils/objectUtils";
+import { useLocation } from "react-router-dom";
 
-const JobDescription = ({ setOpen1, setOpen }) => {
+const JobDescription = ({ setOpen1 }) => {
   const { jobPost } = useJobPostStore();
+  const location = useLocation();
   return (
     <Fragment>
       {/* desktop-view */}
@@ -87,16 +89,18 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                 </div>
               </div>
             </div>
-            <Button
-              onClick={() => {
-                setOpen1(true);
-              }}
-              className="cursor-pointer px-5 py-2.5 bg-gray-900 rounded-3xl flex justify-center items-center gap-2.5"
-            >
-              <div className="justify-start text-white text-base font-medium capitalize">
-                Apply For Candidate
-              </div>
-            </Button>
+            {!location.pathname.includes("corporate") && (
+              <Button
+                onClick={() => {
+                  setOpen1(true);
+                }}
+                className="cursor-pointer px-5 py-2.5 bg-gray-900 rounded-3xl flex justify-center items-center gap-2.5"
+              >
+                <div className="justify-start text-white text-base font-medium capitalize">
+                  Apply For Candidate
+                </div>
+              </Button>
+            )}
           </div>
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-8">
@@ -314,14 +318,16 @@ const JobDescription = ({ setOpen1, setOpen }) => {
                 </div>
               </div>
             </div>
-            <Button
-              onClick={() => setOpen1(true)}
-              className="self-stretch px-5 py-2.5 bg-gray-900 rounded-3xl inline-flex justify-center items-center gap-2.5"
-            >
-              <div className="justify-start text-white text-sm font-medium capitalize">
-                Apply For Candidate
-              </div>
-            </Button>
+            {!location.pathname.includes("corporate") && (
+              <Button
+                onClick={() => setOpen1(true)}
+                className="self-stretch px-5 py-2.5 bg-gray-900 rounded-3xl inline-flex justify-center items-center gap-2.5"
+              >
+                <div className="justify-start text-white text-sm font-medium capitalize">
+                  Apply For Candidate
+                </div>
+              </Button>
+            )}
           </div>
         </div>
         <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">

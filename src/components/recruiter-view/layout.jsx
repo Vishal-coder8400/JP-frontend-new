@@ -155,13 +155,14 @@ const Layout = () => {
             <div className="flex justify-center items-center">
               <img
                 className="w-16 h-16 rounded-full"
-                src="https://placehold.co/65x65"
+                src={user?.profileImage || user?.basicInformation?.companyLogo}
+                alt={user?.name || user?.basicInformation?.companyName}
               />
             </div>
           </div>
           <div className="z-1 inline-flex flex-col justify-start items-center gap-1.5">
             <div className="self-stretch text-center justify-start text-white text-base font-medium capitalize">
-              {user?.name}
+              {user?.name || user?.basicInformation?.companyName}
             </div>
             <div className="self-stretch text-center justify-start text-neutral-400 text-sm font-medium capitalize">
               continue your journey and <br />

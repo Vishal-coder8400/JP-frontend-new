@@ -1,14 +1,18 @@
 import { Link } from "react-router-dom";
 import HeroProfile from "../recruiter-view/common/hero-profile";
 import JobCard from "../recruiter-view/job-openings/jobCard";
+import SearchComponent from "../common/searchComponent";
+import Pagination from "../common/pagination";
+import FilterComponent from "../common/filterComponent";
+import { jobOpeningFilters } from "../../config";
 
-const Listing = () => {
+const Listing = ({ jobPosts, formData, setFormData, ClearAll,setOpen }) => {
+  const totalPages = Math.ceil(jobPosts?.data?.length / 10);
   return (
-    <div className="w-full  inline-flex flex-col justify-start items-start gap-12 overflow-hidden">
+    <div className="w-full flex flex-col gap-[26px] lg:gap-6 max-sm:p-[20px]">
       <div className="w-full">
         <HeroProfile />
       </div>
-
       <div className="inline-flex justify-start items-center gap-5">
         <Link
           to={"/corporate/job-posting/analytics"}
@@ -18,47 +22,48 @@ const Listing = () => {
             Analytics
           </div>
         </Link>
-        <div className="w-28 p-3 bg-violet-600 rounded-[69px] flex justify-center items-center gap-6 overflow-hidden">
+        <div className="w-28 p-3 bg-[#6945ED] rounded-[69px] flex justify-center items-center gap-6 overflow-hidden">
           <div className="justify-center text-white text-base font-normal leading-snug">
             Listings
           </div>
         </div>
       </div>
       <div className="self-stretch inline-flex justify-start items-start gap-10">
-        <div className="max-w-[196px] w-full inline-flex flex-col justify-start items-start gap-6">
-          <div className="self-stretch justify-start text-gray-900 text-xl font-semibold leading-tight">
-            Filters
-          </div>
-          <div className="justify-start text-blue-500 text-sm font-medium leading-none">
+        <div className="w-[196px] hidden lg:flex flex-col gap-[23px]">
+          <div className="text-lg text-[#171923] font-semibold">Filters</div>
+          <div
+            onClick={ClearAll}
+            className="text-[#3F93FF] text-base font-medium cursor-pointer"
+          >
             Clear All
           </div>
+          <FilterComponent
+            formControls={jobOpeningFilters}
+            formData={formData}
+            setFormData={setFormData}
+          />
         </div>
         <div className="flex-1 p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4">
           <div className="self-stretch inline-flex justify-between items-center">
-            <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
+            <div className="justify-start text-gray-900 lg:text-xl text-lg font-semibold leading-tight">
               Job Listings{" "}
             </div>
-            <div className="justify-start text-zinc-500 text-xs font-medium leading-tight">
-              View All
-            </div>
           </div>
-          <div className="self-stretch h-0 outline outline-1 outline-offset-[-0.50px] outline-neutral-200"></div>
-          <div className="self-stretch h-10 pl-3 pr-24 py-3 bg-white rounded-[69px] outline outline-1 outline-offset-[-1px] outline-violet-600 inline-flex justify-start items-center gap-6 overflow-hidden">
-            <div className="size-4 relative overflow-hidden">
-              <div className="size-3 left-[2.25px] top-[2.25px] absolute outline outline-2 outline-offset-[-1px] outline-stone-300" />
-              <div className="size-[3.26px] left-[12.49px] top-[12.49px] absolute outline outline-2 outline-offset-[-1px] outline-stone-300" />
-            </div>
-            <div className="justify-center text-neutral-400 text-xs font-normal leading-3">
-              Enter job title, company, location
-            </div>
-          </div>
+          <div className="self-stretch h-0 outline-1 outline-offset-[-0.50px] outline-neutral-200"></div>
+          <SearchComponent />
           <div className="self-stretch flex flex-col justify-start items-start gap-4 w-full">
-            <JobCard />
-            <JobCard />
-            <JobCard />
-            <JobCard />
-            <JobCard />
+            {jobPosts?.data?.map((item, i) => (
+              <JobCard key={i} item={item} setOpen={setOpen} />
+            ))}
           </div>
+          <Pagination
+            range={2}
+            currentPage={formData.page}
+            totalPages={totalPages}
+            onPageChange={(page) =>
+              setFormData((prev) => ({ ...prev, page: page }))
+            }
+          />
         </div>
       </div>
     </div>
