@@ -198,7 +198,7 @@ export const LoginFields = [
 export const sectoralFieldsForm = [
   {
     name: "sectorSpecialization",
-    label: "Sectoral Specialization ( Select any Three )",
+    label: "Sectoral Specialization",
     componentType: "multi-select",
     max: 3,
     options: [],
@@ -214,7 +214,7 @@ export const sectoralFieldsForm = [
 
   {
     name: "experienceLevel",
-    label: "You have expertise in (Select any two)",
+    label: "You have expertise in",
     componentType: "multi-select",
     max: 2,
     options: [
@@ -462,7 +462,7 @@ export const candiadateCreationformControls = [
       },
     ],
   },
- 
+
   {
     name: "gender",
     label: "Gender",
@@ -1005,6 +1005,422 @@ export const CandidatesFilters = [
         label: "Active",
       },
       { id: "ended", label: "Ended" },
+    ],
+  },
+];
+export const trainingController1 = [
+  {
+    label: "What is the title or subject of the training?",
+    componentType: "select",
+    placeholder: "Select Title",
+    name: "jobTitle",
+    options: [
+      {
+        id: "excel",
+        label: "Excel",
+      },
+      { id: "leadership", label: "Leadership" },
+    ],
+  },
+  {
+    name: "jobDescription",
+    label: "Please provide a detailed description of the training program.",
+    placeholder: "Enter Description",
+    componentType: "textarea",
+    type: "text",
+    width: "full",
+  },
+  {
+    name: "skillSet",
+    label: "What skills should the trainer have?",
+    componentType: "multi-select",
+    max: 30,
+    options: [],
+  },
+];
+export const trainingController2 = [
+  {
+    label: "How frequently should the training sessions be conducted?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "session",
+    options: [
+      {
+        id: "daily",
+        label: "Daily",
+      },
+      { id: "alternateDays", label: "Alternate Days" },
+      { id: "weekly", label: "Weekly" },
+      { id: "monthly", label: "Monthly" },
+      { id: "quarterly", label: "Quarterly" },
+      { id: "halfYearly", label: "Half-yearly" },
+      { id: "yearly", label: "Yearly" },
+    ],
+  },
+  {
+    name: "duration",
+    label: " What is the total duration of the training in days?",
+    placeholder: "Enter duration",
+    componentType: "input",
+    type: "number",
+  },
+  {
+    name: "hours",
+    label: "How many hours per day will the training be conducted?",
+    componentType: "select",
+    placeholder: "Select",
+    options: [
+      { id: "1", label: "1 hour" },
+      { id: "2", label: "2 hour" },
+      { id: "3", label: "4 hour" },
+      { id: "4", label: "6 hour" },
+    ],
+    allowOther: true,
+    showOtherInput: true,
+    inlineOther: true,
+  },
+  {
+    label: "What is the minimum experience required?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "experience",
+    options: [
+      {
+        id: "1y",
+        label: "0-1 year",
+      },
+      { id: "2y", label: "0-1 year" },
+      { id: "3y", label: "1-3 years" },
+      { id: "4y", label: "3-5 years" },
+      { id: "5y", label: "5-10 years" },
+      { id: "6y", label: "10-15 years" },
+      { id: "7y", label: "15+ years" },
+    ],
+  },
+  {
+    label: "What level of subject matter expertise do you expect?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "expertise",
+    options: [
+      {
+        id: "high",
+        label: "High",
+      },
+      { id: "moderate", label: "Moderate" },
+    ],
+  },
+];
+export const trainingController3 = [
+  {
+    name: "qualification",
+    label: "What qualifications are preferred or required?",
+    placeholder: "Enter Degree",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    name: "certification",
+    label: "Would you like the trainer to upload any certifications?",
+    placeholder: "Cancel Cheque Upload",
+    componentType: "file",
+    type: "file",
+    accept: "image",
+  },
+  {
+    name: "expected",
+    label: " How many sessions are expected in total?",
+    placeholder: "Enter session",
+    componentType: "input",
+    type: "number",
+  },
+  {
+    label: "Will you cover travel/stay if the trainer needs to relocate?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "relocate",
+    options: [
+      {
+        id: "yes",
+        label: "Yes",
+      },
+      { id: "no", label: "No" },
+      { id: "partially", label: "Partially" },
+    ],
+  },
+  {
+    name: "langyages",
+    label: "What languages should the trainer be fluent in?",
+    componentType: "multi-select",
+    max: 30,
+    options: [],
+  },
+  {
+    name: "batch",
+    label: " How many participants will be in each batch?",
+    componentType: "select",
+    placeholder: "Select",
+    options: [
+      { id: "1", label: "1-5" },
+      { id: "2", label: "5-10" },
+      { id: "3", label: "10-20" },
+      { id: "4", label: "20+" },
+    ],
+    allowOther: true,
+    showOtherInput: true,
+    inlineOther: true,
+  },
+  {
+    label: "Do you expect the trainer to provide study materials or slides?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "provide",
+    options: [
+      {
+        id: "yes",
+        label: "Yes",
+      },
+      { id: "no", label: "No" },
+      { id: "shared", label: "Shared Responsibility" },
+    ],
+  },
+  {
+    label: "Would you like a demo session before confirming?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "demo",
+    options: [
+      {
+        id: "yes",
+        label: "Yes",
+      },
+      { id: "no", label: "No" },
+    ],
+  },
+  {
+    label: "Minimum rating or review level from past clients (if any)?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "rating",
+    options: [
+      {
+        id: "4",
+        label: "4+ stars",
+      },
+      { id: "3", label: "3+ stars" },
+      { id: "no", label: "No preference" },
+    ],
+  },
+];
+export const jobController1 = [
+  {
+    name: "jobTitle",
+    label: "What is the job title or designation?",
+    placeholder: "Enter Title",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    label: "What type of job is this?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "jobType",
+    options: [
+      {
+        id: "4",
+        label: "Full-Time",
+      },
+      { id: "3", label: "Part-Time" },
+      { id: "no", label: "Both" },
+      { id: "night", label: "Night-Time" },
+    ],
+  },
+  {
+    name: "workingHour",
+    label: "What are the working hours for this job?",
+    componentType: "select",
+    placeholder: "Select",
+    options: [
+      { id: "1", label: "9:00 AM – 6:00 PM" },
+      { id: "2", label: "10:00 AM – 7:00 PM" },
+    ],
+    allowOther: true,
+    showOtherInput: true,
+    inlineOther: true,
+  },
+  {
+    name: "workingDays",
+    label: "What are the working days?",
+    componentType: "multi-select",
+    max: 30,
+    options: [],
+  },
+  {
+    label: "Is Sunday a working day?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "sunday",
+    options: [
+      {
+        id: "4",
+        label: "Yes",
+      },
+      { id: "3", label: "No" },
+    ],
+  },
+  {
+    name: "currentAddress.address",
+    label: "Where is the office located?",
+    placeholder: "Enter Address",
+    componentType: "textarea",
+    type: "text",
+    width: "full",
+  },
+  {
+    row: [
+      {
+        name: "currentAddress.city",
+        label: "",
+        placeholder: "Enter City",
+        componentType: "input",
+        type: "text",
+        width: "1/3",
+      },
+      {
+        name: "currentAddress.state",
+        label: "",
+        placeholder: "Enter State",
+        componentType: "input",
+        type: "text",
+        width: "1/3",
+      },
+      {
+        name: "currentAddress.pincode",
+        label: "",
+        placeholder: "Enter Pincode",
+        componentType: "input",
+        type: "text",
+        width: "1/3",
+      },
+    ],
+  },
+  {
+    label: "What is the mode of work?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "mode",
+    options: [
+      {
+        id: "4",
+        label: "Work from Office",
+      },
+      { id: "3", label: "Work from Home" },
+      { id: "hybrid", label: "Hybrid" },
+    ],
+  },
+  {
+    label: "What experience level is required?",
+    componentType: "select",
+    placeholder: "Select",
+    name: "experience",
+    options: [
+      {
+        id: "1y",
+        label: "0-1 year",
+      },
+      { id: "2y", label: "0-1 year" },
+      { id: "3y", label: "1-3 years" },
+      { id: "4y", label: "3-5 years" },
+      { id: "5y", label: "5-10 years" },
+      { id: "6y", label: "10-15 years" },
+      { id: "7y", label: "15+ years" },
+    ],
+  },
+  {
+    name: "gender",
+    label: "Do you have a gender preference?",
+    componentType: "select",
+    placeholder: "Select gender",
+    options: [
+      { id: "male", label: "Male" },
+      { id: "female", label: "Female" },
+      { id: "any", label: "Any" },
+    ],
+  },
+  {
+    name: "education",
+    label: "Minimum education requirement?",
+    componentType: "select",
+    placeholder: "Select",
+    options: [
+      { id: "male", label: "10th Pass" },
+      { id: "female", label: "12th Pass" },
+      { id: "any", label: "Diploma" },
+      { id: "graduate", label: "Graduate" },
+      { id: "postgraduate", label: "Postgraduate" },
+    ],
+  },
+];
+export const jobController2 = [
+  {
+    name: "english",
+    label: "What level of English is expected?",
+    componentType: "select",
+    placeholder: "Select",
+    options: [
+      { id: "basic", label: "Basic" },
+      { id: "moderate", label: "Moderate" },
+      { id: "fluent", label: "Fluent" },
+    ],
+  },
+  {
+    name: "sectorSpecialization",
+    label: "Is any regional language required?",
+    componentType: "multi-select",
+    max: 30,
+    options: [],
+  },
+  {
+    name: "salaryRange",
+    componentType: "salary-range",
+    label: "Preferred age range (if any)?",
+    min: 18,
+    max: 50,
+  },
+  {
+    name: "skills",
+    label: "What skills are required for this role?",
+    componentType: "multi-select",
+    max: 30,
+    options: [],
+  },
+  {
+    name: "wheeler",
+    label: "Is having a two-wheeler mandatory for this job?",
+    componentType: "select",
+    placeholder: "Select",
+    options: [
+      { id: "basic", label: "Yes" },
+      { id: "moderate", label: "No" },
+    ],
+  },
+  {
+    name: "jobDescription",
+    label:
+      "Please provide a detailed job description. (Minimum 300 characters)",
+    placeholder: "Enter Description",
+    componentType: "textarea",
+    type: "text",
+    width: "full",
+  },
+  {
+    name: "walkin",
+    label: "Is this a walk-in interview?",
+    componentType: "select",
+    placeholder: "Select",
+    options: [
+      { id: "basic", label: "Yes" },
+      { id: "moderate", label: "No" },
     ],
   },
 ];
