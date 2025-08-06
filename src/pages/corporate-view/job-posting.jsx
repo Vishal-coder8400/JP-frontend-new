@@ -192,7 +192,7 @@ const JobPosting = () => {
             <CommonForm
               formControls={jobController1}
               formData={formData}
-              setFormData={setFormData}
+              setFormData={setFormData} 
             />
           </div>
         </div>

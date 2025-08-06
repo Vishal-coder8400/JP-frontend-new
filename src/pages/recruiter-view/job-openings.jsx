@@ -9,6 +9,7 @@ import { useGetAllApplicant } from "../../hooks/recruiter/useApplicant";
 import { useFilteredJobs } from "../../hooks/recruiter/useJob";
 import Navbar from "../../components/recruiter-view/navbar";
 import { useDebounce } from "../../hooks/common/useDebounce";
+import { useFilteredTrainings } from "../../hooks/recruiter/useTraining";
 
 const JobOpenings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -20,7 +21,7 @@ const JobOpenings = () => {
       page: params.page ? parseInt(params.page) : 1,
       limit: 10,
       search: params.search || "",
-      jobType: params.jobType || "",
+      jobType: params.jobType || "job",
       sortBy: params.sortBy || "",
       status: params.status || "",
     };
@@ -31,6 +32,9 @@ const JobOpenings = () => {
 
   const { data, isLoading, isError, error } = useGetAllApplicant();
   const { data: jobPosts, isLoading: isLoading2 } = useFilteredJobs(filters);
+  console.log(jobPosts);
+  const { data: trainingPosts, isLoading: isLoading3 } =
+    useFilteredTrainings(filters);
 
   // if (isPending) return <div>Loading...</div>;
   // if (isError) return <div>Error: {error.message}</div>;
@@ -80,7 +84,7 @@ const JobOpenings = () => {
       search: "",
       status: "",
       sortBy: "",
-      jobStatus: "",
+      jobType: "job",
     }));
     setSearchText("");
   };
@@ -144,7 +148,7 @@ const JobOpenings = () => {
           setOpen={setOpen}
           formData={filters}
           setFormData={setFilters}
-          jobPosts={jobPosts}
+          jobPosts={filters.jobType === "job" ? jobPosts : trainingPosts}
           handleSearch={handleSearch}
           searchText={searchText}
           ClearAll={ClearAll}

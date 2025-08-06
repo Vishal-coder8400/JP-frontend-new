@@ -1,13 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { getFilteredJobs } from "../../api/recruiter/job";
+import { getFilteredTrainings } from "../../api/recruiter/training";
 import { omit } from "../../utils/commonFunctions";
 
-export const useFilteredJobs = (filters) => {
-  // Sanitize filters before sending to API
+export const useFilteredTrainings = (filters) => {
   const sanitizedFilters = omit(filters, ["jobType"]);
   return useQuery({
-    queryKey: ["filteredJobs", sanitizedFilters],
-    queryFn: getFilteredJobs,
+    queryKey: ["filteredTrainings", sanitizedFilters],
+    queryFn: getFilteredTrainings,
     keepPreviousData: true, // helpful for pagination
     enabled: !!sanitizedFilters, // ensure filters is not null
   });

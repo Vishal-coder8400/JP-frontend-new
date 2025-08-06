@@ -269,6 +269,11 @@ export default function CommonForm({
             id="time-picker"
             step="1"
             defaultValue="10:30:00"
+            onChange={(event) =>
+              setFormData((prev) =>
+                setNestedValue(prev, nameWithIndex, event.target.value)
+              )
+            }
             className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
           />
         );

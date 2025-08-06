@@ -164,3 +164,7 @@ export const getValue = (obj, path) => {
     .split(".")
     .reduce((acc, key) => (acc ? acc[key] : undefined), obj);
 };
+export const omit = (obj, keysToOmit) =>
+  Object.fromEntries(
+    Object.entries(obj).filter(([key]) => !keysToOmit.includes(key))
+  );
