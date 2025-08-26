@@ -33,7 +33,7 @@ const TrainningPosting = () => {
     recommendationsFromPastClients: true,
   });
   return (
-    <div className="w-full self-stretch px-36 py-0 pb-[32px] inline-flex flex-col justify-start items-start gap-7">
+    <div className="w-full self-stretch px-36 py-0 pb-[32px] inline-flex flex-col justify-start items-start gap-5">
       <Navbar onlySupport={false} />
       <div className="w-full flex flex-col justify-start items-start gap-8">
         <div className="self-stretch flex flex-col justify-start items-start gap-7">

@@ -36,7 +36,7 @@ const Index = () => {
   );
   return (
     <Fragment>
-      <div className="hidden lg:flex flex-col gap-[51px] w-full">
+      <div className="hidden lg:flex flex-col gap-[25px] w-full">
         <HeroProfile />
 
         {!user?.profileCompletion?.page4 && (
@@ -94,8 +94,8 @@ const Index = () => {
           </div>
           <div className="self-stretch h-0 outline outline-offset-[-0.50px] outline-neutral-200"></div>
           {/* <SearchComponent /> */}
-          <div className="w-full self-stretch inline-flex justify-between items-center">
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col gap-4">
+          <div className="w-full self-stretch grid md:grid-cols-3 lg:grid-cols-4 gap-2">
+            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex items-center justify-center flex-col gap-4">
               <div className="self-stretch inline-flex justify-center items-center gap-5">
                 <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
                   Total Candidates
@@ -107,7 +107,7 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-between items-center gap-4">
+            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex  flex-col justify-center items-center gap-4">
               <div className="self-stretch inline-flex justify-center items-center gap-5">
                 <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
                   Total Candidates
@@ -118,7 +118,7 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-between items-center gap-4">
+            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center gap-4">
               <div className="self-stretch inline-flex justify-center items-center gap-5">
                 <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
                   Offered
@@ -128,7 +128,7 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-between items-center gap-4">
+            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center gap-4">
               <div className="self-stretch inline-flex justify-center items-center gap-5">
                 <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
                   Joined
@@ -138,7 +138,7 @@ const Index = () => {
                 </div>
               </div>
             </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-between items-center gap-4">
+            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center gap-4">
               <div className="self-stretch inline-flex justify-center items-center gap-5">
                 <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
                   HOLD

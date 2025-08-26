@@ -290,9 +290,9 @@ const Dashboard = () => {
         </div>
 
         {/* Right Column - Hiring Pipeline & Job Postings */}
-        <div className="w-[571px] flex flex-col gap-9">
+        <div className="flex flex-col gap-9 w-full">
           {/* Hiring Pipeline */}
-          <div className="p-6 bg-white rounded-lg border border-gray-200 flex flex-col gap-4">
+          <div className="p-6 w-full bg-white rounded-lg border border-gray-200 flex flex-col gap-4">
             <div className="flex justify-between">
               <h3 className="text-lg font-semibold text-gray-900">
                 Hiring Pipeline
@@ -376,7 +376,7 @@ const Dashboard = () => {
           </div>
 
           {/* Job Postings Management */}
-          <div className="p-6 bg-white rounded-lg border border-gray-200 flex flex-col gap-4">
+          <div className="p-6 w-full bg-white rounded-lg border border-gray-200 flex flex-col gap-4">
             <div className="flex justify-between">
               <h3 className="text-lg font-semibold text-gray-900">
                 Job Postings Management

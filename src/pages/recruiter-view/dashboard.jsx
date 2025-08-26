@@ -3,7 +3,7 @@ import Navbar from "../../components/recruiter-view/navbar";
 
 const RecruiterDashboard = () => {
   return (
-    <div className="w-full flex flex-col gap-[40px]">
+    <div className="w-full flex flex-col gap-[25px]">
       <Navbar onlySupport={false} />
       <DashboardComponent />
     </div>
