@@ -1,0 +1,318 @@
+import { useEffect } from "react";
+import { Route, Routes } from "react-router-dom";
+import ScrollToTop from "./components/common/scrollToTop";
+import CheckAuth from "./components/common/checkAuth";
+import DynamicCheckAuthWrapper from "./components/common/dynamicCheckAuthWrapper";
+
+import Layout from "./components/recruiter-view/layout";
+import ProfileSetupLayout from "./components/recruiter-view/profile-setup-layout";
+
+import { useGetUserProfile as useGetRecruiterUserProfile } from "./hooks/recruiter/useProfile";
+import { useGetCorporateUserProfile } from "./hooks/corporate/useProfile";
+import { useGetUserProfile as useGetSuperAdminUserProfile } from "./hooks/superAdmin/useProfile";
+
+import useAuthStore from "./stores/useAuthStore";
+
+// Recruiter Pages
+import RecruiterLogin from "./pages/recruiter-view/log-in";
+import RecruiterDashboard from "./pages/recruiter-view/dashboard";
+import JobOpenings from "./pages/recruiter-view/job-openings";
+import Candidates from "./pages/recruiter-view/candidates";
+import CandidateCreate from "./pages/recruiter-view/candidate-create";
+import CandidateReleventDetails from "./pages/recruiter-view/candidate-releventDetails";
+import MatchesAndSubmission from "./pages/recruiter-view/matches-and-submission";
+import BasicDetails from "./pages/recruiter-view/basic-details";
+import KycVerification from "./pages/recruiter-view/kyc-verification";
+import SectoralDetails from "./pages/recruiter-view/sectoral-details";
+import QualificationDetails from "./pages/recruiter-view/qualification-details";
+import Profile from "./pages/recruiter-view/profile";
+import Faq from "./pages/recruiter-view/faq";
+
+// Corporate Pages
+import CorporateLogIn from "./pages/corporate-view/log-in";
+import CorporateDashboard from "./pages/corporate-view/dashboard";
+import CorporateBasicDetails from "./pages/corporate-view/basic-details";
+import FinalSetup from "./pages/corporate-view/final-setup";
+import Analytics from "./pages/corporate-view/analytics";
+import Listing from "./pages/corporate-view/listing";
+import ResumeFiltering from "./pages/corporate-view/resume-filtering";
+import TrainningPosting from "./pages/corporate-view/trainning-posting";
+import JobPosting from "./pages/corporate-view/job-posting";
+import CorporateProfile from "./pages/corporate-view/profile";
+
+// Job Seeker Pages
+import JobSeekerLogin from "./pages/jobSeeker-view/log-in";
+import SeekerBasicDetails from "./pages/jobSeeker-view/basic-details";
+import EducationDetails from "./pages/jobSeeker-view/education-details";
+import WorkingDetails from "./pages/jobSeeker-view/working-details";
+import CertificateDetails from "./pages/jobSeeker-view/certificate-details";
+import JobSeekerDashboard from "./pages/jobSeeker-view/dashboard";
+import AdditionalDetails from "./pages/jobSeeker-view/additional-details";
+import JobDescription from "./pages/jobSeeker-view/job-description";
+import SeekerSeach from "./pages/jobSeeker-view/search";
+
+// Trainer pages
+import TrainerLogin from "./pages/trainner-view/log-in";
+import TrainerBasicDetails from "./pages/trainner-view/basic-details";
+import TrainerEducation from "./pages/trainner-view/education-details";
+import TrainerWorking from "./pages/trainner-view/working-details";
+import TrainerCertificate from "./pages/trainner-view/certificate-details";
+import TrainerAdditional from "./pages/trainner-view/additional-details";
+
+// Super Admin Pages
+import SuperAdminLogin from "./pages/superAdmin-view/log-in";
+import SuperAdminDashboard from "./pages/superAdmin-view/dashboard";
+import SuperAdminUsers from "./pages/superAdmin-view/users";
+import SuperAdminJobOpenings from "./pages/superAdmin-view/job-openings";
+import SuperAdminTrainings from "./pages/superAdmin-view/trainings";
+import SuperAdminSettings from "./pages/superAdmin-view/settings";
+import SuperAdminAnalytics from "./pages/superAdmin-view/analytics";
+import SuperAdminProfile from "./pages/superAdmin-view/profile";
+import SuperAdminBasicDetails from "./pages/superAdmin-view/basic-details";
+import SuperAdminLayout from "./components/superAdmin-view/layout";
+
+function App() {
+  useEffect(() => {
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
+
+    const store = useAuthStore.getState();
+
+    if (token) {
+      store.setToken(token, !!localStorage.getItem("token"));
+      store.setIsAuthenticated(true);
+    } else {
+      store.setTokenInitialized(); // ✅ even if no token, we set initialized
+    }
+  }, []);
+
+  return (
+    <div className="flex flex-col overflow-hidden bg-white">
+      <ScrollToTop />
+      <Routes>
+        {/* Home redirect */}
+        <Route
+          path="/"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetRecruiterUserProfile}
+              allowedRoles={["recruiter", "corporate", "superAdmin"]}
+            >
+              <CorporateDashboard />
+            </CheckAuth>
+          }
+        />
+
+        {/* Recruiter Auth and Setup */}
+        <Route
+          path="/recruiter"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetRecruiterUserProfile}
+              allowedRoles={["recruiter"]}
+            >
+              <ProfileSetupLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="log-in" element={<RecruiterLogin />} />
+        </Route>
+        <Route
+          path="/recruiter/profile-setup"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetRecruiterUserProfile}
+              allowedRoles={["recruiter"]}
+              lockedPages={{
+                "/recruiter/profile-setup/basic-details": "page1",
+                "/recruiter/profile-setup/kyc-verification": "page2",
+                "/recruiter/profile-setup/sectoral-details": "page3",
+                "/recruiter/profile-setup/qualification-details": "page4",
+              }}
+            >
+              <ProfileSetupLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="basic-details" element={<BasicDetails />} />
+          <Route path="kyc-verification" element={<KycVerification />} />
+          <Route path="sectoral-details" element={<SectoralDetails />} />
+          <Route
+            path="qualification-details"
+            element={<QualificationDetails />}
+          />
+        </Route>
+
+        {/* Recruiter Main Dashboard */}
+        <Route
+          path="/recruiter"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetRecruiterUserProfile}
+              allowedRoles={["recruiter"]}
+            >
+              <Layout />
+            </CheckAuth>
+          }
+        >
+          <Route path="dashboard" element={<RecruiterDashboard />} />
+          <Route path="candidates" element={<Candidates />} />
+          <Route
+            path="candidates/candidate-create"
+            element={<CandidateCreate />}
+          />
+          <Route
+            path="candidates/relevent-details"
+            element={<CandidateReleventDetails />}
+          />
+          <Route path="job-openings" element={<JobOpenings />} />
+          <Route
+            path="matches-and-submissions"
+            element={<MatchesAndSubmission />}
+          />
+          <Route path="profile" element={<Profile />} />
+          <Route path="faq" element={<Faq />} />
+        </Route>
+
+        {/* Corporate Auth and Setup */}
+        <Route
+          path="/corporate"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetCorporateUserProfile}
+              allowedRoles={["corporate"]}
+            >
+              <ProfileSetupLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="log-in" element={<CorporateLogIn />} />
+          <Route path="trainning-posting" element={<TrainningPosting />} />
+          <Route path="job-posting" element={<JobPosting />} />
+        </Route>
+        <Route
+          path="/corporate/profile-setup"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetCorporateUserProfile}
+              allowedRoles={["corporate"]}
+              lockedPages={{
+                "/corporate/profile-setup/basic-details": "page1",
+                "/corporate/profile-setup/final-setup": "page2",
+              }}
+            >
+              <ProfileSetupLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="basic-details" element={<CorporateBasicDetails />} />
+          <Route path="final-setup" element={<FinalSetup />} />
+        </Route>
+
+        {/* Corporate Main Dashboard */}
+        <Route
+          path="/corporate"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetCorporateUserProfile}
+              allowedRoles={["corporate"]}
+            >
+              <Layout />
+            </CheckAuth>
+          }
+        >
+          <Route path="dashboard" element={<CorporateDashboard />} />
+          <Route path="job-posting/analytics" element={<Analytics />} />
+          <Route path="job-posting/listing" element={<Listing />} />
+          <Route path="resume-filtering" element={<ResumeFiltering />} />
+          <Route path="profile" element={<CorporateProfile />} />
+        </Route>
+
+        {/* Job Seeker Auth */}
+        <Route path="/job-seeker/log-in" element={<JobSeekerLogin />} />
+
+        {/* Job Seeker Profile Setup */}
+        <Route
+          path="/job-seeker/profile-setup"
+          element={<ProfileSetupLayout />}
+        >
+          <Route path="basic-details" element={<SeekerBasicDetails />} />
+          <Route path="education-details" element={<EducationDetails />} />
+          <Route path="working-details" element={<WorkingDetails />} />
+          <Route path="certificate-details" element={<CertificateDetails />} />
+          <Route path="additional-details" element={<AdditionalDetails />} />
+        </Route>
+        <Route
+          path="/job-seeker"
+          element={
+            // <CheckAuth
+            //   // fetchProfileHook={useGetCorporateUserProfile}
+            //   allowedRoles={["job-seeker"]}
+            // >
+            <Layout />
+            // </CheckAuth>
+          }
+        >
+          <Route path="dashboard" element={<JobSeekerDashboard />} />
+          <Route path="dashboard/:id" element={<JobDescription />} />
+          <Route path="search" element={<SeekerSeach />} />
+          <Route path="faq" element={<Faq />} />
+        </Route>
+        {/* Job Seeker Dashboard */}
+
+        <Route path="/trainer/log-in" element={<TrainerLogin />} />
+
+        {/* Job Seeker Profile Setup */}
+        <Route path="/trainer/profile-setup" element={<ProfileSetupLayout />}>
+          <Route path="basic-details" element={<TrainerBasicDetails />} />
+          <Route path="education-details" element={<TrainerEducation />} />
+          <Route path="working-details" element={<TrainerWorking />} />
+          <Route path="certificate-details" element={<TrainerCertificate />} />
+          <Route path="additional-details" element={<TrainerAdditional />} />
+        </Route>
+        <Route
+          path="/trainer"
+          element={
+            // <CheckAuth
+            //   // fetchProfileHook={useGetCorporateUserProfile}
+            //   allowedRoles={["job-seeker"]}
+            // >
+            <Layout />
+            // </CheckAuth>
+          }
+        >
+          <Route path="dashboard" element={<JobSeekerDashboard />} />
+          <Route path="dashboard/:id" element={<JobDescription />} />
+          <Route path="faq" element={<Faq />} />
+        </Route>
+
+        {/* Super Admin Auth and Setup */}
+        <Route path="/superAdmin/log-in" element={<SuperAdminLogin />} />
+
+        <Route
+          path="/superAdmin/profile-setup"
+          element={<ProfileSetupLayout />}
+        >
+          <Route path="basic-details" element={<SuperAdminBasicDetails />} />
+        </Route>
+
+        {/* Super Admin Main Dashboard */}
+        <Route path="/superAdmin" element={<SuperAdminLayout />}>
+          <Route index element={<SuperAdminDashboard />} />
+          <Route path="dashboard" element={<SuperAdminDashboard />} />
+          <Route path="users" element={<SuperAdminUsers />} />
+          <Route path="job-openings" element={<SuperAdminJobOpenings />} />
+          <Route path="trainings" element={<SuperAdminTrainings />} />
+          <Route path="settings" element={<SuperAdminSettings />} />
+          <Route path="analytics" element={<SuperAdminAnalytics />} />
+          <Route path="profile" element={<SuperAdminProfile />} />
+        </Route>
+
+        {/* Congrats fallback route */}
+        <Route path="congratulation" element={<DynamicCheckAuthWrapper />} />
+      </Routes>
+    </div>
+  );
+}
+
+export default App;
