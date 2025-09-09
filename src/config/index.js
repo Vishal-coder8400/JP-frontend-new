@@ -2311,3 +2311,187 @@ export const experienceFormControls = [
     required: true,
   },
 ];
+
+export const gigTrainingFormControls = [
+  {
+    name: "whyProceed",
+    label: "Why you want to proceed ahead with this Gig Training assignment?",
+    placeholder: "Write in 30 words max",
+    componentType: "textarea",
+  },
+  {
+    name: "avgMonthlySessions",
+    label: "Average Monthly Sessions in Last Assignment?",
+    placeholder: "Enter number",
+    componentType: "input",
+    type: "number",
+  },
+  {
+    name: "opportunitySource",
+    label: "How did you come to know about this Opportunity?",
+    placeholder: "Select One",
+    componentType: "select",
+    options: [
+      { id: "socialMedia", label: "Social Media" },
+      { id: "friends", label: "Friends" },
+      { id: "jobPortal", label: "Job Portal" },
+      { id: "colleagues", label: "Colleagues" },
+      { id: "other", label: "Any Other" },
+    ],
+  },
+  {
+    row: [
+      {
+        name: "fatherName",
+        label: "Father's Name",
+        placeholder: "Enter Father's Name",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "motherName",
+        label: "Mother's Name",
+        placeholder: "Enter Mother's Name",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  // Testimonials
+  {
+    row: [
+      {
+        name: "testimonial1Name",
+        label: "Testimonial 1 - Name",
+        placeholder: "Enter Name",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "testimonial1Contact",
+        label: "Testimonial 1 - Contact No.",
+        placeholder: "Enter Contact Number",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "testimonial1Org",
+        label: "Testimonial 1 - Organization",
+        placeholder: "Enter Organization",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "testimonial1Designation",
+        label: "Testimonial 1 - Designation",
+        placeholder: "Enter Designation",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  {
+    row: [
+      {
+        name: "testimonial2Name",
+        label: "Testimonial 2 - Name",
+        placeholder: "Enter Name",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "testimonial2Contact",
+        label: "Testimonial 2 - Contact No.",
+        placeholder: "Enter Contact Number",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "testimonial2Org",
+        label: "Testimonial 2 - Organization",
+        placeholder: "Enter Organization",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "testimonial2Designation",
+        label: "Testimonial 2 - Designation",
+        placeholder: "Enter Designation",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  {
+    row: [
+      {
+        name: "testimonial3Name",
+        label: "Testimonial 3 - Name",
+        placeholder: "Enter Name",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "testimonial3Contact",
+        label: "Testimonial 3 - Contact No.",
+        placeholder: "Enter Contact Number",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "testimonial3Org",
+        label: "Testimonial 3 - Organization",
+        placeholder: "Enter Organization",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "testimonial3Designation",
+        label: "Testimonial 3 - Designation",
+        placeholder: "Enter Designation",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  {
+    name: "hasMedicalProblem",
+    label: "Any Medical Problem?",
+    componentType: "select",
+    options: [
+      { id: "no", label: "No" },
+      { id: "yes", label: "Yes" },
+    ],
+    placeholder: "select",
+  },
+  {
+    name: "professionalAchievements",
+    label: "Any Professional Achievement to Highlight?",
+    placeholder: "Max 50 words",
+    componentType: "textarea",
+  },
+
+  {
+    name: "trainingPictures",
+    label:
+      "Any pictures of your past Training Sessions?(Self image in the pic is the mandator)",
+    placeholder: "Upload image",
+    componentType: "file",
+    accept: "image", // only images
+    maxFiles: 3, // custom property (you can enforce this inside handleUpload)
+  },
+  {
+    name: "trainingPictures",
+    placeholder: "Upload image",
+    componentType: "file",
+    accept: "image", // only images
+    maxFiles: 3, // custom property (you can enforce this inside handleUpload)
+  },
+  {
+    name: "trainingPictures",
+    placeholder: "Upload image",
+    componentType: "file",
+    accept: "image", // only images
+    maxFiles: 3, // custom property (you can enforce this inside handleUpload)
+  },
+];

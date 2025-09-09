@@ -5,6 +5,7 @@ import {
   additionalDetailsJobSeeker,
   additionalDetailsJobSeeker2,
   additionalDetailsJobSeeker3,
+  gigTrainingFormControls,
 } from "../../config";
 import { Input } from "../../components/ui/input";
 import ButtonComponent from "../../components/common/button";
