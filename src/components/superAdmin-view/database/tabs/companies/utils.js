@@ -82,6 +82,13 @@ export const companies = [
     contact: "admin@techcorp.com",
     jobs: 25,
     location: "Mumbai, India",
+    description:
+      "Stimuler has helped over 3.5 Million people improve their conversational skills using its Audio AI technology. Our AI engines listen, provide detailed feedback on essential speech metrics, and offer guided practice for improvement. Awarded Google Play’s Best AI App and backed by some of the world’s best VC funds, our app has impacted users from over 200 countries till date.",
+    totalApplicants: 128,
+    acceptedApplicants: 76,
+    rejectedApplicants: 32,
+    pendingApplicants: 20,
+    logo: "/google.png",
   },
   {
     id: "1002",
@@ -90,6 +97,13 @@ export const companies = [
     contact: "hr@healthcareplus.com",
     jobs: 12,
     location: "Delhi, India",
+    description:
+      "Stimuler has helped over 3.5 Million people improve their conversational skills using its Audio AI technology. Our AI engines listen, provide detailed feedback on essential speech metrics, and offer guided practice for improvement. Awarded Google Play’s Best AI App and backed by some of the world’s best VC funds, our app has impacted users from over 200 countries till date.",
+    totalApplicants: 128,
+    acceptedApplicants: 76,
+    rejectedApplicants: 32,
+    pendingApplicants: 20,
+    logo: "/google.png",
   },
   {
     id: "1003",
@@ -98,6 +112,13 @@ export const companies = [
     contact: "contact@edutech.com",
     jobs: 5,
     location: "Bangalore, India",
+    description:
+      "Stimuler has helped over 3.5 Million people improve their conversational skills using its Audio AI technology. Our AI engines listen, provide detailed feedback on essential speech metrics, and offer guided practice for improvement. Awarded Google Play’s Best AI App and backed by some of the world’s best VC funds, our app has impacted users from over 200 countries till date.",
+    totalApplicants: 128,
+    acceptedApplicants: 76,
+    rejectedApplicants: 32,
+    pendingApplicants: 20,
+    logo: "/google.png",
   },
   {
     id: "1004",
@@ -106,6 +127,13 @@ export const companies = [
     contact: "info@fintech.com",
     jobs: 18,
     location: "Chennai, India",
+    description:
+      "Stimuler has helped over 3.5 Million people improve their conversational skills using its Audio AI technology. Our AI engines listen, provide detailed feedback on essential speech metrics, and offer guided practice for improvement. Awarded Google Play’s Best AI App and backed by some of the world’s best VC funds, our app has impacted users from over 200 countries till date.",
+    totalApplicants: 128,
+    acceptedApplicants: 76,
+    rejectedApplicants: 32,
+    pendingApplicants: 20,
+    logo: "/google.png",
   },
   {
     id: "1005",
@@ -114,6 +142,13 @@ export const companies = [
     contact: "careers@retailgiants.com",
     jobs: 8,
     location: "Hyderabad, India",
+    description:
+      "Stimuler has helped over 3.5 Million people improve their conversational skills using its Audio AI technology. Our AI engines listen, provide detailed feedback on essential speech metrics, and offer guided practice for improvement. Awarded Google Play’s Best AI App and backed by some of the world’s best VC funds, our app has impacted users from over 200 countries till date.",
+    totalApplicants: 128,
+    acceptedApplicants: 76,
+    rejectedApplicants: 32,
+    pendingApplicants: 20,
+    logo: "/google.png",
   },
   {
     id: "1006",
@@ -122,5 +157,12 @@ export const companies = [
     contact: "hr@manufacturingpro.com",
     jobs: 15,
     location: "Pune, India",
+    description:
+      "Stimuler has helped over 3.5 Million people improve their conversational skills using its Audio AI technology. Our AI engines listen, provide detailed feedback on essential speech metrics, and offer guided practice for improvement. Awarded Google Play’s Best AI App and backed by some of the world’s best VC funds, our app has impacted users from over 200 countries till date.",
+    totalApplicants: 128,
+    acceptedApplicants: 76,
+    rejectedApplicants: 32,
+    pendingApplicants: 20,
+    logo: "/google.png",
   },
 ];

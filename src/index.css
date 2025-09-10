@@ -54,6 +54,17 @@
   --color-custom-purple: rgba(125, 90, 226, 0.1);
   --color-primary-purple: #6945ed;
   --color-gray1: #5b5b5b;
+  --color-gray2: #dadada;
+  --color-black: #171923;
+  --color-success1: #54c413;
+  --color-success2: #54c4131a;
+  --color-danger1: #e72626;
+  --color-danger2: #e726261a;
+  --color-warning1: #d9790a;
+  --color-warning2: #d9790a1a;
+
+  /* borders */
+  --border-1: 1px solid hsl(var(--border));
 }
 @layer base {
   input {

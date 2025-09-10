@@ -1,12 +1,3 @@
-import { Button } from "../../../../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "../../../../ui/dialog";
 import CompaniesTable from "./CompaniesTable";
 import Pagination from "../../../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
@@ -15,18 +6,13 @@ import { companiesFilters } from "./utils";
 import useCompaniesStore from "./zustand";
 
 const CompaniesTab = () => {
-  // Zustand store hooks
   const {
     filters,
     currentPage,
-    showDeleteDialog,
-    selectedCompany,
     setFormData,
     clearAllFilters,
     setCurrentPage,
     handleDeleteCompany,
-    confirmDelete,
-    setShowDeleteDialog,
     getPaginatedCompanies,
     getTotalPages,
     getFilteredCount,
@@ -95,30 +81,6 @@ const CompaniesTab = () => {
           )}
         </div>
       </div>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Company</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete "{selectedCompany?.name}"? This
-              action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteDialog(false)}
-            >
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={confirmDelete}>
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
