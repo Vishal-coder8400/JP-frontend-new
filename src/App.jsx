@@ -64,11 +64,10 @@ import SuperAdminDashboard from "./pages/superAdmin-view/dashboard";
 import SuperAdminProfile from "./pages/superAdmin-view/profile";
 import SuperAdminLayout from "./components/superAdmin-view/layout";
 import SuperAdminDatabasePage from "./pages/superAdmin-view/database";
-import SuperAdminJobsAndTrainings from "./pages/superAdmin-view/jobs-and-trainings";
+import SuperAdminJobsAndTrainingsPage from "./pages/superAdmin-view/jobs-and-trainings/jobs-and-trainings";
 import SuperAdminApprovals from "./pages/superAdmin-view/approvals";
 import SuperAdminAdminManagement from "./pages/superAdmin-view/admin-management";
-import JobCandidates from "./components/superAdmin-view/jobs-and-trainings/candidates/JobCandidates";
-import TrainingCandidates from "./components/superAdmin-view/jobs-and-trainings/candidates/TrainingCandidates";
+import SuperAdminCandidates from "./components/superAdmin-view/jobs-and-trainings/candidates/Candidates";
 
 function App() {
   useEffect(() => {
@@ -296,15 +295,11 @@ function App() {
           <Route path="database" element={<SuperAdminDatabasePage />} />
           <Route
             path="jobs-and-trainings"
-            element={<SuperAdminJobsAndTrainings />}
+            element={<SuperAdminJobsAndTrainingsPage />}
           />
           <Route
-            path="jobs-and-trainings/job/:jobId/candidates"
-            element={<JobCandidates />}
-          />
-          <Route
-            path="jobs-and-trainings/training/:trainingId/candidates"
-            element={<TrainingCandidates />}
+            path="jobs-and-trainings/job/:id/candidates"
+            element={<SuperAdminCandidates />}
           />
           <Route path="approvals" element={<SuperAdminApprovals />} />
           <Route

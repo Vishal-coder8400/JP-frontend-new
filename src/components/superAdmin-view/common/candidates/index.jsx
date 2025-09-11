@@ -4,8 +4,12 @@ import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "@/components/common/filterComponent";
 import { candidatesFilters } from "./utils";
 import useCandidatesStore from "./zustand";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft, MoveLeftIcon } from "lucide-react";
 
-const CandidatesTab = () => {
+const CandidatesTab = ({ title = "Candidates", isBackBtnEnabled = false }) => {
+  const navigate = useNavigate();
+
   const {
     filters,
     currentPage,
@@ -23,12 +27,24 @@ const CandidatesTab = () => {
   const totalPages = getTotalPages();
   const filteredCount = getFilteredCount();
 
+  const handleBackClick = () => {
+    navigate(-1); // Go back to previous page
+  };
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Candidates</h1>
+      <div className="flex items-center gap-4">
+        {isBackBtnEnabled && (
+          <MoveLeftIcon
+            onClick={handleBackClick}
+            className="w-5 h-5 text-gray-600 cursor-pointer"
+          />
+        )}
+        <h1 className="text-2xl font-bold">{title}</h1>
+      </div>
 
       {/* Main Content Layout */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-6 min-h-0">
         {/* Filters Section */}
         <div className="w-full lg:w-64 flex-shrink-0">
           <div className="bg-white rounded-lg border p-4">
@@ -54,20 +70,24 @@ const CandidatesTab = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 space-y-6">
+        <div className="flex-1 min-w-0 space-y-6">
           {/* Header Actions */}
-          <div className="flex justify-between items-center">
-            <SearchComponent
-              value={filters.search}
-              onChange={(e) => setFormData({ search: e.target.value })}
-            />
+          <div className="flex justify-between items-center min-w-0">
+            <div className="max-w-sm w-full">
+              <SearchComponent
+                value={filters.search}
+                onChange={(e) => setFormData({ search: e.target.value })}
+              />
+            </div>
           </div>
 
-          {/* Candidates Table */}
-          <CandidatesTable
-            paginatedCandidates={paginatedCandidates}
-            handleDeleteCandidate={handleDeleteCandidate}
-          />
+          {/* Candidates Table Container with horizontal scroll */}
+          <div className="min-w-0 overflow-x-auto">
+            <CandidatesTable
+              paginatedCandidates={paginatedCandidates}
+              handleDeleteCandidate={handleDeleteCandidate}
+            />
+          </div>
 
           {/* Pagination */}
           {filteredCount > 0 && (

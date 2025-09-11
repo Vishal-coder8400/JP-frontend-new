@@ -1,7 +1,7 @@
 import JobsAndTrainings from "@/components/superAdmin-view/jobs-and-trainings";
 
-const SuperAdminJobsAndTrainings = () => {
+const SuperAdminJobsAndTrainingsPage = () => {
   return <JobsAndTrainings />;
 };
 
-export default SuperAdminJobsAndTrainings;
+export default SuperAdminJobsAndTrainingsPage;

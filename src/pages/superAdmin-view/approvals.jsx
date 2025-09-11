@@ -1,7 +1,11 @@
-import React from "react";
+import Approvals from "@/components/superAdmin-view/approvals";
 
 const SuperAdminApprovals = () => {
-  return <div>SuperAdminApprovals</div>;
+  return (
+    <div>
+      <Approvals />
+    </div>
+  );
 };
 
 export default SuperAdminApprovals;

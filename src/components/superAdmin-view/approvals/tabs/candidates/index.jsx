@@ -28,7 +28,7 @@ const CandidatesTab = () => {
       <h1 className="text-2xl font-bold">Candidates</h1>
 
       {/* Main Content Layout */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-6 min-h-0">
         {/* Filters Section */}
         <div className="w-full lg:w-64 flex-shrink-0">
           <div className="bg-white rounded-lg border p-4">
@@ -54,20 +54,24 @@ const CandidatesTab = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 space-y-6">
+        <div className="flex-1 min-w-0 space-y-6">
           {/* Header Actions */}
-          <div className="flex justify-between items-center">
-            <SearchComponent
-              value={filters.search}
-              onChange={(e) => setFormData({ search: e.target.value })}
-            />
+          <div className="flex justify-between items-center min-w-0">
+            <div className="max-w-sm w-full">
+              <SearchComponent
+                value={filters.search}
+                onChange={(e) => setFormData({ search: e.target.value })}
+              />
+            </div>
           </div>
 
-          {/* Candidates Table */}
-          <CandidatesTable
-            paginatedCandidates={paginatedCandidates}
-            handleDeleteCandidate={handleDeleteCandidate}
-          />
+          {/* Candidates Table Container with horizontal scroll */}
+          <div className="min-w-0 overflow-x-auto">
+            <CandidatesTable
+              paginatedCandidates={paginatedCandidates}
+              handleDeleteCandidate={handleDeleteCandidate}
+            />
+          </div>
 
           {/* Pagination */}
           {filteredCount > 0 && (

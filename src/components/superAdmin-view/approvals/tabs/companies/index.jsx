@@ -1,34 +1,34 @@
-import CandidatesTable from "./CandidatesTable";
-import Pagination from "@/components/common/pagination";
+import CompaniesTable from "./CompaniesTable";
+import Pagination from "../../../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
-import FilterComponent from "@/components/common/filterComponent";
-import { candidatesFilters } from "./utils";
-import useCandidatesStore from "./zustand";
+import FilterComponent from "../../../../common/filterComponent";
+import { companiesFilters } from "./utils";
+import useCompaniesStore from "./zustand";
 
-const CandidatesTab = () => {
+const CompaniesTab = () => {
   const {
     filters,
     currentPage,
     setFormData,
     clearAllFilters,
     setCurrentPage,
-    handleDeleteCandidate,
-    getPaginatedCandidates,
+    handleDeleteCompany,
+    getPaginatedCompanies,
     getTotalPages,
     getFilteredCount,
-  } = useCandidatesStore();
+  } = useCompaniesStore();
 
   // Get computed data
-  const paginatedCandidates = getPaginatedCandidates();
+  const paginatedCompanies = getPaginatedCompanies();
   const totalPages = getTotalPages();
   const filteredCount = getFilteredCount();
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Candidates</h1>
+      <h1 className="text-2xl font-bold">Companies</h1>
 
       {/* Main Content Layout */}
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col lg:flex-row gap-6 min-h-0">
         {/* Filters Section */}
         <div className="w-full lg:w-64 flex-shrink-0">
           <div className="bg-white rounded-lg border p-4">
@@ -45,7 +45,7 @@ const CandidatesTab = () => {
                 </div>
               </div>
               <FilterComponent
-                formControls={candidatesFilters}
+                formControls={companiesFilters}
                 formData={filters}
                 setFormData={setFormData}
               />
@@ -54,20 +54,24 @@ const CandidatesTab = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 space-y-6">
+        <div className="flex-1 min-w-0 space-y-6">
           {/* Header Actions */}
-          <div className="flex justify-between items-center">
-            <SearchComponent
-              value={filters.search}
-              onChange={(e) => setFormData({ search: e.target.value })}
-            />
+          <div className="flex justify-between items-center min-w-0">
+            <div className="max-w-sm w-full">
+              <SearchComponent
+                value={filters.search}
+                onChange={(e) => setFormData({ search: e.target.value })}
+              />
+            </div>
           </div>
 
-          {/* Candidates Table */}
-          <CandidatesTable
-            paginatedCandidates={paginatedCandidates}
-            handleDeleteCandidate={handleDeleteCandidate}
-          />
+          {/* Companies Table Container with horizontal scroll */}
+          <div className="min-w-0 overflow-x-auto">
+            <CompaniesTable
+              paginatedCompanies={paginatedCompanies}
+              handleDeleteCompany={handleDeleteCompany}
+            />
+          </div>
 
           {/* Pagination */}
           {filteredCount > 0 && (
@@ -85,4 +89,4 @@ const CandidatesTab = () => {
   );
 };
 
-export default CandidatesTab;
+export default CompaniesTab;

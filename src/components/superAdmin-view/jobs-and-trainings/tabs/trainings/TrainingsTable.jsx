@@ -1,5 +1,5 @@
 import { Sheet, SheetContent } from "../../../../ui/sheet";
-import { GraduationCap, Eye } from "lucide-react";
+import { GraduationCap, Eye, MoveUpRightIcon } from "lucide-react";
 import TrainingDetailsDrawer from "./TrainingDetailsDrawer";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,7 +24,7 @@ const TrainingsTable = ({ paginatedTrainings }) => {
     }
 
     navigate(
-      `/super-admin/jobs-and-trainings/training/${training.id}/candidates`
+      `/super-admin/jobs-and-trainings/job/${training.id}/candidates?type=training`
     );
   };
 
@@ -174,11 +174,11 @@ const TrainingsTable = ({ paginatedTrainings }) => {
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
                       <button
-                        className="view-details-btn inline-flex items-center px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100 transition-colors"
+                        className="view-details-btn inline-flex items-center px-3 py-1.5 text-sm font-medium text-primary-purple bg-light-purple rounded-md hover:bg-light-purple/80 cursor-pointer transition-colors gap-2"
                         onClick={(e) => handleViewDetails(training, e)}
                       >
-                        <Eye className="w-4 h-4 mr-1" />
                         View Details
+                        <MoveUpRightIcon className="w-3 h-3 mr-1" />
                       </button>
                     </td>
                   </tr>

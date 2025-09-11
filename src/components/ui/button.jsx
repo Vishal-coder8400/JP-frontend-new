@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva } from "class-variance-authority";
 
@@ -12,7 +11,7 @@ const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         destructive:
-          "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
+          "bg-red-500 text-white shadow-xs rounded-3xl hover:bg-red-500/90 focus-visible:ring-red-500/20 cursor-pointer",
         outline:
           "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50",
         secondary:
@@ -21,9 +20,9 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
         purple:
-          "bg-primary-purple text-white shadow-xs rounded-3xl hover:bg-primary-purple/90 focus-visible:ring-primary-purple/20",
+          "bg-primary-purple text-white shadow-xs rounded-3xl hover:bg-primary-purple/90 focus-visible:ring-primary-purple/20 cursor-pointer",
         black:
-          "bg-black text-white shadow-xs rounded-3xl hover:bg-black/90 focus-visible:ring-black/20",
+          "bg-black text-white shadow-xs rounded-3xl hover:bg-black/90 focus-visible:ring-black/20 cursor-pointer",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

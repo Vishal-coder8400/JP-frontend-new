@@ -35,21 +35,22 @@ const CandidatesTable = ({ paginatedCandidates }) => {
     <>
       <div className="bg-white rounded-lg border overflow-hidden">
         <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="min-w-[40px] font-semibold"></TableHead>
-                <TableHead className="min-w-[80px] font-semibold">ID</TableHead>
-                <TableHead className="min-w-[250px] font-semibold">
-                  Name
-                </TableHead>
-                <TableHead className="min-w-[120px] font-semibold">
-                  Industry
-                </TableHead>
-                <TableHead className="min-w-[150px] font-semibold">
-                  Skills
-                </TableHead>
-                <TableHead className="min-w-[100px] font-semibold">
+          <div className="min-w-[1000px]"> {/* Ensure minimum width for proper table display */}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="min-w-[40px] font-semibold"></TableHead>
+                  <TableHead className="min-w-[80px] font-semibold">ID</TableHead>
+                  <TableHead className="min-w-[250px] font-semibold">
+                    Name
+                  </TableHead>
+                  <TableHead className="min-w-[120px] font-semibold">
+                    Industry
+                  </TableHead>
+                  <TableHead className="min-w-[150px] font-semibold">
+                    Skills
+                  </TableHead>
+                                <TableHead className="min-w-[100px] font-semibold">
                   Experience
                 </TableHead>
                 <TableHead className="min-w-[120px] font-semibold">
@@ -118,11 +119,10 @@ const CandidatesTable = ({ paginatedCandidates }) => {
                 </TableRow>
               )}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
         </div>
-      </div>
-
-      {/* Candidate Details Drawer */}
+      </div>      {/* Candidate Details Drawer */}
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent
           side="right"
