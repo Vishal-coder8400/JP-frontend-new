@@ -62,6 +62,8 @@
   --color-danger2: #e726261a;
   --color-warning1: #d9790a;
   --color-warning2: #d9790a1a;
+  --color-light-blue: #e1e6ff;
+  --color-light-pink: #ffe1f7;
 
   /* borders */
   --border-1: 1px solid hsl(var(--border));

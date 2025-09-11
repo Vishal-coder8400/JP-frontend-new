@@ -1,9 +1,9 @@
 import { databaseTabs } from "./utils";
 import useDatabaseTabStore from "./zustand";
 import CompaniesTab from "./tabs/companies";
-import CandidatesTab from "./tabs/Candidates";
 import TrainersTab from "./tabs/Trainers";
 import RecruitersTab from "./tabs/Recruiters";
+import CandidatesTab from "./tabs/candidates";
 
 const SuperAdminDatabase = () => {
   const { activeTab, setActiveTab } = useDatabaseTabStore();
