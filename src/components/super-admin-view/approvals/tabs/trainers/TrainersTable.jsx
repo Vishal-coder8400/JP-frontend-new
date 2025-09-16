@@ -8,11 +8,15 @@ import {
 } from "../../../../ui/table";
 import { User } from "lucide-react";
 import StatusBadge from "../../../../common/StatusBadge";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import { useState } from "react";
+import TrainerDetails from "@/components/super-admin-view/database/tabs/trainers/TrainerDetails";
 
 const TrainersTable = ({ paginatedTrainers }) => {
   const [selectedTrainerId, setSelectedTrainerId] = useState(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectedTrainer, setSelectedTrainer] = useState(null);
 
   const handleSelectTrainer = (trainerId) => {
     setSelectedTrainerId(trainerId);
@@ -23,6 +27,9 @@ const TrainersTable = ({ paginatedTrainers }) => {
     if (event.target.type === "radio") {
       return;
     }
+
+    setSelectedTrainer(trainer);
+    setDrawerOpen(true);
   };
 
   return (
@@ -127,6 +134,25 @@ const TrainersTable = ({ paginatedTrainers }) => {
           </div>
         </div>
       </div>
+
+      <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <SheetContent
+          side="right"
+          className="
+            w-full h-screen 
+            lg:max-w-[900px] 
+            md:max-w-full
+            sm:max-w-full 
+            border-transparent [&>button.absolute]:hidden"
+        >
+          <div className="bg-white rounded-2xl w-full h-full">
+            <TrainerDetails
+              trainer={selectedTrainer}
+              areApprovalBtnsVisible={true}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
     </>
   );
 };

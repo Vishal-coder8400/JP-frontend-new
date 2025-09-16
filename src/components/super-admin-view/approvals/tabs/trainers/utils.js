@@ -80,7 +80,6 @@ export const trainers = [
     title: "Senior Corporate Trainer",
     location: "Mumbai, India",
     status: "active",
-    approvalStatus: "accepted",
     summary:
       "Experienced corporate trainer specializing in technology leadership and team management. Has conducted 200+ training sessions for Fortune 500 companies.",
     totalTrainings: 180,
@@ -92,6 +91,23 @@ export const trainers = [
     lastUpdated: "2024-12-08",
     certifications: ["Certified Corporate Trainer", "PMP", "Agile Coach"],
     languages: ["English", "Hindi", "Marathi"],
+    otherDetails: [
+      { label: "LinkedIn", value: "linkedin.com/in/rajeshkumar" },
+      { label: "Experience In", value: "Python, Java, Cloud Computing" },
+      { label: "Last Organization Name", value: "Tech Solutions Ltd." },
+      { label: "Designation in last Organization", value: "Lead Trainer" },
+      { label: "Latest Qualification", value: "PhD in Computer Science" },
+      {
+        label:
+          "How many average number of monthly sessions were you able to make in your last work assignment",
+        value: "15-20",
+      },
+      {
+        label: "Any professional achievement which you will like to highlight",
+        value: "Employee of the Year 2022 at Tech Solutions Ltd.",
+      },
+    ],
+    trainingImages: ["/training-1.jpg", "/training-2.jpg", "/training-3.jpg"],
   },
   {
     id: "T002",
@@ -104,7 +120,6 @@ export const trainers = [
     title: "Communication Specialist",
     location: "Delhi, India",
     status: "active",
-    approvalStatus: "pending",
     summary:
       "Expert in soft skills development and communication training. Specializes in helping professionals improve their interpersonal and presentation skills.",
     totalTrainings: 150,
@@ -116,6 +131,23 @@ export const trainers = [
     lastUpdated: "2024-12-07",
     certifications: ["Certified Soft Skills Trainer", "Dale Carnegie Trainer"],
     languages: ["English", "Hindi"],
+    otherDetails: [
+      { label: "LinkedIn", value: "linkedin.com/in/rajeshkumar" },
+      { label: "Experience In", value: "Python, Java, Cloud Computing" },
+      { label: "Last Organization Name", value: "Tech Solutions Ltd." },
+      { label: "Designation in last Organization", value: "Lead Trainer" },
+      { label: "Latest Qualification", value: "PhD in Computer Science" },
+      {
+        label:
+          "How many average number of monthly sessions were you able to make in your last work assignment",
+        value: "15-20",
+      },
+      {
+        label: "Any professional achievement which you will like to highlight",
+        value: "Employee of the Year 2022 at Tech Solutions Ltd.",
+      },
+    ],
+    trainingImages: ["/training-1.jpg", "/training-2.jpg", "/training-3.jpg"],
   },
   {
     id: "T003",
@@ -128,7 +160,6 @@ export const trainers = [
     title: "Technical Training Specialist",
     location: "Bangalore, India",
     status: "busy",
-    approvalStatus: "rejected",
     summary:
       "Technical trainer with expertise in data analytics, programming, and emerging technologies. Focuses on upskilling technical teams.",
     totalTrainings: 120,
@@ -144,6 +175,23 @@ export const trainers = [
       "Python Institute Certified",
     ],
     languages: ["English", "Hindi", "Gujarati"],
+    otherDetails: [
+      { label: "LinkedIn", value: "linkedin.com/in/rajeshkumar" },
+      { label: "Experience In", value: "Python, Java, Cloud Computing" },
+      { label: "Last Organization Name", value: "Tech Solutions Ltd." },
+      { label: "Designation in last Organization", value: "Lead Trainer" },
+      { label: "Latest Qualification", value: "PhD in Computer Science" },
+      {
+        label:
+          "How many average number of monthly sessions were you able to make in your last work assignment",
+        value: "15-20",
+      },
+      {
+        label: "Any professional achievement which you will like to highlight",
+        value: "Employee of the Year 2022 at Tech Solutions Ltd.",
+      },
+    ],
+    trainingImages: ["/training-1.jpg", "/training-2.jpg", "/training-3.jpg"],
   },
   {
     id: "T004",
@@ -156,7 +204,6 @@ export const trainers = [
     title: "Sales Training Manager",
     location: "Chennai, India",
     status: "active",
-    approvalStatus: "accepted",
     summary:
       "Sales training expert with proven track record in improving sales performance. Specializes in customer relationship management and sales methodologies.",
     totalTrainings: 200,
@@ -168,6 +215,23 @@ export const trainers = [
     lastUpdated: "2024-12-09",
     certifications: ["Certified Sales Professional", "CRM Specialist"],
     languages: ["English", "Hindi", "Telugu", "Tamil"],
+    otherDetails: [
+      { label: "LinkedIn", value: "linkedin.com/in/rajeshkumar" },
+      { label: "Experience In", value: "Python, Java, Cloud Computing" },
+      { label: "Last Organization Name", value: "Tech Solutions Ltd." },
+      { label: "Designation in last Organization", value: "Lead Trainer" },
+      { label: "Latest Qualification", value: "PhD in Computer Science" },
+      {
+        label:
+          "How many average number of monthly sessions were you able to make in your last work assignment",
+        value: "15-20",
+      },
+      {
+        label: "Any professional achievement which you will like to highlight",
+        value: "Employee of the Year 2022 at Tech Solutions Ltd.",
+      },
+    ],
+    trainingImages: ["/training-1.jpg", "/training-2.jpg", "/training-3.jpg"],
   },
   {
     id: "T005",
@@ -180,7 +244,6 @@ export const trainers = [
     title: "Senior Project Management Trainer",
     location: "Hyderabad, India",
     status: "active",
-    approvalStatus: "pending",
     summary:
       "Seasoned project management trainer with extensive experience in Agile, Scrum, and traditional project management methodologies.",
     totalTrainings: 250,
@@ -192,6 +255,23 @@ export const trainers = [
     lastUpdated: "2024-12-05",
     certifications: ["PMP", "Scrum Master", "Agile Coach", "PRINCE2"],
     languages: ["English", "Hindi"],
+    otherDetails: [
+      { label: "LinkedIn", value: "linkedin.com/in/rajeshkumar" },
+      { label: "Experience In", value: "Python, Java, Cloud Computing" },
+      { label: "Last Organization Name", value: "Tech Solutions Ltd." },
+      { label: "Designation in last Organization", value: "Lead Trainer" },
+      { label: "Latest Qualification", value: "PhD in Computer Science" },
+      {
+        label:
+          "How many average number of monthly sessions were you able to make in your last work assignment",
+        value: "15-20",
+      },
+      {
+        label: "Any professional achievement which you will like to highlight",
+        value: "Employee of the Year 2022 at Tech Solutions Ltd.",
+      },
+    ],
+    trainingImages: ["/training-1.jpg", "/training-2.jpg", "/training-3.jpg"],
   },
   {
     id: "T006",
@@ -204,7 +284,6 @@ export const trainers = [
     title: "Digital Marketing Trainer",
     location: "Pune, India",
     status: "available",
-    approvalStatus: "accepted",
     summary:
       "Digital marketing specialist focusing on modern marketing strategies, social media marketing, and content creation training.",
     totalTrainings: 90,
@@ -220,5 +299,22 @@ export const trainers = [
       "HubSpot Certified",
     ],
     languages: ["English", "Hindi", "Malayalam"],
+    trainingImages: ["/training-1.jpg", "/training-2.jpg", "/training-3.jpg"],
+    otherDetails: [
+      { label: "LinkedIn", value: "linkedin.com/in/rajeshkumar" },
+      { label: "Experience In", value: "Python, Java, Cloud Computing" },
+      { label: "Last Organization Name", value: "Tech Solutions Ltd." },
+      { label: "Designation in last Organization", value: "Lead Trainer" },
+      { label: "Latest Qualification", value: "PhD in Computer Science" },
+      {
+        label:
+          "How many average number of monthly sessions were you able to make in your last work assignment",
+        value: "15-20",
+      },
+      {
+        label: "Any professional achievement which you will like to highlight",
+        value: "Employee of the Year 2022 at Tech Solutions Ltd.",
+      },
+    ],
   },
 ];

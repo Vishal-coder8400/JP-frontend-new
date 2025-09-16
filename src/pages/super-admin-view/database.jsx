@@ -1,4 +1,4 @@
-import SuperAdminDatabase from "@/components/superAdmin-view/database";
+import SuperAdminDatabase from "@/components/super-admin-view/database";
 
 const SuperAdminDatabasePage = () => {
   return <SuperAdminDatabase />;

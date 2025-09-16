@@ -1,4 +1,4 @@
-import Approvals from "@/components/superAdmin-view/approvals";
+import Approvals from "@/components/super-admin-view/approvals";
 
 const SuperAdminApprovals = () => {
   return (

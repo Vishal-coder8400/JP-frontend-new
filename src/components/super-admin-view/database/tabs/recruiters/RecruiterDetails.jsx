@@ -21,7 +21,7 @@ const RecruiterDetails = ({ recruiter }) => {
   );
   return (
     <div className="flex flex-col w-full gap-[24px]">
-      <div className="relative flex w-full bg-white pt-[120px] px-[48px] pb-[47px] rounded-t-[16px] overflow-hidden ">
+      <div className="relative flex w-full bg-white pt-[120px] px-[48px] pb-[47px] rounded-t-[16px] overflow-hidden">
         <div class="absolute top-0 left-0 h-[186px] w-full bg-[url('/Group_1000005865.jpg')] bg-cover bg-center"></div>
         <div className="w-full flex flex-col gap-[36px] ">
           <div className="self-stretch pl-52 pr-10 py-5 relative bg-white rounded-2xl shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)] outline-1 outline-offset-[-1px] outline-neutral-300 inline-flex justify-start items-center gap-2.5">

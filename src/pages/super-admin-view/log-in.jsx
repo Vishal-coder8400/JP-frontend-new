@@ -1,5 +1,5 @@
 import { useState } from "react";
-import LogInComponent from "../../components/superAdmin-view/log-in";
+import LogInComponent from "../../components/super-admin-view/log-in";
 import { useLogin } from "../../hooks/superAdmin/useAuth";
 import { z } from "zod";
 import { validateFormData } from "../../utils/commonFunctions";

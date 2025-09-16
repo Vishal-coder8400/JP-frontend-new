@@ -1,5 +1,5 @@
 import FilterComponent from "@/components/common/filterComponent";
-import JobsTable from "@/components/superAdmin-view/common/JobsTable";
+import JobsTable from "@/components/super-admin-view/common/JobsTable";
 import { useState } from "react";
 
 const jobsFilters = [

@@ -1,4 +1,4 @@
-import SuperAdminAdminManagement from "@/components/superAdmin-view/admin-management";
+import SuperAdminAdminManagement from "@/components/super-admin-view/admin-management";
 
 const SuperAdminAdminManagementPage = () => {
   return (

@@ -59,15 +59,15 @@ import TrainerCertificate from "./pages/trainner-view/certificate-details";
 import TrainerAdditional from "./pages/trainner-view/additional-details";
 
 // Super Admin Pages
-import SuperAdminLogin from "./pages/superAdmin-view/log-in";
-import SuperAdminDashboard from "./pages/superAdmin-view/dashboard";
-import SuperAdminProfile from "./pages/superAdmin-view/profile";
-import SuperAdminLayout from "./components/superAdmin-view/layout";
-import SuperAdminDatabasePage from "./pages/superAdmin-view/database";
-import SuperAdminJobsAndTrainingsPage from "./pages/superAdmin-view/jobs-and-trainings/jobs-and-trainings";
-import SuperAdminApprovals from "./pages/superAdmin-view/approvals";
-import SuperAdminAdminManagementPage from "./pages/superAdmin-view/admin-management";
-import SuperAdminCandidates from "./components/superAdmin-view/jobs-and-trainings/candidates/Candidates";
+import SuperAdminLogin from "./pages/super-admin-view/log-in";
+import SuperAdminDashboard from "./pages/super-admin-view/dashboard";
+import SuperAdminProfile from "./pages/super-admin-view/profile";
+import SuperAdminLayout from "./components/super-admin-view/layout";
+import SuperAdminDatabasePage from "./pages/super-admin-view/database";
+import SuperAdminJobsAndTrainingsPage from "./pages/super-admin-view/jobs-and-trainings/jobs-and-trainings";
+import SuperAdminApprovals from "./pages/super-admin-view/approvals";
+import SuperAdminAdminManagementPage from "./pages/super-admin-view/admin-management";
+import SuperAdminCandidates from "./components/super-admin-view/jobs-and-trainings/candidates/Candidates";
 
 function App() {
   useEffect(() => {
