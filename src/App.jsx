@@ -1,14 +1,16 @@
 import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/common/scrollToTop";
 import CheckAuth from "./components/common/checkAuth";
 import DynamicCheckAuthWrapper from "./components/common/dynamicCheckAuthWrapper";
+import SuperAdminAuth from "./components/common/superAdminAuth";
 
 import Layout from "./components/recruiter-view/layout";
 import ProfileSetupLayout from "./components/recruiter-view/profile-setup-layout";
 
 import { useGetUserProfile as useGetRecruiterUserProfile } from "./hooks/recruiter/useProfile";
 import { useGetCorporateUserProfile } from "./hooks/corporate/useProfile";
+import { useGetUserProfile } from "./hooks/superAdmin/useProfile";
 
 import useAuthStore from "./stores/useAuthStore";
 
@@ -94,12 +96,43 @@ function App() {
           element={
             <CheckAuth
               fetchProfileHook={useGetRecruiterUserProfile}
-              allowedRoles={["recruiter", "corporate", "superAdmin"]}
+              allowedRoles={["recruiter", "corporate"]}
             >
               <CorporateDashboard />
             </CheckAuth>
           }
         />
+
+        {/* Super Admin Home redirect */}
+        <Route
+          path="/super-admin"
+          element={
+            <SuperAdminAuth>
+              <SuperAdminLayout />
+            </SuperAdminAuth>
+          }
+        >
+          <Route
+            index
+            element={<Navigate to="/super-admin/database" replace />}
+          />
+          <Route path="dashboard" element={<SuperAdminDashboard />} />
+          <Route path="profile" element={<SuperAdminProfile />} />
+          <Route path="database" element={<SuperAdminDatabasePage />} />
+          <Route
+            path="jobs-and-trainings"
+            element={<SuperAdminJobsAndTrainingsPage />}
+          />
+          <Route
+            path="jobs-and-trainings/job/:id/candidates"
+            element={<SuperAdminCandidates />}
+          />
+          <Route path="approvals" element={<SuperAdminApprovals />} />
+          <Route
+            path="admin-management"
+            element={<SuperAdminAdminManagementPage />}
+          />
+        </Route>
 
         {/* Recruiter Auth and Setup */}
         <Route
@@ -286,27 +319,6 @@ function App() {
 
         {/* Super Admin Auth and Setup */}
         <Route path="/super-admin/log-in" element={<SuperAdminLogin />} />
-
-        {/* Super Admin Main Dashboard */}
-        <Route path="/super-admin" element={<SuperAdminLayout />}>
-          <Route index element={<SuperAdminDashboard />} />
-          <Route path="dashboard" element={<SuperAdminDashboard />} />
-          <Route path="profile" element={<SuperAdminProfile />} />
-          <Route path="database" element={<SuperAdminDatabasePage />} />
-          <Route
-            path="jobs-and-trainings"
-            element={<SuperAdminJobsAndTrainingsPage />}
-          />
-          <Route
-            path="jobs-and-trainings/job/:id/candidates"
-            element={<SuperAdminCandidates />}
-          />
-          <Route path="approvals" element={<SuperAdminApprovals />} />
-          <Route
-            path="admin-management"
-            element={<SuperAdminAdminManagementPage />}
-          />
-        </Route>
 
         {/* Congrats fallback route */}
         <Route path="congratulation" element={<DynamicCheckAuthWrapper />} />

@@ -9,11 +9,11 @@ export const useGetUserProfile = ({ enabled = true } = {}) => {
   return useQuery({
     queryKey: ["superAdmin-user-profile", token],
     queryFn: ({ signal }) => getUserDetails({ signal }),
-    enabled: false, // Disabled for development - no auth required
+    enabled: false, // Temporarily disabled to prevent loading issues
     onError: (error) => {
-      // Commented out for development
-      // toast.error("Session expired. Please login again.");
-      // navigate("/superAdmin/log-in");
+      console.error("Super admin profile fetch error:", error);
+      // Navigate to login on authentication error
+      navigate("/super-admin/log-in");
     },
   });
 };

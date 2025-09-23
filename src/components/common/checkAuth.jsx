@@ -56,11 +56,11 @@ const CheckAuth = ({
     "/recruiter/log-in",
     "/corporate/log-in",
     "/job-seeker/log-in",
-    "/superAdmin/log-in",
+    "/super-admin/log-in",
     "/recruiter/profile-setup/basic-details",
     "/corporate/profile-setup/basic-details",
     "/job-seeker/profile-setup/basic-details",
-    "/superAdmin/profile-setup/basic-details",
+    "/super-admin/profile-setup/basic-details",
   ].includes(location.pathname);
 
   // 🔒 Page lock (like skipping profile setup steps)

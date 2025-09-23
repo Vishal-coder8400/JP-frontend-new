@@ -2,7 +2,7 @@ import axios from "axios";
 import useAuthStore from "../stores/useAuthStore";
 
 const api = axios.create({
-  baseURL: "https://52.66.198.79:8006", // Production API URL
+  baseURL: "http://82.29.162.149:8006", // Production API URL
   // baseURL: "http://127.0.0.1:8006", // Development API URL
 });
 
