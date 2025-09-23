@@ -3,29 +3,35 @@ import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 
 const AdminTableRow = ({ admin, onEdit, onDelete }) => {
+  const fullName = `${admin.firstName} ${admin.lastName}`;
+  const profileImage = admin.profileImage || "/public/person.png";
+
   return (
     <TableRow>
-      <TableCell className="font-medium">{admin.id}</TableCell>
+      <TableCell className="font-medium">{admin._id}</TableCell>
       <TableCell>
         <div className="flex items-center gap-3">
           <img
-            src={admin.owner.image}
-            alt={admin.owner.name}
+            src={profileImage}
+            alt={fullName}
             className="w-8 h-8 rounded-full object-cover"
             onError={(e) => {
               e.target.src = "/public/person.png";
             }}
           />
-          <span className="font-medium text-gray-900">{admin.owner.name}</span>
+          <span className="font-medium text-gray-900">{fullName}</span>
         </div>
       </TableCell>
       <TableCell className="text-gray-600">{admin.email}</TableCell>
-      <TableCell className="text-gray-600">{admin.phone}</TableCell>
+      <TableCell className="text-gray-600">{admin.phoneNumber}</TableCell>
       <TableCell>
         <div className="flex flex-wrap gap-1">
-          {admin.features.map((feature, index) => (
-            <span key={index} className="">
-              {feature} {index < admin.features.length - 1 ? "," : ""}
+          {admin.allowedFeatures.map((feature, index) => (
+            <span key={index} className="text-xs bg-gray-100 px-2 py-1 rounded">
+              {feature
+                .replace(/-/g, " ")
+                .replace(/\b\w/g, (l) => l.toUpperCase())}
+              {index < admin.allowedFeatures.length - 1 ? "," : ""}
             </span>
           ))}
         </div>
@@ -44,7 +50,7 @@ const AdminTableRow = ({ admin, onEdit, onDelete }) => {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => onDelete(admin.id)}
+            onClick={() => onDelete(admin._id)}
             className="h-8 w-8 text-red-600 hover:text-red-700 hover:border-red-300"
             title="Delete Admin"
           >

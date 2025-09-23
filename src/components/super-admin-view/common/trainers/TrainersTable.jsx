@@ -5,16 +5,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../../../../ui/table";
+} from "@/components/ui/table";
 import { User } from "lucide-react";
-import StatusBadge from "../../../../common/StatusBadge";
+import StatusBadge from "@/components/common/StatusBadge";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import { useState } from "react";
-import TrainerDetails from "@/components/super-admin-view/database/tabs/trainers/TrainerDetails";
+import TrainerDetails from "./TrainerDetails";
 import { useGetTrainerById } from "@/hooks/superAdmin/useTrainers";
 
-const TrainersTable = ({ paginatedTrainers }) => {
+const TrainersTable = ({
+  paginatedTrainers,
+  showStatusColumn = false,
+  areApprovalBtnsVisible = false,
+}) => {
   const [selectedTrainerId, setSelectedTrainerId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedTrainer, setSelectedTrainer] = useState(null);
@@ -49,9 +53,7 @@ const TrainersTable = ({ paginatedTrainers }) => {
     <>
       <div className="bg-white rounded-lg border overflow-hidden">
         <div className="overflow-x-auto">
-          <div className="min-w-[1000px]">
-            {" "}
-            {/* Ensure minimum width for proper table display */}
+          <div className={showStatusColumn ? "min-w-[1000px]" : ""}>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -74,9 +76,11 @@ const TrainersTable = ({ paginatedTrainers }) => {
                   <TableHead className="min-w-[120px] font-semibold">
                     Last Updated
                   </TableHead>
-                  <TableHead className="min-w-[120px] font-semibold">
-                    Status
-                  </TableHead>
+                  {showStatusColumn && (
+                    <TableHead className="min-w-[120px] font-semibold">
+                      Status
+                    </TableHead>
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -127,14 +131,19 @@ const TrainersTable = ({ paginatedTrainers }) => {
                       <TableCell>
                         {new Date(trainer.updatedAt).toLocaleDateString()}
                       </TableCell>
-                      <TableCell>
-                        <StatusBadge status={trainer.status} />
-                      </TableCell>
+                      {showStatusColumn && (
+                        <TableCell>
+                          <StatusBadge status={trainer.status} />
+                        </TableCell>
+                      )}
                     </TableRow>
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell
+                      colSpan={showStatusColumn ? 8 : 7}
+                      className="text-center py-8"
+                    >
                       <div className="flex flex-col items-center justify-center space-y-2">
                         <User className="h-8 w-8 text-gray-400" />
                         <span className="text-gray-500">
@@ -160,10 +169,14 @@ const TrainersTable = ({ paginatedTrainers }) => {
             sm:max-w-full 
             border-transparent [&>button.absolute]:hidden"
         >
-          <div className="bg-white rounded-2xl w-full h-full">
+          <div
+            className={`bg-white ${
+              areApprovalBtnsVisible ? "rounded-2xl" : "rounded-l-2xl"
+            } w-full h-full`}
+          >
             <TrainerDetails
               trainer={trainerDetails?.data?.data || selectedTrainer}
-              areApprovalBtnsVisible={true}
+              areApprovalBtnsVisible={areApprovalBtnsVisible}
               isLoading={isLoadingDetails}
               error={detailsError}
             />

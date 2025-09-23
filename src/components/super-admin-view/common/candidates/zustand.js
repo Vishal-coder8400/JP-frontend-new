@@ -195,7 +195,6 @@ const useCandidatesStore = create((set, get) => ({
   confirmDelete: () => {
     // TODO: Implement actual delete logic here
     const selectedCandidate = get().selectedCandidate;
-    console.log("Deleting candidate:", selectedCandidate);
 
     set({
       showDeleteDialog: false,

@@ -78,7 +78,6 @@ const useRecruitersStore = create((set, get) => ({
   confirmDelete: () => {
     // TODO: Implement actual delete logic here
     const selectedRecruiter = get().selectedRecruiter;
-    console.log("Deleting recruiter:", selectedRecruiter);
 
     set({
       showDeleteDialog: false,

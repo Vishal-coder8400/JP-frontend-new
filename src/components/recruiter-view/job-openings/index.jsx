@@ -16,7 +16,6 @@ const Index = ({
   ClearAll,
 }) => {
   const totalPages = Math.ceil(jobPosts?.pagination?.total / 10);
-  console.log(totalPages);
   return (
     <Fragment>
       {/* Desktop-view */}

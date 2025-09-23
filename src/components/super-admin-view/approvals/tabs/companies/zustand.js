@@ -78,7 +78,6 @@ const useCompaniesStore = create((set, get) => ({
   confirmDelete: () => {
     // TODO: Implement actual delete logic here
     const selectedCompany = get().selectedCompany;
-    console.log("Deleting company:", selectedCompany);
 
     set({
       showDeleteDialog: false,

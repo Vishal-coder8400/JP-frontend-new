@@ -1,4 +1,4 @@
-import TrainersTable from "./TrainersTable";
+import { TrainersTable } from "../../../common/trainers";
 import Pagination from "../../../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../../common/filterComponent";
@@ -57,7 +57,6 @@ const TrainersTab = () => {
 
   // Handle delete trainer (placeholder - implement actual delete logic)
   const handleDeleteTrainer = (trainer) => {
-    console.log("Delete trainer:", trainer);
     // TODO: Implement actual delete logic here
   };
 
@@ -115,7 +114,8 @@ const TrainersTab = () => {
           ) : (
             <TrainersTable
               paginatedTrainers={trainers}
-              handleDeleteTrainer={handleDeleteTrainer}
+              showStatusColumn={false}
+              areApprovalBtnsVisible={false}
             />
           )}
 

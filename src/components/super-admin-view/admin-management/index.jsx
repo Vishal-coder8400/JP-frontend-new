@@ -10,13 +10,21 @@ import {
 } from "@/components/ui/table";
 import EditAdminDrawer from "./EditAdminDrawer";
 import AdminTableRow from "./AdminTableRow";
-import { mockAdmins } from "./mockData";
 import SearchComponent from "@/components/common/searchComponent";
+import {
+  useGetAllAdmins,
+  useDeleteAdmin,
+} from "@/hooks/superAdmin/useAdminManagement";
 
 const SuperAdminAdminManagement = () => {
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
-  const [admins, setAdmins] = useState(mockAdmins);
+
+  // API hooks
+  const { data: adminsResponse, isLoading, error } = useGetAllAdmins();
+  const deleteAdminMutation = useDeleteAdmin();
+
+  const admins = adminsResponse?.data?.data?.admins || [];
 
   const handleCreateAdmin = () => {
     setSelectedAdmin(null);
@@ -29,43 +37,8 @@ const SuperAdminAdminManagement = () => {
   };
 
   const handleDelete = (adminId) => {
-    // Delete functionality to be implemented later
-    console.log("Delete admin with ID:", adminId);
-    // For now, just show confirmation
     if (window.confirm("Are you sure you want to delete this admin?")) {
-      setAdmins(admins.filter((admin) => admin.id !== adminId));
-    }
-  };
-
-  const handleSaveAdmin = (adminData) => {
-    if (selectedAdmin) {
-      // Update existing admin
-      setAdmins(
-        admins.map((admin) =>
-          admin.id === selectedAdmin.id
-            ? {
-                ...admin,
-                owner: { ...admin.owner, name: adminData.name },
-                email: adminData.email,
-                phone: adminData.phone,
-                features: adminData.features,
-              }
-            : admin
-        )
-      );
-    } else {
-      // Create new admin
-      const newAdmin = {
-        id: Math.max(...admins.map((a) => a.id)) + 1,
-        owner: {
-          name: adminData.name,
-          image: "/public/person.png",
-        },
-        email: adminData.email,
-        phone: adminData.phone,
-        features: adminData.features,
-      };
-      setAdmins([...admins, newAdmin]);
+      deleteAdminMutation.mutate(adminId);
     }
   };
 
@@ -103,14 +76,37 @@ const SuperAdminAdminManagement = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {admins.map((admin) => (
-                <AdminTableRow
-                  key={admin.id}
-                  admin={admin}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
-              ))}
+              {isLoading ? (
+                <TableRow>
+                  <td colSpan={6} className="text-center py-8">
+                    <div className="flex justify-center items-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                      <span className="ml-2">Loading admins...</span>
+                    </div>
+                  </td>
+                </TableRow>
+              ) : error ? (
+                <TableRow>
+                  <td colSpan={6} className="text-center py-8 text-red-500">
+                    Error loading admins: {error.message}
+                  </td>
+                </TableRow>
+              ) : admins.length === 0 ? (
+                <TableRow>
+                  <td colSpan={6} className="text-center py-8 text-gray-500">
+                    No admins found
+                  </td>
+                </TableRow>
+              ) : (
+                admins.map((admin) => (
+                  <AdminTableRow
+                    key={admin.id}
+                    admin={admin}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                ))
+              )}
             </TableBody>
           </Table>
         </div>
@@ -120,7 +116,6 @@ const SuperAdminAdminManagement = () => {
         open={isEditDrawerOpen}
         onClose={() => setIsEditDrawerOpen(false)}
         admin={selectedAdmin}
-        onSave={handleSaveAdmin}
       />
     </div>
   );

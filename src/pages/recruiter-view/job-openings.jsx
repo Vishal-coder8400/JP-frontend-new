@@ -32,7 +32,6 @@ const JobOpenings = () => {
 
   const { data, isLoading, isError, error } = useGetAllApplicant();
   const { data: jobPosts, isLoading: isLoading2 } = useFilteredJobs(filters);
-  console.log(jobPosts);
   const { data: trainingPosts, isLoading: isLoading3 } =
     useFilteredTrainings(filters);
 

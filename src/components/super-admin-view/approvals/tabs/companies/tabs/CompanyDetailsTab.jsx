@@ -1,5 +1,4 @@
 const CompanyDetailsTab = ({ company }) => {
-  console.log(company);
   const details = [
     { label: "Name", value: "ABC Company" },
     { label: "Website", value: "www.abccompany.com" },
