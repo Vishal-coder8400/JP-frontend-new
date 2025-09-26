@@ -4,7 +4,6 @@ import ProfileSetupLayout from "../recruiter-view/profile-setup-layout/index";
 import Congratulation from "../../pages/common/congratulation";
 import { useGetCorporateUserProfile } from "../../hooks/corporate/useProfile";
 import { useGetUserProfile as useGetRecruiterUserProfile } from "../../hooks/recruiter/useProfile";
-import { useGetUserProfile as useGetSuperAdminUserProfile } from "../../hooks/superAdmin/useProfile";
 
 const DynamicCheckAuthWrapper = () => {
   const { user } = useAuthStore();
@@ -13,14 +12,12 @@ const DynamicCheckAuthWrapper = () => {
   const fetchProfileHook =
     user?.role === "recruiter"
       ? useGetRecruiterUserProfile
-      : user?.role === "super-admin"
-      ? useGetSuperAdminUserProfile
       : useGetCorporateUserProfile;
 
   return (
     <CheckAuth
       fetchProfileHook={fetchProfileHook}
-      allowedRoles={["recruiter", "corporate", "super-admin"]}
+      allowedRoles={["recruiter", "corporate"]}
     >
       <Congratulation />
     </CheckAuth>

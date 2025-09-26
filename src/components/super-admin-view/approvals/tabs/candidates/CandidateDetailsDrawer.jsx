@@ -4,12 +4,15 @@ import JobsApplied from "./tabs/JobsApplied";
 import AboutCandidate from "./tabs/AboutCandidate";
 import { Button } from "@/components/ui/button";
 import { useGetCandidateDetails } from "@/hooks/superAdmin/useApplicant";
+import { useApprovals } from "@/hooks/superAdmin/useApprovals";
 
 const CandidateDetailsDrawer = ({
   candidate,
   areApprovalBtnsVisible = false,
 }) => {
   const [activeTab, setActiveTab] = useState("aboutCandidate");
+  const { isLoading, approveApplication, rejectApplication, holdApplication } =
+    useApprovals();
 
   // Fetch detailed candidate data
   const {
@@ -22,6 +25,33 @@ const CandidateDetailsDrawer = ({
 
   // Use detailed data if available, otherwise fall back to basic candidate data
   const displayCandidate = candidateDetails?.data?.data || candidate;
+
+  const handleApprove = async () => {
+    try {
+      await approveApplication(displayCandidate.id);
+      // Optionally refresh the candidate data or close the drawer
+    } catch (error) {
+      console.error("Failed to approve candidate:", error);
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      await rejectApplication(displayCandidate.id);
+      // Optionally refresh the candidate data or close the drawer
+    } catch (error) {
+      console.error("Failed to reject candidate:", error);
+    }
+  };
+
+  const handleHold = async () => {
+    try {
+      await holdApplication(displayCandidate.id);
+      // Optionally refresh the candidate data or close the drawer
+    } catch (error) {
+      console.error("Failed to hold candidate:", error);
+    }
+  };
 
   const tabs = [
     {
@@ -95,9 +125,23 @@ const CandidateDetailsDrawer = ({
 
         {areApprovalBtnsVisible && (
           <div className="flex items-center gap-4">
-            <Button variant={"purple"}>Accept Candidate</Button>
-            <Button variant={"destructive"}>Reject Candidate</Button>
-            <Button variant={"black"}>Hold Candidate</Button>
+            <Button
+              variant={"purple"}
+              onClick={handleApprove}
+              disabled={isLoading}
+            >
+              {isLoading ? "Processing..." : "Approve Candidate"}
+            </Button>
+            <Button
+              variant={"destructive"}
+              onClick={handleReject}
+              disabled={isLoading}
+            >
+              {isLoading ? "Processing..." : "Reject Candidate"}
+            </Button>
+            <Button variant={"black"} onClick={handleHold} disabled={isLoading}>
+              {isLoading ? "Processing..." : "Hold Candidate"}
+            </Button>
           </div>
         )}
       </div>

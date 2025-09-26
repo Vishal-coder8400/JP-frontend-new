@@ -4,9 +4,39 @@ import { Fragment, useState } from "react";
 import CompanyDetailsTab from "./tabs/CompanyDetailsTab";
 import JobListingTab from "./tabs/JobListingTab";
 import CompanyStats from "./CompanyStats";
+import { useApprovals } from "@/hooks/superAdmin/useApprovals";
 
 const CompanyDetailsDrawer = ({ company, areApprovalBtnsVisible = false }) => {
   const [activeTab, setActiveTab] = useState("details");
+  const { isLoading, approveApplication, rejectApplication, holdApplication } =
+    useApprovals();
+
+  const handleApprove = async () => {
+    try {
+      await approveApplication(company.id);
+      // Optionally refresh the company data or close the drawer
+    } catch (error) {
+      console.error("Failed to approve company:", error);
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      await rejectApplication(company.id);
+      // Optionally refresh the company data or close the drawer
+    } catch (error) {
+      console.error("Failed to reject company:", error);
+    }
+  };
+
+  const handleHold = async () => {
+    try {
+      await holdApplication(company.id);
+      // Optionally refresh the company data or close the drawer
+    } catch (error) {
+      console.error("Failed to hold company:", error);
+    }
+  };
 
   if (!company) {
     return (
@@ -57,15 +87,30 @@ const CompanyDetailsDrawer = ({ company, areApprovalBtnsVisible = false }) => {
 
         <div className="space-y-3">
           {areApprovalBtnsVisible ? (
-            <Fragment className="flex items-center gap-4">
-              <Button variant={"purple"} className={"w-full"}>
-                Accept Job
+            <Fragment>
+              <Button
+                variant={"purple"}
+                className={"w-full"}
+                onClick={handleApprove}
+                disabled={isLoading}
+              >
+                {isLoading ? "Processing..." : "Approve Company"}
               </Button>
-              <Button variant={"destructive"} className={"w-full"}>
-                Reject Job
+              <Button
+                variant={"destructive"}
+                className={"w-full"}
+                onClick={handleReject}
+                disabled={isLoading}
+              >
+                {isLoading ? "Processing..." : "Reject Company"}
               </Button>
-              <Button variant={"black"} className={"w-full"}>
-                Hold Job
+              <Button
+                variant={"black"}
+                className={"w-full"}
+                onClick={handleHold}
+                disabled={isLoading}
+              >
+                {isLoading ? "Processing..." : "Hold Company"}
               </Button>
             </Fragment>
           ) : (

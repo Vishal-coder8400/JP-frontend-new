@@ -13,7 +13,6 @@ import {
 } from "../../utils/icon";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
-import useAuthStore from "../../stores/useAuthStore";
 import MobileNav from "./mobileNav";
 import {
   Dialog,
@@ -54,12 +53,14 @@ const dashboardMenuSuperAdmin = [
 const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout, user } = useAuthStore();
+  // No longer need useAuthStore for super admin
   const dashboardMenu = dashboardMenuSuperAdmin;
 
   const logOut = () => {
-    navigate("/superAdmin/log-in");
-    logout();
+    // Simple localStorage logout
+    localStorage.removeItem("token");
+    localStorage.removeItem("userRole");
+    navigate("/super-admin/log-in");
   };
 
   return (
@@ -82,12 +83,12 @@ const Layout = () => {
               >
                 <img
                   className="size-12 rounded-full border border-black object-cover"
-                  src={user?.profileImage || "/image.png"}
-                  alt={user?.name || "Super Admin"}
+                  src="/image.png"
+                  alt="Super Admin"
                 />
                 <div className="flex-1 inline-flex flex-col justify-center items-center gap-1.5">
                   <div className="self-stretch text-center justify-start text-white text-md2 font-medium capitalize">
-                    {user?.name || "Super Admin"}
+                    Super Admin
                   </div>
                 </div>
                 <div className="size-2.5 left-[52px] top-[50px] absolute bg-lime-600 rounded-full" />
@@ -181,14 +182,14 @@ const Layout = () => {
             <div className="flex justify-center items-center">
               <img
                 className="w-16 h-16 rounded-full"
-                src={user?.profileImage || "/image.png"}
-                alt={user?.name || "Super Admin"}
+                src="/image.png"
+                alt="Super Admin"
               />
             </div>
           </div>
           <div className="z-1 inline-flex flex-col justify-start items-center gap-1.5">
             <div className="self-stretch text-center justify-start text-white text-base font-medium capitalize">
-              {user?.name || "Super Admin"}
+              Super Admin
             </div>
             <div className="self-stretch text-center justify-start text-neutral-400 text-sm font-medium capitalize">
               System Administrator <br />

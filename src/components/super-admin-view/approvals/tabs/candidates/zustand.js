@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getJobseekersList } from "../../../../../api/super-admin/user";
+import { getApprovalsList } from "../../../../../api/super-admin/approvals";
 
 const useCandidatesStore = create((set, get) => ({
   // Data state
@@ -119,7 +119,7 @@ const useCandidatesStore = create((set, get) => ({
         }),
       };
 
-      const response = await getJobseekersList(params);
+      const response = await getApprovalsList("jobseeker", params);
 
       // Parse the API response structure
       const jobSeekers = response.data?.data?.jobSeekers || [];

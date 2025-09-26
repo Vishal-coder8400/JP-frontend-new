@@ -2,8 +2,39 @@ import { Button } from "@/components/ui/button";
 import { getValue } from "@/utils/commonFunctions";
 import { DownloadIcon, YourImageIcon, YourPdfIcon } from "@/utils/icon";
 import { Link } from "react-router-dom";
+import { useApprovals } from "@/hooks/superAdmin/useApprovals";
 
 const RecruiterDetails = ({ recruiter, areApprovalBtnsVisible = false }) => {
+  const { isLoading, approveApplication, rejectApplication, holdApplication } =
+    useApprovals();
+
+  const handleApprove = async () => {
+    try {
+      await approveApplication(recruiter.id);
+      // Optionally refresh the recruiter data or close the drawer
+    } catch (error) {
+      console.error("Failed to approve recruiter:", error);
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      await rejectApplication(recruiter.id);
+      // Optionally refresh the recruiter data or close the drawer
+    } catch (error) {
+      console.error("Failed to reject recruiter:", error);
+    }
+  };
+
+  const handleHold = async () => {
+    try {
+      await holdApplication(recruiter.id);
+      // Optionally refresh the recruiter data or close the drawer
+    } catch (error) {
+      console.error("Failed to hold recruiter:", error);
+    }
+  };
+
   const pdfObject = {
     Resume: "resume",
     "PAN Card": "kycDetails.panDetails.image",
@@ -39,9 +70,27 @@ const RecruiterDetails = ({ recruiter, areApprovalBtnsVisible = false }) => {
             <div className="size- inline-flex flex-col justify-center items-start gap-2.5">
               {areApprovalBtnsVisible ? (
                 <div className="flex items-center gap-4">
-                  <Button variant={"purple"}>Accept Candidate</Button>
-                  <Button variant={"destructive"}>Reject Candidate</Button>
-                  <Button variant={"black"}>Hold Candidate</Button>
+                  <Button
+                    variant={"purple"}
+                    onClick={handleApprove}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Processing..." : "Approve Recruiter"}
+                  </Button>
+                  <Button
+                    variant={"destructive"}
+                    onClick={handleReject}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Processing..." : "Reject Recruiter"}
+                  </Button>
+                  <Button
+                    variant={"black"}
+                    onClick={handleHold}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Processing..." : "Hold Recruiter"}
+                  </Button>
                 </div>
               ) : (
                 <div className="self-stretch px-3 py-2 bg-black rounded-lg inline-flex justify-center items-center gap-1">

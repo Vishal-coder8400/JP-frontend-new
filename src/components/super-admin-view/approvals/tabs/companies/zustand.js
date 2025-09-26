@@ -1,7 +1,13 @@
 import { create } from "zustand";
-import { companies } from "./utils";
+import { getApprovalsList } from "../../../../../api/super-admin/approvals";
 
 const useCompaniesStore = create((set, get) => ({
+  // Data state
+  companies: [],
+  loading: false,
+  error: null,
+  totalCount: 0,
+
   // Filter state
   filters: {
     search: "",
@@ -21,17 +27,23 @@ const useCompaniesStore = create((set, get) => ({
   selectedCompany: null,
 
   // Actions
-  setFilter: (filterName, value) =>
+  setFilter: (filterName, value) => {
     set((state) => ({
       filters: { ...state.filters, [filterName]: value },
       currentPage: 1, // Reset to first page when filtering
-    })),
+    }));
+    // Trigger API call after setting filter
+    setTimeout(() => get().fetchCompanies(), 0);
+  },
 
-  updateFilters: (newFilters) =>
+  updateFilters: (newFilters) => {
     set((state) => ({
       filters: { ...state.filters, ...newFilters },
       currentPage: 1, // Reset to first page when filtering
-    })),
+    }));
+    // Trigger API call after updating filters
+    setTimeout(() => get().fetchCompanies(), 0);
+  },
 
   // Method to handle FilterComponent updates
   setFormData: (newFormData) => {
@@ -48,9 +60,11 @@ const useCompaniesStore = create((set, get) => ({
         currentPage: 1,
       };
     });
+    // Trigger API call after setting form data
+    setTimeout(() => get().fetchCompanies(), 0);
   },
 
-  clearAllFilters: () =>
+  clearAllFilters: () => {
     set({
       filters: {
         search: "",
@@ -61,9 +75,16 @@ const useCompaniesStore = create((set, get) => ({
         postedDate: null,
       },
       currentPage: 1,
-    }),
+    });
+    // Trigger API call after clearing filters
+    setTimeout(() => get().fetchCompanies(), 0);
+  },
 
-  setCurrentPage: (page) => set({ currentPage: page }),
+  setCurrentPage: (page) => {
+    set({ currentPage: page });
+    // Trigger API call after changing page
+    setTimeout(() => get().fetchCompanies(), 0);
+  },
 
   setShowDeleteDialog: (show) => set({ showDeleteDialog: show }),
 
@@ -85,78 +106,94 @@ const useCompaniesStore = create((set, get) => ({
     });
   },
 
+  // API actions
+  fetchCompanies: async () => {
+    const { filters, currentPage, itemsPerPage } = get();
+
+    set({ loading: true, error: null });
+
+    try {
+      // Build query parameters
+      const params = {
+        page: currentPage,
+        limit: itemsPerPage,
+        search: filters.search,
+        ...(filters.status.length > 0 && { status: filters.status }),
+        ...(filters.location.length > 0 && { location: filters.location }),
+        ...(filters.industry.length > 0 && { industry: filters.industry }),
+        ...(filters.company.length > 0 && { company: filters.company }),
+        ...(filters.postedDate && { postedDate: filters.postedDate }),
+      };
+
+      const response = await getApprovalsList("corporate", params);
+
+      // Parse the API response structure
+      const companies = response.data?.data?.companies || [];
+      const pagination = response.data?.data?.pagination || {};
+
+      // Map API data to component expected format
+      const companiesData = companies.map((company) => ({
+        id: company._id,
+        name: company.name || "N/A",
+        email: company.email || "N/A",
+        contact: company.phone
+          ? `${company.phone.countryCode} ${company.phone.number}`
+          : "N/A",
+        industry: company.industry || "N/A",
+        location: company.location || "N/A",
+        status: company.status || "pending",
+        joinedDate: company.createdAt
+          ? new Date(company.createdAt).toISOString().split("T")[0]
+          : "N/A",
+        lastUpdated: company.updatedAt
+          ? new Date(company.updatedAt).toISOString().split("T")[0]
+          : "N/A",
+        // Additional API fields
+        _id: company._id,
+        phone: company.phone,
+        createdAt: company.createdAt,
+        updatedAt: company.updatedAt,
+      }));
+
+      const total = pagination.totalCompanies || companiesData.length;
+
+      set({
+        companies: companiesData,
+        totalCount: total,
+        loading: false,
+      });
+    } catch (error) {
+      console.error("Error fetching companies:", error);
+      set({
+        error: error.response?.data?.message || "Failed to fetch companies",
+        loading: false,
+      });
+    }
+  },
+
+  refetchCompanies: () => {
+    get().fetchCompanies();
+  },
+
   // Computed properties (getters)
   getFilteredCompanies: () => {
-    const { filters } = get();
-
-    return companies.filter((company) => {
-      // Apply search filter
-      const matchesSearch =
-        filters.search === "" ||
-        company.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        company.email.toLowerCase().includes(filters.search.toLowerCase()) ||
-        company.industry.toLowerCase().includes(filters.search.toLowerCase());
-
-      // Apply status filter
-      const matchesStatus =
-        filters.status.length === 0 || filters.status.includes(company.status);
-
-      // Apply location filter
-      const matchesLocation =
-        filters.location.length === 0 ||
-        filters.location.some((loc) =>
-          company.location.toLowerCase().includes(loc.toLowerCase())
-        );
-
-      // Apply industry filter
-      const matchesIndustry =
-        filters.industry.length === 0 ||
-        filters.industry.some((ind) =>
-          company.industry.toLowerCase().includes(ind.toLowerCase())
-        );
-
-      // Apply company filter
-      const matchesCompany =
-        filters.company.length === 0 ||
-        filters.company.some((comp) =>
-          company.name.toLowerCase().includes(comp.toLowerCase())
-        );
-
-      // Apply date filter
-      const matchesDate =
-        !filters.postedDate ||
-        new Date(company.joinedDate) >= new Date(filters.postedDate);
-
-      return (
-        matchesSearch &&
-        matchesStatus &&
-        matchesLocation &&
-        matchesIndustry &&
-        matchesCompany &&
-        matchesDate
-      );
-    });
+    const { companies } = get();
+    return companies;
   },
 
   getPaginatedCompanies: () => {
-    const filteredCompanies = get().getFilteredCompanies();
-    const { currentPage, itemsPerPage } = get();
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-
-    return filteredCompanies.slice(startIndex, endIndex);
+    const { companies } = get();
+    return companies;
   },
 
   getTotalPages: () => {
-    const filteredCompanies = get().getFilteredCompanies();
-    const { itemsPerPage } = get();
-
-    return Math.ceil(filteredCompanies.length / itemsPerPage);
+    const { totalCount, itemsPerPage } = get();
+    return Math.ceil(totalCount / itemsPerPage);
   },
 
   getFilteredCount: () => {
-    return get().getFilteredCompanies().length;
+    const { totalCount } = get();
+    return totalCount;
   },
 
   // Additional utility methods

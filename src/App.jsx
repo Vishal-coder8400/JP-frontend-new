@@ -3,14 +3,13 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/common/scrollToTop";
 import CheckAuth from "./components/common/checkAuth";
 import DynamicCheckAuthWrapper from "./components/common/dynamicCheckAuthWrapper";
-import SuperAdminAuth from "./components/common/superAdminAuth";
+import SuperAdminAuth from "./components/common/SuperAdminAuth";
 
 import Layout from "./components/recruiter-view/layout";
 import ProfileSetupLayout from "./components/recruiter-view/profile-setup-layout";
 
 import { useGetUserProfile as useGetRecruiterUserProfile } from "./hooks/recruiter/useProfile";
 import { useGetCorporateUserProfile } from "./hooks/corporate/useProfile";
-import { useGetUserProfile } from "./hooks/superAdmin/useProfile";
 
 import useAuthStore from "./stores/useAuthStore";
 

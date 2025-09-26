@@ -1,7 +1,13 @@
 import { create } from "zustand";
-import { recruiters } from "./utils";
+import { getApprovalsList } from "../../../../../api/super-admin/approvals";
 
 const useRecruitersStore = create((set, get) => ({
+  // Data state
+  recruiters: [],
+  loading: false,
+  error: null,
+  totalCount: 0,
+
   // Filter state
   filters: {
     search: "",
@@ -21,17 +27,23 @@ const useRecruitersStore = create((set, get) => ({
   selectedRecruiter: null,
 
   // Actions
-  setFilter: (filterName, value) =>
+  setFilter: (filterName, value) => {
     set((state) => ({
       filters: { ...state.filters, [filterName]: value },
       currentPage: 1, // Reset to first page when filtering
-    })),
+    }));
+    // Trigger API call after setting filter
+    setTimeout(() => get().fetchRecruiters(), 0);
+  },
 
-  updateFilters: (newFilters) =>
+  updateFilters: (newFilters) => {
     set((state) => ({
       filters: { ...state.filters, ...newFilters },
       currentPage: 1, // Reset to first page when filtering
-    })),
+    }));
+    // Trigger API call after updating filters
+    setTimeout(() => get().fetchRecruiters(), 0);
+  },
 
   // Method to handle FilterComponent updates
   setFormData: (newFormData) => {
@@ -48,9 +60,11 @@ const useRecruitersStore = create((set, get) => ({
         currentPage: 1,
       };
     });
+    // Trigger API call after setting form data
+    setTimeout(() => get().fetchRecruiters(), 0);
   },
 
-  clearAllFilters: () =>
+  clearAllFilters: () => {
     set({
       filters: {
         search: "",
@@ -61,9 +75,16 @@ const useRecruitersStore = create((set, get) => ({
         postedDate: null,
       },
       currentPage: 1,
-    }),
+    });
+    // Trigger API call after clearing filters
+    setTimeout(() => get().fetchRecruiters(), 0);
+  },
 
-  setCurrentPage: (page) => set({ currentPage: page }),
+  setCurrentPage: (page) => {
+    set({ currentPage: page });
+    // Trigger API call after changing page
+    setTimeout(() => get().fetchRecruiters(), 0);
+  },
 
   setShowDeleteDialog: (show) => set({ showDeleteDialog: show }),
 
@@ -85,82 +106,97 @@ const useRecruitersStore = create((set, get) => ({
     });
   },
 
+  // API actions
+  fetchRecruiters: async () => {
+    const { filters, currentPage, itemsPerPage } = get();
+
+    set({ loading: true, error: null });
+
+    try {
+      // Build query parameters
+      const params = {
+        page: currentPage,
+        limit: itemsPerPage,
+        search: filters.search,
+        ...(filters.jobStatus.length > 0 && { jobStatus: filters.jobStatus }),
+        ...(filters.location.length > 0 && { location: filters.location }),
+        ...(filters.company.length > 0 && { company: filters.company }),
+        ...(filters.industry.length > 0 && { industry: filters.industry }),
+        ...(filters.postedDate && { postedDate: filters.postedDate }),
+      };
+
+      const response = await getApprovalsList("recruiter", params);
+
+      // Parse the API response structure
+      const recruiters = response.data?.data?.recruiters || [];
+      const pagination = response.data?.data?.pagination || {};
+
+      // Map API data to component expected format
+      const recruitersData = recruiters.map((recruiter) => ({
+        id: recruiter._id,
+        name: recruiter.name || "N/A",
+        email: recruiter.email || "N/A",
+        contact: recruiter.phone
+          ? `${recruiter.phone.countryCode} ${recruiter.phone.number}`
+          : "N/A",
+        company: recruiter.company || "N/A",
+        designation: recruiter.designation || "N/A",
+        industry: recruiter.industry || "N/A",
+        location: recruiter.location || "N/A",
+        jobStatus: recruiter.jobStatus || "pending",
+        candidatesCount: recruiter.candidatesCount || 0,
+        postedDate: recruiter.createdAt
+          ? new Date(recruiter.createdAt).toISOString().split("T")[0]
+          : "N/A",
+        lastUpdated: recruiter.updatedAt
+          ? new Date(recruiter.updatedAt).toISOString().split("T")[0]
+          : "N/A",
+        // Additional API fields
+        _id: recruiter._id,
+        phone: recruiter.phone,
+        createdAt: recruiter.createdAt,
+        updatedAt: recruiter.updatedAt,
+      }));
+
+      const total = pagination.totalRecruiters || recruitersData.length;
+
+      set({
+        recruiters: recruitersData,
+        totalCount: total,
+        loading: false,
+      });
+    } catch (error) {
+      console.error("Error fetching recruiters:", error);
+      set({
+        error: error.response?.data?.message || "Failed to fetch recruiters",
+        loading: false,
+      });
+    }
+  },
+
+  refetchRecruiters: () => {
+    get().fetchRecruiters();
+  },
+
   // Computed properties (getters)
   getFilteredRecruiters: () => {
-    const { filters } = get();
-
-    return recruiters.filter((recruiter) => {
-      // Apply search filter
-      const matchesSearch =
-        filters.search === "" ||
-        recruiter.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        recruiter.email.toLowerCase().includes(filters.search.toLowerCase()) ||
-        recruiter.company
-          .toLowerCase()
-          .includes(filters.search.toLowerCase()) ||
-        recruiter.designation
-          .toLowerCase()
-          .includes(filters.search.toLowerCase());
-
-      // Apply job status filter
-      const matchesJobStatus =
-        filters.jobStatus.length === 0 ||
-        filters.jobStatus.includes(recruiter.jobStatus);
-
-      // Apply location filter
-      const matchesLocation =
-        filters.location.length === 0 ||
-        filters.location.some((loc) =>
-          recruiter.location.toLowerCase().includes(loc.toLowerCase())
-        );
-
-      // Apply company filter
-      const matchesCompany =
-        filters.company.length === 0 ||
-        filters.company.some((comp) =>
-          recruiter.company.toLowerCase().includes(comp.toLowerCase())
-        );
-
-      // Apply industry filter
-      const matchesIndustry =
-        filters.industry.length === 0 ||
-        filters.industry.includes(recruiter.industry.toLowerCase());
-
-      // Apply date filter
-      const matchesDate =
-        !filters.postedDate ||
-        new Date(recruiter.postedDate) >= new Date(filters.postedDate);
-
-      return (
-        matchesSearch &&
-        matchesJobStatus &&
-        matchesLocation &&
-        matchesCompany &&
-        matchesIndustry &&
-        matchesDate
-      );
-    });
+    const { recruiters } = get();
+    return recruiters;
   },
 
   getPaginatedRecruiters: () => {
-    const filteredRecruiters = get().getFilteredRecruiters();
-    const { currentPage, itemsPerPage } = get();
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-
-    return filteredRecruiters.slice(startIndex, endIndex);
+    const { recruiters } = get();
+    return recruiters;
   },
 
   getTotalPages: () => {
-    const filteredRecruiters = get().getFilteredRecruiters();
-    const { itemsPerPage } = get();
-
-    return Math.ceil(filteredRecruiters.length / itemsPerPage);
+    const { totalCount, itemsPerPage } = get();
+    return Math.ceil(totalCount / itemsPerPage);
   },
 
   getFilteredCount: () => {
-    return get().getFilteredRecruiters().length;
+    const { totalCount } = get();
+    return totalCount;
   },
 
   // Additional utility methods

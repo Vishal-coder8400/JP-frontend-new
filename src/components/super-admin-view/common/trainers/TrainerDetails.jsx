@@ -9,6 +9,7 @@ import {
   SquarePenIcon,
   UserIcon,
 } from "lucide-react";
+import { useApprovals } from "@/hooks/superAdmin/useApprovals";
 
 const TrainerDetails = ({
   trainer,
@@ -16,6 +17,40 @@ const TrainerDetails = ({
   isLoading = false,
   error = null,
 }) => {
+  const {
+    isLoading: isApprovalLoading,
+    approveApplication,
+    rejectApplication,
+    holdApplication,
+  } = useApprovals();
+
+  const handleApprove = async () => {
+    try {
+      await approveApplication(trainer._id);
+      // Optionally refresh the trainer data or close the drawer
+    } catch (error) {
+      console.error("Failed to approve trainer:", error);
+    }
+  };
+
+  const handleReject = async () => {
+    try {
+      await rejectApplication(trainer._id);
+      // Optionally refresh the trainer data or close the drawer
+    } catch (error) {
+      console.error("Failed to reject trainer:", error);
+    }
+  };
+
+  const handleHold = async () => {
+    try {
+      await holdApplication(trainer._id);
+      // Optionally refresh the trainer data or close the drawer
+    } catch (error) {
+      console.error("Failed to hold trainer:", error);
+    }
+  };
+
   // Handle loading state
   if (isLoading) {
     return (
@@ -106,9 +141,27 @@ const TrainerDetails = ({
           </div>
           {areApprovalBtnsVisible && (
             <div className="flex items-center gap-4">
-              <Button variant={"purple"}>Accept Candidate</Button>
-              <Button variant={"destructive"}>Reject Candidate</Button>
-              <Button variant={"black"}>Hold Candidate</Button>
+              <Button
+                variant={"purple"}
+                onClick={handleApprove}
+                disabled={isApprovalLoading}
+              >
+                {isApprovalLoading ? "Processing..." : "Approve Trainer"}
+              </Button>
+              <Button
+                variant={"destructive"}
+                onClick={handleReject}
+                disabled={isApprovalLoading}
+              >
+                {isApprovalLoading ? "Processing..." : "Reject Trainer"}
+              </Button>
+              <Button
+                variant={"black"}
+                onClick={handleHold}
+                disabled={isApprovalLoading}
+              >
+                {isApprovalLoading ? "Processing..." : "Hold Trainer"}
+              </Button>
             </div>
           )}
         </div>

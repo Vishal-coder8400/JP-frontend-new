@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import CompaniesTable from "./CompaniesTable";
 import Pagination from "../../../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
@@ -9,6 +10,8 @@ const CompaniesTab = () => {
   const {
     filters,
     currentPage,
+    loading,
+    error,
     setFormData,
     clearAllFilters,
     setCurrentPage,
@@ -16,7 +19,13 @@ const CompaniesTab = () => {
     getPaginatedCompanies,
     getTotalPages,
     getFilteredCount,
+    fetchCompanies,
   } = useCompaniesStore();
+
+  // Fetch companies on component mount
+  useEffect(() => {
+    fetchCompanies();
+  }, [fetchCompanies]);
 
   // Get computed data
   const paginatedCompanies = getPaginatedCompanies();
@@ -26,6 +35,16 @@ const CompaniesTab = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Companies</h1>
+
+      {/* Error Message */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="text-red-800 font-medium">
+            Error loading companies
+          </div>
+          <div className="text-red-600 text-sm">{error}</div>
+        </div>
+      )}
 
       {/* Main Content Layout */}
       <div className="flex flex-col lg:flex-row gap-6 min-h-0">
@@ -65,16 +84,25 @@ const CompaniesTab = () => {
             </div>
           </div>
 
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-8">
+              <div className="text-gray-500">Loading companies...</div>
+            </div>
+          )}
+
           {/* Companies Table Container with horizontal scroll */}
-          <div className="min-w-0 overflow-x-auto">
-            <CompaniesTable
-              paginatedCompanies={paginatedCompanies}
-              handleDeleteCompany={handleDeleteCompany}
-            />
-          </div>
+          {!loading && (
+            <div className="min-w-0 overflow-x-auto">
+              <CompaniesTable
+                paginatedCompanies={paginatedCompanies}
+                handleDeleteCompany={handleDeleteCompany}
+              />
+            </div>
+          )}
 
           {/* Pagination */}
-          {filteredCount > 0 && (
+          {!loading && filteredCount > 0 && (
             <div className="flex justify-center">
               <Pagination
                 currentPage={currentPage}
