@@ -62,7 +62,6 @@ import TrainerAdditional from "./pages/trainner-view/additional-details";
 // Super Admin Pages
 import SuperAdminLogin from "./pages/super-admin-view/log-in";
 import SuperAdminDashboard from "./pages/super-admin-view/dashboard";
-import SuperAdminProfile from "./pages/super-admin-view/profile";
 import SuperAdminLayout from "./components/super-admin-view/layout";
 import SuperAdminDatabasePage from "./pages/super-admin-view/database";
 import SuperAdminJobsAndTrainingsPage from "./pages/super-admin-view/jobs-and-trainings/jobs-and-trainings";
@@ -116,7 +115,6 @@ function App() {
             element={<Navigate to="/super-admin/database" replace />}
           />
           <Route path="dashboard" element={<SuperAdminDashboard />} />
-          <Route path="profile" element={<SuperAdminProfile />} />
           <Route path="database" element={<SuperAdminDatabasePage />} />
           <Route
             path="jobs-and-trainings"

@@ -9,46 +9,95 @@ import {
   TwitterIcon,
   LinkedinIcon,
 } from "lucide-react";
+import { useGetJobDetails } from "../../../../../hooks/superAdmin/useJob";
 
-const JobDetailsDrawer = ({ job }) => {
-  if (!job) return null;
+const JobDetailsDrawer = ({ jobId }) => {
+  const { data: jobData, isLoading, error } = useGetJobDetails(jobId);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-full flex flex-col bg-white p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-500">Loading job details...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-full flex flex-col bg-white p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-red-500">
+            Error loading job details: {error.message}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!jobData?.data) {
+    return (
+      <div className="min-h-full flex flex-col bg-white p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-500">No job details found</div>
+        </div>
+      </div>
+    );
+  }
+
+  const job = jobData.data;
 
   return (
     <div className="min-h-full flex flex-col bg-white p-6">
       {/* Header */}
       <div className="flex justify-between gap-4 p-6 border-1 border-gray2 rounded-lg">
-        <img
-          src="/google.png"
-          alt={job.name}
-          className="h-10 w-10 rounded-md"
-        />
+        {job.companyLogo && (
+          <img
+            src={job.companyLogo}
+            alt={job.company}
+            className="h-10 w-10 rounded-md"
+          />
+        )}
         <div className="flex-1">
-          <p>Google</p>
+          {job.company && <p>{job.company}</p>}
           <div className="flex items-center gap-4">
-            <p className="text-xl font-medium">Data Engineer</p>
-            <Badge className="text-primary-purple bg-light-purple text-xs">
-              2 Applied
-            </Badge>
+            {(job.title || job.name) && (
+              <p className="text-xl font-medium">{job.title || job.name}</p>
+            )}
+            {(job.applicationsCount || job.candidates) && (
+              <Badge className="text-primary-purple bg-light-purple text-xs">
+                {job.applicationsCount || job.candidates} Applied
+              </Badge>
+            )}
           </div>
           <div className="text-gray1 flex items-center gap-6 mt-2">
-            <div className="flex items-center gap-2">
-              <LocationIcon className="h-4 w-4 text-gray1" />
-              Brussels
-            </div>
-            <div className="flex items-center gap-2">
-              <ClockIcon className="h-4 w-4 text-gray1" />
-              Full Time
-            </div>
-            <div className="flex items-center gap-2">
-              <DollarSignIcon className="h-4 w-4 text-gray1" />
-              50-55k
-            </div>
+            {job.location && (
+              <div className="flex items-center gap-2">
+                <LocationIcon className="h-4 w-4 text-gray1" />
+                {job.location}
+              </div>
+            )}
+            {(job.jobType || job.type) && (
+              <div className="flex items-center gap-2">
+                <ClockIcon className="h-4 w-4 text-gray1" />
+                {job.jobType || job.type}
+              </div>
+            )}
+            {(job.salary || job.salaryRange) && (
+              <div className="flex items-center gap-2">
+                <DollarSignIcon className="h-4 w-4 text-gray1" />
+                {job.salary || job.salaryRange}
+              </div>
+            )}
           </div>
 
-          <div className="text-gray1 flex items-center gap-2 mt-2">
-            <CalendarIcon className="h-4 w-4 text-gray1" />
-            29 mins ago
-          </div>
+          {job.postedDate && (
+            <div className="text-gray1 flex items-center gap-2 mt-2">
+              <CalendarIcon className="h-4 w-4 text-gray1" />
+              {new Date(job.postedDate).toLocaleDateString()}
+            </div>
+          )}
         </div>
         <Button variant="black">Apply Now</Button>
       </div>
@@ -58,75 +107,139 @@ const JobDetailsDrawer = ({ job }) => {
         <div>
           <h3 className="text-lg font-semibold">About the job</h3>
           <div className="text-gray1 mt-4 space-y-2">
-            <h4 className="font-semibold">Job Description</h4>
-            <p>
-              Jayant Fitness is looking for a dynamic and results-driven
-              Business Development Executive / Sales Executive to expand our
-              client base in the corporate and real estate sectors. The ideal
-              candidate will be responsible for generating leads, closing deals,
-              and building long-term relationships with clients.
-            </p>
+            {(job.description || job.jobDescription) && (
+              <>
+                <h4 className="font-semibold">Job Description</h4>
+                <p>{job.description || job.jobDescription}</p>
+              </>
+            )}
 
-            <h4 className="font-semibold">Key Responsibilities</h4>
-            <ul className="list-disc list-inside">
-              <li>Identify and pursue new business opportunities</li>
-              <li>Build and maintain relationships with clients</li>
-              <li>
-                Conduct market research to identify trends and opportunities
-              </li>
-              <li>Prepare and deliver presentations to clients</li>
-              <li>Negotiate contracts and close deals</li>
-            </ul>
+            {job.responsibilities && (
+              <>
+                <h4 className="font-semibold">Key Responsibilities</h4>
+                <ul className="list-disc list-inside">
+                  {Array.isArray(job.responsibilities) ? (
+                    job.responsibilities.map((resp, index) => (
+                      <li key={index}>{resp}</li>
+                    ))
+                  ) : (
+                    <li>{job.responsibilities}</li>
+                  )}
+                </ul>
+              </>
+            )}
 
-            <h4 className="font-semibold">Education</h4>
-            <p>Any Graduates</p>
+            {job.requirements && (
+              <>
+                <h4 className="font-semibold">Requirements</h4>
+                <ul className="list-disc list-inside">
+                  {Array.isArray(job.requirements) ? (
+                    job.requirements.map((req, index) => (
+                      <li key={index}>{req}</li>
+                    ))
+                  ) : (
+                    <li>{job.requirements}</li>
+                  )}
+                </ul>
+              </>
+            )}
 
-            <h4 className="font-semibold">Other Details</h4>
-            <ul className="list-disc list-inside">
-              <li>Experience: 0-1 years</li>
-              <li>Location: Bangalore</li>
-              <li>Salary: 15K - 25K P.A.</li>
-              <li>Job Type: Full-time, Permanent</li>
-              <li>Industry: Fitness & Wellness</li>
-            </ul>
+            {job.education && (
+              <>
+                <h4 className="font-semibold">Education</h4>
+                <p>{job.education}</p>
+              </>
+            )}
 
-            <p>
-              For additional information, you can reach out to me at
-              anesh@stimuler.tech
-            </p>
+            {(job.experience ||
+              job.location ||
+              job.salary ||
+              job.jobType ||
+              job.industry) && (
+              <>
+                <h4 className="font-semibold">Other Details</h4>
+                <ul className="list-disc list-inside">
+                  {job.experience && <li>Experience: {job.experience}</li>}
+                  {job.location && <li>Location: {job.location}</li>}
+                  {job.salary && <li>Salary: {job.salary}</li>}
+                  {(job.jobType || job.type) && (
+                    <li>Job Type: {job.jobType || job.type}</li>
+                  )}
+                  {job.industry && <li>Industry: {job.industry}</li>}
+                </ul>
+              </>
+            )}
 
-            <div className="flex items-center gap-2 mt-4">
-              {["Sales", "Marketing", "Communication"].map((skill) => (
-                <span
-                  key={skill}
-                  className="inline-block px-2 py-1 text-xs font-medium border-1 rounded-full"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
+            {job.contactEmail && (
+              <p>
+                For additional information, you can reach out to me at{" "}
+                {job.contactEmail}
+              </p>
+            )}
+
+            {job.skills && (
+              <div className="flex items-center gap-2 mt-4">
+                {Array.isArray(job.skills) ? (
+                  job.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="inline-block px-2 py-1 text-xs font-medium border-1 rounded-full"
+                    >
+                      {skill}
+                    </span>
+                  ))
+                ) : (
+                  <span className="inline-block px-2 py-1 text-xs font-medium border-1 rounded-full">
+                    {job.skills}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Company */}
-      <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
-        <h4>About the Company</h4>
-        <p className="text-gray1 mt-4">
-          Google LLC is an American multinational technology company that
-          specializes in Internet-related services and products, which include
-          online advertising technologies, a search engine, cloud computing,
-          software, and hardware. It is considered one of the Big Five companies
-          in the U.S. information technology industry, along with Amazon, Apple,
-          Meta (Facebook), and Microsoft.
-        </p>
+      {(job.companyDescription || job.company?.description) && (
+        <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
+          <h4>About the Company</h4>
+          <p className="text-gray1 mt-4">
+            {job.companyDescription || job.company?.description}
+          </p>
 
-        <div className="mt-4 pt-4 flex items-center gap-4 border-t-1 border-gray-2">
-          <FacebookIcon className="h-4 w-4 text-gray1" />
-          <LinkedinIcon className="h-4 w-4 text-gray1" />
-          <TwitterIcon className="h-4 w-4 text-gray1" />
+          {(job.company?.socialMedia || job.socialMedia) && (
+            <div className="mt-4 pt-4 flex items-center gap-4 border-t-1 border-gray-2">
+              {job.company?.socialMedia?.facebook && (
+                <a
+                  href={job.company.socialMedia.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FacebookIcon className="h-4 w-4 text-gray1 hover:text-blue-600" />
+                </a>
+              )}
+              {job.company?.socialMedia?.linkedin && (
+                <a
+                  href={job.company.socialMedia.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <LinkedinIcon className="h-4 w-4 text-gray1 hover:text-blue-600" />
+                </a>
+              )}
+              {job.company?.socialMedia?.twitter && (
+                <a
+                  href={job.company.socialMedia.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <TwitterIcon className="h-4 w-4 text-gray1 hover:text-blue-600" />
+                </a>
+              )}
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 };

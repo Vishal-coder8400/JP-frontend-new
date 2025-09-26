@@ -21,3 +21,12 @@ export const getJobApplications = ({ signal, jobId, ...params }) =>
     signal,
     params,
   });
+
+export const getJobsApplications = ({ signal, ...params }) =>
+  api.get("/api/v1/admin/applications/jobs", {
+    signal,
+    params,
+  });
+
+export const getJobDetails = ({ signal, jobId }) =>
+  api.get(`/api/v1/admin/applications/jobs/${jobId}`, { signal });

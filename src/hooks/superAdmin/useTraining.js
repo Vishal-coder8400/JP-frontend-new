@@ -5,6 +5,8 @@ import {
   createTraining,
   updateTraining,
   deleteTraining,
+  getTrainingsApplications,
+  getTrainingDetails,
 } from "../../api/super-admin/training";
 import { toast } from "sonner";
 
@@ -21,6 +23,22 @@ export const useGetTrainingById = (id, { enabled = true } = {}) => {
     queryKey: ["superAdmin-training", id],
     queryFn: ({ signal }) => getTrainingById({ signal, id }),
     enabled: enabled && !!id,
+  });
+};
+
+export const useGetTrainingsApplications = (params = {}) => {
+  return useQuery({
+    queryKey: ["superAdmin-trainings-applications", params],
+    queryFn: ({ signal }) => getTrainingsApplications({ signal, ...params }),
+    keepPreviousData: true,
+  });
+};
+
+export const useGetTrainingDetails = (trainingId, { enabled = true } = {}) => {
+  return useQuery({
+    queryKey: ["superAdmin-training-details", trainingId],
+    queryFn: ({ signal }) => getTrainingDetails({ signal, trainingId }),
+    enabled: enabled && !!trainingId,
   });
 };
 

@@ -21,6 +21,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { BriefcaseIcon } from "lucide-react";
+import { useGetSuperAdminProfile } from "../../hooks/superAdmin/useProfile";
 
 const dashboardMenuSuperAdmin = [
   {
@@ -34,7 +35,7 @@ const dashboardMenuSuperAdmin = [
     icon: <BriefcaseIcon className="h-5 w-5 text-white" />,
   },
   {
-    name: "Jobs/Training",
+    name: "Jobs/Trainings",
     link: "/super-admin/jobs-and-trainings",
     icon: <BriefcaseIcon className="h-5 w-5 text-white" />,
   },
@@ -53,8 +54,11 @@ const dashboardMenuSuperAdmin = [
 const Layout = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  // No longer need useAuthStore for super admin
+  const { data: profileData, isLoading: profileLoading } =
+    useGetSuperAdminProfile();
   const dashboardMenu = dashboardMenuSuperAdmin;
+
+  const profile = profileData?.data?.data || {};
 
   const logOut = () => {
     // Simple localStorage logout
@@ -78,17 +82,23 @@ const Layout = () => {
               </div>
               {/* Profile Card */}
               <Link
-                to="/superAdmin/profile"
+                to="/super-admin/profile"
                 className="self-stretch px-5 py-4 relative bg-[#23344B] rounded-lg inline-flex justify-center items-center gap-4"
               >
                 <img
                   className="size-12 rounded-full border border-black object-cover"
-                  src="/image.png"
-                  alt="Super Admin"
+                  src={profile?.profileImage || "/image.png"}
+                  alt={
+                    profile?.firstName
+                      ? `${profile.firstName} ${profile.lastName}`
+                      : "Super Admin"
+                  }
                 />
                 <div className="flex-1 inline-flex flex-col justify-center items-center gap-1.5">
                   <div className="self-stretch text-center justify-start text-white text-md2 font-medium capitalize">
-                    Super Admin
+                    {profile?.firstName && profile?.lastName
+                      ? `${profile.firstName} ${profile.lastName}`
+                      : profile?.name || "Super Admin"}
                   </div>
                 </div>
                 <div className="size-2.5 left-[52px] top-[50px] absolute bg-lime-600 rounded-full" />

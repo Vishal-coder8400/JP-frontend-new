@@ -9,13 +9,19 @@ import {
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { User } from "lucide-react";
 import CandidateDetailsDrawer from "./CandidateDetailsDrawer";
+import { useGetCandidateDetails } from "@/hooks/superAdmin/useApplicant";
 
 import { useState } from "react";
 
 const CandidatesTable = ({ paginatedCandidates }) => {
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] = useState(null);
+  const [candidateIdForDetails, setCandidateIdForDetails] = useState(null);
+
+  const { data: candidateDetails, isLoading: isLoadingCandidateDetails } =
+    useGetCandidateDetails(candidateIdForDetails, {
+      enabled: !!candidateIdForDetails,
+    });
 
   const handleSelectCandidate = (candidateId) => {
     setSelectedCandidateId(candidateId);
@@ -27,7 +33,7 @@ const CandidatesTable = ({ paginatedCandidates }) => {
       return;
     }
 
-    setSelectedCandidate(candidate);
+    setCandidateIdForDetails(candidate.id);
     setDrawerOpen(true);
   };
 
@@ -134,7 +140,10 @@ const CandidatesTable = ({ paginatedCandidates }) => {
             overflow-y-auto border-transparent [&>button.absolute]:hidden"
         >
           <div className="w-full h-full">
-            <CandidateDetailsDrawer candidate={selectedCandidate} />
+            <CandidateDetailsDrawer
+              candidate={candidateDetails?.data}
+              isLoading={isLoadingCandidateDetails}
+            />
           </div>
         </SheetContent>
       </Sheet>

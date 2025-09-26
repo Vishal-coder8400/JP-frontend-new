@@ -28,7 +28,7 @@ const JobsTable = ({ paginatedJobs }) => {
 
   const handleViewDetails = (job, event) => {
     event.stopPropagation();
-    setSelectedJob(job);
+    setSelectedJob(job.id);
     setDrawerOpen(true);
   };
 

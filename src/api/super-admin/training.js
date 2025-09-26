@@ -30,3 +30,12 @@ export const updateTrainer = ({ id, data }) =>
   api.put(`/api/v1/admin/trainers/${id}`, data);
 
 export const deleteTrainer = (id) => api.delete(`/api/v1/admin/trainers/${id}`);
+
+export const getTrainingsApplications = ({ signal, ...params }) =>
+  api.get("/api/v1/admin/applications/trainings", {
+    signal,
+    params,
+  });
+
+export const getTrainingDetails = ({ signal, trainingId }) =>
+  api.get(`/api/v1/admin/applications/trainings/${trainingId}`, { signal });

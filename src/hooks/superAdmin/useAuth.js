@@ -8,9 +8,6 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: login,
     onSuccess: async (data, variables) => {
-      console.log("Login success data:", data);
-      console.log("Token from response:", data.data.token);
-
       toast.success(data.data.message);
 
       // Simple localStorage approach

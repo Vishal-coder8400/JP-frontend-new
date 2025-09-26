@@ -4,7 +4,7 @@ import JobsApplied from "./tabs/JobsApplied";
 import AboutCandidate from "./tabs/AboutCandidate";
 import { Button } from "@/components/ui/button";
 
-const CandidateDetailsDrawer = ({ candidate }) => {
+const CandidateDetailsDrawer = ({ candidate, isLoading }) => {
   const [activeTab, setActiveTab] = useState("aboutCandidate");
 
   const tabs = [
@@ -17,6 +17,17 @@ const CandidateDetailsDrawer = ({ candidate }) => {
       label: "About Candidate",
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full p-10 bg-white rounded-l-2xl inline-flex flex-col justify-center items-center">
+        <div className="text-center">
+          <User className="h-12 w-12 text-gray-400 mx-auto mb-4 animate-pulse" />
+          <p className="text-gray-500">Loading candidate details...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!candidate) {
     return (

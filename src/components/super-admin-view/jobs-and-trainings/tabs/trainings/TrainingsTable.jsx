@@ -30,7 +30,7 @@ const TrainingsTable = ({ paginatedTrainings }) => {
 
   const handleViewDetails = (training, event) => {
     event.stopPropagation();
-    setSelectedTraining(training);
+    setSelectedTraining(training.id);
     setDrawerOpen(true);
   };
 

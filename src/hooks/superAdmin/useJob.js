@@ -6,6 +6,8 @@ import {
   updateJob,
   deleteJob,
   getJobApplications,
+  getJobsApplications,
+  getJobDetails,
 } from "../../api/super-admin/job";
 import { toast } from "sonner";
 
@@ -35,6 +37,22 @@ export const useGetJobApplications = (
     queryFn: ({ signal }) => getJobApplications({ signal, jobId, ...params }),
     enabled: enabled && !!jobId,
     keepPreviousData: true,
+  });
+};
+
+export const useGetJobsApplications = (params = {}) => {
+  return useQuery({
+    queryKey: ["superAdmin-jobs-applications", params],
+    queryFn: ({ signal }) => getJobsApplications({ signal, ...params }),
+    keepPreviousData: true,
+  });
+};
+
+export const useGetJobDetails = (jobId, { enabled = true } = {}) => {
+  return useQuery({
+    queryKey: ["superAdmin-job-details", jobId],
+    queryFn: ({ signal }) => getJobDetails({ signal, jobId }),
+    enabled: enabled && !!jobId,
   });
 };
 

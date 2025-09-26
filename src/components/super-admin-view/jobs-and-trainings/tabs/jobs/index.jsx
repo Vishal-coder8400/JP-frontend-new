@@ -3,24 +3,139 @@ import Pagination from "../../../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../../common/filterComponent";
 import { jobsAndTrainingsFilters } from "../../utils";
-import useJobsStore from "./zustand";
+import { useGetJobsApplications } from "../../../../../hooks/superAdmin/useJob";
+import { useState, useMemo } from "react";
 
 const JobsTab = () => {
-  const {
-    filters,
-    currentPage,
-    setFormData,
-    clearAllFilters,
-    setCurrentPage,
-    getPaginatedJobs,
-    getTotalPages,
-    getFilteredCount,
-  } = useJobsStore();
+  const [filters, setFilters] = useState({
+    search: "",
+    status: [],
+    postedDate: null,
+    location: [],
+    company: [],
+    industry: [],
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  // Get computed data
-  const paginatedJobs = getPaginatedJobs();
-  const totalPages = getTotalPages();
-  const filteredCount = getFilteredCount();
+  // Fetch jobs applications data
+  const {
+    data: jobsData,
+    isLoading,
+    error,
+  } = useGetJobsApplications({
+    page: currentPage,
+    limit: itemsPerPage,
+    ...filters,
+  });
+
+  // Filter jobs based on current filters
+  const filteredJobs = useMemo(() => {
+    if (!jobsData?.data?.applications) return [];
+
+    return jobsData.data.applications.filter((job) => {
+      // Search filter
+      if (
+        filters.search &&
+        !job.name?.toLowerCase().includes(filters.search.toLowerCase()) &&
+        !job.company?.toLowerCase().includes(filters.search.toLowerCase())
+      ) {
+        return false;
+      }
+
+      // Status filter
+      if (filters.status.length > 0 && !filters.status.includes(job.status)) {
+        return false;
+      }
+
+      // Location filter
+      if (
+        filters.location.length > 0 &&
+        !filters.location.some((loc) =>
+          job.location?.toLowerCase().includes(loc.toLowerCase())
+        )
+      ) {
+        return false;
+      }
+
+      // Company filter
+      if (
+        filters.company.length > 0 &&
+        !filters.company.some((comp) =>
+          job.company?.toLowerCase().includes(comp.toLowerCase())
+        )
+      ) {
+        return false;
+      }
+
+      // Industry filter
+      if (
+        filters.industry.length > 0 &&
+        !filters.industry.includes(job.industry)
+      ) {
+        return false;
+      }
+
+      // Posted date filter
+      if (filters.postedDate) {
+        const jobDate = new Date(job.postedDate);
+        const filterDate = new Date(filters.postedDate);
+        if (jobDate.toDateString() !== filterDate.toDateString()) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }, [jobsData?.data?.applications, filters]);
+
+  const setFormData = (newFilters) => {
+    setFilters((prev) => ({ ...prev, ...newFilters }));
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      search: "",
+      status: [],
+      postedDate: null,
+      location: [],
+      company: [],
+      industry: [],
+    });
+    setCurrentPage(1);
+  };
+
+  // Use server-side pagination data from API
+  const paginatedJobs = filteredJobs;
+  const totalPages = jobsData?.data?.pagination?.totalPages || 0;
+  const filteredCount = jobsData?.data?.pagination?.totalApplications || 0;
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6 min-w-0">
+        <h1 className="text-2xl font-bold">Jobs</h1>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-500">Loading jobs...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="space-y-6 min-w-0">
+        <h1 className="text-2xl font-bold">Jobs</h1>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-red-500">
+            Error loading jobs: {error.message}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 min-w-0">

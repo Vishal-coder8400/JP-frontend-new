@@ -1,41 +1,11 @@
-import React from "react";
-import { useGetAllApplicants } from "../../hooks/superAdmin/useApplicant";
-import { useGetAllJobs } from "../../hooks/superAdmin/useJob";
-import { useGetAllTrainings } from "../../hooks/superAdmin/useTraining";
-import useAuthStore from "../../stores/useAuthStore";
+import { useGetSuperAdminProfile } from "../../hooks/superAdmin/useProfile";
 
 const SuperAdminDashboard = () => {
-  const { user } = useAuthStore();
-  const { data: applicants } = useGetAllApplicants({ page: 1, limit: 5 });
-  const { data: jobs } = useGetAllJobs({ page: 1, limit: 5 });
-  const { data: trainings } = useGetAllTrainings({ page: 1, limit: 5 });
+  const { data: profileData, isLoading: profileLoading } =
+    useGetSuperAdminProfile();
 
-  const stats = [
-    {
-      title: "Total Users",
-      value: applicants?.data?.totalUsers || 0,
-      color: "bg-blue-500",
-      icon: "👥",
-    },
-    {
-      title: "Active Jobs",
-      value: jobs?.data?.totalJobs || 0,
-      color: "bg-green-500",
-      icon: "💼",
-    },
-    {
-      title: "Training Programs",
-      value: trainings?.data?.totalTrainings || 0,
-      color: "bg-purple-500",
-      icon: "📚",
-    },
-    {
-      title: "System Status",
-      value: "Online",
-      color: "bg-emerald-500",
-      icon: "✅",
-    },
-  ];
+  // Get profile information from API response
+  const profile = profileData?.data?.data || {};
 
   return (
     <div className="w-full space-y-6">
@@ -47,9 +17,9 @@ const SuperAdminDashboard = () => {
           </h1>
           <p className="text-gray-600 mt-1">
             Welcome back,{" "}
-            {user?.firstName
-              ? `${user.firstName} ${user.lastName}`
-              : "Administrator"}
+            {profile?.firstName
+              ? `${profile.firstName} ${profile.lastName}`
+              : profile?.name || "Administrator"}
           </p>
         </div>
         <div className="text-sm text-gray-500">
@@ -62,118 +32,52 @@ const SuperAdminDashboard = () => {
         </div>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-lg shadow-md p-6 border border-gray-200"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">
-                  {stat.title}
-                </p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-              </div>
-              <div
-                className={`p-3 rounded-full ${stat.color} text-white text-xl`}
-              >
-                {stat.icon}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Activity */}
+      {/* Profile Information */}
+      {profileLoading ? (
         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Recent Activity
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              <p className="text-sm text-gray-600">New user registered</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <p className="text-sm text-gray-600">Job posting approved</p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-              <p className="text-sm text-gray-600">Training program created</p>
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-1/4 mb-4"></div>
+            <div className="space-y-2">
+              <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
             </div>
           </div>
         </div>
-
-        {/* System Health */}
+      ) : profile && Object.keys(profile).length > 0 ? (
         <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            System Health
+            Profile Information
           </h3>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Database</span>
-              <span className="text-green-500 text-sm font-medium">
-                Healthy
-              </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-gray-600">Name</p>
+              <p className="text-sm font-medium text-gray-900">
+                {profile?.firstName && profile?.lastName
+                  ? `${profile.firstName} ${profile.lastName}`
+                  : profile?.name || "N/A"}
+              </p>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">API Status</span>
-              <span className="text-green-500 text-sm font-medium">Active</span>
+            <div>
+              <p className="text-sm text-gray-600">Email</p>
+              <p className="text-sm font-medium text-gray-900">
+                {profile?.email || "N/A"}
+              </p>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Storage</span>
-              <span className="text-yellow-500 text-sm font-medium">
-                75% Used
-              </span>
+            <div>
+              <p className="text-sm text-gray-600">Role</p>
+              <p className="text-sm font-medium text-gray-900">
+                {profile?.role || "Super Admin"}
+              </p>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Status</p>
+              <p className="text-sm font-medium text-gray-900">
+                {profile?.isActive ? "Active" : "Inactive"}
+              </p>
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Management Links */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <a
-          href="/superAdmin/users"
-          className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow"
-        >
-          <div className="text-center">
-            <div className="text-3xl mb-2">👥</div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              User Management
-            </h3>
-            <p className="text-sm text-gray-600">Manage all system users</p>
-          </div>
-        </a>
-        <a
-          href="/superAdmin/job-openings"
-          className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow"
-        >
-          <div className="text-center">
-            <div className="text-3xl mb-2">💼</div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              Job Management
-            </h3>
-            <p className="text-sm text-gray-600">Oversee all job postings</p>
-          </div>
-        </a>
-        <a
-          href="/superAdmin/settings"
-          className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:shadow-lg transition-shadow"
-        >
-          <div className="text-center">
-            <div className="text-3xl mb-2">⚙️</div>
-            <h3 className="text-lg font-semibold text-gray-900">
-              System Settings
-            </h3>
-            <p className="text-sm text-gray-600">Configure system parameters</p>
-          </div>
-        </a>
-      </div>
+      ) : null}
     </div>
   );
 };

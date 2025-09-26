@@ -9,46 +9,103 @@ import {
   TwitterIcon,
   LinkedinIcon,
 } from "lucide-react";
+import { useGetTrainingDetails } from "../../../../../hooks/superAdmin/useTraining";
 
-const TrainingDetailsDrawer = ({ training }) => {
-  if (!training) return null;
+const TrainingDetailsDrawer = ({ trainingId }) => {
+  const {
+    data: trainingData,
+    isLoading,
+    error,
+  } = useGetTrainingDetails(trainingId);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-full flex flex-col bg-white p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-500">
+            Loading training details...
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-full flex flex-col bg-white p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-red-500">
+            Error loading training details: {error.message}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!trainingData?.data) {
+    return (
+      <div className="min-h-full flex flex-col bg-white p-6">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-500">No training details found</div>
+        </div>
+      </div>
+    );
+  }
+
+  const training = trainingData.data;
 
   return (
     <div className="min-h-full flex flex-col bg-white p-6">
       {/* Header */}
       <div className="flex justify-between gap-4 p-6 border-1 border-gray2 rounded-lg">
-        <img
-          src="/google.png"
-          alt={training.name}
-          className="h-10 w-10 rounded-md"
-        />
+        {training.companyLogo && (
+          <img
+            src={training.companyLogo}
+            alt={training.company}
+            className="h-10 w-10 rounded-md"
+          />
+        )}
         <div className="flex-1">
-          <p>Google</p>
+          {training.company && <p>{training.company}</p>}
           <div className="flex items-center gap-4">
-            <p className="text-xl font-medium">Data Engineer</p>
-            <Badge className="text-primary-purple bg-light-purple text-xs">
-              2 Applied
-            </Badge>
+            {(training.title || training.name) && (
+              <p className="text-xl font-medium">
+                {training.title || training.name}
+              </p>
+            )}
+            {(training.applicationsCount || training.candidates) && (
+              <Badge className="text-primary-purple bg-light-purple text-xs">
+                {training.applicationsCount || training.candidates} Applied
+              </Badge>
+            )}
           </div>
           <div className="text-gray1 flex items-center gap-6 mt-2">
-            <div className="flex items-center gap-2">
-              <LocationIcon className="h-4 w-4 text-gray1" />
-              Brussels
-            </div>
-            <div className="flex items-center gap-2">
-              <ClockIcon className="h-4 w-4 text-gray1" />
-              Full Time
-            </div>
-            <div className="flex items-center gap-2">
-              <DollarSignIcon className="h-4 w-4 text-gray1" />
-              50-55k
-            </div>
+            {training.location && (
+              <div className="flex items-center gap-2">
+                <LocationIcon className="h-4 w-4 text-gray1" />
+                {training.location}
+              </div>
+            )}
+            {(training.trainingType || training.type) && (
+              <div className="flex items-center gap-2">
+                <ClockIcon className="h-4 w-4 text-gray1" />
+                {training.trainingType || training.type}
+              </div>
+            )}
+            {(training.price || training.cost) && (
+              <div className="flex items-center gap-2">
+                <DollarSignIcon className="h-4 w-4 text-gray1" />
+                {training.price || training.cost}
+              </div>
+            )}
           </div>
 
-          <div className="text-gray1 flex items-center gap-2 mt-2">
-            <CalendarIcon className="h-4 w-4 text-gray1" />
-            29 mins ago
-          </div>
+          {training.postedDate && (
+            <div className="text-gray1 flex items-center gap-2 mt-2">
+              <CalendarIcon className="h-4 w-4 text-gray1" />
+              {new Date(training.postedDate).toLocaleDateString()}
+            </div>
+          )}
         </div>
         <Button variant="black">Apply Now</Button>
       </div>
@@ -56,77 +113,145 @@ const TrainingDetailsDrawer = ({ training }) => {
       {/* Content */}
       <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
         <div>
-          <h3 className="text-lg font-semibold">About the job</h3>
+          <h3 className="text-lg font-semibold">About the training</h3>
           <div className="text-gray1 mt-4 space-y-2">
-            <h4 className="font-semibold">Job Description</h4>
-            <p>
-              Jayant Fitness is looking for a dynamic and results-driven
-              Business Development Executive / Sales Executive to expand our
-              client base in the corporate and real estate sectors. The ideal
-              candidate will be responsible for generating leads, closing deals,
-              and building long-term relationships with clients.
-            </p>
+            {(training.description || training.trainingDescription) && (
+              <>
+                <h4 className="font-semibold">Training Description</h4>
+                <p>{training.description || training.trainingDescription}</p>
+              </>
+            )}
 
-            <h4 className="font-semibold">Key Responsibilities</h4>
-            <ul className="list-disc list-inside">
-              <li>Identify and pursue new business opportunities</li>
-              <li>Build and maintain relationships with clients</li>
-              <li>
-                Conduct market research to identify trends and opportunities
-              </li>
-              <li>Prepare and deliver presentations to clients</li>
-              <li>Negotiate contracts and close deals</li>
-            </ul>
+            {training.objectives && (
+              <>
+                <h4 className="font-semibold">Learning Objectives</h4>
+                <ul className="list-disc list-inside">
+                  {Array.isArray(training.objectives) ? (
+                    training.objectives.map((objective, index) => (
+                      <li key={index}>{objective}</li>
+                    ))
+                  ) : (
+                    <li>{training.objectives}</li>
+                  )}
+                </ul>
+              </>
+            )}
 
-            <h4 className="font-semibold">Education</h4>
-            <p>Any Graduates</p>
+            {training.prerequisites && (
+              <>
+                <h4 className="font-semibold">Prerequisites</h4>
+                <ul className="list-disc list-inside">
+                  {Array.isArray(training.prerequisites) ? (
+                    training.prerequisites.map((prereq, index) => (
+                      <li key={index}>{prereq}</li>
+                    ))
+                  ) : (
+                    <li>{training.prerequisites}</li>
+                  )}
+                </ul>
+              </>
+            )}
 
-            <h4 className="font-semibold">Other Details</h4>
-            <ul className="list-disc list-inside">
-              <li>Experience: 0-1 years</li>
-              <li>Location: Bangalore</li>
-              <li>Salary: 15K - 25K P.A.</li>
-              <li>Job Type: Full-time, Permanent</li>
-              <li>Industry: Fitness & Wellness</li>
-            </ul>
+            {training.duration && (
+              <>
+                <h4 className="font-semibold">Duration</h4>
+                <p>{training.duration}</p>
+              </>
+            )}
 
-            <p>
-              For additional information, you can reach out to me at
-              anesh@stimuler.tech
-            </p>
+            {(training.experience ||
+              training.location ||
+              training.price ||
+              training.trainingType ||
+              training.industry) && (
+              <>
+                <h4 className="font-semibold">Other Details</h4>
+                <ul className="list-disc list-inside">
+                  {training.experience && (
+                    <li>Experience: {training.experience}</li>
+                  )}
+                  {training.location && <li>Location: {training.location}</li>}
+                  {training.price && <li>Price: {training.price}</li>}
+                  {(training.trainingType || training.type) && (
+                    <li>
+                      Training Type: {training.trainingType || training.type}
+                    </li>
+                  )}
+                  {training.industry && <li>Industry: {training.industry}</li>}
+                </ul>
+              </>
+            )}
 
-            <div className="flex items-center gap-2 mt-4">
-              {["Sales", "Marketing", "Communication"].map((skill) => (
-                <span
-                  key={skill}
-                  className="inline-block px-2 py-1 text-xs font-medium border-1 rounded-full"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
+            {training.contactEmail && (
+              <p>
+                For additional information, you can reach out to me at{" "}
+                {training.contactEmail}
+              </p>
+            )}
+
+            {training.skills && (
+              <div className="flex items-center gap-2 mt-4">
+                {Array.isArray(training.skills) ? (
+                  training.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="inline-block px-2 py-1 text-xs font-medium border-1 rounded-full"
+                    >
+                      {skill}
+                    </span>
+                  ))
+                ) : (
+                  <span className="inline-block px-2 py-1 text-xs font-medium border-1 rounded-full">
+                    {training.skills}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Company */}
-      <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
-        <h4>About the Company</h4>
-        <p className="text-gray1 mt-4">
-          Google LLC is an American multinational technology company that
-          specializes in Internet-related services and products, which include
-          online advertising technologies, a search engine, cloud computing,
-          software, and hardware. It is considered one of the Big Five companies
-          in the U.S. information technology industry, along with Amazon, Apple,
-          Meta (Facebook), and Microsoft.
-        </p>
+      {(training.companyDescription || training.company?.description) && (
+        <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
+          <h4>About the Company</h4>
+          <p className="text-gray1 mt-4">
+            {training.companyDescription || training.company?.description}
+          </p>
 
-        <div className="mt-4 pt-4 flex items-center gap-4 border-t-1 border-gray-2">
-          <FacebookIcon className="h-4 w-4 text-gray1" />
-          <LinkedinIcon className="h-4 w-4 text-gray1" />
-          <TwitterIcon className="h-4 w-4 text-gray1" />
+          {(training.company?.socialMedia || training.socialMedia) && (
+            <div className="mt-4 pt-4 flex items-center gap-4 border-t-1 border-gray-2">
+              {training.company?.socialMedia?.facebook && (
+                <a
+                  href={training.company.socialMedia.facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <FacebookIcon className="h-4 w-4 text-gray1 hover:text-blue-600" />
+                </a>
+              )}
+              {training.company?.socialMedia?.linkedin && (
+                <a
+                  href={training.company.socialMedia.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <LinkedinIcon className="h-4 w-4 text-gray1 hover:text-blue-600" />
+                </a>
+              )}
+              {training.company?.socialMedia?.twitter && (
+                <a
+                  href={training.company.socialMedia.twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <TwitterIcon className="h-4 w-4 text-gray1 hover:text-blue-600" />
+                </a>
+              )}
+            </div>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 };

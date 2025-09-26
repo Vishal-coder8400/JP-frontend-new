@@ -7,16 +7,16 @@ export const useAuthStore = create((set) => ({
   refetchProfile: false,
   tokenInitialized: false,
 
-  setToken: (token, rememberMe = false) => {
-    console.log("Setting token:", token);
-    localStorage.setItem("token", token);
-    set({ token, tokenInitialized: true });
+  setToken: (token, rememberMe) => {
+    if (rememberMe) {
+      localStorage.setItem("token", token);
+    } else {
+      sessionStorage.setItem("token", token);
+    }
+    set({ token, tokenInitialized: true }); // ✅ mark as initialized
   },
 
-  setTokenInitialized: () => {
-    console.log("AuthStore - Setting tokenInitialized to true");
-    set({ tokenInitialized: true });
-  },
+  setTokenInitialized: () => set({ tokenInitialized: true }),
 
   setUser: (user) =>
     set((state) => {
@@ -26,7 +26,6 @@ export const useAuthStore = create((set) => ({
 
   setIsAuthenticated: (isAuthenticated) =>
     set((state) => {
-      console.log("Setting isAuthenticated:", isAuthenticated);
       if (state.isAuthenticated === isAuthenticated) return state;
       return { isAuthenticated };
     }),
@@ -35,6 +34,7 @@ export const useAuthStore = create((set) => ({
 
   logout: () => {
     localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
     set({
       token: null,
       user: null,
