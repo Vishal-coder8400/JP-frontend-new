@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useLogin } from "../../hooks/corporate/useAuth";
 import LogInComponent from "../../components/recruiter-view/log-in";
+import { useTrainerLogin } from "../../hooks/trainer/useAuth";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +9,7 @@ const Login = () => {
     rememberme: false,
   });
   const signUpLink = "/trainer/profile-setup/basic-details";
-  const { mutate, isPending, isError, error } = useLogin();
+  const { mutate, isPending } = useTrainerLogin();
   const handleSubmit = (e) => {
     e.preventDefault();
     mutate(formData);

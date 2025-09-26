@@ -3,12 +3,6 @@ import useAuthStore from "../../stores/useAuthStore";
 import { useEffect } from "react";
 import { calculateProfileCompletion } from "../../utils/profileCompletion/calculate";
 
-// Hook-safe wrapper
-const useProfile = (hook, enabled) => {
-  if (hook) return hook({ enabled });
-  return { data: null, isLoading: false, status: "idle" };
-};
-
 const CheckAuth = ({
   allowedRoles = [],
   fetchProfileHook,
@@ -18,18 +12,13 @@ const CheckAuth = ({
   const location = useLocation();
 
   const {
-    token,
     tokenInitialized,
     isAuthenticated,
     setIsAuthenticated,
     user,
     setUser,
-    refetchProfile,
-    setRefetchProfile,
   } = useAuthStore();
-
-  const shouldFetchProfile = isAuthenticated && (refetchProfile || !user);
-  const profile = useProfile(fetchProfileHook, shouldFetchProfile);
+  const profile = fetchProfileHook ? fetchProfileHook() : null;
 
   useEffect(() => {
     if (profile?.status === "success" && !profile.isLoading) {
@@ -44,9 +33,8 @@ const CheckAuth = ({
       });
 
       setIsAuthenticated(true);
-      if (refetchProfile) setRefetchProfile(false);
     }
-  }, [profile?.status, profile?.data?.data]);
+  }, [profile?.status, profile?.data?.data?._id]);
 
   const isLoading = profile?.isLoading || (!user && isAuthenticated);
   const userRole = user?.role;
@@ -56,7 +44,12 @@ const CheckAuth = ({
     "/recruiter/log-in",
     "/corporate/log-in",
     "/job-seeker/log-in",
+    "/trainer/log-in",
     "/recruiter/profile-setup/basic-details",
+    "/trainer/profile-setup/basic-details",
+    "/trainer/profile-setup/education-details",
+    "/trainer/profile-setup/working-details",
+    "/trainer/profile-setup/certificate-details",
     "/corporate/profile-setup/basic-details",
     "/job-seeker/profile-setup/basic-details",
   ].includes(location.pathname);

@@ -150,7 +150,7 @@ const Index = () => {
 
   const { mutate, isPending } = useCreateApplicant();
   const { mutate: UploadImage } = useUpload();
-
+  console.log(formData);
   const onSubmit = (e) => {
     localStorage.removeItem("seekerID");
     e.preventDefault();
@@ -203,7 +203,6 @@ const Index = () => {
       fileInputRef.current.value = "";
     } // Clear file name
   };
-  console.log(formData);
   return (
     <div className="w-full self-stretch lg:px-36 lg:py-20 p-[20px] lg:pt-0 inline-flex flex-col justify-start items-end lg:gap-10 gap-[15px]">
       <div className="w-full inline-flex justify-start items-start gap-8">
@@ -342,6 +341,7 @@ const Index = () => {
                   key={index}
                   i={index}
                   disabled={false}
+                  formType={"education"}
                 />
               ))}
             </div>

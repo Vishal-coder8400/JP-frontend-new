@@ -125,6 +125,7 @@ const CandidateReleventDetails = () => {
   if (!showPage) {
     return <div>Loading....</div>;
   }
+  console.log(formData);
 
   return (
     <>
@@ -252,6 +253,7 @@ const CandidateReleventDetails = () => {
                       setFormData={setFormData}
                       key={index}
                       i={index}
+                      formType={"experienceDetails"}
                       disabled={item.currentlyWorking}
                     />
                   ))}

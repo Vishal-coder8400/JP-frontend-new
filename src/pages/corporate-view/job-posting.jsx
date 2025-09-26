@@ -183,7 +183,6 @@ const JobPosting = () => {
     spocNumber: "",
   });
   const { mutate, isPending, isError, error } = useCorporateJobPost();
-  console.log(formData);
   const onSubmit = (e) => {
     e.preventDefault();
     let payload = { ...formData };

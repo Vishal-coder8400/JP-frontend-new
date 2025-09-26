@@ -9,6 +9,7 @@ import ProfileSetupLayout from "./components/recruiter-view/profile-setup-layout
 
 import { useGetUserProfile as useGetRecruiterUserProfile } from "./hooks/recruiter/useProfile";
 import { useGetCorporateUserProfile } from "./hooks/corporate/useProfile";
+import { useGetJobseekerProfile } from "./hooks/job-seeker/useProfile";
 
 import useAuthStore from "./stores/useAuthStore";
 
@@ -60,6 +61,7 @@ import TrainerAdditional from "./pages/trainner-view/additional-details";
 import TrainerDashboard from "./pages/trainner-view/dashboard";
 import TrainerJobDescription from "./pages/trainner-view/job-description";
 import TrainerSearch from "./pages/trainner-view/search";
+import { useGetTrainerProfile } from "./hooks/trainer/useProfile";
 
 function App() {
   useEffect(() => {
@@ -219,12 +221,31 @@ function App() {
         </Route>
 
         {/* Job Seeker Auth */}
-        <Route path="/job-seeker/log-in" element={<JobSeekerLogin />} />
+        <Route
+          path="/job-seeker"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetJobseekerProfile}
+              allowedRoles={["job-seeker"]}
+            >
+              <ProfileSetupLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="log-in" element={<JobSeekerLogin />} />
+        </Route>
 
         {/* Job Seeker Profile Setup */}
         <Route
           path="/job-seeker/profile-setup"
-          element={<ProfileSetupLayout />}
+          element={
+            // <CheckAuth
+            //   fetchProfileHook={useGetJobseekerProfile}
+            //   allowedRoles={["job-seeker"]}
+            // >
+            <ProfileSetupLayout />
+            // </CheckAuth>
+          }
         >
           <Route path="basic-details" element={<SeekerBasicDetails />} />
           <Route path="education-details" element={<EducationDetails />} />
@@ -236,7 +257,7 @@ function App() {
           path="/job-seeker"
           element={
             // <CheckAuth
-            //   // fetchProfileHook={useGetCorporateUserProfile}
+            //   fetchProfileHook={useGetJobseekerProfile}
             //   allowedRoles={["job-seeker"]}
             // >
             <Layout />
@@ -248,18 +269,40 @@ function App() {
           <Route path="search" element={<SeekerSeach />} />
           <Route path="faq" element={<Faq />} />
         </Route>
-        {/* Job Seeker Dashboard */}
-
-        <Route path="/trainer/log-in" element={<TrainerLogin />} />
+        {/* Trainer Dashboard */}
+        <Route
+          path="/trainer"
+          element={
+            <CheckAuth
+              fetchProfileHook={useGetTrainerProfile}
+              allowedRoles={["trainer"]}
+            >
+              <ProfileSetupLayout />
+            </CheckAuth>
+          }
+        >
+          <Route path="log-in" element={<TrainerLogin />} />
+        </Route>
 
         {/* Job Seeker Profile Setup */}
-        <Route path="/trainer/profile-setup" element={<ProfileSetupLayout />}>
+        <Route
+          path="/trainer/profile-setup"
+          element={
+            // <CheckAuth
+            //   fetchProfileHook={useGetTrainerProfile}
+            //   allowedRoles={["trainer"]}
+            // >
+            <ProfileSetupLayout />
+            // </CheckAuth>
+          }
+        >
           <Route path="basic-details" element={<TrainerBasicDetails />} />
           <Route path="education-details" element={<TrainerEducation />} />
           <Route path="working-details" element={<TrainerWorking />} />
           <Route path="certificate-details" element={<TrainerCertificate />} />
-          <Route path="additional-details" element={<TrainerAdditional />} />
+          {/* <Route path="additional-details" element={<TrainerAdditional />} /> */}
         </Route>
+
         <Route
           path="/trainer"
           element={

@@ -2,7 +2,7 @@ import axios from "axios";
 import useAuthStore from "../stores/useAuthStore";
 
 const api = axios.create({
-  baseURL: "http://52.66.198.79:8006", // change this
+  baseURL: "http://82.29.162.149:8006/api/v1", // change this
 });
 
 // Automatically attach token from Zustand

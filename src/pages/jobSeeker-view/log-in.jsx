@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLogin } from "../../hooks/corporate/useAuth";
+import { useLogin } from "../../hooks/job-seeker/useAuth";
 import LogInComponent from "../../components/recruiter-view/log-in";
 
 const Login = () => {

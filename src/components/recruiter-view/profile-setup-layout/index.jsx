@@ -1,5 +1,4 @@
 import MobileNav from "../mobileNav";
-import Navbar from "../navbar";
 import { Outlet } from "react-router-dom";
 
 const Index = () => {

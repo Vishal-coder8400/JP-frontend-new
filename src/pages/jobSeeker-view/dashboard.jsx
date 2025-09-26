@@ -1,13 +1,24 @@
 import { useState } from "react";
-import FilterComponent from "../../components/common/filterComponent";
 import Navbar from "../../components/recruiter-view/navbar";
-import { CandidatesFilters, jobOpeningFilters } from "../../config";
 import { Link } from "react-router-dom";
 import HeroProfile from "../../components/recruiter-view/common/hero-profile";
 import Pagination from "../../components/common/pagination";
+import { useJobseekerProfileProgress } from "../../hooks/job-seeker/useProfile";
 
 const JobSeekerDashboard = () => {
-  const [formData, setFormData] = useState({});
+  const { data: profileProgress } = useJobseekerProfileProgress();
+  const nextStagePath =
+    profileProgress?.data?.currentStage === 1
+      ? "/job-seeker/profile-setup/basic-details"
+      : profileProgress?.data?.currentStage === 2
+      ? "/job-seeker/profile-setup/education-details"
+      : profileProgress?.data?.currentStage === 3
+      ? "/job-seeker/profile-setup/working-details"
+      : profileProgress?.data?.currentStage === 4
+      ? "/job-seeker/profile-setup/certificate-details"
+      : profileProgress?.data?.currentStage === 5
+      ? "/job-seeker/profile-setup/additional-upload"
+      : null;
   return (
     <div className="w-full flex flex-col gap-[30px] ">
       <Navbar onlySupport={false} />
@@ -18,7 +29,7 @@ const JobSeekerDashboard = () => {
             <div className="self-stretch inline-flex justify-start items-start gap-12">
               <div className="inline-flex flex-col justify-center items-start gap-3.5">
                 <div className="justify-start text-gray-900 text-6xl font-semibold leading-[64px]">
-                  50%
+                  {profileProgress?.data?.signupProgress}%
                 </div>
                 <div className="w-28 opacity-70 justify-start text-gray-900 text-base font-semibold">
                   Of your profile is complete
@@ -29,10 +40,20 @@ const JobSeekerDashboard = () => {
                   Complete your profile!
                 </div>
                 <div className="self-stretch inline-flex justify-start items-start gap-2">
-                  <div className="flex-1 h-2 bg-lime-600 rounded-xl" />
-                  <div className="flex-1 h-2 bg-lime-600 rounded-xl" />
-                  <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
-                  <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
+                  {Array.from({
+                    length: profileProgress?.data?.totalStages,
+                  }).map((_, index) => (
+                    <div
+                      key={index}
+                      className={`flex-1 h-2 ${
+                        profileProgress?.data?.completedStages.includes(
+                          index + 1
+                        )
+                          ? "bg-lime-600"
+                          : "bg-zinc-300"
+                      } rounded-xl`}
+                    />
+                  ))}
                 </div>
                 <div className="self-stretch inline-flex justify-start items-center gap-12">
                   <div className="flex-1 opacity-70 justify-start text-gray-900 text-base font-normal">
@@ -42,7 +63,7 @@ const JobSeekerDashboard = () => {
                     ullamco laboris nisi ut.
                   </div>
                   <Link
-                    to="/recruiter/profile-setup/sectoral-details"
+                    to={nextStagePath || "#"}
                     className="px-4 py-3.5 bg-neutral-800 rounded-md shadow-[0px_1px_4px_0px_rgba(25,33,61,0.08)] flex justify-center items-center gap-[3px]"
                   >
                     <div className="text-center justify-start text-white text-base font-semibold leading-tight">
@@ -66,16 +87,16 @@ const JobSeekerDashboard = () => {
                   <path
                     d="M7.66683 13.9999C11.1646 13.9999 14.0002 11.1644 14.0002 7.66659C14.0002 4.16878 11.1646 1.33325 7.66683 1.33325C4.16903 1.33325 1.3335 4.16878 1.3335 7.66659C1.3335 11.1644 4.16903 13.9999 7.66683 13.9999Z"
                     stroke="#9E9E9E"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                   <path
                     d="M14.6668 14.6666L13.3335 13.3333"
                     stroke="#9E9E9E"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
               </div>
@@ -92,20 +113,20 @@ const JobSeekerDashboard = () => {
                   viewBox="0 0 16 16"
                   fill="none"
                 >
-                  <g clip-path="url(#clip0_1168_13659)">
+                  <g clipPath="url(#clip0_1168_13659)">
                     <path
                       d="M14 6.66675C14 11.3334 8 15.3334 8 15.3334C8 15.3334 2 11.3334 2 6.66675C2 5.07545 2.63214 3.54933 3.75736 2.42411C4.88258 1.29889 6.4087 0.666748 8 0.666748C9.5913 0.666748 11.1174 1.29889 12.2426 2.42411C13.3679 3.54933 14 5.07545 14 6.66675Z"
                       stroke="#9E9E9E"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                     <path
                       d="M8 8.66675C9.10457 8.66675 10 7.77132 10 6.66675C10 5.56218 9.10457 4.66675 8 4.66675C6.89543 4.66675 6 5.56218 6 6.66675C6 7.77132 6.89543 8.66675 8 8.66675Z"
                       stroke="#9E9E9E"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                     />
                   </g>
                   <defs>

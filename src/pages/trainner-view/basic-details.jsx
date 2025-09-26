@@ -2,42 +2,128 @@ import { useState } from "react";
 import ButtonComponent from "../../components/common/button";
 import CommonForm from "../../components/common/form";
 import Navbar from "../../components/recruiter-view/navbar";
-import {
-  jobSeekerBasicDetails,
-  kycBankFormControls,
-  trainerFormControls1,
-} from "../../config";
-import { useCorporateRegister } from "../../hooks/corporate/useAuth";
+import { kycBankFormControls, trainerFormControls1 } from "../../config";
 import { useUpload } from "../../hooks/common/useUpload";
-import { Input } from "../../components/ui/input";
-import { setNestedValue } from "../../utils/commonFunctions";
-import { GoogleIcon, ResumeSlateIcon } from "../../utils/icon";
+import { setNestedValue, validateFormData } from "../../utils/commonFunctions";
+import Address from "../../components/common/address";
+import UploadResume from "../../components/common/uploadResume";
+import { z } from "zod";
+import { useTrainerRegisterationStage1 } from "../../hooks/trainer/useAuth";
+
+export const basicDetailsSchema = z
+  .object({
+    fullName: z.string().min(1, "Full name is required"),
+    profilePicture: z.string().optional(), // file URL or base64
+
+    phone: z.object({
+      countryCode: z.string().min(1, "Country code is required"),
+      number: z
+        .string()
+        .min(10, "Phone number must be at least 10 digits")
+        .max(15, "Phone number is too long"),
+    }),
+
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email("Please enter a valid email"),
+
+    password: z.string().min(6, "Password must be at least 6 characters long"),
+
+    confirmPassword: z.string().min(1, "Please confirm your password"),
+
+    currentAddress: z.object({
+      address: z.string().min(1, "Address is required"),
+      city: z.string().min(1, "City is required"),
+      pincode: z
+        .string()
+        .min(6, "Pincode must be 6 digits")
+        .max(6, "Pincode must be 6 digits"),
+      state: z.string().min(1, "State is required"),
+    }),
+
+    permanentAddress: z.object({
+      address: z.string().min(1, "Address is required"),
+      city: z.string().min(1, "City is required"),
+      pincode: z
+        .string()
+        .min(6, "Pincode must be 6 digits")
+        .max(6, "Pincode must be 6 digits"),
+      state: z.string().min(1, "State is required"),
+    }),
+
+    resume: z.string().optional(), // file URL or base64
+
+    panDetails: z.object({
+      number: z
+        .string()
+        .regex(/[A-Z]{5}[0-9]{4}[A-Z]{1}/, "Invalid PAN format"),
+      image: z.string().optional(),
+    }),
+
+    aadharDetails: z.object({
+      number: z
+        .string()
+        .regex(/^[0-9]{12}$/, "Aadhar number must be 12 digits"),
+      image: z.string().optional(),
+    }),
+
+    bankDetails: z.object({
+      accountNumber: z.string().min(6, "Account number is required"),
+      accountHolderName: z.string().min(1, "Account holder name is required"),
+      bankName: z.string().min(1, "Bank name is required"),
+      ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code"),
+    }),
+
+    cancelChequeOrPassbookImage: z.string().optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  });
 
 const BasicDetails = () => {
   const [formData, setFormData] = useState({
     fullName: "",
-    birthDate: "",
+    profilePicture: "",
     phone: {
       countryCode: "",
       number: "",
     },
     email: "",
     password: "",
+    confirmPassword: "",
     currentAddress: {
       city: "",
       pincode: "",
+      state: "",
+      address: "",
     },
-    permanentAddress: "",
-    gender: "",
-    languages: [],
-    bio: "",
-    profilePicture: "",
-    identityCard: "",
-    nationality: "",
+    permanentAddress: {
+      city: "",
+      pincode: "",
+      state: "",
+      address: "",
+    },
+    resume: "",
+    panDetails: {
+      number: "",
+      image: "",
+    },
+    aadharDetails: {
+      number: "",
+      image: "",
+    },
+    bankDetails: {
+      accountNumber: "",
+      accountHolderName: "",
+      bankName: "",
+      ifscCode: "",
+    },
+    cancelChequeOrPassbookImage: "",
   });
-  ("");
   const [fileName, setFileName] = useState("");
-  const { mutate, isPending, isError, error } = useCorporateRegister();
+  const { mutate, isPending } = useTrainerRegisterationStage1();
   const { mutate: UploadImage } = useUpload();
   const handleUpload = (file, callback) => {
     UploadImage(file, {
@@ -52,9 +138,13 @@ const BasicDetails = () => {
   };
   const onSubmit = (e) => {
     e.preventDefault();
-    const isValid = validateFormData(formDataSchema, formData);
+    const payload = { ...formData };
+    if (formData.sameAs) {
+      payload.permanentAddress = { ...formData.currentAddress };
+    }
+    const isValid = validateFormData(basicDetailsSchema, payload);
     if (!isValid) return;
-    mutate(formData);
+    mutate(payload);
   };
   const handleUpload2 = (file, callback) => {
     UploadImage(file, {
@@ -72,10 +162,8 @@ const BasicDetails = () => {
       (prev) => setNestedValue(prev, "resume", "") // Clear uploaded file URL
     );
     setFileName("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    } // Clear file name
   };
+  console.log(formData);
   return (
     <div className="w-full self-stretch px-[20px] py-[20px] lg:px-36 lg:py-[0px] lg:pb-[32px] inline-flex flex-col justify-start items-start gap-[18px] lg:gap-7">
       <Navbar onlySupport={true} />
@@ -88,7 +176,7 @@ const BasicDetails = () => {
       </div>
       <div className="w-full flex flex-col justify-start items-start gap-8">
         <div className="justify-start text-gray-900 text-base lg:text-xl font-bold leading-tight">
-          Let's get started – You're 20% there!
+          Let's get started – You're 0% there!
         </div>
         <div className="self-stretch inline-flex justify-start items-start gap-2">
           <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
@@ -101,7 +189,7 @@ const BasicDetails = () => {
       <div className="w-full self-stretch flex flex-col justify-start items-start gap-10">
         <div className="self-stretch inline-flex justify-start items-start gap-2.5">
           <form
-            // onSubmit={onSubmit}
+            onSubmit={onSubmit}
             className="w-full inline-flex flex-col justify-start items-start gap-4"
           >
             <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4">
@@ -116,78 +204,17 @@ const BasicDetails = () => {
                   formControls={trainerFormControls1}
                   formData={formData}
                   setFormData={setFormData}
+                  handleUpload={handleUpload}
                 />
               </div>
-
-              <div className="self-stretch flex flex-col justify-start items-start gap-10">
-                <div className="inline-flex justify-start items-start gap-2.5">
-                  <div className="justify-start text-gray-900 text-base font-semibold leading-normal">
-                    Upload Resume
-                  </div>
-                </div>
-                <div className="self-stretch flex flex-col justify-center items-center gap-4">
-                  <div className="self-stretch h-32 relative bg-white rounded-lg outline-[1.50px] outline-offset-[-1.50px] outline-gray-200 overflow-hidden">
-                    <div className="lg:left-1/2 lg:top-1/2 lg:transform lg:-translate-x-1/2 lg:-translate-y-1/2 left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 absolute inline-flex flex-col justify-start items-center gap-1">
-                      <ResumeSlateIcon />
-                      <div className="justify-start text-gray-900 lg:text-base text-sm font-medium leading-normal">
-                        {fileName ? fileName : "No files Uploaded yet!"}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="self-stretch flex flex-col justify-start items-center gap-2">
-                    <div className="relative w-60 inline-flex justify-start items-start">
-                      <div
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation(); // stops file dialog from opening
-                          if (fileName !== "") handleRemoveFile();
-                        }}
-                        className={`flex-1 px-4 py-2.5 ${
-                          fileName ? "bg-[#e64d4d]" : "bg-[#6945ED1A]"
-                        } rounded-[100px] shadow-[0px_1px_2px_0px_rgba(5,32,81,0.05)] outline-1 outline-offset-[-1px] outline-white flex justify-center items-center gap-2.5 cursor-pointer`}
-                      >
-                        <div
-                          className={`justify-center   ${
-                            fileName ? "text-[#fff]" : "text-[#6945ED]"
-                          } text-base font-semibold leading-normal`}
-                        >
-                          {fileName ? "Delete" : "Upload"}
-                        </div>
-                      </div>
-                      {!fileName && (
-                        <Input
-                          type="file"
-                          accept="application/pdf"
-                          className="absolute inset-0 opacity-0 cursor-pointer z-0 h-full w-full"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (!file) return;
-                            const isValidSize = file.size <= 5 * 1024 * 1024;
-                            if (!file.type === "application/pdf") {
-                              alert("Only PDF files are allowed.");
-                              return;
-                            }
-
-                            if (!isValidSize) {
-                              alert("File must be smaller than 5MB.");
-                              return;
-                            }
-                            handleUpload2(file, (uploadedFileUrl, fileName) => {
-                              setFormData((prev) =>
-                                setNestedValue(prev, "resume", uploadedFileUrl)
-                              );
-                              setFileName(fileName);
-                            });
-                          }}
-                        />
-                      )}
-                    </div>
-                    <div className="justify-start text-stone-500 text-sm font-normal leading-tight">
-                      Format: pdf & Max file size: 5 MB
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <Address setFormData={setFormData} formData={formData} />
+              <UploadResume
+                setFormData={setFormData}
+                fileName={fileName}
+                setFileName={setFileName}
+                handleRemoveFile={handleRemoveFile}
+                handleUpload={handleUpload2}
+              />
             </div>
             <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4">
               <div className="self-stretch inline-flex justify-start items-start gap-60">
@@ -201,6 +228,7 @@ const BasicDetails = () => {
                   formControls={kycBankFormControls}
                   formData={formData}
                   setFormData={setFormData}
+                  handleUpload={handleUpload}
                 />
               </div>
             </div>

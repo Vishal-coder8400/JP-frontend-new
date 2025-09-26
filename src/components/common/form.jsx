@@ -20,11 +20,6 @@ import {
 } from "@/components/ui/popover";
 import { getNestedValue, setNestedValue } from "../../utils/commonFunctions";
 import MultiSelectField from "./MultiSelectField";
-import {
-  highestQualification,
-  referenceFields,
-  workingExperience,
-} from "../../config";
 import MonthYearPicker from "./monthYearCalendar";
 import { X } from "lucide-react";
 
@@ -35,17 +30,14 @@ export default function CommonForm({
   i,
   handleUpload,
   disabled = false,
+  formType = null,
 }) {
   const [showPassword, setShowPassword] = useState(false);
   const [otherSelections, setOtherSelections] = useState({});
-  function renderInputsByComponentType(getControlItem, index, formType = null) {
+  function renderInputsByComponentType(getControlItem, index) {
     let nameWithIndex = getControlItem.name;
-    if (formType === "references" && i >= 0) {
-      nameWithIndex = `references.${i}.${getControlItem.name}`;
-    } else if (formType === "highestQualification" && i >= 0) {
-      nameWithIndex = `education.${i}.${getControlItem.name}`;
-    } else if (formType === "isWorkingExperience" && i >= 0) {
-      nameWithIndex = `experienceDetails.${i}.${getControlItem.name}`;
+    if (formType !== null && i >= 0) {
+      nameWithIndex = `${formType}.${i}.${getControlItem.name}`;
     }
     const value = getNestedValue(formData, nameWithIndex) || "";
     const commonInputProps = {
@@ -97,7 +89,7 @@ export default function CommonForm({
                         r="4"
                         fill="white"
                         stroke="#6945ED"
-                        stroke-width="4"
+                        strokeWidth="4"
                       />
                     </svg>
                   )}
@@ -226,7 +218,7 @@ export default function CommonForm({
                   : selectedValue || ""
               }
             >
-              <SelectTrigger className="w-full flex placeholder:translate-y-[1px] items-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[20px] px-[16px] placeholder:text-[#9B959F]">
+              <SelectTrigger className="w-full flex placeholder:translate-y-[1px] items-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[20px] px-[16px] data-[placeholder]:text-[#9B959F]">
                 <SelectValue placeholder={getControlItem?.placeholder} />
               </SelectTrigger>
               <SelectContent className={"bg-white"}>
@@ -360,7 +352,6 @@ export default function CommonForm({
 
       case "file":
         const [fileNames, setFileNames] = useState("");
-        const fileInputRef = useRef(null);
         const acceptType =
           getControlItem.accept === "image"
             ? "image/*"
@@ -373,9 +364,6 @@ export default function CommonForm({
             (prev) => setNestedValue(prev, nameWithIndex, "") // Clear uploaded file URL
           );
           setFileNames("");
-          if (fileInputRef.current) {
-            fileInputRef.current.value = "";
-          } // Clear file name
         };
 
         return (
@@ -383,7 +371,6 @@ export default function CommonForm({
             <div className="relative w-full cursor-pointer">
               {!fileNames && (
                 <Input
-                  ref={fileInputRef}
                   id={getControlItem.name}
                   type="file"
                   accept={acceptType}
@@ -497,7 +484,7 @@ export default function CommonForm({
               <Calendar
                 mode="single"
                 selected={isValidDate ? new Date(value) : undefined}
-                month={isValidDate ? new Date(value) : undefined}
+                defaultMonth={isValidDate ? new Date(value) : undefined}
                 captionLayout="dropdown"
                 onSelect={(date) => {
                   setFormData((prev) =>
@@ -549,16 +536,6 @@ export default function CommonForm({
     <div key={i} className="w-full">
       <div className="flex flex-col gap-[18px] max-sm:gap-[10px]">
         {formControls.map((controlItem, index) => {
-          const isReferenceForm = formControls === referenceFields;
-          const isQualificationForm = formControls === highestQualification;
-          const isWorkingExperience = formControls === workingExperience;
-          const formType = isReferenceForm
-            ? "references"
-            : isQualificationForm
-            ? "highestQualification"
-            : isWorkingExperience
-            ? "isWorkingExperience"
-            : null;
           if (controlItem.row) {
             return (
               <div
@@ -580,7 +557,7 @@ export default function CommonForm({
                           {item.label}
                         </Label>
                       )}
-                      {renderInputsByComponentType(item, i, formType)}
+                      {renderInputsByComponentType(item, i)}
                     </div>
                   </div>
                 ))}
@@ -599,7 +576,7 @@ export default function CommonForm({
                     {controlItem.label}
                   </Label>
                 )}
-                {renderInputsByComponentType(controlItem, index, formType)}
+                {renderInputsByComponentType(controlItem, index)}
               </div>
             );
           }

@@ -3,9 +3,71 @@ import ButtonComponent from "../../components/common/button";
 import CommonForm from "../../components/common/form";
 import Navbar from "../../components/recruiter-view/navbar";
 import { certificateFormControls } from "../../config";
+import { useGetTrainerProgress } from "../../hooks/trainer/useProfile";
+import { useTrainerRegisterationStage4 } from "../../hooks/trainer/useAuth";
+import { validateFormData } from "../../utils/commonFunctions";
+import { z } from "zod";
+
+// ✅ helper regex: matches "8/23", "08/23", "12/25", etc.
+const monthYearRegex = /^(0?[1-9]|1[0-2])\/\d{2}$/;
+
+export const certificatesSchema = z.object({
+  certificates: z
+    .array(
+      z
+        .object({
+          title: z.string().min(1, "Certificate title is required"),
+          organisation: z.string().min(1, "Organisation name is required"),
+          issueDate: z
+            .string()
+            .min(1, "Issue date is required")
+            .regex(monthYearRegex, "Issue date must be in MM/YY format"),
+          expiryDate: z
+            .string()
+            .optional()
+            .refine(
+              (val) => !val || monthYearRegex.test(val),
+              "Expiry date must be in MM/YY format"
+            ),
+        })
+        // 🧠 optional refinement: ensure expiry is after issue
+        .refine(
+          (data) => {
+            if (!data.expiryDate) return true;
+            const [issueMonth, issueYear] = data.issueDate
+              .split("/")
+              .map((x) => parseInt(x));
+            const [expMonth, expYear] = data.expiryDate
+              .split("/")
+              .map((x) => parseInt(x));
+            const issueTotal = issueYear * 12 + issueMonth;
+            const expTotal = expYear * 12 + expMonth;
+            return expTotal >= issueTotal;
+          },
+          {
+            path: ["expiryDate"],
+            message: "Expiry date must be after issue date",
+          }
+        )
+    )
+    .min(1, "At least one certificate is required"),
+});
 
 const CertificateDetails = () => {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({
+    certificates: [
+      { title: "", organisation: "", issueDate: "", expiryDate: "" },
+    ],
+  });
+  const { mutate, isPending } = useTrainerRegisterationStage4();
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const isValid = validateFormData(certificatesSchema, formData);
+    if (!isValid) return;
+    mutate(formData);
+  };
+  const { data: profileProgress } = useGetTrainerProgress();
   return (
     <div className="w-full self-stretch px-[20px] py-[20px] lg:px-36 lg:py-[0px] lg:pb-[32px] inline-flex flex-col justify-start items-start gap-[18px] lg:gap-7">
       <Navbar onlySupport={true} />
@@ -18,20 +80,27 @@ const CertificateDetails = () => {
       </div>
       <div className="w-full flex flex-col justify-start items-start gap-8">
         <div className="justify-start text-gray-900 text-base lg:text-xl font-bold leading-tight">
-          Almost there – 80% completed!
+          Almost there – {profileProgress?.data?.signupProgress}% done
         </div>
         <div className="self-stretch inline-flex justify-start items-start gap-2">
-          <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
-          <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
-          <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
-          <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
-          <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
+          {Array.from({
+            length: profileProgress?.data?.totalStages,
+          }).map((_, index) => (
+            <div
+              key={index}
+              className={`flex-1 h-2 ${
+                profileProgress?.data?.completedStages.includes(index + 1)
+                  ? "bg-lime-600"
+                  : "bg-zinc-300"
+              } rounded-xl`}
+            />
+          ))}
         </div>
       </div>
       <div className="w-full self-stretch flex flex-col justify-start items-start gap-10">
         <div className="self-stretch inline-flex justify-start items-start gap-2.5">
           <form
-            // onSubmit={onSubmit}
+            onSubmit={onSubmit}
             className="w-full inline-flex flex-col justify-start items-start gap-4"
           >
             <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4">
@@ -42,16 +111,21 @@ const CertificateDetails = () => {
               </div>
               <div className="self-stretch h-0 outline-1 outline-offset-[-0.50px] outline-neutral-200"></div>
               <div className="w-full">
-                <CommonForm
-                  formControls={certificateFormControls}
-                  formData={formData}
-                  setFormData={setFormData}
-                />
+                {formData.certificates.map((item, index) => (
+                  <CommonForm
+                    formControls={certificateFormControls}
+                    formData={formData}
+                    setFormData={setFormData}
+                    key={index}
+                    i={index}
+                    formType={"certificates"}
+                  />
+                ))}
               </div>
             </div>
             <div className="self-stretch flex flex-col justify-end items-end gap-2.5">
               <ButtonComponent
-                // isPending={isPending}
+                isPending={isPending}
                 buttonText={"Save & Update Profile"}
               />
             </div>

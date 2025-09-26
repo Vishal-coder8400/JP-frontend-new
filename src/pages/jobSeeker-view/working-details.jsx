@@ -3,14 +3,16 @@ import Navbar from "../../components/recruiter-view/navbar";
 import CommonForm from "../../components/common/form";
 import ButtonComponent from "../../components/common/button";
 import {
-    releventCandidateSalary,
+  releventCandidateSalary,
   roleExpertiseFormControls,
   workExperienceFormControls,
 } from "../../config";
 import { Input } from "../../components/ui/input";
 import { Checkbox } from "../../components/ui/checkbox";
+import { useJobseekerProfileProgress } from "../../hooks/job-seeker/useProfile";
 
 const WorkingDetails = () => {
+  const { data: profileProgress } = useJobseekerProfileProgress();
   const [formData, setFormData] = useState({});
   return (
     <div className="w-full self-stretch px-[20px] py-[20px] lg:px-36 lg:py-[0px] lg:pb-[32px] inline-flex flex-col justify-start items-start gap-[18px] lg:gap-7">
@@ -24,14 +26,21 @@ const WorkingDetails = () => {
       </div>
       <div className="w-full flex flex-col justify-start items-start gap-8">
         <div className="justify-start text-gray-900 text-base lg:text-xl font-bold leading-tight">
-          Halfway through! You're 60% done
+          Halfway through! You're {profileProgress?.data?.signupProgress}% done
         </div>
         <div className="self-stretch inline-flex justify-start items-start gap-2">
-          <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
-          <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
-          <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
-          <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
-          <div className="flex-1 h-2 bg-zinc-300 rounded-xl" />
+          {Array.from({
+            length: profileProgress?.data?.totalStages,
+          }).map((_, index) => (
+            <div
+              key={index}
+              className={`flex-1 h-2 ${
+                profileProgress?.data?.completedStages.includes(index + 1)
+                  ? "bg-lime-600"
+                  : "bg-zinc-300"
+              } rounded-xl`}
+            />
+          ))}
         </div>
       </div>
       <div className="w-full self-stretch flex flex-col justify-start items-start gap-10">

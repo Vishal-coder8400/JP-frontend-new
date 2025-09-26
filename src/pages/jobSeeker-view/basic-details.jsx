@@ -6,12 +6,153 @@ import { jobSeekerBasicDetails } from "../../config";
 import { useCorporateRegister } from "../../hooks/corporate/useAuth";
 import { useUpload } from "../../hooks/common/useUpload";
 import { Input } from "../../components/ui/input";
-import { setNestedValue } from "../../utils/commonFunctions";
+import { setNestedValue, validateFormData } from "../../utils/commonFunctions";
 import { GoogleIcon, ResumeSlateIcon } from "../../utils/icon";
+import { Label } from "../../components/ui/label";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Textarea } from "../../components/ui/textarea";
+import { useRegisterStage1 } from "../../hooks/job-seeker/useAuth";
+import { z } from "zod";
+
+const formSchema = z
+  .object({
+    name: z
+      .string()
+      .min(2, "Full name must be at least 2 characters")
+      .max(100, "Full name must not exceed 100 characters")
+      .regex(/^[a-zA-Z\s]+$/, "Full name can only contain letters and spaces"),
+
+    birthDate: z
+      .string()
+      .min(1, "Birth date is required")
+      .refine((date) => {
+        const birthDate = new Date(date);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+        return age >= 16 && age <= 100;
+      }, "Age must be between 16 and 100 years"),
+
+    phone: z.object({
+      countryCode: z
+        .string()
+        .min(1, "Country code is required")
+        .regex(
+          /^\+\d{1,4}$/,
+          "Country code must start with + and contain 1-4 digits"
+        ),
+
+      number: z
+        .string()
+        .min(10, "Phone number must be at least 10 digits")
+        .max(15, "Phone number must not exceed 15 digits")
+        .regex(/^\d+$/, "Phone number can only contain digits"),
+    }),
+
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email("Please enter a valid email address")
+      .max(255, "Email must not exceed 255 characters"),
+
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .max(128, "Password must not exceed 128 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      ),
+    confirmPassword: z.string().min(1, "confirm password field is required"),
+
+    currentAddress: z.object({
+      address: z
+        .string()
+        .min(5, "Address must be at least 5 characters")
+        .max(200, "Address must not exceed 200 characters"),
+
+      city: z
+        .string()
+        .min(2, "City must be at least 2 characters")
+        .max(50, "City must not exceed 50 characters")
+        .regex(/^[a-zA-Z\s]+$/, "City can only contain letters and spaces"),
+
+      pincode: z
+        .string()
+        .min(4, "Pincode must be at least 4 characters")
+        .max(10, "Pincode must not exceed 10 characters")
+        .regex(/^\d+$/, "Pincode can only contain digits"),
+
+      state: z
+        .string()
+        .min(2, "State must be at least 2 characters")
+        .max(50, "State must not exceed 50 characters")
+        .regex(/^[a-zA-Z\s]+$/, "State can only contain letters and spaces"),
+    }),
+
+    permanentAddress: z.object({
+      address: z
+        .string()
+        .min(5, "Address must be at least 5 characters")
+        .max(200, "Address must not exceed 200 characters"),
+
+      city: z
+        .string()
+        .min(2, "City must be at least 2 characters")
+        .max(50, "City must not exceed 50 characters")
+        .regex(/^[a-zA-Z\s]+$/, "City can only contain letters and spaces"),
+
+      pincode: z
+        .string()
+        .min(4, "Pincode must be at least 4 characters")
+        .max(10, "Pincode must not exceed 10 characters")
+        .regex(/^\d+$/, "Pincode can only contain digits"),
+
+      state: z
+        .string()
+        .min(2, "State must be at least 2 characters")
+        .max(50, "State must not exceed 50 characters")
+        .regex(/^[a-zA-Z\s]+$/, "State can only contain letters and spaces"),
+    }),
+
+    gender: z.enum(["male", "female", "other"], {
+      errorMap: () => ({ message: "Please select a valid gender" }),
+    }),
+
+    bio: z
+      .string()
+      .max(500, "Bio must not exceed 500 characters")
+      .optional()
+      .or(z.literal("")),
+
+    profilePicture: z
+      .string()
+      .url("Please provide a valid URL for profile picture")
+      .optional()
+      .or(z.literal("")),
+
+    resume: z
+      .string()
+      .url("Please provide a valid URL for resume")
+      .optional()
+      .or(z.literal("")),
+
+    sameAs: z.boolean(),
+
+    currentWorkingStatus: z.enum(
+      ["serving-notice-period", "working", "not-working"],
+      {
+        errorMap: () => ({ message: "Please select a valid working status" }),
+      }
+    ),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 const BasicDetails = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
+    name: "",
     birthDate: "",
     phone: {
       countryCode: "",
@@ -20,20 +161,26 @@ const BasicDetails = () => {
     email: "",
     password: "",
     currentAddress: {
+      address: "",
       city: "",
       pincode: "",
+      state: "",
     },
-    permanentAddress: "",
+    permanentAddress: {
+      address: "",
+      city: "",
+      pincode: "",
+      state: "",
+    },
     gender: "",
-    languages: [],
     bio: "",
     profilePicture: "",
-    identityCard: "",
-    nationality: "",
+    resume: "",
+    sameAs: false,
+    currentWorkingStatus: "",
   });
-  ("");
   const [fileName, setFileName] = useState("");
-  const { mutate, isPending, isError, error } = useCorporateRegister();
+  const { mutate, isPending } = useRegisterStage1();
   const { mutate: UploadImage } = useUpload();
   const handleUpload = (file, callback) => {
     UploadImage(file, {
@@ -48,9 +195,13 @@ const BasicDetails = () => {
   };
   const onSubmit = (e) => {
     e.preventDefault();
-    const isValid = validateFormData(formDataSchema, formData);
+    const payload = { ...formData };
+    if (formData.sameAs) {
+      payload.permanentAddress = { ...formData.currentAddress };
+    }
+    const isValid = validateFormData(formSchema, payload);
     if (!isValid) return;
-    mutate(formData);
+    mutate(payload);
   };
   const handleUpload2 = (file, callback) => {
     UploadImage(file, {
@@ -64,13 +215,8 @@ const BasicDetails = () => {
     });
   };
   const handleRemoveFile = () => {
-    setFormData(
-      (prev) => setNestedValue(prev, "resume", "") // Clear uploaded file URL
-    );
+    setFormData((prev) => setNestedValue(prev, "resume", ""));
     setFileName("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    } // Clear file name
   };
   return (
     <div className="w-full self-stretch px-[20px] py-[20px] lg:px-36 lg:py-[0px] lg:pb-[32px] inline-flex flex-col justify-start items-start gap-[18px] lg:gap-7">
@@ -97,7 +243,7 @@ const BasicDetails = () => {
       <div className="w-full self-stretch flex flex-col justify-start items-start gap-10">
         <div className="self-stretch inline-flex justify-start items-start gap-2.5">
           <form
-            // onSubmit={onSubmit}
+            onSubmit={onSubmit}
             className="w-full inline-flex flex-col justify-start items-start gap-4"
           >
             <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4">
@@ -128,7 +274,108 @@ const BasicDetails = () => {
                   formControls={jobSeekerBasicDetails}
                   formData={formData}
                   setFormData={setFormData}
+                  handleUpload={handleUpload}
                 />
+              </div>
+              <div className="w-full flex flex-col gap-[18px]">
+                <div className="flex flex-col gap-[8px] relative">
+                  <div className="absolute top-0 right-0 flex items-center gap-2">
+                    <Checkbox
+                      onCheckedChange={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          sameAs: !formData.sameAs,
+                        }))
+                      }
+                      className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[16px] w-[16px] rounded-[2px] flex items-center justify-center cursor-pointer"
+                    />
+                    <span className="text-xs font-medium">
+                      Same as Current Address?
+                    </span>
+                  </div>
+                  <Label className="text-base text-[#20102B] font-semibold">
+                    Permanent Address
+                  </Label>
+                  <Textarea
+                    disabled={formData?.sameAs}
+                    value={
+                      formData?.sameAs
+                        ? formData?.currentAddress?.address
+                        : formData?.permanentAddress?.address
+                    }
+                    row={4}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        permanentAddress: {
+                          ...prev.permanentAddress,
+                          address: e.target.value,
+                        },
+                      }))
+                    }
+                    placeholder="Enter Permanent address"
+                    className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+                  />
+                </div>
+                <div className="flex gap-[8px] flex-wrap justify-end items-end">
+                  <Input
+                    value={
+                      formData?.sameAs
+                        ? formData?.currentAddress?.city
+                        : formData?.permanentAddress?.city
+                    }
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        permanentAddress: {
+                          ...prev.permanentAddress,
+                          city: e.target.value,
+                        },
+                      }))
+                    }
+                    disabled={formData?.sameAs}
+                    placeholder="Enter City"
+                    className=" flex-1 placeholder:translate-y-[1px] text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+                  />
+                  <Input
+                    value={
+                      formData?.sameAs
+                        ? formData?.currentAddress?.state
+                        : formData?.permanentAddress?.state
+                    }
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        permanentAddress: {
+                          ...prev.permanentAddress,
+                          state: e.target.value,
+                        },
+                      }))
+                    }
+                    disabled={formData?.sameAs}
+                    placeholder="Enter State"
+                    className="flex-1 placeholder:translate-y-[1px] text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+                  />
+                  <Input
+                    value={
+                      formData?.sameAs
+                        ? formData?.currentAddress?.pincode
+                        : formData?.permanentAddress?.pincode
+                    }
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        permanentAddress: {
+                          ...prev.permanentAddress,
+                          pincode: e.target.value,
+                        },
+                      }))
+                    }
+                    disabled={formData?.sameAs}
+                    placeholder="Enter Pincode"
+                    className="flex-1 placeholder:translate-y-[1px] text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+                  />
+                </div>
               </div>
               <div className="self-stretch flex flex-col justify-start items-start gap-2">
                 <div className="self-stretch inline-flex justify-start items-center gap-3">

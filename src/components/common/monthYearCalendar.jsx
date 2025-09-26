@@ -47,7 +47,6 @@ export default function MonthYearPicker({
     setSelectedYear(year);
     setStep("month");
   };
-console.log(name)
   const handleMonthSelect = (monthIndex) => {
     if (disabled && index === 1) return;
     if (selectedYear !== null) {

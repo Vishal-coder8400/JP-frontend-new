@@ -1,21 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../stores/useAuthStore";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { login, register } from "../../api/recruiter/auth";
 import { toast } from "sonner";
 
 export const useLogin = () => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { setUser, setToken, setIsAuthenticated, setRefetchProfile } =
-    useAuthStore();
+  const { setToken, setIsAuthenticated } = useAuthStore();
   return useMutation({
     mutationFn: login,
     onSuccess: async (data, variables) => {
       toast.success(data.data.message);
       setToken(data.data.data.token, variables.rememberme);
       setIsAuthenticated(true);
-      // setUser(data.data.data);
-      setRefetchProfile(true);
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       navigate("/recruiter/dashboard");
     },
     onError: (error) => {
@@ -25,7 +24,8 @@ export const useLogin = () => {
 };
 
 export const useRegister = () => {
-  const { setToken, setRefetchProfile, setIsAuthenticated } = useAuthStore();
+  const queryClient = useQueryClient();
+  const { setToken, setIsAuthenticated } = useAuthStore();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: register,
@@ -33,7 +33,7 @@ export const useRegister = () => {
       toast.success(data.data.message);
       setToken(data.data.data.token);
       setIsAuthenticated(true);
-      setRefetchProfile(true);
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       navigate("/recruiter/profile-setup/kyc-verification");
     },
     onError: (error) => {

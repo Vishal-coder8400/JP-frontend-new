@@ -140,6 +140,7 @@ const QualificationDetails = () => {
               formControls={referenceFields}
               formData={formData}
               setFormData={setFormData}
+              formType={"references"}
             />
           ))}
         </div>
