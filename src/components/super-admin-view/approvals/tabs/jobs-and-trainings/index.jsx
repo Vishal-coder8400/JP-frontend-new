@@ -39,14 +39,16 @@ const JobTrainingsTab = () => {
   };
 
   return (
-    <div className="w-full space-y-6 min-w-0">
+    <div className="w-full gap-6">
       {/* Sub Tab Navigation */}
-      <div className="flex p-1 overflow-x-auto flex-1 justify-end ">
-        {subTabs.map((tab) => (
+      <div className="w-full grid grid-cols-12 gap-2">
+        {subTabs.map((tab, index) => (
           <button
             key={tab.id}
             onClick={() => handleTabChange(tab.id)}
-            className={`flex items-center px-4 py-2 transition-colors font-medium cursor-pointer whitespace-nowrap rounded-3xl ${
+            className={`${
+              index === 0 ? "col-start-11" : "col-start-12"
+            } col-span-1 text-center px-4 py-2 transition-colors font-medium cursor-pointer whitespace-nowrap rounded-3xl ${
               activeSubTab === tab.id
                 ? "bg-primary-purple text-white"
                 : "text-gray1"
@@ -57,8 +59,8 @@ const JobTrainingsTab = () => {
         ))}
       </div>
 
-      {/* Sub Tab Content with consistent height and smooth transition */}
-      <div className="min-w-0 min-h-[600px] transition-all duration-300 ease-in-out">
+      {/* Sub Tab Content with grid layout */}
+      <div className="grid grid-cols-1 min-h-0">
         <div
           className={`transition-opacity duration-300 ease-in-out ${
             isTransitioning ? "opacity-0" : "opacity-100"

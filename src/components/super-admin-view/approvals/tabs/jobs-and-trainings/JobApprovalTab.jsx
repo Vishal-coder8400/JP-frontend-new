@@ -33,7 +33,7 @@ const JobApprovalTab = () => {
   const filteredCount = getFilteredCount();
 
   return (
-    <div className="space-y-6">
+    <div className="w-full grid grid-rows-[auto_auto_1fr] gap-6 min-h-0">
       <h1 className="text-2xl font-bold">Job Approvals</h1>
 
       {/* Error Message */}
@@ -45,33 +45,31 @@ const JobApprovalTab = () => {
       )}
 
       {/* Main Content Layout */}
-      <div className="flex flex-col lg:flex-row gap-6 min-h-0">
+      <div className="grid grid-cols-1 lg:grid-cols-[256px_1fr] gap-6 min-h-0">
         {/* Filters Section */}
-        <div className="w-full lg:w-64 flex-shrink-0">
-          <div className="bg-white rounded-lg border p-4">
-            <div className="flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div className="text-lg text-[#171923] font-semibold">
-                  Filters
-                </div>
-                <div
-                  onClick={clearAllFilters}
-                  className="text-[#3F93FF] text-sm font-medium cursor-pointer hover:underline"
-                >
-                  Clear All
-                </div>
+        <div className="bg-white rounded-lg border p-4 min-h-[400px]">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+              <div className="text-lg text-[#171923] font-semibold">
+                Filters
               </div>
-              <FilterComponent
-                formControls={jobsApprovalFilters}
-                formData={filters}
-                setFormData={setFormData}
-              />
+              <div
+                onClick={clearAllFilters}
+                className="text-[#3F93FF] text-sm font-medium cursor-pointer hover:underline"
+              >
+                Clear All
+              </div>
             </div>
+            <FilterComponent
+              formControls={jobsApprovalFilters}
+              formData={filters}
+              setFormData={setFormData}
+            />
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 min-w-0 space-y-6">
+        <div className="grid grid-rows-[auto_auto_1fr_auto] gap-6 min-h-0">
           {/* Header Actions */}
           <div className="flex justify-between items-center min-w-0">
             <div className="max-w-sm w-full">
@@ -91,11 +89,13 @@ const JobApprovalTab = () => {
 
           {/* Jobs Table Container with horizontal scroll */}
           {!loading && (
-            <div className="min-w-0 overflow-x-auto min-h-[300px]">
-              <JobsApprovalTable
-                paginatedJobs={paginatedJobs}
-                handleDeleteJob={handleDeleteJob}
-              />
+            <div className="w-full overflow-x-auto min-h-[300px]">
+              <div className="min-w-[1200px]">
+                <JobsApprovalTable
+                  paginatedJobs={paginatedJobs}
+                  handleDeleteJob={handleDeleteJob}
+                />
+              </div>
             </div>
           )}
 

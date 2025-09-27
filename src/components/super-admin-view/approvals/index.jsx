@@ -24,10 +24,10 @@ const Approvals = () => {
   };
 
   return (
-    <div className="w-full space-y-6 min-w-0">
+    <div className="w-full space-y-6">
       {/* Tab Navigation */}
-      <div className="flex items-center justify-between min-w-0">
-        <div className="flex p-1 min-w-0 overflow-x-auto flex-1 lg:max-w-3xl">
+      <div className="flex items-center justify-between">
+        <div className="flex p-1 overflow-x-auto flex-1 lg:max-w-3xl">
           {databaseTabs.map((tab) => (
             <button
               key={tab.id}
@@ -50,7 +50,7 @@ const Approvals = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="min-w-0">{renderTabContent()}</div>
+      <div className="w-full">{renderTabContent()}</div>
     </div>
   );
 };
