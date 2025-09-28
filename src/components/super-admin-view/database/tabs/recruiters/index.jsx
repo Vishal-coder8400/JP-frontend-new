@@ -6,6 +6,7 @@ import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../../common/filterComponent";
 import { recruitersFilters } from "./utils";
 import useRecruitersStore from "./zustand";
+import { useRecruiters } from "../../../../../hooks/super-admin/useRecruiters";
 
 const RecruitersTab = () => {
   const {
@@ -15,15 +16,16 @@ const RecruitersTab = () => {
     clearAllFilters,
     setCurrentPage,
     handleDeleteRecruiter,
-    getPaginatedRecruiters,
-    getTotalPages,
-    getFilteredCount,
   } = useRecruitersStore();
 
-  // Get computed data
-  const paginatedRecruiters = getPaginatedRecruiters();
-  const totalPages = getTotalPages();
-  const filteredCount = getFilteredCount();
+  // Use API hook for data fetching
+  const {
+    data: paginatedRecruiters,
+    loading,
+    error,
+    totalPages,
+    totalCount,
+  } = useRecruiters(filters, currentPage, 10);
 
   return (
     <div className="space-y-6">
@@ -65,14 +67,30 @@ const RecruitersTab = () => {
             />
           </div>
 
+          {/* Loading State */}
+          {loading && (
+            <div className="flex justify-center items-center py-8">
+              <div className="text-gray-500">Loading recruiters...</div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="flex justify-center items-center py-8">
+              <div className="text-red-500">Error: {error}</div>
+            </div>
+          )}
+
           {/* Recruiters Table */}
-          <RecruitersTable
-            paginatedRecruiters={paginatedRecruiters}
-            handleDeleteRecruiter={handleDeleteRecruiter}
-          />
+          {!loading && !error && (
+            <RecruitersTable
+              paginatedRecruiters={paginatedRecruiters}
+              handleDeleteRecruiter={handleDeleteRecruiter}
+            />
+          )}
 
           {/* Pagination */}
-          {filteredCount > 0 && (
+          {!loading && !error && totalCount > 0 && (
             <div className="flex justify-center">
               <Pagination
                 currentPage={currentPage}

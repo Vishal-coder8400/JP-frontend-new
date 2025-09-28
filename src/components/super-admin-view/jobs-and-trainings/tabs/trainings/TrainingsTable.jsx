@@ -3,6 +3,7 @@ import { GraduationCap, Eye, MoveUpRightIcon } from "lucide-react";
 import TrainingDetailsDrawer from "./TrainingDetailsDrawer";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getTrainingApplications } from "../../../../../api/super-admin/jobsAndTrainings";
 
 const TrainingsTable = ({ paginatedTrainings }) => {
   const [selectedTrainingId, setSelectedTrainingId] = useState(null);
@@ -14,7 +15,7 @@ const TrainingsTable = ({ paginatedTrainings }) => {
     setSelectedTrainingId(trainingId);
   };
 
-  const handleRowClick = (training, event) => {
+  const handleRowClick = async (training, event) => {
     // Don't navigate if radio button or view details button was clicked
     if (
       event.target.type === "radio" ||
@@ -23,14 +24,22 @@ const TrainingsTable = ({ paginatedTrainings }) => {
       return;
     }
 
-    navigate(
-      `/super-admin/jobs-and-trainings/job/${training.id}/candidates?type=training`
-    );
+    try {
+      await getTrainingApplications({ id: training._id });
+      navigate(
+        `/super-admin/jobs-and-trainings/job/${training._id}/candidates?type=training`
+      );
+    } catch (error) {
+      console.error("Error fetching training applications:", error);
+      navigate(
+        `/super-admin/jobs-and-trainings/job/${training._id}/candidates?type=training`
+      );
+    }
   };
 
   const handleViewDetails = (training, event) => {
     event.stopPropagation();
-    setSelectedTraining(training.id);
+    setSelectedTraining(training._id);
     setDrawerOpen(true);
   };
 
@@ -45,7 +54,7 @@ const TrainingsTable = ({ paginatedTrainings }) => {
   const getStatusBadge = (status) => {
     const statusColors = {
       active: "bg-success2 text-success1",
-      ended: "bg-danger2 text-danger1",
+      closed: "bg-danger2 text-danger1",
       pending: "bg-warning2 text-warning1",
     };
 
@@ -134,7 +143,7 @@ const TrainingsTable = ({ paginatedTrainings }) => {
               {paginatedTrainings.length > 0 ? (
                 paginatedTrainings.map((training) => (
                   <tr
-                    key={training.id}
+                    key={training._id}
                     onClick={(e) => handleRowClick(training, e)}
                     className="cursor-pointer hover:bg-gray-50 transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted border-b"
                   >
@@ -142,32 +151,32 @@ const TrainingsTable = ({ paginatedTrainings }) => {
                       <input
                         type="radio"
                         name="selectTraining"
-                        checked={selectedTrainingId === training.id}
-                        onChange={() => handleSelectTraining(training.id)}
-                        aria-label={`Select training ${training.name}`}
+                        checked={selectedTrainingId === training._id}
+                        onChange={() => handleSelectTraining(training._id)}
+                        aria-label={`Select training ${training.title}`}
                         className="w-4 h-4 text-primary-purple border-2 border-gray-300 focus:ring-2 focus:ring-primary-purple/50 focus:ring-offset-0 cursor-pointer appearance-none rounded-full checked:bg-primary-purple checked:border-primary-purple relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:transform before:-translate-x-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:bg-white before:rounded-full before:opacity-0 checked:before:opacity-100"
                       />
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {training.id}
+                      {training._id}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap font-medium">
-                      {training.name}
+                      {training.title}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {formatDate(training.appliedTime)}
+                      {formatDate(training.createdAt)}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {training.company}
+                      {/* Company field not available in API response */}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {training.candidates}
+                      {/* Candidates field not available in API response */}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {training.location}
+                      {training.trainingMode}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {training.experience}
+                      {training.minimumExperience}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
                       {getStatusBadge(training.status)}
@@ -215,7 +224,7 @@ const TrainingsTable = ({ paginatedTrainings }) => {
             overflow-y-auto border-transparent [&>button.absolute]:hidden"
         >
           <div className="w-full h-full">
-            <TrainingDetailsDrawer training={selectedTraining} />
+            <TrainingDetailsDrawer trainingId={selectedTraining} />
           </div>
         </SheetContent>
       </Sheet>

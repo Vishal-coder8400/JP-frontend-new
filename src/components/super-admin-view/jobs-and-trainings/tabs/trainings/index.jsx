@@ -4,7 +4,7 @@ import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../../common/filterComponent";
 import { jobsAndTrainingsFilters } from "../../utils";
 import { useGetAllTrainings } from "../../../../../hooks/super-admin/useTraining";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 const TrainingsTab = () => {
   const [filters, setFilters] = useState({
@@ -29,69 +29,6 @@ const TrainingsTab = () => {
     ...filters,
   });
 
-  // Filter trainings based on current filters
-  const filteredTrainings = useMemo(() => {
-    if (!trainingsData?.data?.trainings) return [];
-
-    return trainingsData.data.trainings.filter((training) => {
-      // Search filter
-      if (
-        filters.search &&
-        !training.name?.toLowerCase().includes(filters.search.toLowerCase()) &&
-        !training.company?.toLowerCase().includes(filters.search.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Status filter
-      if (
-        filters.status.length > 0 &&
-        !filters.status.includes(training.status)
-      ) {
-        return false;
-      }
-
-      // Location filter
-      if (
-        filters.location.length > 0 &&
-        !filters.location.some((loc) =>
-          training.location?.toLowerCase().includes(loc.toLowerCase())
-        )
-      ) {
-        return false;
-      }
-
-      // Company filter
-      if (
-        filters.company.length > 0 &&
-        !filters.company.some((comp) =>
-          training.company?.toLowerCase().includes(comp.toLowerCase())
-        )
-      ) {
-        return false;
-      }
-
-      // Industry filter
-      if (
-        filters.industry.length > 0 &&
-        !filters.industry.includes(training.industry)
-      ) {
-        return false;
-      }
-
-      // Posted date filter
-      if (filters.postedDate) {
-        const trainingDate = new Date(training.postedDate);
-        const filterDate = new Date(filters.postedDate);
-        if (trainingDate.toDateString() !== filterDate.toDateString()) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [trainingsData?.data?.trainings, filters]);
-
   const setFormData = (newFilters) => {
     setFilters((prev) => ({ ...prev, ...newFilters }));
     setCurrentPage(1); // Reset to first page when filters change
@@ -110,7 +47,7 @@ const TrainingsTab = () => {
   };
 
   // Use server-side pagination data from API
-  const paginatedTrainings = filteredTrainings;
+  const paginatedTrainings = trainingsData?.data?.data?.trainings || [];
   const totalPages = trainingsData?.data?.pagination?.totalPages || 0;
   const filteredCount = trainingsData?.data?.pagination?.totalTrainings || 0;
 

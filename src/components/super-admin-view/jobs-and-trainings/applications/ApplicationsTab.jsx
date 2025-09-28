@@ -1,12 +1,19 @@
 import { useEffect } from "react";
-import RecruitersTable from "./RecruitersTable";
-import Pagination from "../../../../common/pagination";
+import ApplicationsTable from "./ApplicationsTable";
+import Pagination from "@/components/common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
-import FilterComponent from "../../../../common/filterComponent";
-import { getApprovalFilters } from "../../utils";
-import useRecruitersStore from "./zustand";
+import FilterComponent from "@/components/common/filterComponent";
+import { applicationsFilters } from "./utils";
+import useApplicationsStore from "./zustand";
+import { useNavigate } from "react-router-dom";
+import { ChevronLeft, MoveLeftIcon } from "lucide-react";
 
-const RecruitersTab = () => {
+const ApplicationsTab = ({
+  title = "Applications",
+  isBackBtnEnabled = false,
+}) => {
+  const navigate = useNavigate();
+
   const {
     filters,
     currentPage,
@@ -15,32 +22,44 @@ const RecruitersTab = () => {
     setFormData,
     clearAllFilters,
     setCurrentPage,
-    handleDeleteRecruiter,
-    getPaginatedRecruiters,
+    handleDeleteApplication,
+    getPaginatedApplications,
     getTotalPages,
     getFilteredCount,
-    fetchRecruiters,
-  } = useRecruitersStore();
+    fetchApplications,
+  } = useApplicationsStore();
 
-  // Fetch recruiters on component mount
+  // Fetch applications on component mount
   useEffect(() => {
-    fetchRecruiters();
-  }, [fetchRecruiters]);
+    fetchApplications();
+  }, [fetchApplications]);
 
   // Get computed data
-  const paginatedRecruiters = getPaginatedRecruiters();
+  const paginatedApplications = getPaginatedApplications();
   const totalPages = getTotalPages();
   const filteredCount = getFilteredCount();
 
+  const handleBackClick = () => {
+    navigate(-1); // Go back to previous page
+  };
+
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Recruiters</h1>
+      <div className="flex items-center gap-4">
+        {isBackBtnEnabled && (
+          <MoveLeftIcon
+            onClick={handleBackClick}
+            className="w-5 h-5 text-gray-600 cursor-pointer"
+          />
+        )}
+        <h1 className="text-2xl font-bold">{title}</h1>
+      </div>
 
       {/* Error Message */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="text-red-800 font-medium">
-            Error loading recruiters
+            Error loading applications
           </div>
           <div className="text-red-600 text-sm">{error}</div>
         </div>
@@ -64,7 +83,7 @@ const RecruitersTab = () => {
                 </div>
               </div>
               <FilterComponent
-                formControls={getApprovalFilters("recruiters")}
+                formControls={applicationsFilters}
                 formData={filters}
                 setFormData={setFormData}
               />
@@ -87,17 +106,16 @@ const RecruitersTab = () => {
           {/* Loading State */}
           {loading && (
             <div className="flex justify-center items-center py-8">
-              <div className="text-gray-500">Loading recruiters...</div>
+              <div className="text-gray-500">Loading applications...</div>
             </div>
           )}
 
-          {/* Recruiters Table Container with horizontal scroll */}
+          {/* Applications Table Container with horizontal scroll */}
           {!loading && (
             <div className="min-w-0 overflow-x-auto">
-              <RecruitersTable
-                paginatedRecruiters={paginatedRecruiters}
-                handleDeleteRecruiter={handleDeleteRecruiter}
-                onRevalidate={fetchRecruiters}
+              <ApplicationsTable
+                paginatedApplications={paginatedApplications}
+                handleDeleteApplication={handleDeleteApplication}
               />
             </div>
           )}
@@ -118,4 +136,4 @@ const RecruitersTab = () => {
   );
 };
 
-export default RecruitersTab;
+export default ApplicationsTab;

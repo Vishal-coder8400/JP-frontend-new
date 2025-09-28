@@ -1,14 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LocationIcon } from "@/utils/icon";
-import {
-  ClockIcon,
-  DollarSignIcon,
-  CalendarIcon,
-  FacebookIcon,
-  TwitterIcon,
-  LinkedinIcon,
-} from "lucide-react";
+import { ClockIcon, DollarSignIcon, CalendarIcon } from "lucide-react";
 import { useGetJobDetails } from "../../../../../hooks/super-admin/useJob";
 
 const JobDetailsDrawer = ({ jobId }) => {
@@ -36,7 +29,7 @@ const JobDetailsDrawer = ({ jobId }) => {
     );
   }
 
-  if (!jobData?.data) {
+  if (!jobData?.data?.data?.job) {
     return (
       <div className="min-h-full flex flex-col bg-white p-6">
         <div className="flex justify-center items-center h-64">
@@ -46,56 +39,50 @@ const JobDetailsDrawer = ({ jobId }) => {
     );
   }
 
-  const job = jobData.data;
+  const job = jobData.data.data.job;
 
   return (
     <div className="min-h-full flex flex-col bg-white p-6">
       {/* Header */}
       <div className="flex justify-between gap-4 p-6 border-1 border-gray2 rounded-lg">
-        {job.companyLogo && (
-          <img
-            src={job.companyLogo}
-            alt={job.company}
-            className="h-10 w-10 rounded-md"
-          />
-        )}
         <div className="flex-1">
-          {job.company && <p>{job.company}</p>}
           <div className="flex items-center gap-4">
-            {(job.title || job.name) && (
-              <p className="text-xl font-medium">{job.title || job.name}</p>
-            )}
-            {(job.applicationsCount || job.candidates) && (
-              <Badge className="text-primary-purple bg-light-purple text-xs">
-                {job.applicationsCount || job.candidates} Applied
-              </Badge>
-            )}
+            <p className="text-xl font-medium">{job.jobTitle}</p>
+            <Badge
+              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                job.status === "active"
+                  ? "bg-success2 text-success1"
+                  : "bg-danger2 text-danger1"
+              }`}
+            >
+              {job.status?.charAt(0).toUpperCase() + job.status?.slice(1)}
+            </Badge>
           </div>
           <div className="text-gray1 flex items-center gap-6 mt-2">
-            {job.location && (
+            {job.officeLocation && (
               <div className="flex items-center gap-2">
                 <LocationIcon className="h-4 w-4 text-gray1" />
-                {job.location}
+                {job.officeLocation}, {job.city}, {job.state}
               </div>
             )}
-            {(job.jobType || job.type) && (
+            {job.jobType && (
               <div className="flex items-center gap-2">
                 <ClockIcon className="h-4 w-4 text-gray1" />
-                {job.jobType || job.type}
+                {job.jobType}
               </div>
             )}
-            {(job.salary || job.salaryRange) && (
+            {job.experienceLevel && (
               <div className="flex items-center gap-2">
                 <DollarSignIcon className="h-4 w-4 text-gray1" />
-                {job.salary || job.salaryRange}
+                {job.experienceLevel}
               </div>
             )}
           </div>
 
-          {job.postedDate && (
+          {job.createdAt && (
             <div className="text-gray1 flex items-center gap-2 mt-2">
               <CalendarIcon className="h-4 w-4 text-gray1" />
-              {new Date(job.postedDate).toLocaleDateString()}
+              Posted on {new Date(job.createdAt).toLocaleDateString()}
             </div>
           )}
         </div>
@@ -106,140 +93,115 @@ const JobDetailsDrawer = ({ jobId }) => {
       <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
         <div>
           <h3 className="text-lg font-semibold">About the job</h3>
-          <div className="text-gray1 mt-4 space-y-2">
-            {(job.description || job.jobDescription) && (
+          <div className="text-gray1 mt-4 space-y-4">
+            {job.jobDescription && (
               <>
                 <h4 className="font-semibold">Job Description</h4>
-                <p>{job.description || job.jobDescription}</p>
+                <p>{job.jobDescription}</p>
               </>
             )}
 
-            {job.responsibilities && (
-              <>
-                <h4 className="font-semibold">Key Responsibilities</h4>
-                <ul className="list-disc list-inside">
-                  {Array.isArray(job.responsibilities) ? (
-                    job.responsibilities.map((resp, index) => (
-                      <li key={index}>{resp}</li>
-                    ))
-                  ) : (
-                    <li>{job.responsibilities}</li>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-semibold">Job Details</h4>
+                <ul className="space-y-1 mt-2">
+                  <li>
+                    <strong>Job Type:</strong> {job.jobType}
+                  </li>
+                  <li>
+                    <strong>Experience Level:</strong> {job.experienceLevel}
+                  </li>
+                  <li>
+                    <strong>Mode of Work:</strong> {job.modeOfWork}
+                  </li>
+                  <li>
+                    <strong>Working Hours:</strong> {job.workingHours}
+                  </li>
+                  <li>
+                    <strong>Working Days:</strong> {job.workingDays}
+                  </li>
+                  {job.isSundayWorking && (
+                    <li>
+                      <strong>Sunday Working:</strong> Yes
+                    </li>
                   )}
                 </ul>
-              </>
-            )}
+              </div>
 
-            {job.requirements && (
-              <>
+              <div>
                 <h4 className="font-semibold">Requirements</h4>
-                <ul className="list-disc list-inside">
-                  {Array.isArray(job.requirements) ? (
-                    job.requirements.map((req, index) => (
-                      <li key={index}>{req}</li>
-                    ))
-                  ) : (
-                    <li>{job.requirements}</li>
-                  )}
+                <ul className="space-y-1 mt-2">
+                  <li>
+                    <strong>Minimum Education:</strong> {job.minimumEducation}
+                  </li>
+                  <li>
+                    <strong>English Level:</strong> {job.englishLevel}
+                  </li>
+                  <li>
+                    <strong>Gender Preference:</strong> {job.genderPreference}
+                  </li>
+                  <li>
+                    <strong>Age Range:</strong> {job.preferredAgeRange}
+                  </li>
+                  <li>
+                    <strong>Regional Language:</strong>{" "}
+                    {job.regionalLanguageRequired ? "Required" : "Not Required"}
+                  </li>
+                  <li>
+                    <strong>Two Wheeler:</strong>{" "}
+                    {job.twoWheelerMandatory ? "Mandatory" : "Not Mandatory"}
+                  </li>
                 </ul>
-              </>
-            )}
+              </div>
+            </div>
 
-            {job.education && (
-              <>
-                <h4 className="font-semibold">Education</h4>
-                <p>{job.education}</p>
-              </>
-            )}
+            <div>
+              <h4 className="font-semibold">Location Details</h4>
+              <ul className="space-y-1 mt-2">
+                <li>
+                  <strong>Office Location:</strong> {job.officeLocation}
+                </li>
+                <li>
+                  <strong>City:</strong> {job.city}
+                </li>
+                <li>
+                  <strong>State:</strong> {job.state}
+                </li>
+                <li>
+                  <strong>Pincode:</strong> {job.pincode}
+                </li>
+              </ul>
+            </div>
 
-            {(job.experience ||
-              job.location ||
-              job.salary ||
-              job.jobType ||
-              job.industry) && (
-              <>
-                <h4 className="font-semibold">Other Details</h4>
-                <ul className="list-disc list-inside">
-                  {job.experience && <li>Experience: {job.experience}</li>}
-                  {job.location && <li>Location: {job.location}</li>}
-                  {job.salary && <li>Salary: {job.salary}</li>}
-                  {(job.jobType || job.type) && (
-                    <li>Job Type: {job.jobType || job.type}</li>
-                  )}
-                  {job.industry && <li>Industry: {job.industry}</li>}
-                </ul>
-              </>
-            )}
-
-            {job.contactEmail && (
-              <p>
-                For additional information, you can reach out to me at{" "}
-                {job.contactEmail}
-              </p>
-            )}
-
-            {job.skills && (
-              <div className="flex items-center gap-2 mt-4">
-                {Array.isArray(job.skills) ? (
-                  job.skills.map((skill) => (
+            {job.requiredSkills && job.requiredSkills.length > 0 && (
+              <div>
+                <h4 className="font-semibold">Required Skills</h4>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {job.requiredSkills.map((skill, index) => (
                     <span
-                      key={skill}
-                      className="inline-block px-2 py-1 text-xs font-medium border-1 rounded-full"
+                      key={index}
+                      className="inline-block px-3 py-1 text-xs font-medium bg-light-purple text-primary-purple rounded-full"
                     >
                       {skill}
                     </span>
-                  ))
-                ) : (
-                  <span className="inline-block px-2 py-1 text-xs font-medium border-1 rounded-full">
-                    {job.skills}
-                  </span>
-                )}
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {job.isWalkInInterview && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <h4 className="font-semibold text-yellow-800">
+                  Walk-in Interview
+                </h4>
+                <p className="text-yellow-700 mt-1">
+                  This job allows walk-in interviews.
+                </p>
               </div>
             )}
           </div>
         </div>
       </div>
-
-      {/* Company */}
-      {(job.companyDescription || job.company?.description) && (
-        <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
-          <h4>About the Company</h4>
-          <p className="text-gray1 mt-4">
-            {job.companyDescription || job.company?.description}
-          </p>
-
-          {(job.company?.socialMedia || job.socialMedia) && (
-            <div className="mt-4 pt-4 flex items-center gap-4 border-t-1 border-gray-2">
-              {job.company?.socialMedia?.facebook && (
-                <a
-                  href={job.company.socialMedia.facebook}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <FacebookIcon className="h-4 w-4 text-gray1 hover:text-blue-600" />
-                </a>
-              )}
-              {job.company?.socialMedia?.linkedin && (
-                <a
-                  href={job.company.socialMedia.linkedin}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <LinkedinIcon className="h-4 w-4 text-gray1 hover:text-blue-600" />
-                </a>
-              )}
-              {job.company?.socialMedia?.twitter && (
-                <a
-                  href={job.company.socialMedia.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <TwitterIcon className="h-4 w-4 text-gray1 hover:text-blue-600" />
-                </a>
-              )}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };

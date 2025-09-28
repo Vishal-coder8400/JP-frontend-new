@@ -1,8 +1,10 @@
 import { getValue } from "@/utils/commonFunctions";
 import { DownloadIcon, YourImageIcon, YourPdfIcon } from "@/utils/icon";
 import { Link } from "react-router-dom";
+import { useRecruiterDetails } from "../../../../../hooks/super-admin/useRecruiterDetails";
 
-const RecruiterDetails = ({ recruiter }) => {
+const RecruiterDetails = ({ recruiterId }) => {
+  const { data: recruiter, loading, error } = useRecruiterDetails(recruiterId);
   const pdfObject = {
     Resume: "resume",
     "PAN Card": "kycDetails.panDetails.image",
@@ -19,6 +21,31 @@ const RecruiterDetails = ({ recruiter }) => {
     },
     {}
   );
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <div className="text-gray-500">Loading recruiter details...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <div className="text-red-500">Error: {error}</div>
+      </div>
+    );
+  }
+
+  if (!recruiter) {
+    return (
+      <div className="flex justify-center items-center h-96">
+        <div className="text-gray-500">No recruiter data available</div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col w-full gap-[24px]">
       <div className="relative flex w-full bg-white pt-[120px] px-[48px] pb-[47px] rounded-t-[16px] overflow-hidden">
@@ -27,13 +54,13 @@ const RecruiterDetails = ({ recruiter }) => {
           <div className="self-stretch pl-52 pr-10 py-5 relative bg-white rounded-2xl shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)] outline-1 outline-offset-[-1px] outline-neutral-300 inline-flex justify-start items-center gap-2.5">
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-1.5">
               <div className="text-center justify-start text-black text-xl font-semibold leading-tight">
-                {recruiter?.name}
+                Recruiter ID: {recruiter?._id || "N/A"}
               </div>
             </div>
             <img
               className="size-28 left-[42px] top-[-21px] absolute object-cover rounded-full outline-2 outline-white"
               src={recruiter?.profileImage || "/person.png"}
-              alt={recruiter?.name}
+              alt={`Recruiter ${recruiter?._id || "avatar"}`}
             />
             <div className="size- inline-flex flex-col justify-center items-start gap-2.5">
               <div className="self-stretch px-3 py-2 bg-black rounded-lg inline-flex justify-center items-center gap-1">
@@ -89,6 +116,63 @@ const RecruiterDetails = ({ recruiter }) => {
           </div>
           <div className="self-stretch inline-flex flex-col justify-start items-start gap-6">
             <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
+              Recruiter Information
+            </div>
+            <div className="self-stretch flex flex-col justify-start items-start gap-4">
+              <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
+                <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                  Recruiter ID
+                </div>
+                <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                  {recruiter?._id || "N/A"}
+                </div>
+              </div>
+              <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
+                <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                  Status
+                </div>
+                <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                  {recruiter?.status || "N/A"}
+                </div>
+              </div>
+              <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
+                <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                  Verification Status
+                </div>
+                <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                  {recruiter?.verificationStatus || "N/A"}
+                </div>
+              </div>
+              <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
+                <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                  Is Verified
+                </div>
+                <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                  {recruiter?.isVerified ? "Yes" : "No"}
+                </div>
+              </div>
+              <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
+                <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                  Created At
+                </div>
+                <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                  {recruiter?.createdAt
+                    ? new Date(recruiter.createdAt).toLocaleDateString()
+                    : "N/A"}
+                </div>
+              </div>
+              <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
+                <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                  Updated At
+                </div>
+                <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                  {recruiter?.updatedAt
+                    ? new Date(recruiter.updatedAt).toLocaleDateString()
+                    : "N/A"}
+                </div>
+              </div>
+            </div>
+            <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
               Personal Information
             </div>
             <div className="flex items-center justify-between w-full gap-[12px]">
@@ -115,7 +199,7 @@ const RecruiterDetails = ({ recruiter }) => {
                   </div>
                 </div>
                 <div className="text-[#61758A] text-base font-normal">
-                  {recruiter?.totalExperience} YOE
+                  {recruiter?.totalExperience || "N/A"} YOE
                 </div>
               </div>
               <div className="max-w-[237px] w-full h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
@@ -184,7 +268,9 @@ const RecruiterDetails = ({ recruiter }) => {
                     </svg>
                   </div>
                   <div>
-                    {recruiter?.phone?.countryCode} {recruiter?.phone?.number}
+                    {recruiter?.phone?.countryCode && recruiter?.phone?.number
+                      ? `${recruiter.phone.countryCode} ${recruiter.phone.number}`
+                      : "N/A"}
                   </div>
                 </div>
                 <div className="text-[#61758A] text-base font-normal flex items-center gap-2">
@@ -210,7 +296,7 @@ const RecruiterDetails = ({ recruiter }) => {
                       />
                     </svg>
                   </div>
-                  <div>{recruiter?.email}</div>
+                  <div>{recruiter?.email || "N/A"}</div>
                 </div>
               </div>
               <div className="max-w-[237px] w-full h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
@@ -236,7 +322,11 @@ const RecruiterDetails = ({ recruiter }) => {
                   </div>
                 </div>
                 <div className="text-[#61758A] text-base font-normal leading-tight line-clamp-2">
-                  {`${recruiter?.currentAddress?.address}, ${recruiter?.currentAddress?.city}, ${recruiter?.currentAddress?.state}`}
+                  {recruiter?.currentAddress?.address &&
+                  recruiter?.currentAddress?.city &&
+                  recruiter?.currentAddress?.state
+                    ? `${recruiter.currentAddress.address}, ${recruiter.currentAddress.city}, ${recruiter.currentAddress.state}`
+                    : "N/A"}
                 </div>
               </div>
             </div>
@@ -323,30 +413,40 @@ const RecruiterDetails = ({ recruiter }) => {
                     Sectoral Specialization
                   </div>
                   <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
-                    {recruiter?.sectorSpecialization
-                      .map((item) => item.name)
-                      .join(", ")}
+                    {recruiter?.sectorSpecialization?.length > 0
+                      ? recruiter.sectorSpecialization
+                          .map((item) => item.name)
+                          .join(", ")
+                      : "N/A"}
                   </div>
                 </div>
                 <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
                   <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
                     LinkedIn
                   </div>
-                  <Link
-                    to={recruiter?.linkedinProfile}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight truncate"
-                  >
-                    {recruiter?.linkedinProfile}
-                  </Link>
+                  {recruiter?.linkedinProfile ? (
+                    <Link
+                      to={recruiter.linkedinProfile}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight truncate"
+                    >
+                      {recruiter.linkedinProfile}
+                    </Link>
+                  ) : (
+                    <span className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                      N/A
+                    </span>
+                  )}
                 </div>
                 <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
                   <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
                     Experience In
                   </div>
                   <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
-                    {recruiter?.experienceLevel?.join(", ") || "Not Specified"}
+                    {recruiter?.experienceLevel?.length > 0
+                      ? recruiter.experienceLevel.join(", ")
+                      : "N/A"}
                   </div>
                 </div>
                 <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
@@ -354,7 +454,7 @@ const RecruiterDetails = ({ recruiter }) => {
                     Last Organization Name
                   </div>
                   <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
-                    {recruiter?.lastOrganization?.name || "Not Specified"}
+                    {recruiter?.lastOrganization?.name || "N/A"}
                   </div>
                 </div>
                 <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
@@ -362,7 +462,7 @@ const RecruiterDetails = ({ recruiter }) => {
                     Designation in last Organization
                   </div>
                   <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
-                    {recruiter?.lastOrganization?.position || "Not Specified"}
+                    {recruiter?.lastOrganization?.position || "N/A"}
                   </div>
                 </div>
               </div>
@@ -394,7 +494,7 @@ const RecruiterDetails = ({ recruiter }) => {
                       Father’s Name
                     </div>
                     <div className="font-normal text-base text-[#61758A]">
-                      {recruiter?.fatherName}
+                      {recruiter?.fatherName || "N/A"}
                     </div>
                   </div>
                 </div>
@@ -420,7 +520,7 @@ const RecruiterDetails = ({ recruiter }) => {
                       Mother's Name
                     </div>
                     <div className="font-normal text-base text-[#61758A]">
-                      {recruiter?.motherName}
+                      {recruiter?.motherName || "N/A"}
                     </div>
                   </div>
                 </div>
@@ -472,7 +572,8 @@ const RecruiterDetails = ({ recruiter }) => {
                       Medical Problems
                     </div>
                     <div className="font-normal text-base text-[#61758A]">
-                      {recruiter?.medicalProblemDetails === ""
+                      {recruiter?.medicalProblemDetails === "" ||
+                      !recruiter?.medicalProblemDetails
                         ? "None"
                         : recruiter?.medicalProblemDetails}
                     </div>

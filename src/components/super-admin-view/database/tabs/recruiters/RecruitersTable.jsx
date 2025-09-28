@@ -61,7 +61,7 @@ const RecruitersTable = ({ paginatedRecruiters = [] }) => {
               {paginatedRecruiters && paginatedRecruiters.length > 0 ? (
                 paginatedRecruiters.map((recruiter) => (
                   <TableRow
-                    key={recruiter.id}
+                    key={recruiter._id}
                     onClick={(e) => handleRowClick(recruiter, e)}
                     className="cursor-pointer hover:bg-gray-50 transition-colors"
                   >
@@ -69,29 +69,23 @@ const RecruitersTable = ({ paginatedRecruiters = [] }) => {
                       <input
                         type="radio"
                         name="selectRecruiter"
-                        checked={selectedRecruiterId === recruiter.id}
-                        onChange={() => handleSelectRecruiter(recruiter.id)}
-                        aria-label={`Select recruiter ${recruiter.name}`}
+                        checked={selectedRecruiterId === recruiter._id}
+                        onChange={() => handleSelectRecruiter(recruiter._id)}
+                        aria-label={`Select recruiter ${
+                          recruiter.name || recruiter._id
+                        }`}
                         className="w-4 h-4 text-primary-purple border-2 border-gray-300 focus:ring-2 focus:ring-primary-purple/50 focus:ring-offset-0 cursor-pointer appearance-none rounded-full checked:bg-primary-purple checked:border-primary-purple relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:transform before:-translate-x-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:bg-white before:rounded-full before:opacity-0 checked:before:opacity-100"
                       />
                     </TableCell>
-                    <TableCell>{recruiter.id}</TableCell>
+                    <TableCell>{recruiter._id}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        {recruiter.profileImage ? (
-                          <img
-                            src={recruiter.profileImage}
-                            alt={`${recruiter.name} avatar`}
-                            className="w-10 h-10 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <User className="h-5 w-5 text-gray-400" />
-                          </div>
-                        )}
+                        <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                          <User className="h-5 w-5 text-gray-400" />
+                        </div>
                         <div className="flex flex-col">
                           <span className="font-medium text-gray-900">
-                            {recruiter.name}
+                            {recruiter.name || "N/A"}
                           </span>
                           <span className="text-sm text-gray-500">
                             {recruiter.designation || "Recruiter"}
@@ -100,22 +94,16 @@ const RecruitersTable = ({ paginatedRecruiters = [] }) => {
                       </div>
                     </TableCell>
                     <TableCell className="text-gray-700">
-                      {recruiter.email}
+                      {recruiter.email || "N/A"}
                     </TableCell>
                     <TableCell className="text-gray-700">
-                      {recruiter.phone?.countryCode && recruiter.phone?.number
-                        ? `${recruiter.phone.countryCode} ${recruiter.phone.number}`
-                        : recruiter.phone || "N/A"}
+                      {recruiter.phone || "N/A"}
                     </TableCell>
                     <TableCell className="text-gray-700">
-                      {recruiter.company ||
-                        recruiter.lastOrganization?.name ||
-                        "N/A"}
+                      {recruiter.company || "N/A"}
                     </TableCell>
                     <TableCell className="text-gray-700">
-                      {recruiter.candidatesCount ||
-                        recruiter.candidates?.length ||
-                        0}
+                      {recruiter.candidatesCount || 0}
                     </TableCell>
                   </TableRow>
                 ))
@@ -148,7 +136,7 @@ const RecruitersTable = ({ paginatedRecruiters = [] }) => {
             overflow-y-auto border-transparent [&>button.absolute]:hidden"
         >
           <div className="w-full h-full">
-            <RecruiterDetails recruiter={selectedRecruiter} />
+            <RecruiterDetails recruiterId={selectedRecruiter?._id} />
           </div>
         </SheetContent>
       </Sheet>

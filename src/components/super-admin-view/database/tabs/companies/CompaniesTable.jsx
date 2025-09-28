@@ -61,7 +61,7 @@ const CompaniesTable = ({ paginatedCompanies }) => {
               {paginatedCompanies.length > 0 ? (
                 paginatedCompanies.map((company) => (
                   <TableRow
-                    key={company.id}
+                    key={company._id}
                     onClick={(e) => handleRowClick(company, e)}
                     className="cursor-pointer hover:bg-gray-50 transition-colors"
                   >
@@ -69,18 +69,22 @@ const CompaniesTable = ({ paginatedCompanies }) => {
                       <input
                         type="radio"
                         name="selectCompany"
-                        checked={selectedCompanyId === company.id}
-                        onChange={() => handleSelectCompany(company.id)}
-                        aria-label={`Select company ${company.name}`}
+                        checked={selectedCompanyId === company._id}
+                        onChange={() => handleSelectCompany(company._id)}
+                        aria-label={`Select company ${
+                          company.name || company._id
+                        }`}
                         className="w-4 h-4 text-primary-purple border-2 border-gray-300 focus:ring-2 focus:ring-primary-purple/50 focus:ring-offset-0 cursor-pointer appearance-none rounded-full checked:bg-primary-purple checked:border-primary-purple relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:transform before:-translate-x-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:bg-white before:rounded-full before:opacity-0 checked:before:opacity-100"
                       />
                     </TableCell>
-                    <TableCell>{company.id}</TableCell>
-                    <TableCell>{company.name}</TableCell>
-                    <TableCell>{company.industry}</TableCell>
-                    <TableCell>{company.contact}</TableCell>
-                    <TableCell>{company.jobs}</TableCell>
-                    <TableCell>{company.location}</TableCell>
+                    <TableCell>{company._id}</TableCell>
+                    <TableCell>{company.name || "-"}</TableCell>
+                    <TableCell>{company.industry || "-"}</TableCell>
+                    <TableCell>
+                      {company.contact || company.email || "-"}
+                    </TableCell>
+                    <TableCell>{company.jobs || "-"}</TableCell>
+                    <TableCell>{company.location || "-"}</TableCell>
                   </TableRow>
                 ))
               ) : (
@@ -112,7 +116,7 @@ const CompaniesTable = ({ paginatedCompanies }) => {
             overflow-y-auto border-transparent [&>button.absolute]:hidden"
         >
           <div className="w-full h-full">
-            <CompanyDetailsDrawer company={selectedCompany} />
+            <CompanyDetailsDrawer companyId={selectedCompany?._id} />
           </div>
         </SheetContent>
       </Sheet>

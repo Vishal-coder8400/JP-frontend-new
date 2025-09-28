@@ -2,8 +2,8 @@ import axios from "axios";
 import useAuthStore from "../stores/useAuthStore";
 
 const api = axios.create({
-  // baseURL: "https://srv938709.hstgr.cloud", // Production API URL
-  baseURL: "http://127.0.0.1:8006", // Development API URL
+  baseURL: "https://srv938709.hstgr.cloud", // Production API URL
+  // baseURL: "http://127.0.0.1:8006", // Development API URL
 });
 
 // Automatically attach token from Zustand or localStorage

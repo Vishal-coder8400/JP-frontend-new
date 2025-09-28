@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { recruiters } from "./utils";
 
 const useRecruitersStore = create((set, get) => ({
   // Filter state
@@ -85,82 +84,20 @@ const useRecruitersStore = create((set, get) => ({
     });
   },
 
-  // Computed properties (getters)
-  getFilteredRecruiters: () => {
-    const { filters } = get();
-
-    return recruiters.filter((recruiter) => {
-      // Apply search filter
-      const matchesSearch =
-        filters.search === "" ||
-        recruiter.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        recruiter.email.toLowerCase().includes(filters.search.toLowerCase()) ||
-        recruiter.company
-          .toLowerCase()
-          .includes(filters.search.toLowerCase()) ||
-        recruiter.designation
-          .toLowerCase()
-          .includes(filters.search.toLowerCase());
-
-      // Apply job status filter
-      const matchesJobStatus =
-        filters.jobStatus.length === 0 ||
-        filters.jobStatus.includes(recruiter.jobStatus);
-
-      // Apply location filter
-      const matchesLocation =
-        filters.location.length === 0 ||
-        filters.location.some((loc) =>
-          recruiter.location.toLowerCase().includes(loc.toLowerCase())
-        );
-
-      // Apply company filter
-      const matchesCompany =
-        filters.company.length === 0 ||
-        filters.company.some((comp) =>
-          recruiter.company.toLowerCase().includes(comp.toLowerCase())
-        );
-
-      // Apply industry filter
-      const matchesIndustry =
-        filters.industry.length === 0 ||
-        filters.industry.includes(recruiter.industry.toLowerCase());
-
-      // Apply date filter
-      const matchesDate =
-        !filters.postedDate ||
-        new Date(recruiter.postedDate) >= new Date(filters.postedDate);
-
-      return (
-        matchesSearch &&
-        matchesJobStatus &&
-        matchesLocation &&
-        matchesCompany &&
-        matchesIndustry &&
-        matchesDate
-      );
-    });
-  },
-
+  // Computed properties (getters) - These will be replaced by API data
   getPaginatedRecruiters: () => {
-    const filteredRecruiters = get().getFilteredRecruiters();
-    const { currentPage, itemsPerPage } = get();
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-
-    return filteredRecruiters.slice(startIndex, endIndex);
+    // This will be handled by the API hook
+    return [];
   },
 
   getTotalPages: () => {
-    const filteredRecruiters = get().getFilteredRecruiters();
-    const { itemsPerPage } = get();
-
-    return Math.ceil(filteredRecruiters.length / itemsPerPage);
+    // This will be handled by the API hook
+    return 0;
   },
 
   getFilteredCount: () => {
-    return get().getFilteredRecruiters().length;
+    // This will be handled by the API hook
+    return 0;
   },
 
   // Additional utility methods
@@ -186,29 +123,6 @@ const useRecruitersStore = create((set, get) => ({
     if (filters.industry.length > 0) count++;
     if (filters.postedDate !== null) count++;
     return count;
-  },
-
-  // Get statistics
-  getRecruiterStats: () => {
-    const allRecruiters = recruiters;
-    const totalRecruiters = allRecruiters.length;
-    const activeRecruiters = allRecruiters.filter(
-      (r) => r.jobStatus === "active"
-    ).length;
-    const totalCandidates = allRecruiters.reduce(
-      (sum, r) => sum + r.candidatesCount,
-      0
-    );
-    const avgCandidatesPerRecruiter = Math.round(
-      totalCandidates / totalRecruiters
-    );
-
-    return {
-      totalRecruiters,
-      activeRecruiters,
-      totalCandidates,
-      avgCandidatesPerRecruiter,
-    };
   },
 }));
 

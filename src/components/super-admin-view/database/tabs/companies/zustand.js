@@ -1,20 +1,28 @@
 import { create } from "zustand";
-import { companies } from "./utils";
+import { getAllCompanies } from "../../../../../api/super-admin/database";
 
 const useCompaniesStore = create((set, get) => ({
   // Filter state
   filters: {
     search: "",
     status: [],
-    location: [],
-    company: [],
+    verification: [],
     industry: [],
-    postedDate: null,
+    companySize: [],
+    location: [],
+    sortBy: "createdAt",
+    sortOrder: "desc",
   },
 
   // Pagination state
   currentPage: 1,
   itemsPerPage: 10,
+
+  // API state
+  companies: [],
+  totalCount: 0,
+  isLoading: false,
+  error: null,
 
   // UI state
   showDeleteDialog: false,
@@ -55,10 +63,12 @@ const useCompaniesStore = create((set, get) => ({
       filters: {
         search: "",
         status: [],
-        location: [],
-        company: [],
+        verification: [],
         industry: [],
-        postedDate: null,
+        companySize: [],
+        location: [],
+        sortBy: "createdAt",
+        sortOrder: "desc",
       },
       currentPage: 1,
     }),
@@ -75,6 +85,47 @@ const useCompaniesStore = create((set, get) => ({
       showDeleteDialog: true,
     }),
 
+  // API actions
+  setCompanies: (companies) => set({ companies }),
+  setTotalCount: (totalCount) => set({ totalCount }),
+  setLoading: (isLoading) => set({ isLoading }),
+  setError: (error) => set({ error }),
+
+  fetchCompanies: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const { filters, currentPage, itemsPerPage } = get();
+      const params = {
+        page: currentPage,
+        limit: itemsPerPage,
+        search: filters.search,
+        status: filters.status.join(","),
+        verification: filters.verification.join(","),
+        industry: filters.industry.join(","),
+        companySize: filters.companySize.join(","),
+        location: filters.location.join(","),
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
+      };
+
+      const response = await getAllCompanies({ params });
+      const { data } = response.data;
+
+      set({
+        companies: data.corporates || data.companies || data.data || data,
+        totalCount:
+          data.pagination?.total ||
+          data.totalCount ||
+          data.total ||
+          data.length ||
+          0,
+        isLoading: false,
+      });
+    } catch (error) {
+      set({ error: error.message, isLoading: false });
+    }
+  },
+
   confirmDelete: () => {
     // TODO: Implement actual delete logic here
     const selectedCompany = get().selectedCompany;
@@ -87,76 +138,72 @@ const useCompaniesStore = create((set, get) => ({
 
   // Computed properties (getters)
   getFilteredCompanies: () => {
-    const { filters } = get();
+    const { companies, filters } = get();
 
     return companies.filter((company) => {
       // Apply search filter
       const matchesSearch =
         filters.search === "" ||
-        company.name.toLowerCase().includes(filters.search.toLowerCase()) ||
-        company.email.toLowerCase().includes(filters.search.toLowerCase()) ||
-        company.industry.toLowerCase().includes(filters.search.toLowerCase());
+        company.name?.toLowerCase().includes(filters.search.toLowerCase()) ||
+        company.email?.toLowerCase().includes(filters.search.toLowerCase()) ||
+        company.industry
+          ?.toLowerCase()
+          .includes(filters.search.toLowerCase()) ||
+        company._id?.toLowerCase().includes(filters.search.toLowerCase());
 
       // Apply status filter
       const matchesStatus =
         filters.status.length === 0 || filters.status.includes(company.status);
 
-      // Apply location filter
-      const matchesLocation =
-        filters.location.length === 0 ||
-        filters.location.some((loc) =>
-          company.location.toLowerCase().includes(loc.toLowerCase())
-        );
+      // Apply verification filter
+      const matchesVerification =
+        filters.verification.length === 0 ||
+        filters.verification.includes(company.verificationStatus);
 
       // Apply industry filter
       const matchesIndustry =
         filters.industry.length === 0 ||
         filters.industry.some((ind) =>
-          company.industry.toLowerCase().includes(ind.toLowerCase())
+          company.industry?.toLowerCase().includes(ind.toLowerCase())
         );
 
-      // Apply company filter
-      const matchesCompany =
-        filters.company.length === 0 ||
-        filters.company.some((comp) =>
-          company.name.toLowerCase().includes(comp.toLowerCase())
+      // Apply company size filter
+      const matchesCompanySize =
+        filters.companySize.length === 0 ||
+        filters.companySize.some((size) =>
+          company.companySize?.toLowerCase().includes(size.toLowerCase())
         );
 
-      // Apply date filter
-      const matchesDate =
-        !filters.postedDate ||
-        new Date(company.joinedDate) >= new Date(filters.postedDate);
+      // Apply location filter
+      const matchesLocation =
+        filters.location.length === 0 ||
+        filters.location.some((loc) =>
+          company.location?.toLowerCase().includes(loc.toLowerCase())
+        );
 
       return (
         matchesSearch &&
         matchesStatus &&
-        matchesLocation &&
+        matchesVerification &&
         matchesIndustry &&
-        matchesCompany &&
-        matchesDate
+        matchesCompanySize &&
+        matchesLocation
       );
     });
   },
 
   getPaginatedCompanies: () => {
-    const filteredCompanies = get().getFilteredCompanies();
-    const { currentPage, itemsPerPage } = get();
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-
-    return filteredCompanies.slice(startIndex, endIndex);
+    const { companies } = get();
+    return companies; // API already handles pagination
   },
 
   getTotalPages: () => {
-    const filteredCompanies = get().getFilteredCompanies();
-    const { itemsPerPage } = get();
-
-    return Math.ceil(filteredCompanies.length / itemsPerPage);
+    const { totalCount, itemsPerPage } = get();
+    return Math.ceil(totalCount / itemsPerPage);
   },
 
   getFilteredCount: () => {
-    return get().getFilteredCompanies().length;
+    return get().totalCount;
   },
 
   // Additional utility methods
@@ -165,10 +212,12 @@ const useCompaniesStore = create((set, get) => ({
     return (
       filters.search !== "" ||
       filters.status.length > 0 ||
-      filters.location.length > 0 ||
-      filters.company.length > 0 ||
+      filters.verification.length > 0 ||
       filters.industry.length > 0 ||
-      filters.postedDate !== null
+      filters.companySize.length > 0 ||
+      filters.location.length > 0 ||
+      filters.sortBy !== "createdAt" ||
+      filters.sortOrder !== "desc"
     );
   },
 
@@ -177,10 +226,12 @@ const useCompaniesStore = create((set, get) => ({
     let count = 0;
     if (filters.search !== "") count++;
     if (filters.status.length > 0) count++;
-    if (filters.location.length > 0) count++;
-    if (filters.company.length > 0) count++;
+    if (filters.verification.length > 0) count++;
     if (filters.industry.length > 0) count++;
-    if (filters.postedDate !== null) count++;
+    if (filters.companySize.length > 0) count++;
+    if (filters.location.length > 0) count++;
+    if (filters.sortBy !== "createdAt") count++;
+    if (filters.sortOrder !== "desc") count++;
     return count;
   },
 }));

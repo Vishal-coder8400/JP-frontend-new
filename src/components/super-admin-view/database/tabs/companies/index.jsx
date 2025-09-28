@@ -4,6 +4,8 @@ import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../../common/filterComponent";
 import { companiesFilters } from "./utils";
 import useCompaniesStore from "./zustand";
+import { useGetAllCompanies } from "../../../../../hooks/super-admin/useCompanies";
+import { useEffect } from "react";
 
 const CompaniesTab = () => {
   const {
@@ -13,15 +15,66 @@ const CompaniesTab = () => {
     clearAllFilters,
     setCurrentPage,
     handleDeleteCompany,
-    getPaginatedCompanies,
-    getTotalPages,
-    getFilteredCount,
+    fetchCompanies,
+    isLoading,
+    error,
   } = useCompaniesStore();
 
+  // Fetch companies data using the API hook
+  const {
+    data: companiesData,
+    isLoading: apiLoading,
+    error: apiError,
+  } = useGetAllCompanies({
+    page: currentPage,
+    limit: 10,
+    search: filters.search,
+    status: filters.status.join(","),
+    verification: filters.verification.join(","),
+    industry: filters.industry.join(","),
+    companySize: filters.companySize.join(","),
+    location: filters.location.join(","),
+    sortBy: filters.sortBy,
+    sortOrder: filters.sortOrder,
+  });
+
+  // Update store with API data
+  useEffect(() => {
+    if (companiesData?.data) {
+      const { corporates, pagination } = companiesData.data;
+      useCompaniesStore.getState().setCompanies(corporates || []);
+      useCompaniesStore.getState().setTotalCount(pagination?.total || 0);
+    }
+  }, [companiesData]);
+
   // Get computed data
-  const paginatedCompanies = getPaginatedCompanies();
-  const totalPages = getTotalPages();
-  const filteredCount = getFilteredCount();
+  const paginatedCompanies = companiesData?.data?.data?.corporates || [];
+  const totalPages = companiesData?.data?.pagination?.totalPages || 0;
+  const filteredCount = companiesData?.data?.pagination?.total || 0;
+
+  if (apiLoading) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Companies</h1>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">Loading companies...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (apiError) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Companies</h1>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-red-600">
+            Error loading companies: {apiError.message}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

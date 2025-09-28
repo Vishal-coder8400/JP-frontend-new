@@ -3,7 +3,7 @@ import TrainingsApprovalTable from "./TrainingsApprovalTable";
 import Pagination from "@/components/common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "@/components/common/filterComponent";
-import { trainingsApprovalFilters } from "./utils";
+import { getApprovalFilters } from "../../utils";
 import useTrainingsApprovalStore from "./useTrainingsApprovalStore";
 
 const TrainingApprovalTab = () => {
@@ -63,7 +63,7 @@ const TrainingApprovalTab = () => {
               </div>
             </div>
             <FilterComponent
-              formControls={trainingsApprovalFilters}
+              formControls={getApprovalFilters("trainings")}
               formData={filters}
               setFormData={setFormData}
             />

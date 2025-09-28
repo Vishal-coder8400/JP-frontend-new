@@ -1,8 +1,9 @@
 import { Sheet, SheetContent } from "../../../../ui/sheet";
-import { Briefcase, Eye, MoveUpRightIcon } from "lucide-react";
+import { Briefcase, MoveUpRightIcon } from "lucide-react";
 import JobDetailsDrawer from "./JobDetailsDrawer";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getJobApplications } from "../../../../../api/super-admin/jobsAndTrainings";
 
 const JobsTable = ({ paginatedJobs }) => {
   const [selectedJobId, setSelectedJobId] = useState(null);
@@ -14,7 +15,7 @@ const JobsTable = ({ paginatedJobs }) => {
     setSelectedJobId(jobId);
   };
 
-  const handleRowClick = (job, event) => {
+  const handleRowClick = async (job, event) => {
     // Don't navigate if radio button or view details button was clicked
     if (
       event.target.type === "radio" ||
@@ -23,12 +24,18 @@ const JobsTable = ({ paginatedJobs }) => {
       return;
     }
 
-    navigate(`/super-admin/jobs-and-trainings/job/${job.id}/candidates`);
+    try {
+      await getJobApplications({ id: job._id });
+      navigate(`/super-admin/jobs-and-trainings/job/${job._id}/candidates`);
+    } catch (error) {
+      console.error("Error fetching job applications:", error);
+      navigate(`/super-admin/jobs-and-trainings/job/${job._id}/candidates`);
+    }
   };
 
   const handleViewDetails = (job, event) => {
     event.stopPropagation();
-    setSelectedJob(job.id);
+    setSelectedJob(job._id);
     setDrawerOpen(true);
   };
 
@@ -132,7 +139,7 @@ const JobsTable = ({ paginatedJobs }) => {
               {paginatedJobs.length > 0 ? (
                 paginatedJobs.map((job) => (
                   <tr
-                    key={job.id}
+                    key={job._id}
                     onClick={(e) => handleRowClick(job, e)}
                     className="cursor-pointer hover:bg-gray-50 transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted border-b"
                   >
@@ -140,32 +147,32 @@ const JobsTable = ({ paginatedJobs }) => {
                       <input
                         type="radio"
                         name="selectJob"
-                        checked={selectedJobId === job.id}
-                        onChange={() => handleSelectJob(job.id)}
-                        aria-label={`Select job ${job.name}`}
+                        checked={selectedJobId === job._id}
+                        onChange={() => handleSelectJob(job._id)}
+                        aria-label={`Select job ${job.jobTitle}`}
                         className="w-4 h-4 text-primary-purple border-2 border-gray-300 focus:ring-2 focus:ring-primary-purple/50 focus:ring-offset-0 cursor-pointer appearance-none rounded-full checked:bg-primary-purple checked:border-primary-purple relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:transform before:-translate-x-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:bg-white before:rounded-full before:opacity-0 checked:before:opacity-100"
                       />
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {job.id}
+                      {job._id.slice(-8)}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap font-medium">
-                      {job.name}
+                      {job.jobTitle}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {formatDate(job.appliedTime)}
+                      {formatDate(job.createdAt)}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {job.company}
+                      {job.postedBy?.companyName || ""}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {job.candidates}
+                      {/* Candidates field not available in API response */}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {job.location}
+                      {job.city}, {job.state}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
-                      {job.experience}
+                      {job.experienceLevel}
                     </td>
                     <td className="p-2 align-middle whitespace-nowrap">
                       {getStatusBadge(job.status)}
@@ -213,7 +220,7 @@ const JobsTable = ({ paginatedJobs }) => {
             overflow-y-auto border-transparent [&>button.absolute]:hidden"
         >
           <div className="w-full h-full">
-            <JobDetailsDrawer job={selectedJob} />
+            <JobDetailsDrawer jobId={selectedJob} />
           </div>
         </SheetContent>
       </Sheet>

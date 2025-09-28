@@ -3,7 +3,7 @@ import CompaniesApprovalTable from "./CompaniesApprovalTable";
 import Pagination from "../../../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../../common/filterComponent";
-import { getCompaniesApprovalFilters } from "./utils";
+import { getApprovalFilters } from "../../utils";
 import useCompaniesStore from "./zustand";
 import { useDebounce } from "@/hooks/common/useDebounce";
 
@@ -88,7 +88,9 @@ const CompaniesTab = () => {
                 </div>
               </div>
               <FilterComponent
-                formControls={getCompaniesApprovalFilters(companyOptions)}
+                formControls={getApprovalFilters("companies", {
+                  companyOptions,
+                })}
                 formData={filters}
                 setFormData={setFormData}
               />

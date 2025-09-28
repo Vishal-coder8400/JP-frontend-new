@@ -2,7 +2,7 @@ import { TrainersTable } from "../../../common/trainers";
 import Pagination from "../../../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../../common/filterComponent";
-import { trainersFilters } from "./utils";
+import { getApprovalFilters } from "../../utils";
 import { useState, useEffect } from "react";
 import { getApprovalsList } from "../../../../../api/super-admin/approvals";
 
@@ -164,7 +164,7 @@ const TrainersTab = () => {
                 </div>
               </div>
               <FilterComponent
-                formControls={trainersFilters}
+                formControls={getApprovalFilters("trainers")}
                 formData={filters}
                 setFormData={setFormData}
               />

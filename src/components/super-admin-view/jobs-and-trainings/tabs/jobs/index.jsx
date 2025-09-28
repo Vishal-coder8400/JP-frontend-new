@@ -4,16 +4,19 @@ import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../../common/filterComponent";
 import { jobsAndTrainingsFilters } from "../../utils";
 import { useGetAllJobs } from "../../../../../hooks/super-admin/useJob";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 const JobsTab = () => {
   const [filters, setFilters] = useState({
     search: "",
     status: [],
-    postedDate: null,
-    location: [],
-    company: [],
-    industry: [],
+    jobType: [],
+    experienceLevel: [],
+    city: [],
+    state: [],
+    modeOfWork: [],
+    genderPreference: [],
+    isWalkInInterview: [],
   });
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -29,68 +32,16 @@ const JobsTab = () => {
     ...filters,
   });
 
-  // Filter jobs based on current filters
-  const filteredJobs = useMemo(() => {
-    if (!jobsData?.data?.jobs) return [];
-
-    return jobsData.data.jobs.filter((job) => {
-      // Search filter
-      if (
-        filters.search &&
-        !job.name?.toLowerCase().includes(filters.search.toLowerCase()) &&
-        !job.company?.toLowerCase().includes(filters.search.toLowerCase())
-      ) {
-        return false;
-      }
-
-      // Status filter
-      if (filters.status.length > 0 && !filters.status.includes(job.status)) {
-        return false;
-      }
-
-      // Location filter
-      if (
-        filters.location.length > 0 &&
-        !filters.location.some((loc) =>
-          job.location?.toLowerCase().includes(loc.toLowerCase())
-        )
-      ) {
-        return false;
-      }
-
-      // Company filter
-      if (
-        filters.company.length > 0 &&
-        !filters.company.some((comp) =>
-          job.company?.toLowerCase().includes(comp.toLowerCase())
-        )
-      ) {
-        return false;
-      }
-
-      // Industry filter
-      if (
-        filters.industry.length > 0 &&
-        !filters.industry.includes(job.industry)
-      ) {
-        return false;
-      }
-
-      // Posted date filter
-      if (filters.postedDate) {
-        const jobDate = new Date(job.postedDate);
-        const filterDate = new Date(filters.postedDate);
-        if (jobDate.toDateString() !== filterDate.toDateString()) {
-          return false;
-        }
-      }
-
-      return true;
-    });
-  }, [jobsData?.data?.jobs, filters]);
+  // Jobs are already filtered from backend
+  const jobs = jobsData?.data?.data?.jobs || [];
 
   const setFormData = (newFilters) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
+    setFilters((prev) => {
+      // Handle both function updates (from MultiSelectFilter) and object updates (from other components)
+      return typeof newFilters === "function"
+        ? newFilters(prev)
+        : { ...prev, ...newFilters };
+    });
     setCurrentPage(1); // Reset to first page when filters change
   };
 
@@ -98,16 +49,18 @@ const JobsTab = () => {
     setFilters({
       search: "",
       status: [],
-      postedDate: null,
-      location: [],
-      company: [],
-      industry: [],
+      jobType: [],
+      experienceLevel: [],
+      city: [],
+      state: [],
+      modeOfWork: [],
+      genderPreference: [],
+      isWalkInInterview: [],
     });
     setCurrentPage(1);
   };
 
   // Use server-side pagination data from API
-  const paginatedJobs = filteredJobs;
   const totalPages = jobsData?.data?.pagination?.totalPages || 0;
   const filteredCount = jobsData?.data?.pagination?.totalJobs || 0;
 
@@ -179,7 +132,7 @@ const JobsTab = () => {
 
           {/* Jobs Table */}
           <div className="min-w-0">
-            <JobsTable paginatedJobs={paginatedJobs} />
+            <JobsTable paginatedJobs={jobs} />
           </div>
 
           {/* Pagination */}

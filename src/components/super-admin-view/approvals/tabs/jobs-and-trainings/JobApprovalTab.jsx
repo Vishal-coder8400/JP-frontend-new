@@ -3,7 +3,7 @@ import JobsApprovalTable from "./JobsApprovalTable";
 import Pagination from "@/components/common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "@/components/common/filterComponent";
-import { jobsApprovalFilters } from "./utils";
+import { getApprovalFilters } from "../../utils";
 import useJobsApprovalStore from "./useJobsApprovalStore";
 
 const JobApprovalTab = () => {
@@ -61,7 +61,7 @@ const JobApprovalTab = () => {
               </div>
             </div>
             <FilterComponent
-              formControls={jobsApprovalFilters}
+              formControls={getApprovalFilters("jobs")}
               formData={filters}
               setFormData={setFormData}
             />
