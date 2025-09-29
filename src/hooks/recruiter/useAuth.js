@@ -7,11 +7,12 @@ import { toast } from "sonner";
 export const useLogin = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { setToken, setIsAuthenticated } = useAuthStore();
+  const { setToken, setIsAuthenticated, setUser } = useAuthStore();
   return useMutation({
     mutationFn: login,
     onSuccess: async (data, variables) => {
       toast.success(data.data.message);
+      setUser({ ...data.data.data, role: "recruiter" });
       setToken(data.data.data.token, variables.rememberme);
       setIsAuthenticated(true);
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
@@ -25,12 +26,13 @@ export const useLogin = () => {
 
 export const useRegister = () => {
   const queryClient = useQueryClient();
-  const { setToken, setIsAuthenticated } = useAuthStore();
+  const { setToken, setIsAuthenticated, setUser } = useAuthStore();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: register,
     onSuccess: (data) => {
       toast.success(data.data.message);
+      setUser({ ...data.data.data, role: "recruiter" });
       setToken(data.data.data.token);
       setIsAuthenticated(true);
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });

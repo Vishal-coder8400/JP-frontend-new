@@ -1,7 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import useAuthStore from "../../stores/useAuthStore";
 import { useEffect } from "react";
-import { calculateProfileCompletion } from "../../utils/profileCompletion/calculate";
 
 const CheckAuth = ({
   allowedRoles = [],
@@ -26,12 +25,9 @@ const CheckAuth = ({
       const profileData =
         userRole === "trainer" ? profile.data.data.trainer : profile.data.data;
 
-      const completion = calculateProfileCompletion(profileData, userRole);
-
       setUser({
         ...profileData,
         role: userRole,
-        profileCompletion: completion,
       });
 
       setIsAuthenticated(true);

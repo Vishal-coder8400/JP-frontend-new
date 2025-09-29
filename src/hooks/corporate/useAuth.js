@@ -12,7 +12,7 @@ export const useLogin = () => {
     mutationFn: login,
     onSuccess: (data, variables) => {
       toast.success(data.data.message);
-      setUser(data.data.data);
+      setUser({ ...data.data.data, role: "corporate" });
       setToken(data.data.data.token, variables.rememberme);
       setIsAuthenticated(true);
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
@@ -24,13 +24,15 @@ export const useLogin = () => {
   });
 };
 export const useCorporateRegister = () => {
-  const { setToken, setIsAuthenticated } = useAuthStore();
+  const { setToken, setIsAuthenticated, setUser } = useAuthStore();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   return useMutation({
     mutationFn: register,
     onSuccess: (data) => {
       toast.success(data.data.message);
       setToken(data.data.data.token);
+      setUser({ ...data.data.data, role: "corporate" });
       setIsAuthenticated(true);
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       navigate("/congratulation");
