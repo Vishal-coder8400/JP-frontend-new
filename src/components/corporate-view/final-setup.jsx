@@ -63,7 +63,10 @@ const FinalSetup = () => {
         </div>
       </div>
       <div className="self-stretch flex flex-col justify-end items-end gap-2.5">
-        <ButtonComponent buttonText={"Save & Update Profile"} />
+        <ButtonComponent
+          color={"#6945ED"}
+          buttonText={"Save & Update Profile"}
+        />
       </div>
     </div>
   );

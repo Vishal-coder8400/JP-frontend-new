@@ -13,6 +13,7 @@ import { useFilteredTrainings } from "../../hooks/recruiter/useTraining";
 
 const JobOpenings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedSeeker, setSelectedSeeker] = useState([]);
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState(() => {
     // Restore from URL on first render
@@ -35,10 +36,6 @@ const JobOpenings = () => {
   const { data: trainingPosts, isLoading: isLoading3 } =
     useFilteredTrainings(filters);
 
-  // if (isPending) return <div>Loading...</div>;
-  // if (isError) return <div>Error: {error.message}</div>;
-  // if (isLoading2) return <div>Loading job posts...</div>;
-  // if (!jobPosts) return <div>No job posts found</div>;
   const applicants = data?.data ? [...data.data].reverse() : [];
 
   // 👇 Sync filters.search to searchText on mount
@@ -65,6 +62,7 @@ const JobOpenings = () => {
   // Update URL when filters change
   useEffect(() => {
     const updatedParams = {};
+
     for (const key in filters) {
       if (filters[key]) updatedParams[key] = filters[key];
     }
@@ -87,6 +85,9 @@ const JobOpenings = () => {
     }));
     setSearchText("");
   };
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>Error: {error.message}</div>;
+  if (isLoading2) return <div>Loading job posts...</div>;
 
   return (
     <Fragment>
@@ -121,6 +122,8 @@ const JobOpenings = () => {
               show={true}
               setOpen2={setOpen2}
               button={true}
+              selectedSeeker={selectedSeeker}
+              setSelectedSeeker={setSelectedSeeker}
             />
           </div>
         </SheetContent>
@@ -147,7 +150,7 @@ const JobOpenings = () => {
           setOpen={setOpen}
           formData={filters}
           setFormData={setFilters}
-          jobPosts={filters.jobType === "job" ? jobPosts : trainingPosts}
+          jobPosts={filters.jobType === "job" ? jobPosts : trainingPosts?.data}
           handleSearch={handleSearch}
           searchText={searchText}
           ClearAll={ClearAll}

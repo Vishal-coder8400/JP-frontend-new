@@ -8,6 +8,7 @@ import { useUpload } from "../../hooks/common/useUpload";
 import { z } from "zod";
 import { validateFormData } from "../../utils/commonFunctions";
 import { useTrainerRegisterationStage3 } from "../../hooks/trainer/useAuth";
+import useAuthStore from "../../stores/useAuthStore";
 
 export const experienceSchema = z.object({
   expertiseLevel: z.string().min(1, "Expertise level is required"),
@@ -92,6 +93,8 @@ const WorkingDetails = () => {
     mutate(formData);
   };
   const { data: profileProgress } = useGetTrainerProgress();
+  const { user } = useAuthStore();
+  console.log(user);
   return (
     <div className="w-full self-stretch px-[20px] py-[20px] lg:px-36 lg:py-[0px] lg:pb-[32px] inline-flex flex-col justify-start items-start gap-[18px] lg:gap-7">
       <Navbar onlySupport={true} />
@@ -147,6 +150,7 @@ const WorkingDetails = () => {
             <div className="self-stretch flex flex-col justify-end items-end gap-2.5">
               <ButtonComponent
                 isPending={isPending}
+                color={"#6945ED"}
                 buttonText={"Save & Update Profile"}
               />
             </div>

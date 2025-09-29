@@ -7,6 +7,7 @@ const CheckAuth = ({
   allowedRoles = [],
   fetchProfileHook,
   lockedPages = {},
+  userRole,
   children,
 }) => {
   const location = useLocation();
@@ -22,13 +23,14 @@ const CheckAuth = ({
 
   useEffect(() => {
     if (profile?.status === "success" && !profile.isLoading) {
-      const profileData = profile.data.data;
-      const role = profileData?.role;
+      const profileData =
+        userRole === "trainer" ? profile.data.data.trainer : profile.data.data;
 
-      const completion = calculateProfileCompletion(profileData, role);
+      const completion = calculateProfileCompletion(profileData, userRole);
 
       setUser({
         ...profileData,
+        role: userRole,
         profileCompletion: completion,
       });
 
@@ -36,8 +38,7 @@ const CheckAuth = ({
     }
   }, [profile?.status, profile?.data?.data?._id]);
 
-  const isLoading = profile?.isLoading || (!user && isAuthenticated);
-  const userRole = user?.role;
+  const isLoading = profile?.isLoading;
 
   // 🧠 Routes where logged-in users should NOT be allowed
   const isLoginOrRegisterRoute = [
@@ -47,9 +48,7 @@ const CheckAuth = ({
     "/trainer/log-in",
     "/recruiter/profile-setup/basic-details",
     "/trainer/profile-setup/basic-details",
-    "/trainer/profile-setup/education-details",
-    "/trainer/profile-setup/working-details",
-    "/trainer/profile-setup/certificate-details",
+    // "/trainer/profile-setup/education-details",
     "/corporate/profile-setup/basic-details",
     "/job-seeker/profile-setup/basic-details",
   ].includes(location.pathname);
@@ -57,25 +56,25 @@ const CheckAuth = ({
   // 🔒 Page lock (like skipping profile setup steps)
   const lockedKey = lockedPages[location.pathname];
   const isPageLocked = lockedKey && user?.profileCompletion?.[lockedKey];
-
+  // console.log(tokenInitialized, isLoading);
   // ⏳ Wait for token to be initialized from storage
-  if (!tokenInitialized || isLoading || (isAuthenticated && !userRole)) {
+  if (!tokenInitialized || isLoading || (isAuthenticated && !user)) {
     return <div>Loading...</div>;
   }
 
   // 🚫 Authenticated users should not access login or register
-  if (isAuthenticated && isLoginOrRegisterRoute && userRole) {
+  if (isAuthenticated && isLoginOrRegisterRoute) {
     return <Navigate to={`/${userRole}/dashboard`} replace />;
   }
 
   // 🏠 Redirect from root
-  if (location.pathname === "/") {
-    return isAuthenticated && userRole ? (
-      <Navigate to={`/${userRole}/dashboard`} replace />
-    ) : (
-      <Navigate to={`/${allowedRoles[0]}/log-in`} replace />
-    );
-  }
+  // if (location.pathname === "/") {
+  //   return isAuthenticated ? (
+  //     <Navigate to={`/${user?.role}/dashboard`} replace />
+  //   ) : (
+  //     <Navigate to={`/${allowedRoles[0]}/log-in`} replace />
+  //   );
+  // }
 
   // 🔐 Not authenticated and trying to access protected routes
   if (!isAuthenticated && !isLoginOrRegisterRoute) {

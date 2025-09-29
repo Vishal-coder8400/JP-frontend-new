@@ -148,6 +148,7 @@ const QualificationDetails = () => {
           <PrevButton link={"/recruiter/profile-setup/sectoral-details"} />
           <ButtonComponent
             isPending={isPending}
+            color={"#6945ED"}
             buttonText={"Save & Update Profile"}
           />
         </div>

@@ -254,11 +254,14 @@ const JobPosting = () => {
             )}
           </div>
           <div className="self-stretch flex flex-col justify-start items-end gap-10">
-            <ButtonComponent isPending={isPending} buttonText={"Continue"} />
+            <ButtonComponent
+              color={"#6945ED"}
+              isPending={isPending}
+              buttonText={"Continue"}
+            />
           </div>
         </div>
       </form>
-      
     </div>
   );
 };

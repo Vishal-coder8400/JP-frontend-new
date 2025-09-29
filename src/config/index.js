@@ -2025,7 +2025,7 @@ export const trainerFormControls1 = [
       {
         name: "fullName",
         label: "Candidate Name",
-        placeholder: "e.g. Jason Wild",
+        placeholder: "e.g. Jason Wild", 
         componentType: "input",
         type: "text",
       },
@@ -2147,7 +2147,7 @@ export const kycBankFormControls = [
   {
     row: [
       {
-        name: "bankDetails.bankName",
+        name: "bankDetails.branchName",
         label: "Branch Name",
         placeholder: "Branch Name",
         componentType: "input",

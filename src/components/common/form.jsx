@@ -540,7 +540,7 @@ export default function CommonForm({
             return (
               <div
                 key={index}
-                className="flex gap-[8px] flex-wrap justify-end items-end"
+                className="flex gap-[8px] w-full flex-wrap justify-end items-end"
               >
                 {controlItem.row.map((item, i) => (
                   <div

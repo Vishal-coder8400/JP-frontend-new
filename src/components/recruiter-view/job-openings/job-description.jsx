@@ -9,10 +9,20 @@ import {
 } from "../../../utils/icon";
 import { formatSalaryRange, timeAgo } from "../../../utils/commonFunctions";
 import { useLocation } from "react-router-dom";
+import { useGetJobById } from "../../../hooks/recruiter/useJob";
+import { useGetTrainningById } from "../../../hooks/recruiter/useTraining";
 
 const JobDescription = ({ setOpen1 }) => {
-  const { jobPost } = useJobPostStore();
   const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const jobType = queryParams.get("jobType");
+  const { jobPost } = useJobPostStore();
+
+  const { data: jobDetail } = useGetJobById(jobPost?._id, jobType);
+  const { data: trainningDetails } = useGetTrainningById(jobPost?._id, jobType);
+
+  const data = jobType === "job" ? jobDetail : trainningDetails;
+
   return (
     <Fragment>
       {/* desktop-view */}
@@ -25,20 +35,20 @@ const JobDescription = ({ setOpen1 }) => {
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
             <img
               className="w-16 h-16 relative rounded object-cover overflow-hidden"
-              src={jobPost?.companyDetails?.comapnyName}
-              alt={jobPost?.companyDetails?.companyName}
+              src={data?.data?.company?.companyLogo}
+              alt={data?.data?.company?.companyName}
             />
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-3">
               <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
                 <div className="flex flex-col justify-start items-start gap-1">
                   <div className="inline-flex justify-start items-center gap-3">
                     <div className="justify-start text-neutral-900 text-md2 font-normal leading-relaxed">
-                      {jobPost?.companyDetails?.companyName}
+                      {data?.data?.company?.companyName}
                     </div>
                   </div>
                   <div className="flex flex-col justify-start items-start gap-3">
                     <div className="justify-start text-neutral-900 text-xl font-medium leading-9">
-                      {jobPost?.jobTitle}
+                      {data?.data?.jobTitle || data?.data?.title}
                     </div>
                     <div className="px-1.5 py-0.5 bg-[#7D5AE21A] rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
                       <div className="justify-start text-[#7D5AE2] text-xs font-medium leading-none">
@@ -53,7 +63,7 @@ const JobDescription = ({ setOpen1 }) => {
                       <LocationIcon className="h-full w-full" />
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      {jobPost?.location}
+                      {data?.data?.city}, {data?.data?.state}
                     </div>
                   </div>
                   <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
@@ -62,7 +72,7 @@ const JobDescription = ({ setOpen1 }) => {
                       <ClockIcon className="h-full w-full" />
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      {jobPost?.jobType}
+                      {data?.data?.jobType || data?.data?.trainingMode}
                     </div>
                   </div>
                   <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
@@ -72,8 +82,8 @@ const JobDescription = ({ setOpen1 }) => {
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
                       {formatSalaryRange(
-                        jobPost?.salaryRange?.min,
-                        jobPost?.salaryRange?.max
+                        data?.data?.salaryRange?.min,
+                        data?.data?.salaryRange?.max
                       )}
                     </div>
                   </div>
@@ -83,7 +93,7 @@ const JobDescription = ({ setOpen1 }) => {
                       <CalenderIcon className="h-full w-full" />
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      {timeAgo(jobPost?.createdAt)}
+                      {timeAgo(data?.data?.createdAt)}
                     </div>
                   </div>
                 </div>
@@ -113,95 +123,22 @@ const JobDescription = ({ setOpen1 }) => {
                   <br />
                 </span>
                 <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                  Job Overview:
-                  <br />
-                  Jayant Fitness is looking for a dynamic and results-driven
-                  Business Development Executive / Sales Executive to expand our
-                  client base in the corporate and real estate sectors. The
-                  ideal candidate will be responsible for generating leads,
-                  closing deals, and building long-term relationships with
-                  clients.
-                  <br />
-                </span>
-                <span className="text-neutral-900/70 text-base font-bold leading-normal">
-                  <br />
-                  Key Responsibilities:
-                  <br />
-                </span>
-                <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                  Identify and develop new business opportunities in corporate
-                  offices, real estate developers, and commercial spaces.
-                  <br />
-                  Meet potential clients, give product presentations, and
-                  understand their fitness equipment needs.
-                  <br />
-                  Build and maintain strong relationships with key
-                  decision-makers.
-                  <br />
-                  Achieve and exceed sales targets through strategic planning
-                  and negotiation.
-                  <br />
-                  Conduct market research to identify new trends and business
-                  opportunities.
-                  <br />
-                  Collaborate with internal teams to ensure seamless delivery
-                  and customer satisfaction.
-                  <br />
-                  Maintain records of sales, client interactions, and market
-                  intelligence.
-                  <br />
-                </span>
-                <span className="text-neutral-900/70 text-base font-bold leading-normal">
-                  <br />
-                  Education
-                  <br />
-                </span>
-                <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                  UG: Any Graduate
-                  <br />
-                </span>
-                <span className="text-neutral-900/70 text-base font-bold leading-normal">
-                  <br />
-                  Other Details
-                  <br />
-                </span>
-                <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                  <br />
-                </span>
-                <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                  Location : In-office role in HSR, Bengaluru
-                  <br />
-                  Stipend : 35K INR/month
-                  <br />
-                  Duration : 3-6 months
-                  <br />
-                  Joining Date : ASAP, we need you now!
-                  <br />
-                  Bonus Pointer : A thoughtful & well-written email (at
-                  anesh@stimuler.tech) about why you are a good fit, will
-                  exponentially increase your chances to land an interview
-                  <br />
-                </span>
-                <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                  <br />
-                  For additional information, you can reach out to me at
-                  anesh@stimuler.tech
-                  <br />
-                  <br />
-                  Looking forward to seeing some great applications!
+                  <p>{data?.data?.jobDescription || data?.data?.description}</p>
                 </span>
               </div>
               <div className="w-full inline-flex justify-start items-start gap-3 flex-wrap content-start">
-                {jobPost?.requiredSkills?.map((item, i) => (
-                  <div
-                    key={i}
-                    className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5"
-                  >
-                    <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                      {item}
+                {(data?.data?.requiredSkills || data?.data?.skillDetails)?.map(
+                  (item, i) => (
+                    <div
+                      key={i}
+                      className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5"
+                    >
+                      <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
+                        {item?.skillName}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             </div>
           </div>
@@ -243,18 +180,18 @@ const JobDescription = ({ setOpen1 }) => {
         <div className="self-stretch p-6  rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
           <img
             className="w-12 h-12 relative rounded object-cover overflow-hidden"
-            src={jobPost?.companyDetails?.comapnyName}
-            alt={jobPost?.companyDetails?.companyName}
+            src={data?.data?.company?.companyLogo}
+            alt={data?.data?.company?.companyName}
           />
           <div className="flex-1 inline-flex flex-col justify-start items-start gap-3">
             <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
               <div className="self-stretch flex flex-col justify-start items-start gap-1">
                 <div className="justify-start text-neutral-900 text-[15px] font-normal">
-                  {jobPost?.companyDetails?.companyName}
+                  {data?.data?.company?.companyName}
                 </div>
                 <div className="self-stretch flex flex-col justify-start items-start gap-3">
                   <div className="self-stretch justify-start text-neutral-900 text-lg font-medium">
-                    {jobPost?.jobTitle}
+                    {data?.data?.jobTitle || data?.data?.title}
                   </div>
                   <div className="px-1.5 py-0.5 bg-[#7D5AE21A] rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
                     <div className="justify-start text-[#7D5AE2] text-xs font-medium leading-none">
@@ -269,7 +206,7 @@ const JobDescription = ({ setOpen1 }) => {
                     <LocationIcon className="h-full w-full" />
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                    {jobPost?.location}
+                    {data?.data?.city}, {data?.data?.state}
                   </div>
                 </div>
                 <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
@@ -278,7 +215,7 @@ const JobDescription = ({ setOpen1 }) => {
                     <ClockIcon className="h-full w-full" />
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                    {jobPost?.jobType}
+                    {data?.data?.jobType || data?.data?.trainingMode}
                   </div>
                 </div>
                 <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
@@ -288,8 +225,8 @@ const JobDescription = ({ setOpen1 }) => {
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
                     {formatSalaryRange(
-                      jobPost?.salaryRange?.min,
-                      jobPost?.salaryRange?.max
+                      data?.data?.salaryRange?.min,
+                      data?.data?.salaryRange?.max
                     )}
                   </div>
                 </div>
@@ -299,7 +236,7 @@ const JobDescription = ({ setOpen1 }) => {
                     <CalenderIcon className="h-full w-full" />
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                    {timeAgo(jobPost?.createdAt)}
+                    {timeAgo(data?.data?.createdAt)}
                   </div>
                 </div>
               </div>
@@ -327,94 +264,22 @@ const JobDescription = ({ setOpen1 }) => {
                 <br />
               </span>
               <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                Job Overview:
-                <br />
-                Jayant Fitness is looking for a dynamic and results-driven
-                Business Development Executive / Sales Executive to expand our
-                client base in the corporate and real estate sectors. The ideal
-                candidate will be responsible for generating leads, closing
-                deals, and building long-term relationships with clients.
-                <br />
-              </span>
-              <span className="text-neutral-900/70 text-base font-bold leading-normal">
-                <br />
-                Key Responsibilities:
-                <br />
-              </span>
-              <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                Identify and develop new business opportunities in corporate
-                offices, real estate developers, and commercial spaces.
-                <br />
-                Meet potential clients, give product presentations, and
-                understand their fitness equipment needs.
-                <br />
-                Build and maintain strong relationships with key
-                decision-makers.
-                <br />
-                Achieve and exceed sales targets through strategic planning and
-                negotiation.
-                <br />
-                Conduct market research to identify new trends and business
-                opportunities.
-                <br />
-                Collaborate with internal teams to ensure seamless delivery and
-                customer satisfaction.
-                <br />
-                Maintain records of sales, client interactions, and market
-                intelligence.
-                <br />
-              </span>
-              <span className="text-neutral-900/70 text-base font-bold leading-normal">
-                <br />
-                Education
-                <br />
-              </span>
-              <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                UG: Any Graduate
-                <br />
-              </span>
-              <span className="text-neutral-900/70 text-base font-bold leading-normal">
-                <br />
-                Other Details
-                <br />
-              </span>
-              <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                <br />
-              </span>
-              <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                Location : In-office role in HSR, Bengaluru
-                <br />
-                Stipend : 35K INR/month
-                <br />
-                Duration : 3-6 months
-                <br />
-                Joining Date : ASAP, we need you now!
-                <br />
-                Bonus Pointer : A thoughtful & well-written email (at
-                anesh@stimuler.tech) about why you are a good fit, will
-                exponentially increase your chances to land an interview
-                <br />
-              </span>
-              <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                <br />
-                For additional information, you can reach out to me at
-                anesh@stimuler.tech
-                <br />
-                <br />
-                Looking forward to seeing some great applications!
+                <p>{data?.data?.jobDescription || data?.data?.description}</p>
               </span>
             </div>
             <div className="w-full self-stretch inline-flex justify-start items-start gap-3 flex-wrap content-start">
-              {jobPost?.requiredSkills?.map((item, i) => (
-                <div
-                  key={i}
-                  className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5"
-                >
-                  <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
-                    {item}
+              {(data?.data?.requiredSkills || data?.data?.skillDetails)?.map(
+                (item, i) => (
+                  <div
+                    key={i}
+                    className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5"
+                  >
+                    <div className="justify-start text-neutral-500 text-sm font-medium capitalize">
+                      {item?.skillName}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
         </div>

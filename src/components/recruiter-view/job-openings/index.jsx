@@ -42,7 +42,7 @@ const Index = ({
             </div>
             <div className="border border-[#DFDFDF]"></div>
             <SearchComponent handleSearch={handleSearch} value={searchText} />
-            {jobPosts?.data?.map((item, i) => (
+            {(jobPosts?.data || jobPosts?.trainings)?.map((item, i) => (
               <JobCard key={i} item={item} setOpen={setOpen} />
             ))}
             <Pagination
@@ -67,7 +67,7 @@ const Index = ({
           </div>
           <div className="self-stretch h-0 outline outline-offset-[-0.50px] outline-neutral-200"></div>
           <SearchComponent handleSearch={handleSearch} value={searchText} />
-          {jobPosts?.data?.map((item, i) => (
+          {(jobPosts?.data || jobPosts?.trainings)?.map((item, i) => (
             <JobCard key={i} item={item} setOpen={setOpen} />
           ))}
         </div>

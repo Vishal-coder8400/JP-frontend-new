@@ -83,6 +83,8 @@ const Layout = () => {
     navigate(`/${user?.role}/log-in`);
     logout();
   };
+  // console.log(user);
+
   return (
     <main className="w-full min-h-screen flex flex-col lg:flex-row">
       <MobileNav />
@@ -106,11 +108,17 @@ const Layout = () => {
                   src={
                     user?.profileImage || user?.basicInformation?.companyLogo
                   }
-                  alt={user?.name || user?.basicInformation?.companyName}
+                  alt={
+                    user?.name ||
+                    user?.basicInformation?.companyName ||
+                    user?.firstName
+                  }
                 />
                 <div className="flex-1 inline-flex flex-col justify-center items-center gap-1.5">
                   <div className="self-stretch text-center justify-start text-white text-md2 font-medium capitalize">
-                    {user?.name || user?.basicInformation?.companyName}
+                    {user?.name ||
+                      user?.basicInformation?.companyName ||
+                      `${user?.firstName} ${user?.lastName}`}
                   </div>
                 </div>
                 <div className="size-2.5 left-[52px] top-[50px] absolute bg-lime-600 rounded-full" />

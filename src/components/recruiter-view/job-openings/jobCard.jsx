@@ -46,7 +46,7 @@ const JobCard = ({ setOpen, item, setOpen1 }) => {
               }}
               className="text-[#141414] text-lg font-medium cursor-pointer"
             >
-              {item?.jobTitle}
+              {item?.jobTitle || item?.title}
             </div>
           </div>
           <div className="flex items-center gap-[24px]">
@@ -64,7 +64,9 @@ const JobCard = ({ setOpen, item, setOpen1 }) => {
                 <div className="flex items-center justify-center">
                   <ClockIcon className="h-[16px] w-[16px]" />
                 </div>
-                <div className="text-[#141414] text-sm">{item?.jobType}</div>
+                <div className="text-[#141414] text-sm">
+                  {item?.jobType || item?.trainingMode}
+                </div>
               </div>
               <div className="flex gap-[6px] items-center">
                 <div className="flex items-center justify-center">
@@ -157,7 +159,7 @@ const JobCard = ({ setOpen, item, setOpen1 }) => {
                 </div>
                 <div className="flex flex-col justify-start items-start gap-3">
                   <div className="justify-start text-neutral-900 text-md font-medium leading-none">
-                    {item?.jobTitle}
+                    {item?.jobTitle || item?.title}
                   </div>
                   <div className="px-1.5 py-0.5 bg-violet-500/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
                     <div className="justify-start text-[#6945ED] text-sm font-medium leading-none">
@@ -177,7 +179,7 @@ const JobCard = ({ setOpen, item, setOpen1 }) => {
               <div className="flex justify-start items-center gap-1.5">
                 <ClockIcon className="h-[14px] w-[14px]" />
                 <div className="justify-start text-neutral-900/70 text-sm font-normal leading-none">
-                  {item?.jobType}
+                  {item?.jobType || item?.trainingMode}
                 </div>
               </div>
               <div className="flex justify-start items-center gap-1.5">

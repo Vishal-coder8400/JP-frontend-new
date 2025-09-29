@@ -3,6 +3,7 @@ import Navbar from "../../components/recruiter-view/navbar";
 import { Link } from "react-router-dom";
 import HeroProfile from "../../components/recruiter-view/common/hero-profile";
 import Pagination from "../../components/common/pagination";
+import SearchComponent from "../../components/common/searchComponent";
 
 const JobSeekerDashboard = () => {
   const [formData, setFormData] = useState({});
@@ -52,7 +53,7 @@ const JobSeekerDashboard = () => {
             </div>
           </div>
           <div className="self-stretch inline-flex justify-start items-start gap-3.5">
-            <div className="flex-1 px-4 py-5 bg-color-gray-10 rounded-xl outline outline-1 outline-offset-[-1px] outline-stone-300/80 flex justify-center items-center gap-2.5">
+            {/* <div className="flex-1 px-4 py-5 bg-color-gray-10 rounded-xl outline outline-1 outline-offset-[-1px] outline-stone-300/80 flex justify-center items-center gap-2.5">
               <div className="size-4 relative">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -80,8 +81,9 @@ const JobSeekerDashboard = () => {
               <div className="flex-1 self-stretch justify-center text-color-gray-60 text-xs font-medium">
                 Search your job here
               </div>
-            </div>
-            <div className="w-44 px-4 py-5 bg-color-gray-10 rounded-xl outline outline-1 outline-offset-[-1px] outline-stone-300/80 flex justify-center items-center gap-2.5">
+            </div> */}
+            <SearchComponent />
+            {/* <div className="w-44 px-4 py-5 bg-color-gray-10 rounded-xl outline outline-1 outline-offset-[-1px] outline-stone-300/80 flex justify-center items-center gap-2.5">
               <div className="size-4 relative overflow-hidden">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -116,7 +118,7 @@ const JobSeekerDashboard = () => {
               <div className="flex-1 self-stretch justify-center text-color-gray-60 text-xs font-medium">
                 Location
               </div>
-            </div>
+            </div> */}
           </div>
           <div className="size- inline-flex justify-start items-start gap-8">
             <div className="size- px-5 py-2.5 rounded-3xl outline outline-1 outline-offset-[-1px] outline-neutral-400 flex justify-center items-center gap-2.5">

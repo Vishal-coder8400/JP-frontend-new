@@ -20,13 +20,65 @@ import { convertMonthsToYearsAndMonths } from "../../../utils/commonFunctions";
 import useJobSeekerProfileStore from "../../../stores/useJobSeekerProfileStore";
 import Pagination from "../../common/pagination";
 import SearchComponent from "../../common/searchComponent";
+import {
+  useApplySingle,
+  useBulkApplySingle,
+} from "../../../hooks/recruiter/useJob";
+import { Button } from "../../ui/button";
+import useJobPostStore from "../../../stores/useJobPostStore";
+import { Loader2 } from "lucide-react";
 
-const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
+const CandidateSelection = ({
+  setOpen2,
+  show,
+  button,
+  applicants,
+  selectedSeeker,
+  setSelectedSeeker,
+}) => {
   const { setJobSeekerProfile } = useJobSeekerProfileStore();
+  const { jobPost } = useJobPostStore();
+  const {
+    mutate: singleApply,
+    isPending,
+    isSuccess: successSingle,
+  } = useApplySingle();
+  const {
+    mutate: BulkApply,
+    isPending: isPendigBulk,
+    isSuccess: successBulk,
+  } = useBulkApplySingle();
   const [currentPage, setCurrentPage] = useState(1);
   const handleOpen = (i) => {
     setJobSeekerProfile(i);
     setOpen2(true);
+  };
+  const handleSelect = (seeker) => {
+    setSelectedSeeker((prev) => {
+      let update = [...prev];
+      if (update.includes(seeker)) {
+        update = update.filter((s) => s !== seeker);
+      } else {
+        update.push(seeker);
+      }
+      return update;
+    });
+  };
+  const handleApply = () => {
+    if (selectedSeeker.length > 1) {
+      BulkApply({
+        jobId: jobPost._id,
+        applicantIds: selectedSeeker,
+      });
+    } else {
+      singleApply({
+        jobId: jobPost._id,
+        applicantId: selectedSeeker[0],
+      });
+    }
+    if (successBulk || successSingle) {
+      setSelectedSeeker([]);
+    }
   };
   return (
     <Fragment>
@@ -41,11 +93,23 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
               Select Candidates
             </div>
             <div className="self-stretch flex flex-col justify-start items-end gap-2.5">
-              <div className="px-5 py-2.5 bg-gray-900 rounded-3xl inline-flex justify-center items-center gap-2.5">
+              <Button
+                disabled={
+                  isPending || isPendigBulk || selectedSeeker.length === 0
+                }
+                onClick={handleApply}
+                className="cursor-pointer px-5 py-2.5 bg-gray-900 rounded-3xl inline-flex justify-center items-center gap-2.5"
+              >
                 <div className="justify-start text-white text-sm font-medium capitalize">
-                  Submit the candidates
+                  {isPending || isPendigBulk ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="animate-spin h-2 w-2" /> Please wait
+                    </span>
+                  ) : (
+                    "Submit the Candidate"
+                  )}
                 </div>
-              </div>
+              </Button>
             </div>
           </div>
         )}
@@ -116,7 +180,11 @@ const CandidateSelection = ({ setOpen2, show, button, applicants }) => {
               {applicants?.map((item, i) => (
                 <TableRow key={i}>
                   <TableCell className="w-[50px] px-[16px] py-[12px]">
-                    <Checkbox className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[16px] w-[16px] rounded-[2px] flex items-center justify-center cursor-pointer" />
+                    <Checkbox
+                      onCheckedChange={() => handleSelect(item._id)}
+                      checked={selectedSeeker?.includes(item._id)}
+                      className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[16px] w-[16px] rounded-[2px] flex items-center justify-center cursor-pointer"
+                    />
                   </TableCell>
                   <TableCell className="px-[16px] py-[12px] flex gap-[10px]">
                     <div
