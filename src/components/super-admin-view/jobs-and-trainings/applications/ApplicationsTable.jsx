@@ -46,13 +46,13 @@ const ApplicationsTable = ({ paginatedApplications }) => {
                     ID
                   </TableHead>
                   <TableHead className="min-w-[250px] font-semibold">
-                    Name
+                    Applicant
                   </TableHead>
                   <TableHead className="min-w-[120px] font-semibold">
-                    Industry
+                    Source
                   </TableHead>
                   <TableHead className="min-w-[150px] font-semibold">
-                    Skills
+                    Status
                   </TableHead>
                   <TableHead className="min-w-[100px] font-semibold">
                     Experience
@@ -66,7 +66,7 @@ const ApplicationsTable = ({ paginatedApplications }) => {
                 {paginatedApplications.length > 0 ? (
                   paginatedApplications.map((application) => (
                     <TableRow
-                      key={application.id}
+                      key={application._id}
                       onClick={(e) => handleRowClick(application, e)}
                       className="cursor-pointer hover:bg-gray-50 transition-colors"
                     >
@@ -74,15 +74,15 @@ const ApplicationsTable = ({ paginatedApplications }) => {
                         <input
                           type="radio"
                           name="selectApplication"
-                          checked={selectedApplicationId === application.id}
+                          checked={selectedApplicationId === application._id}
                           onChange={() =>
-                            handleSelectApplication(application.id)
+                            handleSelectApplication(application._id)
                           }
-                          aria-label={`Select application ${application.name}`}
+                          aria-label={`Select application ${application._id}`}
                           className="w-4 h-4 text-primary-purple border-2 border-gray-300 focus:ring-2 focus:ring-primary-purple/50 focus:ring-offset-0 cursor-pointer appearance-none rounded-full checked:bg-primary-purple checked:border-primary-purple relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:transform before:-translate-x-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:bg-white before:rounded-full before:opacity-0 checked:before:opacity-100"
                         />
                       </TableCell>
-                      <TableCell>{application.id}</TableCell>
+                      <TableCell>{application._id}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
@@ -90,18 +90,24 @@ const ApplicationsTable = ({ paginatedApplications }) => {
                           </div>
                           <div className="flex flex-col">
                             <span className="font-medium text-gray-900">
-                              {application.name}
+                              {application.applicantId || "N/A"}
                             </span>
                             <span className="text-sm text-gray-500">
-                              {application.occupation}
+                              {application.applicantType || "N/A"}
                             </span>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{application.industry}</TableCell>
-                      <TableCell>{application.skills}</TableCell>
-                      <TableCell>{application.experience}</TableCell>
-                      <TableCell>{application.appliedDate}</TableCell>
+                      <TableCell>{application.source || "N/A"}</TableCell>
+                      <TableCell>{application.status || "N/A"}</TableCell>
+                      <TableCell>{application.experience || "N/A"}</TableCell>
+                      <TableCell>
+                        {application.applicationDate
+                          ? new Date(
+                              application.applicationDate
+                            ).toLocaleDateString()
+                          : "N/A"}
+                      </TableCell>
                     </TableRow>
                   ))
                 ) : (
@@ -130,7 +136,7 @@ const ApplicationsTable = ({ paginatedApplications }) => {
             lg:max-w-[900px] 
             md:max-w-full
             sm:max-w-full 
-            overflow-y-auto border-transparent [&>button.absolute]:hidden"
+            overflow-y-auto border-transparent bg-white [&>button.absolute]:hidden"
         >
           <div className="w-full h-full">
             <ApplicationDetailsDrawer application={selectedApplication} />

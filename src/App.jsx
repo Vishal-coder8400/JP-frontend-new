@@ -67,6 +67,7 @@ import SuperAdminDatabasePage from "./pages/super-admin-view/database";
 import SuperAdminJobsAndTrainingsPage from "./pages/super-admin-view/jobs-and-trainings/jobs-and-trainings";
 import SuperAdminApprovals from "./pages/super-admin-view/approvals";
 import SuperAdminAdminManagementPage from "./pages/super-admin-view/admin-management";
+import SuperAdminMasterDataPage from "./pages/super-admin-view/master-data";
 import SuperAdminCandidates from "./components/super-admin-view/jobs-and-trainings/applications/Applications";
 import TrainerDashboard from "./pages/trainner-view/dashboard";
 import TrainerJobDescription from "./pages/trainner-view/job-description";
@@ -134,6 +135,7 @@ function App() {
             path="admin-management"
             element={<SuperAdminAdminManagementPage />}
           />
+          <Route path="master-data" element={<SuperAdminMasterDataPage />} />
         </Route>
 
         {/* Recruiter Auth and Setup */}

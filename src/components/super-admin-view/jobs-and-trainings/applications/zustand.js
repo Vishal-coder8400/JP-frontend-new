@@ -26,14 +26,22 @@ const useApplicationsStore = create((set, get) => ({
   showDeleteDialog: false,
   selectedApplication: null,
 
+  // Store current jobId for API calls
+  currentJobId: null,
+
   // Actions
+  setCurrentJobId: (jobId) => set({ currentJobId: jobId }),
+
   setFilter: (filterName, value) => {
     set((state) => ({
       filters: { ...state.filters, [filterName]: value },
       currentPage: 1, // Reset to first page when filtering
     }));
     // Trigger API call after setting filter
-    setTimeout(() => get().fetchApplications(), 0);
+    const { currentJobId } = get();
+    if (currentJobId) {
+      setTimeout(() => get().fetchApplications(currentJobId), 0);
+    }
   },
 
   updateFilters: (newFilters) => {
@@ -42,7 +50,10 @@ const useApplicationsStore = create((set, get) => ({
       currentPage: 1, // Reset to first page when filtering
     }));
     // Trigger API call after updating filters
-    setTimeout(() => get().fetchApplications(), 0);
+    const { currentJobId } = get();
+    if (currentJobId) {
+      setTimeout(() => get().fetchApplications(currentJobId), 0);
+    }
   },
 
   // Method to handle FilterComponent updates
@@ -61,7 +72,10 @@ const useApplicationsStore = create((set, get) => ({
       };
     });
     // Trigger API call after setting form data
-    setTimeout(() => get().fetchApplications(), 0);
+    const { currentJobId } = get();
+    if (currentJobId) {
+      setTimeout(() => get().fetchApplications(currentJobId), 0);
+    }
   },
 
   clearAllFilters: () => {
@@ -78,13 +92,19 @@ const useApplicationsStore = create((set, get) => ({
       currentPage: 1,
     });
     // Trigger API call after clearing filters
-    setTimeout(() => get().fetchApplications(), 0);
+    const { currentJobId } = get();
+    if (currentJobId) {
+      setTimeout(() => get().fetchApplications(currentJobId), 0);
+    }
   },
 
   setCurrentPage: (page) => {
     set({ currentPage: page });
     // Trigger API call after changing page
-    setTimeout(() => get().fetchApplications(), 0);
+    const { currentJobId } = get();
+    if (currentJobId) {
+      setTimeout(() => get().fetchApplications(currentJobId), 0);
+    }
   },
 
   setShowDeleteDialog: (show) => set({ showDeleteDialog: show }),
@@ -98,26 +118,37 @@ const useApplicationsStore = create((set, get) => ({
       showDeleteDialog: true,
     }),
 
-  // API actions - TODO: Implement actual API integration
-  fetchApplications: async () => {
+  // API actions
+  fetchApplications: async (jobId) => {
     const { filters, currentPage, itemsPerPage } = get();
 
     set({ loading: true, error: null });
 
     try {
-      // TODO: Replace with actual API call
-      // const response = await getApplicationsAPI({
-      //   page: currentPage,
-      //   limit: itemsPerPage,
-      //   ...filters,
-      // });
+      // Import the API function
+      const { getJobApplications } = await import(
+        "@/api/super-admin/jobsAndTrainings"
+      );
 
-      // For now, set empty data
-      set({
-        applications: [],
-        totalCount: 0,
-        loading: false,
+      // Make API call with jobId
+      const response = await getJobApplications({
+        id: jobId,
+        signal: new AbortController().signal,
       });
+
+      if (response.data.status) {
+        const { applications, pagination } = response.data.data;
+
+        set({
+          applications: applications || [],
+          totalCount: pagination?.totalApplications || 0,
+          loading: false,
+        });
+      } else {
+        throw new Error(
+          response.data.message || "Failed to fetch applications"
+        );
+      }
     } catch (error) {
       console.error("Error fetching applications:", error);
       set({
