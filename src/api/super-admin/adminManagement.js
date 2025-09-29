@@ -4,33 +4,28 @@ export const uploadProfileImageForAdmin = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
 
-  const response = await api.post(
-    "/api/v1/admin/upload/profile-images",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
+  const response = await api.post("/admin/upload/profile-images", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return response.data;
 };
 
-export const createAdmin = (data) =>
-  api.post("/api/v1/admin-management/create", data);
+export const createAdmin = (data) => api.post("/admin-management/create", data);
 
-export const getAllAdmins = () => api.get("/api/v1/admin-management/list");
+export const getAllAdmins = () => api.get("/admin-management/list");
 
 export const getAdminById = (adminId) =>
-  api.get(`/api/v1/admin-management/${adminId}`);
+  api.get(`/admin-management/${adminId}`);
 
 export const updateAdmin = (adminId, data) =>
-  api.put(`/api/v1/admin-management/${adminId}`, data);
+  api.put(`/admin-management/${adminId}`, data);
 
 export const deleteAdmin = (adminId) =>
-  api.delete(`/api/v1/admin-management/${adminId}`);
+  api.delete(`/admin-management/${adminId}`);
 
 export const getFeatures = () => {
-  return api.get("/api/v1/admin-management/features");
+  return api.get("/admin-management/features");
 };

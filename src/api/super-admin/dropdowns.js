@@ -2,7 +2,7 @@ import api from "../../lib/axios";
 
 export const getDropdowns = async ({ signal }) => {
   try {
-    const response = await api.get("/api/v1/admin/dropdowns", {
+    const response = await api.get("/admin/dropdowns", {
       signal,
       params: { isActive: true },
     });
@@ -16,7 +16,7 @@ export const getDropdowns = async ({ signal }) => {
 export const getDropdownValues = async ({ queryKey, signal }) => {
   try {
     const [, dropdownId] = queryKey;
-    const response = await api.get(`/api/v1/dropdowns/${dropdownId}/values`, {
+    const response = await api.get(`/dropdowns/${dropdownId}/values`, {
       signal,
     });
     return response.data;
@@ -29,7 +29,7 @@ export const getDropdownValues = async ({ queryKey, signal }) => {
 export const createDropdownValue = async (dropdownId, payload) => {
   try {
     const response = await api.post(
-      `/api/v1/admin/dropdowns/${dropdownId}/values`,
+      `/admin/dropdowns/${dropdownId}/values`,
       payload
     );
     return response.data;
@@ -42,7 +42,7 @@ export const createDropdownValue = async (dropdownId, payload) => {
 export const updateDropdownValue = async (dropdownId, payload) => {
   try {
     const response = await api.put(
-      `/api/v1/admin/dropdowns/${dropdownId}/values`,
+      `/admin/dropdowns/${dropdownId}/values`,
       payload
     );
     return response.data;
@@ -54,12 +54,9 @@ export const updateDropdownValue = async (dropdownId, payload) => {
 
 export const deleteDropdownValue = async (dropdownId, value) => {
   try {
-    const response = await api.delete(
-      `/api/v1/admin/dropdowns/${dropdownId}/values`,
-      {
-        data: { value },
-      }
-    );
+    const response = await api.delete(`/admin/dropdowns/${dropdownId}/values`, {
+      data: { value },
+    });
     return response.data;
   } catch (error) {
     console.error("Delete dropdown value API error:", error);
@@ -69,7 +66,7 @@ export const deleteDropdownValue = async (dropdownId, value) => {
 
 export const createDropdown = async (payload) => {
   try {
-    const response = await api.post("/api/v1/admin/dropdowns", payload);
+    const response = await api.post("/admin/dropdowns", payload);
     return response.data;
   } catch (error) {
     console.error("Create dropdown API error:", error);
@@ -79,10 +76,7 @@ export const createDropdown = async (payload) => {
 
 export const updateDropdown = async (dropdownId, payload) => {
   try {
-    const response = await api.put(
-      `/api/v1/admin/dropdowns/${dropdownId}`,
-      payload
-    );
+    const response = await api.put(`/admin/dropdowns/${dropdownId}`, payload);
     return response.data;
   } catch (error) {
     console.error("Update dropdown API error:", error);

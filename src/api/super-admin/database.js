@@ -1,37 +1,37 @@
 import api from "../../lib/axios";
 
 export const getAllTrainers = ({ signal, page = 1, limit = 10, ...params }) =>
-  api.get("/api/v1/admin/trainers/list", {
+  api.get("/admin/trainers/list", {
     signal,
     params: { page, limit, ...params },
   });
 
 export const getTrainerById = ({ signal, id }) =>
-  api.get(`/api/v1/admin/trainers/${id}`, { signal });
+  api.get(`/admin/trainers/${id}`, { signal });
 
 export const getAllCompanies = ({ signal, page = 1, limit = 10, ...params }) =>
-  api.get("/api/v1/admin/corporates", {
+  api.get("/admin/corporates", {
     signal,
     params: { page, limit, ...params },
   });
 
 export const getCompanyById = ({ signal, id }) =>
-  api.get(`/api/v1/admin/corporates/${id}`, { signal });
+  api.get(`/admin/corporates/${id}`, { signal });
 
 export const getAllRecruiters = ({ signal, page = 1, limit = 10, ...params }) =>
-  api.get("/api/v1/admin/recruiters", {
+  api.get("/admin/recruiters", {
     signal,
     params: { page, limit, ...params },
   });
 
 export const getRecruiterById = ({ signal, id }) =>
-  api.get(`/api/v1/admin/recruiters/${id}`, { signal });
+  api.get(`/admin/recruiters/${id}`, { signal });
 
 export const getAllCandidates = ({ signal, page = 1, limit = 10, ...params }) =>
-  api.get("/api/v1/admin/candidates/list", {
+  api.get("/admin/candidates/list", {
     signal,
     params: { page, limit, ...params },
   });
 
 export const getCandidateById = ({ signal, id }) =>
-  api.get(`/api/v1/admin/candidates/${id}`, { signal });
+  api.get(`/admin/candidates/${id}`, { signal });
