@@ -1,5 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { corporateJobPost, getFilteredJobs } from "../../api/corporate/job";
+import {
+  corporateJobById,
+  corporateJobPost,
+  getCandidatesByJobId,
+  getFilteredJobs,
+} from "../../api/corporate/job";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import useAuthStore from "../../stores/useAuthStore";
@@ -26,5 +31,23 @@ export const useCorporateJobPost = () => {
     onError: (error) => {
       toast.error(error.response.data.message, {});
     },
+  });
+};
+
+export const useCorporateJobById = (id, jobType) => {
+  return useQuery({
+    queryKey: ["corporateJobById", id],
+    queryFn: () => corporateJobById(id),
+    enabled: jobType === "job",
+    retry: false,
+  });
+};
+
+export const useGetCandidatesByJobId = (id, filters) => {
+  return useQuery({
+    queryKey: ["candidatesByJobId", id, filters],
+    queryFn: getCandidatesByJobId,
+    enabled: !!id,
+    retry: false,
   });
 };

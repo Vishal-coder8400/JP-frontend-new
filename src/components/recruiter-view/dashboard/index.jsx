@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { getNextIncompleteStep } from "../../../utils/profileCompletion/calculate";
 import { calculateProfileCompletionPercentage } from "../../../utils/profileCompletion/rule";
+import { useGetUserProgress } from "../../../hooks/recruiter/useProfile";
 
 const data = [
   { company: "ABC Tech", submitted: 32, shortlisted: 18, hired: 18 },
@@ -25,26 +26,27 @@ const data = [
 
 const Index = () => {
   const { user } = useAuthStore();
-  const stepRoutes = {
-    page2: { route: "/recruiter/profile-setup/kyc-verification" },
-    page3: { route: "/recruiter/profile-setup/sectoral-details" },
-    page4: { route: "/recruiter/profile-setup/qualification-details" },
-  };
-  const nextStep = getNextIncompleteStep(user?.profileCompletion || {});
-  const percent = calculateProfileCompletionPercentage(
-    user?.profileCompletion || {}
-  );
+  const { data: progress } = useGetUserProgress();
+  const nextStagePath =
+    progress?.data?.currentStage === 1
+      ? "/recruiter/profile-setup/kyc-verification"
+      : progress?.data?.currentStage === 2
+      ? "/recruiter/profile-setup/sectoral-details"
+      : progress?.data?.currentStage === 3
+      ? "/recruiter/profile-setup/qualification-details"
+      : "/recruiter/dashboard";
+
   return (
     <Fragment>
       <div className="hidden lg:flex flex-col gap-[25px] w-full">
         <HeroProfile />
 
-        {!user?.profileCompletion?.page4 && (
+        {!progress?.data?.signupProgress < 100 && (
           <div className="self-stretch p-10 bg-white rounded-2xl shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)] outline outline-offset-[-1px] outline-neutral-300 flex flex-col justify-start items-start gap-2.5">
             <div className="self-stretch inline-flex justify-start items-start gap-12">
               <div className="inline-flex flex-col justify-center items-start gap-3.5">
                 <div className="justify-start text-gray-900 text-6xl font-semibold leading-[64px]">
-                  {percent}%
+                  {progress?.data?.signupProgress}%
                 </div>
                 <div className="w-28 opacity-70 justify-start text-gray-900 text-base font-semibold">
                   Of your profile is complete
@@ -55,16 +57,18 @@ const Index = () => {
                   Complete your profile to post jobs!
                 </div>
                 <div className="self-stretch inline-flex justify-start items-start gap-2">
-                  {Object.values(user?.profileCompletion || {}).map(
-                    (step, index) => (
-                      <div
-                        key={index}
-                        className={`flex-1 h-2 ${
-                          step ? "bg-lime-600" : "bg-zinc-300"
-                        } rounded-xl`}
-                      />
-                    )
-                  )}
+                  {Array.from({
+                    length: progress?.data?.totalStages,
+                  }).map((_, index) => (
+                    <div
+                      key={index}
+                      className={`flex-1 h-2 ${
+                        progress?.data?.completedStages.includes(index + 1)
+                          ? "bg-lime-600"
+                          : "bg-zinc-300"
+                      } rounded-xl`}
+                    />
+                  ))}
                 </div>
                 <div className="self-stretch inline-flex justify-start items-center gap-12">
                   <div className="flex-1 opacity-70 justify-start text-gray-900 text-base font-normal">
@@ -74,7 +78,7 @@ const Index = () => {
                     ullamco laboris nisi ut.
                   </div>
                   <Link
-                    to={stepRoutes[nextStep].route}
+                    to={nextStagePath}
                     className="px-4 py-3.5 bg-neutral-800 rounded-md shadow-[0px_1px_4px_0px_rgba(25,33,61,0.08)] flex justify-center items-center gap-[3px]"
                   >
                     <div className="text-center justify-start text-white text-base font-semibold leading-tight">

@@ -117,7 +117,7 @@ const CandidateReleventDetails = () => {
     queryClient.invalidateQueries({ queryKey: ["applicants"] });
   };
   useEffect(() => {
-    if (localStorage.getItem("seekerID")) {
+    if (!localStorage.getItem("seekerID")) {
       return navigate("/recruiter/candidates/candidate-create");
     }
     return setShowPage(true);

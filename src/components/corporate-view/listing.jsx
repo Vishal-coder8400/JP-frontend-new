@@ -17,6 +17,7 @@ const Listing = ({
   open1,
   setOpen1,
 }) => {
+  // console.log(jobPosts);
   const totalPages = Math.ceil(jobPosts?.pagination?.total / 10);
   return (
     <div className="w-full flex flex-col gap-[26px] lg:gap-6 max-sm:p-[20px]">
@@ -62,7 +63,7 @@ const Listing = ({
           <div className="self-stretch h-0 outline-1 outline-offset-[-0.50px] outline-neutral-200"></div>
           <SearchComponent handleSearch={handleSearch} value={searchText} />
           <div className="self-stretch flex flex-col justify-start items-start gap-4 w-full">
-            {jobPosts?.data?.map((item, i) => (
+            {(jobPosts?.data || jobPosts?.trainings)?.map((item, i) => (
               <JobCard
                 key={i}
                 item={item}

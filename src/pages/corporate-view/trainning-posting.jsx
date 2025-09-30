@@ -9,29 +9,81 @@ import {
 } from "../../config";
 import Navbar from "../../components/recruiter-view/navbar";
 import { PostTrainingIcon } from "../../utils/icon";
+import { useCorporateTrainingPost } from "../../hooks/corporate/useTraining";
+import { validateFormData } from "../../utils/commonFunctions";
+import ButtonComponent from "../../components/common/button";
+import { z } from "zod";
+
+export const TrainingSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  skills: z.array(z.string()).default([]),
+
+  // mode/frequency as free strings — change to z.enum([...]) if you have fixed options
+  trainingMode: z.string().optional().nullable().default(""),
+  sessionFrequency: z.string().optional().nullable().default(""),
+
+  // numeric fields — ints where applicable, non-negative
+  totalDurationDays: z.number().int().nonnegative().default(0),
+  hoursPerDay: z.number().nonnegative().default(0),
+
+  minimumExperience: z.string().optional().nullable().default(""),
+  subjectMatterExpertise: z.string().optional().nullable().default(""),
+  qualificationsRequired: z.string().optional().nullable().default(""),
+
+  // If certificationUpload represents a URL or filename
+  certificationUpload: z.string().optional().nullable().default(""),
+
+  sessionsExpected: z.number().int().nonnegative().default(0),
+
+  travelRequired: z.boolean().default(false),
+  languagesFluent: z.array(z.string()).default([]),
+
+  participantsPerBatch: z.number().int().nonnegative().default(0),
+
+  studyMaterialsProvided: z.boolean().default(false),
+  demoSessionBeforeConfirming: z.boolean().default(false),
+  recommendationsFromPastClients: z.boolean().default(false),
+});
 
 const TrainningPosting = () => {
   const [formData, setFormData] = useState({
-    title: "Full Stack Web Development Bootcamp",
-    description:
-      "Comprehensive training program covering modern web development technologies including React, Node.js, and MongoDB",
-    skills: ["6876a60170cc0ae27963d009"],
-    trainingMode: "Virtual / Online",
-    sessionFrequency: "daily",
-    totalDurationDays: 90,
-    hoursPerDay: 4,
-    minimumExperience: "1y",
-    subjectMatterExpertise: "high",
-    qualificationsRequired:
-      "Bachelor's degree in Computer Science or related field",
-    sessionsExpected: 60,
+    title: "",
+    description: "",
+    skills: [],
+    trainingMode: "",
+    sessionFrequency: "",
+    totalDurationDays: 0,
+    hoursPerDay: 0,
+    minimumExperience: "",
+    subjectMatterExpertise: "",
+    qualificationsRequired: "",
+    certificationUpload: "",
+    sessionsExpected: 0,
     travelRequired: false,
-    languagesFluent: ["English", "Hindi"],
-    participantsPerBatch: 3,
-    studyMaterialsProvided: true,
-    demoSessionBeforeConfirming: true,
-    recommendationsFromPastClients: true,
+    languagesFluent: [],
+    participantsPerBatch: 0,
+    studyMaterialsProvided: false,
+    demoSessionBeforeConfirming: false,
+    recommendationsFromPastClients: false,
   });
+  const { mutate, isPending, isError, error } = useCorporateTrainingPost();
+  const onSubmit = (e) => {
+    e.preventDefault();
+    let payload = { ...formData };
+    const booleanFields = [
+      "travelRequired",
+      "studyMaterialsProvided",
+      "demoSessionBeforeConfirming",
+      "recommendationsFromPastClients",
+    ];
+    booleanFields.forEach((field) => {
+      payload[field] = formData[field] === "yes";
+    });
+    const isValid = validateFormData(TrainingSchema, payload);
+    if (!isValid) return;
+    mutate(payload);
+  };
   return (
     <div className="w-full self-stretch px-36 py-0 pb-[32px] inline-flex flex-col justify-start items-start gap-5">
       <Navbar onlySupport={false} />
@@ -57,7 +109,10 @@ const TrainningPosting = () => {
           </div>
         </div>
       </div>
-      <div className="self-stretch inline-flex justify-start items-start gap-10">
+      <form
+        onSubmit={onSubmit}
+        className="self-stretch inline-flex justify-start items-start gap-10"
+      >
         <div className="flex-1 inline-flex flex-col justify-start items-start gap-10">
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-1 outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4">
             <CommonForm
@@ -95,14 +150,14 @@ const TrainningPosting = () => {
           </div>
 
           <div className="self-stretch flex flex-col justify-start items-end gap-2.5">
-            <div className="w-64 px-5 py-2.5 bg-violet-600 rounded-3xl inline-flex justify-center items-center gap-2.5">
-              <div className="justify-start text-white text-sm font-medium capitalize">
-                Save & Update Profile
-              </div>
-            </div>
+            <ButtonComponent
+              color={"#6945ED"}
+              isPending={isPending}
+              buttonText={"Continue"}
+            />
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

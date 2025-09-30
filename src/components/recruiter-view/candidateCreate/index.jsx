@@ -101,7 +101,7 @@ const formDataSchema = z.object({
     .min(1, "At least one education record is required"),
 
   // currentWorkingStatus: z.string().min(1, "Current working status is required"),
-  about: z.string().min(1, "Summary is Required"),
+  summary: z.string().min(1, "Summary is Required"),
 
   resume: z
     .string()
@@ -125,7 +125,7 @@ const Index = () => {
       pincode: "",
       state: "",
     },
-    about: "",
+    summary: "",
     permanentAddress: {
       address: "",
       city: "",
@@ -198,9 +198,6 @@ const Index = () => {
       (prev) => setNestedValue(prev, "resume", "") // Clear uploaded file URL
     );
     setFileName("");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    } // Clear file name
   };
   return (
     <div className="w-full self-stretch lg:px-36 lg:py-20 p-[20px] lg:pt-0 inline-flex flex-col justify-start items-end lg:gap-10 gap-[15px]">

@@ -9,6 +9,7 @@ import {
   trainerRegistrationStage4,
 } from "../../api/trainer/auth";
 import { toast } from "sonner";
+import { useApproval } from "../common/useApproval";
 
 export const useTrainerRegisterationStage1 = () => {
   const { setToken, setIsAuthenticated } = useAuthStore();
@@ -72,11 +73,17 @@ export const useTrainerRegisterationStage3 = () => {
 };
 export const useTrainerRegisterationStage4 = () => {
   const queryClient = useQueryClient();
+  const { mutate: approve } = useApproval();
   const navigate = useNavigate();
   return useMutation({
     queryKey: ["trainerRegistrationStage4"],
     mutationFn: trainerRegistrationStage4,
     onSuccess: (data) => {
+      approve({
+        type: "trainer",
+        applicantId: data?.data?.data?._id,
+        applicantType: "trainer",
+      });
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       toast.success(data.data.message);
       navigate("/trainer/dashboard");
