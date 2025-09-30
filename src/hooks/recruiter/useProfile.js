@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserDetails, getUserProgress } from "../../api/recruiter/user";
 import useAuthStore from "../../stores/useAuthStore";
+import { useApproval } from "../common/useApproval";
+import { approve } from "../../api/common/approval";
 
 export const useKycDetails = () => {
   const navigate = useNavigate();
@@ -23,10 +25,16 @@ export const useKycDetails = () => {
 export const useSectoralDetails = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { mutate: approve } = useApproval();
   return useMutation({
     mutationFn: sectoralDetails,
     onSuccess: (data, variables) => {
       toast.success(data.data.message);
+      approve({
+        type: "recruiter",
+        applicantId: data?.data?.data?._id,
+        applicantType: "recruiter",
+      });
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       if (variables.sectorSpecialization) {
         navigate("/recruiter/profile-setup/qualification-details");

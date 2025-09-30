@@ -41,7 +41,7 @@ const Index = () => {
       <div className="hidden lg:flex flex-col gap-[25px] w-full">
         <HeroProfile />
 
-        {progress?.data?.signupProgress < 100 && (
+        {!progress?.data?.signupProgress < 100 && (
           <div className="self-stretch p-10 bg-white rounded-2xl shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)] outline outline-offset-[-1px] outline-neutral-300 flex flex-col justify-start items-start gap-2.5">
             <div className="self-stretch inline-flex justify-start items-start gap-12">
               <div className="inline-flex flex-col justify-center items-start gap-3.5">

@@ -43,7 +43,7 @@ export const useBulkApplySingle = () => {
     mutationFn: applyBulkSeeker,
     onSuccess: (data) => {
       if (data.data.failed > 0) {
-        toast.error("Something went wrong");
+        toast.error(data.data.message);
       } else {
         toast.success(data.data.message);
       }

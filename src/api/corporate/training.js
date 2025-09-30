@@ -6,3 +6,10 @@ export const getTrainingList = async ({ queryKey }) => {
   const response = await api.get(`/corporate/training?${params}`);
   return response.data;
 };
+export const corporateTrainingPost = (data) =>
+  api.post("/corporate/training", data);
+
+export const corporateTrainingById = (id) => {
+  const result = api.get(`/corporate/training/${id}`);
+  return result.data;
+};

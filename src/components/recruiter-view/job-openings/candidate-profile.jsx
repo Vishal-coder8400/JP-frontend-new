@@ -23,7 +23,7 @@ const CandidateProfile = () => {
   return (
     <Fragment>
       <div className="min-h-screen w-full hidden self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 lg:inline-flex flex-col justify-start items-start gap-4">
-        <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
+        <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex justify-center items-center gap-6">
           <div className="size-16 relative rounded-sm overflow-hidden">
             <img
               className="size-16 left-0 top-0 absolute object-cover overflow-hidden"
@@ -109,9 +109,9 @@ const CandidateProfile = () => {
         </div>
         <div className="self-stretch flex flex-col justify-start items-start gap-4 overflow-hidden">
           <div className="self-stretch inline-flex justify-start items-start gap-4">
-            <div className="self-stretch px-6 py-4 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center gap-4">
-              <div className="min-w-[130px] flex flex-col justify-center items-center gap-1.5">
-                <div className="justify-center text-zinc-500 text-sm font-normal leading-normal">
+            <div className="self-stretch px-6 py-4 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-center gap-4">
+              <div className="min-w-[130px] flex flex-col justify-start items-start gap-4">
+                <div className="justify-start text-zinc-500 text-sm font-normal leading-normal">
                   Location
                 </div>
                 <div className="justify-start text-gray-900 text-sm font-normal leading-normal">
@@ -119,30 +119,28 @@ const CandidateProfile = () => {
                 </div>
               </div>
             </div>
-            <div className="px-6 py-4 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center gap-4">
-              <div className="min-w-[150px] flex flex-col justify-center items-start gap-1.5">
+            <div className="px-6 py-4 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center">
+              <div className="min-w-[150px] flex flex-col justify-center items-start gap-4">
                 <div className="justify-start text-zinc-500 text-sm font-normal leading-normal">
                   Current Employment
                 </div>
-                <div className="justify-start text-gray-900 text-sm font-normal leading-normal">
-                  Product Designer
-                </div>
-                <div className=" inline-flex justify-start items-center gap-3">
-                  <img
-                    className="size-6 rounded-sm"
-                    src="https://placehold.co/24x24"
-                  />
+                <div className="flex flex-col justify-start items-start gap-2.5">
+                  <div className="justify-start text-gray-900 text-sm font-normal leading-normal">
+                    Product Designer
+                  </div>
                   <div className="justify-start text-neutral-900 text-sm font-normal leading-normal">
                     Uber India
                   </div>
                 </div>
               </div>
             </div>
-            <div className="flex-1 px-6 py-4 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-1 outline-offset-[-1px] outline-zinc-300 flex justify-start items-center gap-4">
-              <div className="inline-flex flex-col justify-center items-start gap-1.5">
+            <div className="flex px-6 py-4 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 justify-start items-start gap-4 flex-col">
+              <div className="inline-flex flex-col items-start gap-1.5">
                 <div className="justify-start text-zinc-500 text-sm font-normal leading-normal">
                   Contact Information
                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2.5">
                 <div className="inline-flex justify-start items-center gap-3">
                   <div className="flex justify-start items-center gap-2.5">
                     <CallIcon />
@@ -162,8 +160,6 @@ const CandidateProfile = () => {
                     {jobSeekerProfile?.email}
                   </div>
                 </div>
-              </div>
-              <div className="h-20 inline-flex flex-col justify-end items-start gap-1.5">
                 <div className="inline-flex justify-start items-center gap-3">
                   <div className="size-4 relative overflow-hidden">
                     <DOBIcon />
@@ -173,7 +169,7 @@ const CandidateProfile = () => {
                   </div>
                 </div>
                 <div className="inline-flex justify-start items-center gap-3">
-                  <img className="size-4" src="https://placehold.co/16x16" />
+                  <DOBIcon />
                   <div className="justify-start text-neutral-900 text-sm font-normal leading-normal">
                     {jobSeekerProfile?.gender}
                   </div>

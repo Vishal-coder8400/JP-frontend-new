@@ -18,14 +18,22 @@ import { IndianRupee } from "lucide-react";
 
 const JobCard = ({ setOpen, item, setOpen1 }) => {
   const { setJobPost } = useJobPostStore();
-  const handleJob = (job) => {
+  const handleParentClick = (e) => {
+    setOpen1((prev) => !prev);
+    setJobPost(item);
+  };
+  const handleJob = (e, job) => {
+    e.stopPropagation();
     setJobPost(job);
     setOpen(true);
   };
   return (
     <Fragment>
       {/* //desktop-view */}
-      <div className="hidden lg:flex items-center justify-between rounded-[8px] p-[24px] border border-[#dadada] w-full">
+      <div
+        onClick={handleParentClick}
+        className="cursor-pointer hidden lg:flex items-center justify-between rounded-[8px] p-[24px] border border-[#dadada] w-full"
+      >
         <div className="flex flex-col gap-[12px]">
           <div className="flex flex-col gap-[4px]">
             <div className="flex items-center gap-[10px]">
@@ -40,12 +48,7 @@ const JobCard = ({ setOpen, item, setOpen1 }) => {
                 {item?.companyDetails?.companyName}
               </div>
             </div>
-            <div
-              onClick={() => {
-                setOpen1((prev) => !prev);
-              }}
-              className="text-[#141414] text-lg font-medium cursor-pointer"
-            >
+            <div className="text-[#141414] text-lg font-medium">
               {item?.jobTitle || item?.title}
             </div>
           </div>
@@ -107,7 +110,7 @@ const JobCard = ({ setOpen, item, setOpen1 }) => {
             </div>
           )}
           <Button
-            onClick={() => handleJob(item)}
+            onClick={(e) => handleJob(e, item)}
             className="cursor-pointer flex items-center justify-center gap-[4px] rounded-[8px] bg-[#6945ED] px-[12px] py-[8px]"
           >
             <div className="text-[#fff] text-sm">View Details</div>

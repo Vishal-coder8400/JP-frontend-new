@@ -1196,9 +1196,9 @@ export const trainingController3 = [
     type: "text",
   },
   {
-    name: "certification",
+    name: "certificationUpload",
     label: "Would you like the trainer to upload any certifications?",
-    placeholder: "Cancel Cheque Upload",
+    placeholder: "Upload Certificate",
     componentType: "file",
     type: "file",
     accept: "image",
@@ -2025,7 +2025,7 @@ export const trainerFormControls1 = [
       {
         name: "fullName",
         label: "Candidate Name",
-        placeholder: "e.g. Jason Wild", 
+        placeholder: "e.g. Jason Wild",
         componentType: "input",
         type: "text",
       },

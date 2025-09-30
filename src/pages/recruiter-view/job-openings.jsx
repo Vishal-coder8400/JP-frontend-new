@@ -6,10 +6,13 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import CandidateSelection from "../../components/recruiter-view/job-openings/candidates-selection";
 import CandidateProfile from "../../components/recruiter-view/job-openings/candidate-profile";
 import { useGetAllApplicant } from "../../hooks/recruiter/useApplicant";
-import { useFilteredJobs } from "../../hooks/recruiter/useJob";
+import { useFilteredJobs, useGetJobById } from "../../hooks/recruiter/useJob";
 import Navbar from "../../components/recruiter-view/navbar";
 import { useDebounce } from "../../hooks/common/useDebounce";
-import { useFilteredTrainings } from "../../hooks/recruiter/useTraining";
+import {
+  useFilteredTrainings,
+  useGetTrainningById,
+} from "../../hooks/recruiter/useTraining";
 
 const JobOpenings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -102,7 +105,12 @@ const JobOpenings = () => {
             overflow-y-auto border-transparent [&>button.absolute]:hidden"
         >
           <div className="w-full h-full">
-            <JobDescription setOpen1={setOpen1} setOpen={setOpen} />
+            <JobDescription
+              setOpen1={setOpen1}
+              setOpen={setOpen}
+              useGetTrainningById={useGetTrainningById}
+              useGetJobById={useGetJobById}
+            />
           </div>
         </SheetContent>
       </Sheet>

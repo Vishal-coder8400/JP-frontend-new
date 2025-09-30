@@ -1,12 +1,19 @@
 import { useEffect, useState } from "react";
 import CorporateListing from "../../components/corporate-view/listing";
-import { useFilteredJobs } from "../../hooks/corporate/useJob";
+import {
+  useCorporateJobById,
+  useFilteredJobs,
+  useGetCandidatesByJobId,
+} from "../../hooks/corporate/useJob";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import JobDescription from "../../components/recruiter-view/job-openings/job-description";
 import Navbar from "../../components/recruiter-view/navbar";
 import { useSearchParams } from "react-router-dom";
 import { useDebounce } from "../../hooks/common/useDebounce";
-import { useTraining } from "../../hooks/corporate/useTraining";
+import {
+  useGetTrainningById,
+  useTraining,
+} from "../../hooks/corporate/useTraining";
 import CandidateProfiles from "../../components/recruiter-view/job-openings/candidate-profile";
 
 import Pagination from "../../components/common/pagination";
@@ -21,6 +28,7 @@ import {
 import { Checkbox } from "../../components/ui/checkbox";
 import SearchComponent from "../../components/common/searchComponent";
 import { convertMonthsToYearsAndMonths } from "../../utils/commonFunctions";
+import useJobPostStore from "../../stores/useJobPostStore";
 const candidateList = [
   {
     name: "Heeral Nant",
@@ -96,12 +104,12 @@ const candidateList = [
 const Listing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [currentPage, setCurrentPage] = useState(1);
-
+  const { jobPost } = useJobPostStore();
+  // console.log(jobPost)
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [formData, setFormData] = useState({ sortBy: "" });
 
   const [filters, setFilters] = useState(() => {
     // Restore from URL on first render
@@ -115,8 +123,16 @@ const Listing = () => {
       jobStatus: params.jobStatus || "",
     };
   });
+  const [candidateListFilters, setCandidateListFilters] = useState({
+    page: 1,
+    limit: 10,
+    search: "",
+  });
   const { data: jobPosts, isLoading } = useFilteredJobs(filters);
   const { data: trainingPosts, isLoading: isLoading2 } = useTraining(filters);
+  const { data: candidateProfiles, isLoading: isLoading3 } =
+    useGetCandidatesByJobId(jobPost?._id, candidateListFilters);
+  console.log(candidateProfiles);
 
   // 👇 Sync filters.search to searchText on mount
   useEffect(() => {
@@ -177,13 +193,16 @@ const Listing = () => {
             overflow-y-auto border-transparent"
         >
           <div className="w-full h-full">
-            <JobDescription />
+            <JobDescription
+              useGetJobById={useCorporateJobById}
+              useGetTrainningById={useGetTrainningById}
+            />
           </div>
         </SheetContent>
       </Sheet>
       <Navbar onlySupport={false} />
       <CorporateListing
-        jobPosts={filters.jobType === "job" ? jobPosts : trainingPosts}
+        jobPosts={filters.jobType === "job" ? jobPosts : trainingPosts?.data}
         formData={filters}
         setFormData={setFilters}
         setOpen={setOpen}
@@ -251,7 +270,7 @@ const Listing = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {candidateList?.map((item, i) => (
+                      {candidateProfiles?.data?.applications.map((item, i) => (
                         <TableRow key={i}>
                           <TableCell className="w-[50px] px-[16px] py-[12px]">
                             <Checkbox className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[16px] w-[16px] rounded-[2px] flex items-center justify-center cursor-pointer" />
@@ -269,23 +288,23 @@ const Listing = () => {
                             </div>
                             <div className="flex flex-col">
                               <div className="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
-                                {item?.name}
+                                {item?.name || "N/A"}
                               </div>
                               <div className="self-stretch justify-start text-[#6E6E71] text-xs font-normal leading-none">
-                                {item?.areaOfExpertise}
+                                {item?.areaOfExpertise || "N/A"}
                               </div>
                             </div>
                           </TableCell>
                           <TableCell className="px-[16px] py-[12px]">
                             <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                              {item?.skills?.join(", ")}
+                              {item?.skills?.join(", ") || "N/A"}
                             </div>
                           </TableCell>
                           <TableCell className="px-[16px] py-[12px]">
                             <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
                               {convertMonthsToYearsAndMonths(
                                 item?.totalExperience
-                              )}
+                              ) || "N/A"}
                             </div>
                           </TableCell>
                           <TableCell className="px-[16px] py-[12px]">
@@ -316,10 +335,12 @@ const Listing = () => {
                   {/* </div> */}
                 </div>
                 <Pagination
-                  currentPage={currentPage}
-                  totalPages={10}
+                  currentPage={candidateProfiles?.data?.pagination?.currentPage}
+                  totalPages={candidateProfiles?.data?.pagination?.totalPages}
                   range={2}
-                  onPageChange={(page) => setCurrentPage(page)}
+                  onPageChange={(page) =>
+                    setCandidateListFilters((prev) => ({ ...prev, page }))
+                  }
                 />
               </div>
             </div>

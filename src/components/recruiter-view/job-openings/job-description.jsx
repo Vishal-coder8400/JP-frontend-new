@@ -9,10 +9,8 @@ import {
 } from "../../../utils/icon";
 import { formatSalaryRange, timeAgo } from "../../../utils/commonFunctions";
 import { useLocation } from "react-router-dom";
-import { useGetJobById } from "../../../hooks/recruiter/useJob";
-import { useGetTrainningById } from "../../../hooks/recruiter/useTraining";
 
-const JobDescription = ({ setOpen1 }) => {
+const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const jobType = queryParams.get("jobType");
@@ -22,6 +20,7 @@ const JobDescription = ({ setOpen1 }) => {
   const { data: trainningDetails } = useGetTrainningById(jobPost?._id, jobType);
 
   const data = jobType === "job" ? jobDetail : trainningDetails;
+  console.log(data, "data");
 
   return (
     <Fragment>
@@ -117,14 +116,125 @@ const JobDescription = ({ setOpen1 }) => {
               <div className="self-stretch justify-start text-neutral-900 text-lg font-semibold leading-tight">
                 About the job
               </div>
-              <div className="self-stretch justify-start">
-                <span className="text-neutral-900/70 text-base font-bold leading-normal">
-                  Job description
-                  <br />
-                </span>
-                <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                  <p>{data?.data?.jobDescription || data?.data?.description}</p>
-                </span>
+
+              <div className="text-gray1 mt-4 space-y-4">
+                {data?.data?.jobDescription && (
+                  <>
+                    <h4 className="font-semibold">Job Description</h4>
+                    <p>{data?.data?.jobDescription}</p>
+                  </>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <h4 className="font-semibold">Job Details</h4>
+                    <ul className="space-y-1 mt-2">
+                      <li>
+                        <strong>Job Type:</strong> {data?.data?.jobType}
+                      </li>
+                      <li>
+                        <strong>Experience Level:</strong>{" "}
+                        {data?.data?.experienceLevel}
+                      </li>
+                      <li>
+                        <strong>Mode of Work:</strong> {data?.data?.modeOfWork}
+                      </li>
+                      <li>
+                        <strong>Working Hours:</strong>{" "}
+                        {data?.data?.workingHours}
+                      </li>
+                      <li>
+                        <strong>Working Days:</strong> {data?.data?.workingDays}
+                      </li>
+                      {data?.data?.isSundayWorking && (
+                        <li>
+                          <strong>Sunday Working:</strong> Yes
+                        </li>
+                      )}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="font-semibold">Requirements</h4>
+                    <ul className="space-y-1 mt-2">
+                      <li>
+                        <strong>Minimum Education:</strong>{" "}
+                        {data?.data?.minimumEducation}
+                      </li>
+                      <li>
+                        <strong>English Level:</strong>{" "}
+                        {data?.data?.englishLevel}
+                      </li>
+                      <li>
+                        <strong>Gender Preference:</strong>{" "}
+                        {data?.data?.genderPreference}
+                      </li>
+                      <li>
+                        <strong>Age Range:</strong>{" "}
+                        {data?.data?.preferredAgeRange}
+                      </li>
+                      <li>
+                        <strong>Regional Language:</strong>{" "}
+                        {data?.data?.regionalLanguageRequired
+                          ? "Required"
+                          : "Not Required"}
+                      </li>
+                      <li>
+                        <strong>Two Wheeler:</strong>{" "}
+                        {data?.data?.twoWheelerMandatory
+                          ? "Mandatory"
+                          : "Not Mandatory"}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold">Location Details</h4>
+                  <ul className="space-y-1 mt-2">
+                    <li>
+                      <strong>Office Location:</strong>{" "}
+                      {data?.data?.officeLocation}
+                    </li>
+                    <li>
+                      <strong>City:</strong> {data?.data?.city}
+                    </li>
+                    <li>
+                      <strong>State:</strong> {data?.data?.state}
+                    </li>
+                    <li>
+                      <strong>Pincode:</strong> {data?.data?.pincode}
+                    </li>
+                  </ul>
+                </div>
+
+                {data?.data?.requiredSkills &&
+                  data?.data?.requiredSkills.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold">Required Skills</h4>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {data?.data?.requiredSkills.map((skill, index) => (
+                          <span
+                            key={index}
+                            className="inline-block px-3 py-1 text-xs font-medium bg-light-purple text-primary-purple rounded-full"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                {data?.data?.isWalkInInterview && (
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-yellow-800">
+                      Walk-in Interview
+                    </h4>
+                    <p className="text-yellow-700 mt-1">
+                      This job allows walk-in interviews.
+                    </p>
+                  </div>
+                )}
               </div>
               <div className="w-full inline-flex justify-start items-start gap-3 flex-wrap content-start">
                 {(data?.data?.requiredSkills || data?.data?.skillDetails)?.map(

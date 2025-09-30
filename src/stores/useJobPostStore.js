@@ -1,6 +1,5 @@
 import { create } from "zustand";
-
-export const useJobPostStore = create((set) => ({
+const useJobPostStore = create((set) => ({
   jobPost: null,
   setJobPost: (jobPost) =>
     set((state) => {

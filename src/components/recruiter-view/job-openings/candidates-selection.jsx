@@ -155,7 +155,7 @@ const CandidateSelection = ({
         )}
         <div className="w-full overflow-x-auto">
           {/* <div className="min-w-[1000px]"> */}
-          <Table className="w-full border border-[#DADADA] rounded-[8px]">
+          <Table className="border border-[#DADADA] rounded-[8px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="[&:has([role=checkbox])]:border-none px-[16px] py-[12px] w-[50px] text-sm text-[#101018] font-semibold"></TableHead>
@@ -186,23 +186,22 @@ const CandidateSelection = ({
                       className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[16px] w-[16px] rounded-[2px] flex items-center justify-center cursor-pointer"
                     />
                   </TableCell>
-                  <TableCell className="px-[16px] py-[12px] flex gap-[10px]">
-                    <div
-                      onClick={() => handleOpen(item)}
-                      className="relative cursor-pointer w-[36px] h-[36px] "
-                    >
-                      <img
-                        src={item?.profilePicture}
-                        alt={item?.name}
-                        className="h-full w-full rounded-[50px] object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <div className="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
-                        {item?.name}
+                  <TableCell className="px-[16px] py-[12px]">
+                    <div className="flex items-center gap-[10px]">
+                      <div
+                        onClick={() => handleOpen(item)}
+                        className="relative cursor-pointer w-[36px] h-[36px] "
+                      >
+                        <img
+                          src={item?.profilePicture}
+                          alt={item?.name}
+                          className="h-full w-full rounded-[50px] object-cover"
+                        />
                       </div>
-                      <div className="self-stretch justify-start text-[#6E6E71] text-xs font-normal leading-none">
-                        {item?.areaOfExpertise}
+                      <div className="flex flex-col">
+                        <div className="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
+                          {item?.name}
+                        </div>
                       </div>
                     </div>
                   </TableCell>
@@ -221,12 +220,14 @@ const CandidateSelection = ({
                       {convertMonthsToYearsAndMonths(item?.totalExperience)}
                     </div>
                   </TableCell>
-                  <TableCell className="px-[16px] py-[12px] flex flex-col gap-[4px]">
-                    <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                      {item?.phone?.countryCode} {item?.phone?.number}
-                    </div>
-                    <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                      {item?.email}
+                  <TableCell className="px-[16px] py-[12px]">
+                    <div className="flex flex-col gap-[4px]">
+                      <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
+                        {item?.phone?.countryCode} {item?.phone?.number}
+                      </div>
+                      <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
+                        {item?.email}
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>
