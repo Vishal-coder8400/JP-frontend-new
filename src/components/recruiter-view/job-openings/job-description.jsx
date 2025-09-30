@@ -18,9 +18,10 @@ const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
 
   const { data: jobDetail } = useGetJobById(jobPost?._id, jobType);
   const { data: trainningDetails } = useGetTrainningById(jobPost?._id, jobType);
+  // console.log(trainningDetails);
 
   const data = jobType === "job" ? jobDetail : trainningDetails;
-  console.log(data, "data");
+  // console.log(data, "data");
 
   return (
     <Fragment>
@@ -34,15 +35,22 @@ const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
             <img
               className="w-16 h-16 relative rounded object-cover overflow-hidden"
-              src={data?.data?.company?.companyLogo}
-              alt={data?.data?.company?.companyName}
+              src={
+                data?.data?.company?.companyLogo ||
+                data?.data?.postedBy?.basicInformation?.companyLogo
+              }
+              alt={
+                data?.data?.company?.companyName ||
+                data?.data?.postedBy?.basicInformation?.companyName
+              }
             />
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-3">
               <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
                 <div className="flex flex-col justify-start items-start gap-1">
                   <div className="inline-flex justify-start items-center gap-3">
                     <div className="justify-start text-neutral-900 text-md2 font-normal leading-relaxed">
-                      {data?.data?.company?.companyName}
+                      {data?.data?.company?.companyName ||
+                        data?.data?.postedBy?.basicInformation?.companyName}
                     </div>
                   </div>
                   <div className="flex flex-col justify-start items-start gap-3">
@@ -118,10 +126,12 @@ const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
               </div>
 
               <div className="text-gray1 mt-4 space-y-4">
-                {data?.data?.jobDescription && (
+                {(data?.data?.jobDescription || data?.data?.description) && (
                   <>
                     <h4 className="font-semibold">Job Description</h4>
-                    <p>{data?.data?.jobDescription}</p>
+                    <p>
+                      {data?.data?.jobDescription || data?.data?.description}
+                    </p>
                   </>
                 )}
 
@@ -129,23 +139,37 @@ const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
                   <div>
                     <h4 className="font-semibold">Job Details</h4>
                     <ul className="space-y-1 mt-2">
-                      <li>
-                        <strong>Job Type:</strong> {data?.data?.jobType}
-                      </li>
+                      {data?.data?.jobType && (
+                        <li>
+                          <strong>Job Type:</strong> {data?.data?.jobType}
+                        </li>
+                      )}
                       <li>
                         <strong>Experience Level:</strong>{" "}
-                        {data?.data?.experienceLevel}
+                        {data?.data?.experienceLevel ||
+                          data?.data?.minimumExperience}
                       </li>
                       <li>
-                        <strong>Mode of Work:</strong> {data?.data?.modeOfWork}
+                        <strong>Mode of Work:</strong>{" "}
+                        {data?.data?.modeOfWork || data?.data?.trainingMode}
                       </li>
                       <li>
                         <strong>Working Hours:</strong>{" "}
-                        {data?.data?.workingHours}
+                        {data?.data?.workingHours ||
+                          `${data?.data?.hoursPerDay} Hours`}
                       </li>
-                      <li>
-                        <strong>Working Days:</strong> {data?.data?.workingDays}
-                      </li>
+                      {data?.data?.totalDurationDays && (
+                        <li>
+                          <strong>Duration:</strong>{" "}
+                          {data?.data?.totalDurationDays} Months
+                        </li>
+                      )}
+                      {data?.data?.workingDays && (
+                        <li>
+                          <strong>Working Days:</strong>{" "}
+                          {data?.data?.workingDays}
+                        </li>
+                      )}
                       {data?.data?.isSundayWorking && (
                         <li>
                           <strong>Sunday Working:</strong> Yes

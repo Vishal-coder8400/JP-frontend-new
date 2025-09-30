@@ -71,6 +71,12 @@ const TrainningPosting = () => {
   const onSubmit = (e) => {
     e.preventDefault();
     let payload = { ...formData };
+    payload.hoursPerDay = formData.hoursPerDay
+      ? parseInt(formData.hoursPerDay)
+      : 0;
+    payload.participantsPerBatch = formData.participantsPerBatch
+      ? parseInt(formData.participantsPerBatch)
+      : 0;
     const booleanFields = [
       "travelRequired",
       "studyMaterialsProvided",
@@ -84,6 +90,7 @@ const TrainningPosting = () => {
     if (!isValid) return;
     mutate(payload);
   };
+  console.log(formData);
   return (
     <div className="w-full self-stretch px-36 py-0 pb-[32px] inline-flex flex-col justify-start items-start gap-5">
       <Navbar onlySupport={false} />

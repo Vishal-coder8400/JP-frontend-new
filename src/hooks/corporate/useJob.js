@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import useAuthStore from "../../stores/useAuthStore";
 import { omit } from "../../utils/commonFunctions";
+import { useApproval } from "../common/useApproval";
 
 export const useFilteredJobs = (filters) => {
   const sanitizedFilters = omit(filters, ["jobType"]);
@@ -22,10 +23,16 @@ export const useFilteredJobs = (filters) => {
 export const useCorporateJobPost = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const { mutate: approve } = useApproval();
   return useMutation({
     mutationFn: corporateJobPost,
     onSuccess: (data) => {
       toast.success(data.data.message);
+      approve({
+        type: "job",
+        applicantId: data.data.data._id,
+        applicantType: "job",
+      });
       navigate(`/${user?.role}/dashboard`);
     },
     onError: (error) => {

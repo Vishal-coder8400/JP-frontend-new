@@ -5,7 +5,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getUserDetails, getUserProgress } from "../../api/recruiter/user";
 import useAuthStore from "../../stores/useAuthStore";
 import { useApproval } from "../common/useApproval";
-import { approve } from "../../api/common/approval";
 
 export const useKycDetails = () => {
   const navigate = useNavigate();

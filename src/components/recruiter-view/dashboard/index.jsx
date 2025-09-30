@@ -78,7 +78,7 @@ const Index = () => {
                     ullamco laboris nisi ut.
                   </div>
                   <Link
-                    to={nextStagePath}
+                    to="/recruiter/profile-setup/sectoral-details"
                     className="px-4 py-3.5 bg-neutral-800 rounded-md shadow-[0px_1px_4px_0px_rgba(25,33,61,0.08)] flex justify-center items-center gap-[3px]"
                   >
                     <div className="text-center justify-start text-white text-base font-semibold leading-tight">
