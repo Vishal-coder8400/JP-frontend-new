@@ -11,7 +11,7 @@ import AdminStatusBadge from "../../shared/AdminStatusBadge";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import { useState } from "react";
-import TrainerApprovalDetails from "./TrainerApprovalDetails";
+import TrainerDetailsDrawer from "./TrainerDetailsDrawer";
 
 const TrainersTable = ({
   paginatedTrainers,
@@ -169,12 +169,12 @@ const TrainersTable = ({
         >
           <div
             className={`bg-white ${
-              areApprovalBtnsVisible ? "rounded-2xl" : "rounded-l-2xl"
+              context === "approvals" ? "rounded-2xl" : "rounded-l-2xl"
             } w-full h-full`}
           >
-            <TrainerApprovalDetails
+            <TrainerDetailsDrawer
               trainer={selectedTrainer}
-              areApprovalBtnsVisible={areApprovalBtnsVisible}
+              context={context}
               onClose={() => setDrawerOpen(false)}
               onRevalidate={onRevalidate}
             />
