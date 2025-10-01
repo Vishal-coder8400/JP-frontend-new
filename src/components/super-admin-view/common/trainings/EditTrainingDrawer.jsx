@@ -35,17 +35,15 @@ const EditTrainingDrawer = ({ isOpen, onClose, training, onRevalidate }) => {
           lg:max-w-[1000px] 
           md:max-w-full
           sm:max-w-full 
-          overflow-y-auto border-transparent [&>button.absolute]:hidden"
+          overflow-y-auto border-transparent [&>button.absolute]:hidden bg-white"
       >
-        <div className="w-full h-full">
-          {training && (
-            <EditTrainingForm
-              training={training}
-              onClose={onClose}
-              onSave={handleSave}
-            />
-          )}
-        </div>
+        {training && (
+          <EditTrainingForm
+            training={training}
+            onClose={onClose}
+            onSave={handleSave}
+          />
+        )}
       </SheetContent>
     </Sheet>
   );

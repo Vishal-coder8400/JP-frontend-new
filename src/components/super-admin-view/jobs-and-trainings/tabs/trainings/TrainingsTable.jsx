@@ -1,6 +1,6 @@
 import { Sheet, SheetContent } from "../../../../ui/sheet";
 import { GraduationCap, Eye, MoveUpRightIcon } from "lucide-react";
-import TrainingDetailsDrawer from "./TrainingDetailsDrawer";
+import UnifiedTrainingDetailsDrawer from "../../../common/trainings/UnifiedTrainingDetailsDrawer";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getTrainingApplications } from "../../../../../api/super-admin/jobsAndTrainings";
@@ -221,14 +221,13 @@ const TrainingsTable = ({ paginatedTrainings, onRevalidate }) => {
             lg:max-w-[750px] 
             md:max-w-full
             sm:max-w-full 
-            overflow-y-auto border-transparent [&>button.absolute]:hidden"
+            overflow-y-auto border-transparent [&>button.absolute]:hidden bg-white"
         >
-          <div className="w-full h-full">
-            <TrainingDetailsDrawer
-              trainingId={selectedTraining}
-              onRevalidate={onRevalidate}
-            />
-          </div>
+          <UnifiedTrainingDetailsDrawer
+            trainingId={selectedTraining}
+            context="jobs-and-trainings"
+            onRevalidate={onRevalidate}
+          />
         </SheetContent>
       </Sheet>
     </>

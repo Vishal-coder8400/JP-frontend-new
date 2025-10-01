@@ -1,16 +1,5 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
 import CommonForm from "@/components/common/form";
 import { validateFormData } from "@/utils/commonFunctions";
 import {
@@ -196,7 +185,7 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-white">
+    <div className="min-h-screen bg-white">
       <div className="p-6">
         <div className="mb-6">
           <h2 className="text-2xl font-bold text-gray-900">Edit Training</h2>
