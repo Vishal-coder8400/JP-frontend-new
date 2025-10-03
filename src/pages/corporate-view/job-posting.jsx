@@ -91,6 +91,9 @@ const formSchema = z
     twoWheelerMandatory: z.boolean({
       required_error: "Please specify if two-wheeler is mandatory",
     }),
+    noOfPositions: z
+      .string({ required_error: "Number of positions is required" })
+      .regex(/^[1-9]\d*$/, "Number of positions must be a positive integer"),
 
     jobDescription: z
       .string({ required_error: "Job description is required" })
@@ -181,6 +184,7 @@ const JobPosting = () => {
     walkInAddress: "",
     spocName: "",
     spocNumber: "",
+    noOfPositions: "",
   });
   const { mutate, isPending, isError, error } = useCorporateJobPost();
   const onSubmit = (e) => {

@@ -351,7 +351,9 @@ export default function CommonForm({
         );
 
       case "file":
-        const [fileNames, setFileNames] = useState("");
+        const fileUrl = getNestedValue(formData, nameWithIndex);
+        const fileName = fileUrl ? fileUrl.split("/").pop() : "";
+
         const acceptType =
           getControlItem.accept === "image"
             ? "image/*"
@@ -360,21 +362,18 @@ export default function CommonForm({
             : "";
 
         const handleRemoveFile = () => {
-          setFormData(
-            (prev) => setNestedValue(prev, nameWithIndex, "") // Clear uploaded file URL
-          );
-          setFileNames("");
+          setFormData((prev) => setNestedValue(prev, nameWithIndex, ""));
         };
 
         return (
           <div className="relative">
             <div className="relative w-full cursor-pointer">
-              {!fileNames && (
+              {!fileName && (
                 <Input
                   id={getControlItem.name}
                   type="file"
                   accept={acceptType}
-                  className={`absolute inset-0 opacity-0 cursor-pointer z-0 h-full w-full`}
+                  className="absolute inset-0 opacity-0 cursor-pointer z-0 h-full w-full"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
                     if (!file) return;
@@ -384,12 +383,10 @@ export default function CommonForm({
                     const isValidSize = file.size <= 5 * 1024 * 1024;
 
                     let isValidType = false;
-
-                    if (getControlItem.accept === "image") {
+                    if (getControlItem.accept === "image")
                       isValidType = isImage;
-                    } else if (getControlItem.accept === "pdf") {
+                    else if (getControlItem.accept === "pdf")
                       isValidType = isPdf;
-                    }
 
                     if (!isValidType) {
                       alert(
@@ -405,39 +402,38 @@ export default function CommonForm({
                       return;
                     }
 
-                    handleUpload(file, (uploadedFileUrl, fileName) => {
+                    handleUpload(file, (uploadedFileUrl) => {
                       setFormData((prev) =>
                         setNestedValue(prev, nameWithIndex, uploadedFileUrl)
                       );
-                      setFileNames(fileName);
                     });
                   }}
                 />
               )}
               <Label
-                htmlFor={!fileNames ? getControlItem.name : undefined}
+                htmlFor={!fileName ? getControlItem.name : undefined}
                 className="flex items-center justify-between border border-[#E2E2E2] w-full rounded-[4px] py-[9px] px-[16px] cursor-pointer z-10"
               >
                 <span
                   className={`${
-                    fileNames === "" ? "text-[#9B959F]" : "text-black"
+                    fileName ? "text-black" : "text-[#9B959F]"
                   } text-base truncate w-60`}
                 >
-                  {fileNames || getControlItem.placeholder || "Upload File"}
+                  {fileName || getControlItem.placeholder || "Upload File"}
                 </span>
 
                 <span
                   className="flex justify-center items-center"
                   onClick={(e) => {
                     e.preventDefault();
-                    e.stopPropagation(); // stops file dialog from opening
-                    if (fileNames !== "") handleRemoveFile();
+                    e.stopPropagation();
+                    if (fileName) handleRemoveFile();
                   }}
                 >
-                  {fileNames === "" ? (
-                    <Plus className="h-[15px] w-[15px]" />
-                  ) : (
+                  {fileName ? (
                     <X className="h-[15px] w-[15px] text-red-500 cursor-pointer" />
+                  ) : (
+                    <Plus className="h-[15px] w-[15px]" />
                   )}
                 </span>
               </Label>

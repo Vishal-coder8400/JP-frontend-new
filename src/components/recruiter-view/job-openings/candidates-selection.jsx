@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Input } from "../../ui/input";
 import { Checkbox } from "../../ui/checkbox";
 import {
@@ -35,6 +35,11 @@ const CandidateSelection = ({
   applicants,
   selectedSeeker,
   setSelectedSeeker,
+  filters,
+  setFilters,
+  totalPages,
+  handleSearch,
+  searchTextCandidate,
 }) => {
   const { setJobSeekerProfile } = useJobSeekerProfileStore();
   const { jobPost } = useJobPostStore();
@@ -48,7 +53,7 @@ const CandidateSelection = ({
     isPending: isPendigBulk,
     isSuccess: successBulk,
   } = useBulkApplySingle();
-  const [currentPage, setCurrentPage] = useState(1);
+
   const handleOpen = (i) => {
     setJobSeekerProfile(i);
     setOpen2(true);
@@ -76,10 +81,9 @@ const CandidateSelection = ({
         applicantId: selectedSeeker[0],
       });
     }
-    if (successBulk || successSingle) {
-      setSelectedSeeker([]);
-    }
+    setSelectedSeeker([]);
   };
+
   return (
     <Fragment>
       <div
@@ -113,7 +117,12 @@ const CandidateSelection = ({
             </div>
           </div>
         )}
-        {show && <SearchComponent />}
+        {show && (
+          <SearchComponent
+            handleSearch={handleSearch}
+            value={searchTextCandidate}
+          />
+        )}
         {show && (
           <div className="h-full border border-[#ddd] rounded-[12px] w-full flex items-center justify-between gap-[34px] py-[8px] px-[16px]">
             <div className="max-w-[261px] w-full flex items-center gap-[8px]">
@@ -158,7 +167,9 @@ const CandidateSelection = ({
           <Table className="border border-[#DADADA] rounded-[8px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="[&:has([role=checkbox])]:border-none px-[16px] py-[12px] w-[50px] text-sm text-[#101018] font-semibold"></TableHead>
+                {show && (
+                  <TableHead className="[&:has([role=checkbox])]:border-none px-[16px] py-[12px] w-[50px] text-sm text-[#101018] font-semibold"></TableHead>
+                )}
                 <TableHead className="px-[16px] py-[12px] w-[292px] text-sm text-[#101018] font-semibold">
                   Candidates
                 </TableHead>
@@ -177,70 +188,88 @@ const CandidateSelection = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {applicants?.map((item, i) => (
-                <TableRow key={i}>
-                  <TableCell className="w-[50px] px-[16px] py-[12px]">
-                    <Checkbox
-                      onCheckedChange={() => handleSelect(item._id)}
-                      checked={selectedSeeker?.includes(item._id)}
-                      className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[16px] w-[16px] rounded-[2px] flex items-center justify-center cursor-pointer"
-                    />
-                  </TableCell>
-                  <TableCell className="px-[16px] py-[12px]">
-                    <div className="flex items-center gap-[10px]">
-                      <div
-                        onClick={() => handleOpen(item)}
-                        className="relative cursor-pointer w-[36px] h-[36px] "
-                      >
-                        <img
-                          src={item?.profilePicture}
-                          alt={item?.name}
-                          className="h-full w-full rounded-[50px] object-cover"
+              {applicants?.length > 0 ? (
+                applicants?.map((item, i) => (
+                  <TableRow key={i}>
+                    {show && (
+                      <TableCell className="w-[50px] px-[16px] py-[12px]">
+                        <Checkbox
+                          onCheckedChange={() => handleSelect(item._id)}
+                          checked={selectedSeeker?.includes(item._id)}
+                          className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[16px] w-[16px] rounded-[2px] flex items-center justify-center cursor-pointer"
                         />
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
-                          {item?.name}
+                      </TableCell>
+                    )}
+                    <TableCell className="px-[16px] py-[12px]">
+                      <div className="flex items-center gap-[10px]">
+                        <div
+                          onClick={() => handleOpen(item)}
+                          className="relative cursor-pointer w-[36px] h-[36px] "
+                        >
+                          <img
+                            src={item?.profilePicture}
+                            alt={item?.name}
+                            className="h-full w-full rounded-[50px] object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
+                            {item?.name}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-[16px] py-[12px]">
-                    <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                      {item?.roleLookingFor}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-[16px] py-[12px]">
-                    <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                      {item?.skills?.join(", ")}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-[16px] py-[12px]">
-                    <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                      {convertMonthsToYearsAndMonths(item?.totalExperience)}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-[16px] py-[12px]">
-                    <div className="flex flex-col gap-[4px]">
+                    </TableCell>
+                    <TableCell className="px-[16px] py-[12px]">
                       <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                        {item?.phone?.countryCode} {item?.phone?.number}
+                        {item?.roleLookingFor ? item?.roleLookingFor : "N/A"}
                       </div>
+                    </TableCell>
+                    <TableCell className="px-[16px] py-[12px]">
                       <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                        {item?.email}
+                        {item?.skills.length > 0
+                          ? item?.skills?.join(", ")
+                          : "N/A"}
                       </div>
-                    </div>
-                  </TableCell>
+                    </TableCell>
+                    <TableCell className="px-[16px] py-[12px]">
+                      <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
+                        {(item?.totalExperience !== undefined ||
+                          item?.totalExperienceInMonth !== undefined) && (
+                          <span>
+                            {item?.totalExperience !== undefined &&
+                              `${item.totalExperience} Years `}
+                            {item?.totalExperienceInMonth !== undefined &&
+                              `${item.totalExperienceInMonth} Months`}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-[16px] py-[12px]">
+                      <div className="flex flex-col gap-[4px]">
+                        <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
+                          {item?.phone?.countryCode} {item?.phone?.number}
+                        </div>
+                        <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
+                          {item?.email}
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow className="w-full py-4 text-center">
+                  <TableCell colSpan={6}>No candidates found</TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
           {/* </div> */}
         </div>
         <Pagination
-          currentPage={currentPage}
-          totalPages={10}
+          currentPage={filters?.page}
+          totalPages={totalPages}
           range={2}
-          onPageChange={(page) => setCurrentPage(page)}
+          onPageChange={(page) => setFilters((prev) => ({ ...prev, page }))}
         />
       </div>
       <div
@@ -274,7 +303,9 @@ const CandidateSelection = ({
           <Table className="w-full border border-[#DADADA] rounded-[8px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="[&:has([role=checkbox])]:border-none px-[16px] py-[12px] w-[50px] text-sm text-[#101018] font-semibold flex"></TableHead>
+                {show && (
+                  <TableHead className="[&:has([role=checkbox])]:border-none px-[16px] py-[12px] w-[50px] text-sm text-[#101018] font-semibold flex"></TableHead>
+                )}
                 <TableHead className="px-[16px] py-[12px] w-[292px] text-sm text-[#101018] font-semibold">
                   Candidates
                 </TableHead>
@@ -293,64 +324,81 @@ const CandidateSelection = ({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {applicants?.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell className="w-[50px] px-[16px] py-[12px]">
-                    <Checkbox className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[20px] w-[20px] rounded-[2px] flex items-center justify-center cursor-pointer" />
-                  </TableCell>
-                  <TableCell className="px-[16px] py-[12px] flex gap-[10px]">
-                    <div
-                      onClick={() => handleOpen(item)}
-                      className="cursor-pointer w-[36px] h-[36px] flex items-center justify-center"
-                    >
-                      <img
-                        src={item?.profilePicture}
-                        alt={item?.name}
-                        className="h-full w-full rounded-[50px] object-cover"
-                      />
-                    </div>
-                    <div className="flex flex-col">
-                      <div className="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
-                        {item?.name}
+              {applicants?.length > 0 ? (
+                applicants?.map((item, index) => (
+                  <TableRow key={index}>
+                    {show && (
+                      <TableCell className="w-[50px] px-[16px] py-[12px]">
+                        <Checkbox className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[20px] w-[20px] rounded-[2px] flex items-center justify-center cursor-pointer" />
+                      </TableCell>
+                    )}
+                    <TableCell className="px-[16px] py-[12px]">
+                      <div className="flex items-center gap-[10px]">
+                        <div
+                          onClick={() => handleOpen(item)}
+                          className="cursor-pointer w-[36px] h-[36px] flex items-center justify-center"
+                        >
+                          <img
+                            src={item?.profilePicture}
+                            alt={item?.name}
+                            className="h-full w-full rounded-[50px] object-cover"
+                          />
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="self-stretch justify-start text-[#35353A] text-sm font-bold leading-tight">
+                            {item?.name}
+                          </div>
+                        </div>
                       </div>
-                      <div className="self-stretch justify-start text-[#6E6E71] text-xs font-normal leading-none">
-                        {item?.areaOfExpertise}
+                    </TableCell>
+                    <TableCell className="px-[16px] py-[12px]">
+                      <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
+                        {item?.roleLookingFor ? item?.roleLookingFor : "N/A"}
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-[16px] py-[12px]">
-                    <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                      {item?.roleLookingFor}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-[16px] py-[12px]">
-                    <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                      {item?.skills?.join(", ")}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-[16px] py-[12px]">
-                    <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                      {convertMonthsToYearsAndMonths(item?.totalExperience)}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-[16px] py-[12px] flex flex-col gap-[4px]">
-                    <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                      {item?.phone?.countryCode} {item?.phone?.number}
-                    </div>
-                    <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                      {item?.email}
-                    </div>
-                  </TableCell>
+                    </TableCell>
+                    <TableCell className="px-[16px] py-[12px]">
+                      <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
+                        {item?.skills?.length > 0
+                          ? item?.skills?.join(", ")
+                          : "N/A"}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-[16px] py-[12px]">
+                      <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
+                        {(item?.totalExperience !== undefined ||
+                          item?.totalExperienceInMonth !== undefined) && (
+                          <span>
+                            {item?.totalExperience !== undefined &&
+                              `${item.totalExperience} Years `}
+                            {item?.totalExperienceInMonth !== undefined &&
+                              `${item.totalExperienceInMonth} Months`}
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-[16px] py-[12px] flex flex-col gap-[4px]">
+                      <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
+                        {item?.phone?.countryCode} {item?.phone?.number}
+                      </div>
+                      <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
+                        {item?.email}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow className="w-full py-4 text-center">
+                  <TableCell colSpan={6}>No candidates found</TableCell>
                 </TableRow>
-              ))}
+              )}
             </TableBody>
           </Table>
         </div>
         <Pagination
           range={1}
-          currentPage={currentPage}
-          totalPages={10}
-          onPageChange={(page) => setCurrentPage(page)}
+          currentPage={filters?.page}
+          totalPages={totalPages}
+          onPageChange={(page) => setFilters((prev) => ({ ...prev, page }))}
         />
       </div>
     </Fragment>

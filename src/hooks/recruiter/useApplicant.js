@@ -2,20 +2,19 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   createJobSeeker,
   getAllApplicantDetails,
+  getApplicantsById,
   updateJobSeeker,
 } from "../../api/recruiter/applicant";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import useJobSeekerProfileStore from "../../stores/useJobSeekerProfileStore";
 
-export const useGetAllApplicant = () => {
+export const useGetAllApplicant = (filters) => {
   return useQuery({
-    queryKey: ["applicants"],
-    queryFn: ({ signal }) => getAllApplicantDetails({ signal }),
-    staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
-    retry: 2,
-    refetchOnWindowFocus: false,
+    queryKey: ["applicants", filters],
+    queryFn: getAllApplicantDetails,
+    retry: false,
+    keepPreviousData: true,
   });
 };
 
@@ -49,5 +48,14 @@ export const useUpdateApplicant = () => {
     onError: (error) => {
       toast.error(error.response.data.message, {});
     },
+  });
+};
+
+export const useGetApplicantById = (id) => {
+  return useQuery({
+    queryKey: ["applicant", id],
+    queryFn: ({ signal }) => getApplicantsById({ id, signal }),
+    enabled: !!id,
+    retry: false,
   });
 };

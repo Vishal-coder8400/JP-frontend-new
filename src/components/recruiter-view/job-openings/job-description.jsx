@@ -175,6 +175,30 @@ const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
                           <strong>Sunday Working:</strong> Yes
                         </li>
                       )}
+                      {data?.data?.sessionFrequency && (
+                        <li>
+                          <strong>Session Frequency:</strong>{" "}
+                          {data?.data?.sessionFrequency}
+                        </li>
+                      )}
+                      {data?.data?.subjectMatterExpertise && (
+                        <li>
+                          <strong>Subject Matter Expertise:</strong>{" "}
+                          {data?.data?.subjectMatterExpertise}
+                        </li>
+                      )}
+                      {data?.data?.sessionsExpected && (
+                        <li>
+                          <strong>Sessions Expected:</strong>{" "}
+                          {data?.data?.sessionsExpected}
+                        </li>
+                      )}
+                      {data?.data?.participantsPerBatch && (
+                        <li>
+                          <strong>Participants per Batch:</strong>{" "}
+                          {data?.data?.participantsPerBatch}
+                        </li>
+                      )}
                     </ul>
                   </div>
 
@@ -183,20 +207,27 @@ const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
                     <ul className="space-y-1 mt-2">
                       <li>
                         <strong>Minimum Education:</strong>{" "}
-                        {data?.data?.minimumEducation}
+                        {data?.data?.minimumEducation ||
+                          data?.data?.qualificationsRequired}
                       </li>
-                      <li>
-                        <strong>English Level:</strong>{" "}
-                        {data?.data?.englishLevel}
-                      </li>
-                      <li>
-                        <strong>Gender Preference:</strong>{" "}
-                        {data?.data?.genderPreference}
-                      </li>
-                      <li>
-                        <strong>Age Range:</strong>{" "}
-                        {data?.data?.preferredAgeRange}
-                      </li>
+                      {data?.data?.englishLevel && (
+                        <li>
+                          <strong>English Level:</strong>{" "}
+                          {data?.data?.englishLevel}
+                        </li>
+                      )}
+                      {data?.data?.genderPreference && (
+                        <li>
+                          <strong>Gender Preference:</strong>{" "}
+                          {data?.data?.genderPreference}
+                        </li>
+                      )}
+                      {data?.data?.preferredAgeRange && (
+                        <li>
+                          <strong>Age Range:</strong>{" "}
+                          {data?.data?.preferredAgeRange}
+                        </li>
+                      )}
                       <li>
                         <strong>Regional Language:</strong>{" "}
                         {data?.data?.regionalLanguageRequired
@@ -209,6 +240,18 @@ const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
                           ? "Mandatory"
                           : "Not Mandatory"}
                       </li>
+                      {data?.data?.studyMaterialsProvided && (
+                        <li>
+                          <strong>Study Materials Provided:</strong>{" "}
+                          {"Will be Provided by Company"}
+                        </li>
+                      )}
+                      {data?.data?.demoSessionBeforeConfirming && (
+                        <li>
+                          <strong>Demo Session Before Confirming:</strong>{" "}
+                          {"Will be Provided by Company"}
+                        </li>
+                      )}
                     </ul>
                   </div>
                 </div>

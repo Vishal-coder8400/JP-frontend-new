@@ -133,7 +133,7 @@ export const isTodayOrFuture = (dateString) => {
 
   return inputDate >= today;
 };
-export function formatExperience(years, months) {
+export function formatExperience(years = 0, months = 0) {
   const totalMonths = years * 12 + months;
 
   if (totalMonths < 12) {

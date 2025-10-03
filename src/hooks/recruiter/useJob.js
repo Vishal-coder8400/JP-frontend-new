@@ -15,7 +15,6 @@ export const useFilteredJobs = (filters) => {
     queryKey: ["filteredJobs", sanitizedFilters],
     queryFn: getFilteredJobs,
     keepPreviousData: true, // helpful for pagination
-    enabled: filters?.jobType === "job",
   });
 };
 export const useGetJobById = (id, jobType) => {

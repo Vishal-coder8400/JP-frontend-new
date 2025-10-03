@@ -1,10 +1,12 @@
 import { useState } from "react";
 import CommonForm from "../../components/common/form";
 import {
+  certificationUpload,
   trainingAddress,
   trainingController1,
   trainingController2,
   trainingController3,
+  trainingController4,
   trainingMode,
 } from "../../config";
 import Navbar from "../../components/recruiter-view/navbar";
@@ -60,12 +62,14 @@ const TrainningPosting = () => {
     qualificationsRequired: "",
     certificationUpload: "",
     sessionsExpected: 0,
+    certificationUploadRequired: "",
     travelRequired: false,
     languagesFluent: [],
     participantsPerBatch: 0,
     studyMaterialsProvided: false,
     demoSessionBeforeConfirming: false,
     recommendationsFromPastClients: false,
+    budgetPerSession: "",
   });
   const { mutate, isPending, isError, error } = useCorporateTrainingPost();
   const onSubmit = (e) => {
@@ -151,6 +155,18 @@ const TrainningPosting = () => {
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-1 outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4">
             <CommonForm
               formControls={trainingController3}
+              formData={formData}
+              setFormData={setFormData}
+            />
+            {formData?.certificationUploadRequired === "yes" ? (
+              <CommonForm
+                formControls={certificationUpload}
+                formData={formData}
+                setFormData={setFormData}
+              />
+            ) : null}
+            <CommonForm
+              formControls={trainingController4}
               formData={formData}
               setFormData={setFormData}
             />

@@ -6,7 +6,15 @@ import SearchComponent from "../../common/searchComponent";
 import FilterComponent from "../../common/filterComponent";
 import { CandidatesFilters } from "../../../config";
 
-const Index = ({ applicants, formData, setFormData, setOpen2 }) => {
+const Index = ({
+  applicants,
+  setOpen2,
+  filters,
+  setFilters,
+  searchText,
+  handleSearch,
+  ClearAll,
+}) => {
   return (
     <Fragment>
       <div className="w-full hidden lg:flex flex-col gap-[51px] justify-start items-start">
@@ -15,15 +23,15 @@ const Index = ({ applicants, formData, setFormData, setOpen2 }) => {
           <div className="w-[196px] flex flex-col gap-[23px]">
             <div className="text-lg text-[#171923] font-semibold">Filters</div>
             <div
-              // onClick={ClearAll}
+              onClick={ClearAll}
               className="text-[#3F93FF] text-base font-medium cursor-pointer"
             >
               Clear All
             </div>
             <FilterComponent
               formControls={CandidatesFilters}
-              formData={formData}
-              setFormData={setFormData}
+              formData={filters}
+              setFormData={setFilters}
             />
           </div>
           <div
@@ -46,15 +54,17 @@ const Index = ({ applicants, formData, setFormData, setOpen2 }) => {
               </div>
             </div>
             <div className="self-stretch h-0 outline outline-offset-[-0.50px] outline-neutral-200"></div>
-            <SearchComponent />
-            {/* <div className="overflow-y-auto w-full"> */}
+            <SearchComponent handleSearch={handleSearch} value={searchText} />
             <CandidateSelection
               show={false}
               button={false}
-              applicants={applicants}
+              applicants={applicants?.data?.jobSeekers}
               setOpen2={setOpen2}
+              filters={filters}
+              setFilters={setFilters}
+              currentPage={applicants?.data?.pagination?.currentPage}
+              totalPages={applicants?.data?.pagination?.totalPages}
             />
-            {/* </div> */}
           </div>
         </div>
       </div>
@@ -78,12 +88,16 @@ const Index = ({ applicants, formData, setFormData, setOpen2 }) => {
             </div>
           </div>
           <div className="self-stretch h-0 outline outline-offset-[-0.50px] outline-neutral-200"></div>
-          <SearchComponent />
+          <SearchComponent handleSearch={handleSearch} value={searchText} />
           <CandidateSelection
             show={false}
             button={false}
-            applicants={applicants}
+            applicants={applicants?.data?.jobSeekers}
             setOpen2={setOpen2}
+            filters={filters}
+            setFilters={setFilters}
+            currentPage={applicants?.data?.pagination?.currentPage}
+            totalPages={applicants?.data?.pagination?.totalPages}
           />
         </div>
       </div>

@@ -29,82 +29,15 @@ import { Checkbox } from "../../components/ui/checkbox";
 import SearchComponent from "../../components/common/searchComponent";
 import { convertMonthsToYearsAndMonths } from "../../utils/commonFunctions";
 import useJobPostStore from "../../stores/useJobPostStore";
-const candidateList = [
-  {
-    name: "Heeral Nant",
-    areaOfExpertise: "Lead Product Designer",
-    skills: ["Figma", "UX Research"],
-    totalExperience: 3,
-    status: "Pending",
-  },
-  {
-    name: "Nithya Menon",
-    areaOfExpertise: "UI Designer",
-    skills: ["Python", "Django"],
-    totalExperience: 3,
-    status: "Shortlisted",
-  },
-  {
-    name: "Nithya Menon",
-    areaOfExpertise: "UI Designer",
-    skills: ["Python", "Django"],
-    totalExperience: 3,
-    status: "Shortlisted",
-  },
-  {
-    name: "Meera Gonzalez",
-    areaOfExpertise: "Product Designer",
-    skills: ["Figma", "UX Research"],
-    totalExperience: 3,
-    status: "Rejected",
-  },
-  {
-    name: "Karthik Subramanian",
-    areaOfExpertise: "Sub Content",
-    skills: ["Python", "Django"],
-    totalExperience: 3,
-    status: "Shortlisted",
-  },
-  {
-    name: "Mithra B",
-    areaOfExpertise: "Product Designer",
-    skills: ["Python", "Django"],
-    totalExperience: 3,
-    status: "Shortlisted",
-  },
-  {
-    name: "Jagatheesh Narayanan",
-    areaOfExpertise: "UX Designer",
-    skills: ["Python", "Django"],
-    totalExperience: 3,
-    status: "Shortlisted",
-  },
-  {
-    name: "Steve Rogers",
-    areaOfExpertise: "Developer",
-    skills: ["Figma", "UX Research"],
-    totalExperience: 3,
-    status: "Shortlisted",
-  },
-  {
-    name: "Richard Hendricks",
-    areaOfExpertise: "Sr. Developer",
-    skills: ["Python", "Django"],
-    totalExperience: 3,
-    status: "Rejected",
-  },
-  {
-    name: "Monica Patel",
-    areaOfExpertise: "UX Writer",
-    skills: ["Python", "Django"],
-    totalExperience: 3,
-    status: "Rejected",
-  },
-];
+import useJobSeekerProfileStore from "../../stores/useJobSeekerProfileStore";
+import { useGetApplicantById } from "../../hooks/recruiter/useApplicant";
+
 const Listing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { setJobSeekerProfile, jobSeekerProfile } = useJobSeekerProfileStore();
   const [currentPage, setCurrentPage] = useState(1);
   const { jobPost } = useJobPostStore();
+
   // console.log(jobPost)
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
@@ -128,6 +61,7 @@ const Listing = () => {
     limit: 10,
     search: "",
   });
+  const { data: applicantData } = useGetApplicantById(jobSeekerProfile?._id);
   const { data: jobPosts, isLoading } = useFilteredJobs(filters);
   const { data: trainingPosts, isLoading: isLoading2 } = useTraining(filters);
   const { data: candidateProfiles, isLoading: isLoading3 } =
@@ -180,6 +114,10 @@ const Listing = () => {
     }));
     setSearchText("");
   };
+  const handlejobseekerProfile = (id) => {
+    setOpen2(true);
+    setJobSeekerProfile({ _id: id });
+  };
   return (
     <div className="w-full">
       <Sheet open={open} onOpenChange={setOpen}>
@@ -223,7 +161,7 @@ const Listing = () => {
             overflow-y-auto border-transparent"
         >
           <div className="w-full h-full">
-            <CandidateProfiles />
+            <CandidateProfiles applicantData={applicantData} />
           </div>
         </SheetContent>
       </Sheet>
@@ -277,7 +215,9 @@ const Listing = () => {
                           </TableCell>
                           <TableCell className="px-[16px] py-[12px] flex gap-[10px]">
                             <div
-                              onClick={() => setOpen2(true)}
+                              onClick={() =>
+                                handlejobseekerProfile(item.applicantId)
+                              }
                               className="relative cursor-pointer w-[36px] h-[36px] "
                             >
                               <img
