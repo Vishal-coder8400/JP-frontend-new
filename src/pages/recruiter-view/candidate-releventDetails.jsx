@@ -125,7 +125,6 @@ const CandidateReleventDetails = () => {
   if (!showPage) {
     return <div>Loading....</div>;
   }
-  console.log(formData);
 
   return (
     <>

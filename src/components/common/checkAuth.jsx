@@ -52,7 +52,6 @@ const CheckAuth = ({
   // 🔒 Page lock (like skipping profile setup steps)
   const lockedKey = lockedPages[location.pathname];
   const isPageLocked = lockedKey && user?.profileCompletion?.[lockedKey];
-  // console.log(tokenInitialized, isLoading);
   // ⏳ Wait for token to be initialized from storage
   if (!tokenInitialized || isLoading || (isAuthenticated && !user)) {
     return <div>Loading...</div>;
@@ -64,13 +63,6 @@ const CheckAuth = ({
   }
 
   // 🏠 Redirect from root
-  // if (location.pathname === "/") {
-  //   return isAuthenticated ? (
-  //     <Navigate to={`/${user?.role}/dashboard`} replace />
-  //   ) : (
-  //     <Navigate to={`/${allowedRoles[0]}/log-in`} replace />
-  //   );
-  // }
 
   // 🔐 Not authenticated and trying to access protected routes
   if (!isAuthenticated && !isLoginOrRegisterRoute) {

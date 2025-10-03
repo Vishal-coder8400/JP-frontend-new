@@ -24,6 +24,15 @@ export default function FilterComponent({
   formData,
   setFormData,
 }) {
+  const [calendarStates, setCalendarStates] = useState({});
+
+  const toggleCalendar = (name, isOpen) => {
+    setCalendarStates((prev) => ({
+      ...prev,
+      [name]: isOpen,
+    }));
+  };
+
   function renderInputsByComponentType(getControlItem) {
     let element = null;
     const value = formData[getControlItem.name] || "";
@@ -78,14 +87,18 @@ export default function FilterComponent({
         );
 
         break;
-      case "calendar":
+      case "calendar": {
         const isValidDate = value && !isNaN(new Date(value).getTime());
-        const [isOpen, setIsOpen] = useState(false);
+        const isOpen = calendarStates[getControlItem.name] || false;
+
         return (
-          <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <Popover
+            open={isOpen}
+            onOpenChange={(open) => toggleCalendar(getControlItem.name, open)}
+          >
             <PopoverTrigger asChild>
               <div
-                onClick={() => setIsOpen(true)}
+                onClick={() => toggleCalendar(getControlItem.name, true)}
                 className="self-stretch  py-[6px] px-[10px] bg-white rounded outline outline-neutral-200 inline-flex justify-start items-center gap-2 cursor-pointer"
               >
                 <div className="flex-1 self-stretch flex justify-start items-start gap-2.5">
@@ -130,7 +143,7 @@ export default function FilterComponent({
                         : ""
                     )
                   );
-                  setIsOpen(false);
+                  toggleCalendar(getControlItem.name, false);
                 }}
                 className="rounded-md border shadow bg-white calendar"
                 initialFocus
@@ -138,6 +151,7 @@ export default function FilterComponent({
             </PopoverContent>
           </Popover>
         );
+      }
       case "multi-select":
         return (
           <MultiSelectFilter
@@ -185,7 +199,7 @@ export default function FilterComponent({
 
   return (
     <div className="flex flex-col items-start gap-[23px] w-full">
-      {formControls.map((controlItem, index) => {
+      {formControls.map((controlItem) => {
         return (
           <div
             key={controlItem.name}

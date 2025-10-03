@@ -150,7 +150,6 @@ const Index = () => {
 
   const { mutate, isPending } = useCreateApplicant();
   const { mutate: UploadImage } = useUpload();
-  console.log(formData);
   const onSubmit = (e) => {
     localStorage.removeItem("seekerID");
     e.preventDefault();

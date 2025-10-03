@@ -4,6 +4,7 @@ export const useAuthStore = create((set) => ({
   token: null,
   user: null,
   isAuthenticated: false,
+  refetchProfile: false,
   tokenInitialized: false,
 
   setToken: (token, rememberMe) => {

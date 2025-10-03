@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import ScrollToTop from "./components/common/scrollToTop";
 import CheckAuth from "./components/common/checkAuth";
 import DynamicCheckAuthWrapper from "./components/common/dynamicCheckAuthWrapper";
@@ -58,10 +58,22 @@ import TrainerEducation from "./pages/trainner-view/education-details";
 import TrainerWorking from "./pages/trainner-view/working-details";
 import TrainerCertificate from "./pages/trainner-view/certificate-details";
 import TrainerAdditional from "./pages/trainner-view/additional-details";
+
+// Super Admin Pages
+import SuperAdminLogin from "./pages/super-admin-view/log-in";
+import SuperAdminLayout from "./components/super-admin-view/shared/Layout";
+import SuperAdminDashboard from "./pages/super-admin-view/dashboard";
+import SuperAdminDatabasePage from "./pages/super-admin-view/database";
+import SuperAdminJobsAndTrainingsPage from "./pages/super-admin-view/jobs-and-trainings/jobs-and-trainings";
+import SuperAdminApprovals from "./pages/super-admin-view/approvals";
+import SuperAdminAdminManagementPage from "./pages/super-admin-view/admin-management";
+import SuperAdminMasterDataPage from "./pages/super-admin-view/master-data";
+import SuperAdminCandidates from "./components/super-admin-view/jobs-and-trainings/applications/Applications";
 import TrainerDashboard from "./pages/trainner-view/dashboard";
 import TrainerJobDescription from "./pages/trainner-view/job-description";
 import TrainerSearch from "./pages/trainner-view/search";
 import { useGetTrainerProfile } from "./hooks/trainer/useProfile";
+import SuperAdminAuth from "./components/common/superAdminAuth";
 import Congratulation from "./pages/common/congratulation";
 
 function App() {
@@ -87,6 +99,37 @@ function App() {
       <Routes>
         {/* Home redirect */}
         <Route path="/" element={<div>Home</div>} />
+
+        {/* Super Admin Home redirect */}
+        <Route
+          path="/super-admin"
+          element={
+            <SuperAdminAuth>
+              <SuperAdminLayout />
+            </SuperAdminAuth>
+          }
+        >
+          <Route
+            index
+            element={<Navigate to="/super-admin/database" replace />}
+          />
+          <Route path="dashboard" element={<SuperAdminDashboard />} />
+          <Route path="database" element={<SuperAdminDatabasePage />} />
+          <Route
+            path="jobs-and-trainings"
+            element={<SuperAdminJobsAndTrainingsPage />}
+          />
+          <Route
+            path="jobs-and-trainings/job/:id/candidates"
+            element={<SuperAdminCandidates />}
+          />
+          <Route path="approvals" element={<SuperAdminApprovals />} />
+          <Route
+            path="admin-management"
+            element={<SuperAdminAdminManagementPage />}
+          />
+          <Route path="master-data" element={<SuperAdminMasterDataPage />} />
+        </Route>
 
         {/* Recruiter Auth and Setup */}
         <Route
@@ -311,11 +354,13 @@ function App() {
             </CheckAuth>
           }
         >
-          <Route path="dashboard" element={<TrainerDashboard />} />
-          <Route path="dashboard/:id" element={<TrainerJobDescription />} />
-          <Route path="search" element={<TrainerSearch />} />
+          <Route path="dashboard" element={<JobSeekerDashboard />} />
+          <Route path="dashboard/:id" element={<JobDescription />} />
           <Route path="faq" element={<Faq />} />
         </Route>
+
+        {/* Super Admin Auth and Setup */}
+        <Route path="/super-admin/log-in" element={<SuperAdminLogin />} />
 
         {/* Congrats fallback route */}
         <Route path="congratulation" element={<Congratulation />} />

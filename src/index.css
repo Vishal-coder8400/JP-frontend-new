@@ -49,7 +49,25 @@
   --tracking-wide: 0.025em;
   --tracking-wider: 0.05em;
   --tracking-widest: 0.1em;
+
+  /* Colors */
   --color-custom-purple: rgba(125, 90, 226, 0.1);
+  --color-primary-purple: #6945ed;
+  --color-gray1: #5b5b5b;
+  --color-gray2: #dadada;
+  --color-black: #171923;
+  --color-success1: #54c413;
+  --color-success2: #54c4131a;
+  --color-danger1: #e72626;
+  --color-danger2: #e726261a;
+  --color-warning1: #d9790a;
+  --color-warning2: #d9790a1a;
+  --color-light-blue: #e1e6ff;
+  --color-light-pink: #ffe1f7;
+  --color-light-purple: #7d5ae21a;
+
+  /* borders */
+  --border-1: 1px solid hsl(var(--border));
 }
 @layer base {
   input {
@@ -115,6 +133,7 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --primary-purple: #6945ed;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -141,6 +160,7 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --primary-purple: #6945ed;
   }
 }
 

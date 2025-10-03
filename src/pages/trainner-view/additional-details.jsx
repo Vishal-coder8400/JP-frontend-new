@@ -38,7 +38,35 @@ const AdditionalDetails = () => {
       </div>
       <div className="w-full flex flex-col p-6 rounded-lg border-[#DADADA] border-1 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)] gap-[18px]">
         <CommonForm
-          formControls={gigTrainingFormControls}
+          formControls={additionalDetailsJobSeeker}
+          formData={formData}
+          setFormData={setFormData}
+        />
+        {formData?.handleTeam === "yes" && (
+          <div className="self-stretch">
+            <Input
+              className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+              type="text"
+              placeholder="Team Handling Experience (in years)"
+            />
+          </div>
+        )}
+        <CommonForm
+          formControls={additionalDetailsJobSeeker2}
+          formData={formData}
+          setFormData={setFormData}
+        />
+        {formData?.medicalProblem === "yes" && (
+          <div className="self-stretch">
+            <Input
+              className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+              type="text"
+              placeholder="Enter your Medical Details"
+            />
+          </div>
+        )}
+        <CommonForm
+          formControls={additionalDetailsJobSeeker3}
           formData={formData}
           setFormData={setFormData}
         />

@@ -11,6 +11,9 @@ export const profileCompletionRules = {
     page1: (user) => !!user?.basicInformation?.companyName,
     page2: (user) => !!user?.bankDetails,
   },
+  superAdmin: {
+    page1: (user) => !!user?.name && !!user?.email && !!user?.phone,
+  },
 };
 export const calculateProfileCompletionPercentage = (completionObject) => {
   const total = Object.keys(completionObject).length;

@@ -195,6 +195,7 @@ export const LoginFields = [
     type: "password",
   },
 ];
+
 export const sectoralFieldsForm = [
   {
     name: "sectorSpecialization",
@@ -895,7 +896,6 @@ export const CandidatesFilters = [
     placeholder: "Application Date",
     name: "sortBy",
   },
-  ,
   {
     label: "Designation",
     componentType: "multi-select",
