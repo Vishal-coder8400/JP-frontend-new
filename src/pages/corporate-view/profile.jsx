@@ -1,9 +1,15 @@
 import { Link } from "react-router-dom";
 import Navbar from "../../components/recruiter-view/navbar";
 import useAuthStore from "../../stores/useAuthStore";
+import EditTrainerDrawer from "../../components/common/EditDrawer";
+import EditProfile from "../../components/corporate-view/edit-profile";
+import { useState } from "react";
+import { Button } from "../../components/ui/button";
 
 const Profile = () => {
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const { user } = useAuthStore();
+
   return (
     <div className="flex flex-col w-full gap-[24px]">
       <Navbar onlySupport={false} />
@@ -22,7 +28,10 @@ const Profile = () => {
               alt={user?.basicInformation?.companyName}
             />
             <div className="size- inline-flex flex-col justify-center items-start gap-2.5">
-              <div className="self-stretch px-3 py-2 bg-black rounded-lg inline-flex justify-center items-center gap-1">
+              <Button
+                onClick={() => setIsEditOpen(true)}
+                className="cursor-pointer self-stretch px-3 py-2 bg-black rounded-lg inline-flex justify-center items-center gap-1"
+              >
                 <div className="justify-start text-white text-xs font-normal leading-tight">
                   Edit Your Profile
                 </div>
@@ -41,36 +50,7 @@ const Profile = () => {
                     strokeLinejoin="round"
                   />
                 </svg>
-              </div>
-            </div>
-            <div className="size- p-2 left-[123px] top-[66px] absolute bg-white rounded-lg flex justify-start items-center gap-2.5">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="13"
-                height="13"
-                viewBox="0 0 13 13"
-                fill="none"
-              >
-                <g clipPath="url(#clip0_2310_12132)">
-                  <path
-                    d="M5.95801 2.1665H2.16634C1.87902 2.1665 1.60347 2.28064 1.40031 2.4838C1.19714 2.68697 1.08301 2.96252 1.08301 3.24984V10.8332C1.08301 11.1205 1.19714 11.396 1.40031 11.5992C1.60347 11.8024 1.87902 11.9165 2.16634 11.9165H9.74967C10.037 11.9165 10.3125 11.8024 10.5157 11.5992C10.7189 11.396 10.833 11.1205 10.833 10.8332V7.0415"
-                    stroke="#6945ED"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M10.0205 1.35413C10.236 1.13864 10.5283 1.01758 10.833 1.01758C11.1378 1.01758 11.43 1.13864 11.6455 1.35413C11.861 1.56962 11.9821 1.86188 11.9821 2.16663C11.9821 2.47137 11.861 2.76364 11.6455 2.97913L6.49967 8.12496L4.33301 8.66663L4.87467 6.49996L10.0205 1.35413Z"
-                    stroke="#6945ED"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </g>
-                <defs>
-                  <clipPath id="clip0_2310_12132">
-                    <rect width="13" height="13" fill="white" />
-                  </clipPath>
-                </defs>
-              </svg>
+              </Button>
             </div>
           </div>
           <div className="self-stretch inline-flex flex-col justify-start items-start gap-6">
@@ -377,6 +357,9 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      <EditTrainerDrawer isOpen={isEditOpen} setIsOpen={setIsEditOpen}>
+        <EditProfile setIsEditOpen={setIsEditOpen} />
+      </EditTrainerDrawer>
     </div>
   );
 };

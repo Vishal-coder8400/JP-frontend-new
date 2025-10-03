@@ -31,7 +31,6 @@ const Profile = () => {
   );
   const handleModal = () => {
     setDrawerOpen(!drawerOpen);
-    
   };
   return (
     <>
@@ -475,7 +474,7 @@ const Profile = () => {
         </div>
       </div>
       <EditTrainerDrawer isOpen={drawerOpen} setIsOpen={setDrawerOpen}>
-        <EditProfile />
+        <EditProfile setDrawerOpen={setDrawerOpen} />
       </EditTrainerDrawer>
     </>
   );
