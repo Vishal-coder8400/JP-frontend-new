@@ -7,18 +7,35 @@ import {
 import { toast } from "sonner";
 
 export const useGetAllTrainings = (params = {}) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-trainings", params],
+    queryKey: ["superAdmin-trainings", token, params],
     queryFn: ({ signal }) => getAllTrainings({ signal, ...params }),
+    enabled: !!token,
     keepPreviousData: true,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 
 export const useGetTrainingDetails = (id, { enabled = true } = {}) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-training", id],
+    queryKey: ["superAdmin-training", token, id],
     queryFn: ({ signal }) => getTrainingById({ signal, id }),
-    enabled: enabled && !!id,
+    enabled: enabled && !!id && !!token,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 

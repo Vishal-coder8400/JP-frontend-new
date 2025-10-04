@@ -1,82 +1,174 @@
-import { useState } from "react";
-import { toast } from "sonner";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
-  reviewApproval,
+  getApprovalsList,
   getApprovalDetails,
+  reviewApproval,
 } from "../../api/super-admin/approvals";
-import { useQuery } from "@tanstack/react-query";
 
+export const useGetApprovalsCompanies = (params = {}) => {
+  const token = localStorage.getItem("token");
+
+  return useQuery({
+    queryKey: ["approvals-companies", token, params],
+    queryFn: ({ signal }) =>
+      getApprovalsList("corporate", { signal, ...params }),
+    enabled: !!token,
+    keepPreviousData: true,
+    retry: (failureCount, error) => {
+      // Don't retry on 401 errors (permission denied)
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      // Use default retry logic for other errors
+      return failureCount < 3;
+    },
+  });
+};
+
+export const useGetApprovalsTrainers = (params = {}) => {
+  const token = localStorage.getItem("token");
+
+  return useQuery({
+    queryKey: ["approvals-trainers", token, params],
+    queryFn: ({ signal }) => getApprovalsList("trainer", { signal, ...params }),
+    enabled: !!token,
+    keepPreviousData: true,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+};
+
+export const useGetApprovalsRecruiters = (params = {}) => {
+  const token = localStorage.getItem("token");
+
+  return useQuery({
+    queryKey: ["approvals-recruiters", token, params],
+    queryFn: ({ signal }) =>
+      getApprovalsList("recruiter", { signal, ...params }),
+    enabled: !!token,
+    keepPreviousData: true,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+};
+
+export const useGetApprovalsJobs = (params = {}) => {
+  const token = localStorage.getItem("token");
+
+  return useQuery({
+    queryKey: ["approvals-jobs", token, params],
+    queryFn: ({ signal }) => getApprovalsList("job", { signal, ...params }),
+    enabled: !!token,
+    keepPreviousData: true,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+};
+
+export const useGetApprovalsTrainings = (params = {}) => {
+  const token = localStorage.getItem("token");
+
+  return useQuery({
+    queryKey: ["approvals-trainings", token, params],
+    queryFn: ({ signal }) =>
+      getApprovalsList("training", { signal, ...params }),
+    enabled: !!token,
+    keepPreviousData: true,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+};
+
+export const useGetApprovalsJobsAndTrainings = (params = {}) => {
+  const token = localStorage.getItem("token");
+
+  return useQuery({
+    queryKey: ["approvals-jobs-trainings", token, params],
+    queryFn: ({ signal }) =>
+      getApprovalsList("job-training", { signal, ...params }),
+    enabled: !!token,
+    keepPreviousData: true,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+};
+
+export const useGetApprovalDetails = (approvalId, { enabled = true } = {}) => {
+  return useQuery({
+    queryKey: ["approval-details", approvalId],
+    queryFn: ({ signal }) => getApprovalDetails(approvalId, { signal }),
+    enabled: enabled && !!approvalId,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+};
+
+// Hook for approval actions (approve, reject, hold)
 export const useApprovals = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const queryClient = useQueryClient();
 
-  const handleApiCall = async (apiCall, successMessage, errorMessage) => {
-    setIsLoading(true);
-    setError(null);
+  const reviewApprovalMutation = useMutation({
+    mutationFn: ({ approvalId, status, reviewerNotes }) =>
+      reviewApproval(approvalId, { status, reviewerNotes }),
+    onSuccess: () => {
+      // Invalidate relevant queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ["approvals-"] });
+      queryClient.invalidateQueries({ queryKey: ["approval-details"] });
+    },
+  });
 
-    try {
-      const response = await apiCall();
-      toast.success(successMessage);
-      return response.data;
-    } catch (err) {
-      const errorMsg = err.response?.data?.message || errorMessage;
-      setError(errorMsg);
-      toast.error(errorMsg);
-      throw err;
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Review approval functions
   const approveApplication = async (approvalId) => {
-    return handleApiCall(
-      () =>
-        reviewApproval(approvalId, {
-          status: "approved",
-        }),
-      "Application approved successfully",
-      "Failed to approve application"
-    );
+    return reviewApprovalMutation.mutateAsync({
+      approvalId,
+      status: "approved",
+    });
   };
 
-  const rejectApplication = async (approvalId, rejectionReason = "") => {
-    return handleApiCall(
-      () =>
-        reviewApproval(approvalId, {
-          status: "rejected",
-          rejectionReason: rejectionReason,
-        }),
-      "Application rejected successfully",
-      "Failed to reject application"
-    );
+  const rejectApplication = async (approvalId, reviewerNotes = "") => {
+    return reviewApprovalMutation.mutateAsync({
+      approvalId,
+      status: "rejected",
+      reviewerNotes,
+    });
   };
 
-  const holdApplication = async (approvalId) => {
-    return handleApiCall(
-      () =>
-        reviewApproval(approvalId, {
-          status: "hold",
-        }),
-      "Application put on hold successfully",
-      "Failed to hold application"
-    );
+  const holdApplication = async (approvalId, reviewerNotes = "") => {
+    return reviewApprovalMutation.mutateAsync({
+      approvalId,
+      status: "hold",
+      reviewerNotes,
+    });
   };
 
   return {
-    isLoading,
-    error,
+    isLoading: reviewApprovalMutation.isPending,
     approveApplication,
     rejectApplication,
     holdApplication,
+    error: reviewApprovalMutation.error,
   };
-};
-
-// Hook to get approval details by ID (unified for all types)
-export const useGetApprovalDetails = (approvalId, { enabled = true } = {}) => {
-  return useQuery({
-    queryKey: ["superAdmin-approval-details", approvalId],
-    queryFn: ({ signal }) => getApprovalDetails(approvalId, { signal }),
-    enabled: enabled && !!approvalId,
-  });
 };

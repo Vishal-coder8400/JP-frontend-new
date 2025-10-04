@@ -12,6 +12,10 @@ const StatusTabs = ({ activeStatus, onStatusChange, className = "" }) => {
       id: "rejected",
       name: "Rejected",
     },
+    {
+      id: "hold",
+      name: "Hold",
+    },
   ];
 
   return (
@@ -23,8 +27,10 @@ const StatusTabs = ({ activeStatus, onStatusChange, className = "" }) => {
             onClick={() => onStatusChange(tab.id)}
             className={`px-4 py-2 text-sm font-medium rounded-full transition-colors ${
               index === 0
-                ? "col-start-10"
+                ? "col-start-9"
                 : index === 1
+                ? "col-start-10"
+                : index === 2
                 ? "col-start-11"
                 : "col-start-12"
             } col-span-1 ${

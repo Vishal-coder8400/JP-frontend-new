@@ -28,3 +28,7 @@ export const updateJob = ({ id, data }) => api.put(`/admin/jobs/${id}`, data);
 
 export const updateTraining = ({ id, data }) =>
   api.put(`/admin/trainings/${id}`, data);
+
+// Application approval endpoints
+export const updateApplicationStatus = (applicationId, data) =>
+  api.put(`/admin/job-applications/applications/${applicationId}/status`, data);

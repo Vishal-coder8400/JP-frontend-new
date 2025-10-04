@@ -10,8 +10,8 @@ import {
   useGetApprovalDetails,
 } from "@/hooks/super-admin/useApprovals";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
+import HoldReasonModal from "@/components/common/HoldReasonModal";
 
 const CompanyDetailsDrawer = ({
   companyId,
@@ -22,6 +22,7 @@ const CompanyDetailsDrawer = ({
 }) => {
   const [activeTab, setActiveTab] = useState("details");
   const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [showHoldModal, setShowHoldModal] = useState(false);
   const { isLoading, approveApplication, rejectApplication, holdApplication } =
     useApprovals();
 
@@ -101,8 +102,27 @@ const CompanyDetailsDrawer = ({
     setShowRejectionModal(true);
   };
 
-  const handleHold = async () => {
-    toast.info("Company is on hold");
+  const handleHold = async (holdReason) => {
+    try {
+      await holdApplication(
+        displayCompany.id || displayCompany._id,
+        holdReason
+      );
+      // Revalidate the list data before closing
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+      // Close the drawer after successful hold and revalidation
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to hold displayCompany:", error);
+    }
+  };
+
+  const handleHoldClick = () => {
+    setShowHoldModal(true);
   };
 
   // Handle loading state
@@ -188,7 +208,7 @@ const CompanyDetailsDrawer = ({
             <Button
               variant={"black"}
               className={"w-full"}
-              onClick={handleHold}
+              onClick={handleHoldClick}
               disabled={isLoading}
             >
               {isLoading ? "Processing..." : "Hold Company"}
@@ -358,6 +378,17 @@ const CompanyDetailsDrawer = ({
           isOpen={showRejectionModal}
           onClose={() => setShowRejectionModal(false)}
           onConfirm={handleReject}
+          isLoading={isLoading}
+          entityType="company"
+        />
+      )}
+
+      {/* Hold Reason Modal - Only for approvals context */}
+      {context === "approvals" && (
+        <HoldReasonModal
+          isOpen={showHoldModal}
+          onClose={() => setShowHoldModal(false)}
+          onConfirm={handleHold}
           isLoading={isLoading}
           entityType="company"
         />

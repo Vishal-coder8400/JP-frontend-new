@@ -12,7 +12,7 @@ import ApplicationDetailsDrawer from "./ApplicationDetailsDrawer";
 
 import { useState } from "react";
 
-const ApplicationsTable = ({ paginatedApplications }) => {
+const ApplicationsTable = ({ paginatedApplications, onRevalidate }) => {
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
@@ -139,7 +139,10 @@ const ApplicationsTable = ({ paginatedApplications }) => {
             overflow-y-auto border-transparent bg-white [&>button.absolute]:hidden"
         >
           <div className="w-full h-full">
-            <ApplicationDetailsDrawer application={selectedApplication} />
+            <ApplicationDetailsDrawer
+              application={selectedApplication}
+              onRevalidate={onRevalidate}
+            />
           </div>
         </SheetContent>
       </Sheet>

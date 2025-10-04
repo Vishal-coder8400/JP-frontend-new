@@ -2,29 +2,39 @@ import { TrainersTable } from "./index";
 import Pagination from "../../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../common/filterComponent";
-import { useState, useEffect } from "react";
-import { getApprovalsList } from "../../../../api/super-admin/approvals";
+import { useState } from "react";
 import { useGetAllTrainers } from "@/hooks/super-admin/useTrainers";
+import { useGetApprovalsTrainers } from "@/hooks/super-admin/useApprovals";
+import useApprovalsUIStore from "../../../../stores/useApprovalsUIStore";
 import { getApprovalFilters } from "../../approvals/utils";
 import { trainersFilters } from "../../database/tabs/trainers/utils";
 import StatusTabs from "../../approvals/common/StatusTabs";
+import ErrorDisplay from "@/components/common/ErrorDisplay";
 
 const TrainersTab = ({
   context = "database", // "database" or "approvals"
   showStatusColumn = false,
   areApprovalBtnsVisible = false,
 }) => {
-  // Local state for filters and pagination
+  // Use UI store for approvals context
+  const approvalsUIStore = useApprovalsUIStore();
+  const approvalsStore =
+    context === "approvals" ? approvalsUIStore.trainers : null;
+
+  // Local state for database context
   const [filters, setFilters] = useState(() => {
     if (context === "approvals") {
-      return {
-        search: "",
-        status: "pending",
-        dateFrom: null,
-        dateTo: null,
-        sortBy: "submittedAt",
-        sortOrder: "desc",
-      };
+      return (
+        approvalsStore?.filters || {
+          search: "",
+          status: "pending",
+          location: [],
+          experience: [],
+          skills: [],
+          dateFrom: null,
+          dateTo: null,
+        }
+      );
     } else {
       return {
         search: "",
@@ -44,12 +54,6 @@ const TrainersTab = ({
   );
   const itemsPerPage = 10;
 
-  // State for API data
-  const [trainers, setTrainers] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
   // Database context: use hook for direct API call
   const {
     data: databaseData,
@@ -57,141 +61,111 @@ const TrainersTab = ({
     error: databaseError,
   } = useGetAllTrainers();
 
-  // Fetch trainers data based on context
-  const fetchTrainers = async () => {
-    if (context === "database") return; // Database uses hook
+  // Approvals context: use React Query hook
+  const {
+    data: approvalsData,
+    isLoading: approvalsLoading,
+    error: approvalsError,
+  } = useGetApprovalsTrainers({
+    page: currentPage,
+    limit: itemsPerPage,
+    search: filters.search,
+    status: filters.status,
+    location: filters.location?.join(","),
+    experience: filters.experience?.join(","),
+    skills: filters.skills?.join(","),
+    dateFrom: filters.dateFrom,
+    dateTo: filters.dateTo,
+  });
 
-    setLoading(true);
-    setError(null);
+  // Process approvals data
+  const processApprovalsData = (data) => {
+    if (!data?.data?.data?.approvals) return { trainers: [], pagination: {} };
 
-    try {
-      const params = {
-        page: currentPage,
-        limit: itemsPerPage,
-        search: filters.search,
-        status: filters.status,
-        sortBy: filters.sortBy,
-        sortOrder: filters.sortOrder,
-        ...(filters.dateFrom && { dateFrom: filters.dateFrom }),
-        ...(filters.dateTo && { dateTo: filters.dateTo }),
+    const approvals = data.data.data.approvals;
+    const pagination = data.data.data.pagination || {};
+
+    const trainers = approvals.map((approval) => {
+      const trainer = approval.data || {};
+      return {
+        id: approval._id,
+        name:
+          trainer.firstName && trainer.lastName
+            ? `${trainer.firstName} ${trainer.lastName}`
+            : trainer.name || "N/A",
+        email: trainer.email || "N/A",
+        contact: trainer.phoneNumber || "N/A",
+        skills: trainer.skills?.length > 0 ? trainer.skills.join(", ") : "N/A",
+        industry: trainer.industry || "N/A",
+        experience: trainer.experience || "N/A",
+        location: trainer.location || "N/A",
+        status: approval.status || "pending",
+        rating: trainer.rating || 0,
+        totalStudents: trainer.totalStudents || 0,
+        coursesCompleted: trainer.coursesCompleted || 0,
+        joinedDate: approval.createdAt
+          ? new Date(approval.createdAt).toISOString().split("T")[0]
+          : "N/A",
+        lastUpdated: approval.updatedAt
+          ? new Date(approval.updatedAt).toISOString().split("T")[0]
+          : "N/A",
+        _id: approval._id,
+        phone: trainer.phoneNumber,
+        createdAt: approval.createdAt,
+        updatedAt: approval.updatedAt,
+        approvalStatus: approval.status,
+        applicantId: approval.applicantId,
+        applicantType: approval.applicantType,
+        submittedAt: approval.submittedAt,
+        version: approval.version,
+        isActive: approval.isActive,
+        firstName: trainer.firstName,
+        lastName: trainer.lastName,
+        profileImage: trainer.profileImage,
       };
+    });
 
-      const response = await getApprovalsList("trainer", params);
-
-      // Parse the API response structure
-      const approvals = response.data?.data?.approvals || [];
-      const pagination = response.data?.data?.pagination || {};
-
-      // Map API data to component expected format
-      const mappedTrainers = approvals.map((approval) => {
-        const trainer = approval.data || {};
-        return {
-          id: approval._id,
-          name:
-            trainer.firstName && trainer.lastName
-              ? `${trainer.firstName} ${trainer.lastName}`
-              : trainer.name || "N/A",
-          email: trainer.email || "N/A",
-          contact: trainer.phoneNumber || "N/A",
-          skills:
-            trainer.skills?.length > 0 ? trainer.skills.join(", ") : "N/A",
-          industry: trainer.industry || "N/A",
-          experience: trainer.experience || "N/A",
-          location: trainer.location || "N/A",
-          status: approval.status || "pending",
-          rating: trainer.rating || 0,
-          totalStudents: trainer.totalStudents || 0,
-          coursesCompleted: trainer.coursesCompleted || 0,
-          joinedDate: approval.createdAt
-            ? new Date(approval.createdAt).toISOString().split("T")[0]
-            : "N/A",
-          lastUpdated: approval.updatedAt
-            ? new Date(approval.updatedAt).toISOString().split("T")[0]
-            : "N/A",
-          // Additional API fields
-          _id: approval._id,
-          phone: trainer.phoneNumber,
-          createdAt: approval.createdAt,
-          updatedAt: approval.updatedAt,
-          // Approval specific fields
-          approvalStatus: approval.status,
-          applicantId: approval.applicantId,
-          applicantType: approval.applicantType,
-          submittedAt: approval.submittedAt,
-          version: approval.version,
-          isActive: approval.isActive,
-          // Trainer data fields
-          firstName: trainer.firstName,
-          lastName: trainer.lastName,
-          profileImage: trainer.profileImage,
-        };
-      });
-
-      setTrainers(mappedTrainers);
-      setTotalCount(pagination.totalApprovals || mappedTrainers.length);
-    } catch (error) {
-      console.error("Error fetching trainers:", error);
-      setError(error.response?.data?.message || "Failed to fetch trainers");
-    } finally {
-      setLoading(false);
-    }
+    return { trainers, pagination };
   };
-
-  // Effect to fetch data when filters change (approvals context only)
-  useEffect(() => {
-    if (context === "approvals") {
-      fetchTrainers();
-    }
-  }, [currentPage, filters, context]);
 
   // Get data based on context
-  const getTrainersData = () => {
-    if (context === "database") {
-      return {
-        trainers: databaseData?.data?.data?.trainers || [],
-        totalCount: databaseData?.data?.data?.pagination?.totalTrainers || 0,
-        loading: databaseLoading,
-        error: databaseError,
-      };
-    } else {
-      return {
-        trainers,
-        totalCount,
-        loading,
-        error,
-      };
-    }
-  };
+  const { trainers: approvalsTrainers, pagination: approvalsPagination } =
+    context === "approvals"
+      ? processApprovalsData(approvalsData)
+      : { trainers: [], pagination: {} };
 
-  const {
-    trainers: trainersData,
-    totalCount: totalTrainers,
-    loading: isLoading,
-    error: apiError,
-  } = getTrainersData();
+  const trainersData =
+    context === "database"
+      ? databaseData?.data?.data?.trainers || []
+      : approvalsTrainers;
+
+  const totalTrainers =
+    context === "database"
+      ? databaseData?.data?.data?.pagination?.totalTrainers || 0
+      : approvalsPagination?.totalApprovals || 0;
+
+  const isLoading = context === "database" ? databaseLoading : approvalsLoading;
+  const apiError = context === "database" ? databaseError : approvalsError;
 
   // Handle filter updates
   const setFormData = (newFormData) => {
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      ...(typeof newFormData === "function"
-        ? newFormData(prevFilters)
-        : newFormData),
-    }));
-    setCurrentPage(1); // Reset to first page when filtering
+    if (context === "approvals" && approvalsStore) {
+      approvalsStore.setFilters(newFormData);
+    } else {
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        ...(typeof newFormData === "function"
+          ? newFormData(prevFilters)
+          : newFormData),
+      }));
+      setCurrentPage(1); // Reset to first page when filtering
+    }
   };
 
   // Clear all filters
   const clearAllFilters = () => {
-    if (context === "approvals") {
-      setFilters({
-        search: "",
-        status: "pending",
-        dateFrom: null,
-        dateTo: null,
-        sortBy: "submittedAt",
-        sortOrder: "desc",
-      });
+    if (context === "approvals" && approvalsStore) {
+      approvalsStore.clearFilters();
     } else {
       setFilters({
         search: "",
@@ -203,16 +177,17 @@ const TrainersTab = ({
         sortBy: "createdAt",
         sortOrder: "desc",
       });
+      setCurrentPage(1);
     }
-    setCurrentPage(1);
   };
 
   // Handle status tab change (approvals context only)
   const handleStatusChange = (status) => {
     if (context === "approvals") {
       setActiveStatus(status);
-      setFilters((prev) => ({ ...prev, status }));
-      setCurrentPage(1);
+      if (approvalsStore) {
+        approvalsStore.setFilters({ status });
+      }
     }
   };
 
@@ -233,12 +208,32 @@ const TrainersTab = ({
   // Calculate pagination
   const totalPages = Math.ceil(totalTrainers / itemsPerPage);
 
-  // Revalidation function for approvals context
+  // Revalidation function for approvals context (no longer needed with React Query)
   const handleRevalidate = () => {
-    if (context === "approvals") {
-      fetchTrainers();
-    }
+    // React Query handles revalidation automatically
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Trainers</h1>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">Loading trainers...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (apiError) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Trainers</h1>
+        <ErrorDisplay error={apiError} title="Error loading trainers" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

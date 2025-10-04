@@ -23,6 +23,9 @@ const RecruitersTable = ({
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedRecruiter, setSelectedRecruiter] = useState(null);
 
+  console.log("paginatedRecruiters", paginatedRecruiters);
+  console.log("context", context);
+
   const handleSelectRecruiter = (recruiterId) => {
     setSelectedRecruiterId(recruiterId);
   };

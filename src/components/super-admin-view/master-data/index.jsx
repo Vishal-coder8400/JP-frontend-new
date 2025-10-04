@@ -7,6 +7,7 @@ import AddDropdownModal from "./tabs/AddDropdownModal";
 import EditDropdownModal from "./tabs/EditDropdownModal";
 import { Button } from "../../ui/button";
 import { PencilIcon } from "lucide-react";
+import ErrorDisplay from "@/components/common/ErrorDisplay";
 
 const SuperAdminMasterData = () => {
   const { activeTab, setActiveTab, initializeFirstTab } =
@@ -40,14 +41,7 @@ const SuperAdminMasterData = () => {
     }
 
     if (error) {
-      return (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <h3 className="text-red-800 font-medium">
-            Error loading dropdown data
-          </h3>
-          <p className="text-red-600 mt-1">{error.message}</p>
-        </div>
-      );
+      return <ErrorDisplay error={error} title="Error loading dropdown data" />;
     }
 
     if (!dropdownsData?.data?.dropdowns?.length) {

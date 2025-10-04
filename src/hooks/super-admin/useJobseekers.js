@@ -1,55 +1,20 @@
-import { useState, useEffect, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getJobseekersList } from "../../api/super-admin/user";
 
-const useJobseekers = () => {
-  const [jobseekers, setJobseekers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [totalCount, setTotalCount] = useState(0);
+const useJobseekers = (params = {}) => {
+  const token = localStorage.getItem("token");
 
-  const fetchJobseekers = useCallback(async (params = {}) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const response = await getJobseekersList(params);
-
-      // Parse the API response structure
-      if (response.data) {
-        const jobSeekers = response.data.data?.jobSeekers || [];
-        const pagination = response.data.data?.pagination || {};
-
-        setJobseekers(jobSeekers);
-        setTotalCount(pagination.totalJobSeekers || jobSeekers.length);
+  return useQuery({
+    queryKey: ["superAdmin-jobseekers", token, params],
+    queryFn: ({ signal }) => getJobseekersList({ signal, ...params }),
+    enabled: !!token,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
       }
-    } catch (err) {
-      console.error("Error fetching jobseekers:", err);
-      setError(err.response?.data?.message || "Failed to fetch jobseekers");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Load jobseekers on mount
-  useEffect(() => {
-    fetchJobseekers();
-  }, [fetchJobseekers]);
-
-  const refetch = useCallback(
-    (params = {}) => {
-      return fetchJobseekers(params);
+      return failureCount < 3;
     },
-    [fetchJobseekers]
-  );
-
-  return {
-    jobseekers,
-    loading,
-    error,
-    totalCount,
-    refetch,
-    fetchJobseekers,
-  };
+  });
 };
 
 export default useJobseekers;

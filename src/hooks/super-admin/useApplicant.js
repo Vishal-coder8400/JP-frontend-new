@@ -10,18 +10,35 @@ import { getCandidateDetails } from "../../api/super-admin/user";
 import { toast } from "sonner";
 
 export const useGetAllApplicants = (params = {}) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-applicants", params],
+    queryKey: ["superAdmin-applicants", token, params],
     queryFn: ({ signal }) => getAllApplicants({ signal, ...params }),
+    enabled: !!token,
     keepPreviousData: true,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 
 export const useGetApplicantById = (id, { enabled = true } = {}) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-applicant", id],
+    queryKey: ["superAdmin-applicant", token, id],
     queryFn: ({ signal }) => getApplicantById({ signal, id }),
-    enabled: enabled && !!id,
+    enabled: enabled && !!id && !!token,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 
@@ -80,9 +97,17 @@ export const useGetCandidateDetails = (
   jobseekerId,
   { enabled = true } = {}
 ) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-candidate-details", jobseekerId],
+    queryKey: ["superAdmin-candidate-details", token, jobseekerId],
     queryFn: ({ signal }) => getCandidateDetails(jobseekerId, { signal }),
-    enabled: enabled && !!jobseekerId,
+    enabled: enabled && !!jobseekerId && !!token,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };

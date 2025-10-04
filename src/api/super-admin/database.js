@@ -28,13 +28,13 @@ export const getRecruiterById = ({ signal, id }) =>
   api.get(`/admin/recruiters/${id}`, { signal });
 
 export const getAllCandidates = ({ signal, page = 1, limit = 10, ...params }) =>
-  api.get("/admin/candidates/list", {
+  api.get("/admin/jobseekers/list", {
     signal,
     params: { page, limit, ...params },
   });
 
 export const getCandidateById = ({ signal, id }) =>
-  api.get(`/admin/candidates/${id}`, { signal });
+  api.get(`/admin/jobseekers/${id}`, { signal });
 
 export const updateTrainer = ({ id, data }) =>
-  api.put(`/admin/trainers/${id}`, data);
+  api.put(`/trainer/profile`, data);

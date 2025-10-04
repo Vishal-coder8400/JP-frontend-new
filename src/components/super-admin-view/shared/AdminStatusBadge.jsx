@@ -8,6 +8,8 @@ const AdminStatusBadge = ({ status }) => {
           ? "bg-success2 text-success1"
           : status === "rejected"
           ? "bg-danger2 text-danger1"
+          : status === "hold"
+          ? "bg-orange-100 text-orange-800"
           : "bg-warning2 text-warning1"
       } text-sm`}
     >

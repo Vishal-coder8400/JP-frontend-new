@@ -18,6 +18,7 @@ import {
 import { useGetTrainerDetails } from "@/hooks/super-admin/useTrainers";
 import EditTrainerDrawer from "./EditTrainerDrawer";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
+import HoldReasonModal from "@/components/common/HoldReasonModal";
 import AdminStatusBadge from "../../shared/AdminStatusBadge";
 
 const TrainerDetailsDrawer = ({
@@ -29,6 +30,7 @@ const TrainerDetailsDrawer = ({
   const [hasApprovalAction, setHasApprovalAction] = useState(false);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [showHoldModal, setShowHoldModal] = useState(false);
 
   const {
     isLoading: isApprovalLoading,
@@ -100,8 +102,27 @@ const TrainerDetailsDrawer = ({
     setShowRejectionModal(true);
   };
 
-  const handleHold = () => {
-    toast.info("Trainer is on hold");
+  const handleHold = async (holdReason) => {
+    try {
+      await holdApplication(
+        displayTrainer.id || displayTrainer._id,
+        holdReason
+      );
+      // Revalidate the list data before closing
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+      // Close the drawer after successful hold and revalidation
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to hold displayTrainer:", error);
+    }
+  };
+
+  const handleHoldClick = () => {
+    setShowHoldModal(true);
   };
 
   const handleEdit = () => {
@@ -230,7 +251,7 @@ const TrainerDetailsDrawer = ({
             </Button>
             <Button
               variant="black"
-              onClick={handleHold}
+              onClick={handleHoldClick}
               disabled={isApprovalLoading}
             >
               {isApprovalLoading ? "Processing..." : "Hold Trainer"}
@@ -494,6 +515,15 @@ const TrainerDetailsDrawer = ({
         isOpen={showRejectionModal}
         onClose={() => setShowRejectionModal(false)}
         onConfirm={handleReject}
+        isLoading={isApprovalLoading}
+        entityType="trainer"
+      />
+
+      {/* Hold Reason Modal */}
+      <HoldReasonModal
+        isOpen={showHoldModal}
+        onClose={() => setShowHoldModal(false)}
+        onConfirm={handleHold}
         isLoading={isApprovalLoading}
         entityType="trainer"
       />

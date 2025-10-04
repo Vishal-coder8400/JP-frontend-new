@@ -4,7 +4,12 @@ import { Link } from "react-router-dom";
 import { useRecruiterDetails } from "../../../../../hooks/super-admin/useRecruiterDetails";
 
 const RecruiterDetails = ({ recruiterId }) => {
-  const { data: recruiter, loading, error } = useRecruiterDetails(recruiterId);
+  const {
+    data: response,
+    isLoading: loading,
+    error,
+  } = useRecruiterDetails(recruiterId);
+  const recruiter = response?.data?.data?.recruiter;
   const pdfObject = {
     Resume: "resume",
     "PAN Card": "kycDetails.panDetails.image",

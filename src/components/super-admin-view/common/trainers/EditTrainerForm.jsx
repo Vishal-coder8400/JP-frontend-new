@@ -11,327 +11,351 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import CommonForm from "@/components/common/form";
-import Address from "@/components/common/address";
-import UploadResume from "@/components/common/uploadResume";
-import { useUpload } from "@/hooks/common/useUpload";
-import { setNestedValue, validateFormData } from "@/utils/commonFunctions";
-import {
-  trainerFormControls1,
-  kycBankFormControls,
-  experienceFormControls,
-  jobSeekerEducationFormControls,
-  certificateFormControls,
-} from "@/config";
+import { validateFormData } from "@/utils/commonFunctions";
 import { z } from "zod";
 import { toast } from "sonner";
 
 // Validation schemas
-const editTrainerSchema = z.object({
-  fullName: z.string().min(1, "Full name is required"),
-  profilePicture: z.string().optional(),
-
-  phone: z.object({
-    countryCode: z.string().min(1, "Country code is required"),
-    number: z
+const editTrainerSchema = z
+  .object({
+    // Personal Information (all optional)
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    email: z
       .string()
-      .min(10, "Phone number must be at least 10 digits")
-      .max(15, "Phone number is too long"),
-  }),
+      .email("Please enter a valid email")
+      .optional()
+      .or(z.literal("")),
+    phoneNumber: z.string().optional(),
+    profileImage: z.string().optional(),
+    location: z.string().optional(),
 
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Please enter a valid email"),
-
-  currentAddress: z.object({
-    address: z.string().min(1, "Address is required"),
-    city: z.string().min(1, "City is required"),
-    pincode: z
+    // Professional Information (all optional)
+    bio: z.string().optional(),
+    specialization: z.string().optional(),
+    experience: z.number().optional(),
+    skills: z.array(z.string()).optional(),
+    languages: z.array(z.string()).optional(),
+    linkedinProfile: z
       .string()
-      .min(6, "Pincode must be 6 digits")
-      .max(6, "Pincode must be 6 digits"),
-    state: z.string().min(1, "State is required"),
-  }),
-
-  permanentAddress: z.object({
-    address: z.string().min(1, "Address is required"),
-    city: z.string().min(1, "City is required"),
-    pincode: z
+      .url("Please enter a valid LinkedIn URL")
+      .optional()
+      .or(z.literal("")),
+    portfolio: z
       .string()
-      .min(6, "Pincode must be 6 digits")
-      .max(6, "Pincode must be 6 digits"),
-    state: z.string().min(1, "State is required"),
-  }),
-
-  resume: z.string().optional(),
-
-  panDetails: z.object({
-    number: z.string().regex(/[A-Z]{5}[0-9]{4}[A-Z]{1}/, "Invalid PAN format"),
-    image: z.string().optional(),
-  }),
-
-  aadharDetails: z.object({
-    number: z.string().regex(/^[0-9]{12}$/, "Aadhar number must be 12 digits"),
-    image: z.string().optional(),
-  }),
-
-  bankDetails: z.object({
-    accountNumber: z.string().min(6, "Account number is required"),
-    accountHolderName: z.string().min(1, "Account holder name is required"),
-    branchName: z.string().min(1, "Branch name is required"),
-    ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code"),
-  }),
-
-  cancelChequeOrPassbookImage: z.string().optional(),
-
-  // Experience fields
-  expertiseLevel: z.string().min(1, "Expertise level is required"),
-  totalYearsExperience: z.string().optional(),
-  totalMonthsExperience: z.string().optional(),
-  linkedin: z.string().url("Please enter a valid LinkedIn URL").optional(),
-
-  WorkingDetails: z.object({
-    companyName: z.string().min(1, "Company name is required"),
-    designation: z.string().min(1, "Designation is required"),
-    startDate: z
+      .url("Please enter a valid URL")
+      .optional()
+      .or(z.literal("")),
+    website: z
       .string()
-      .refine(
-        (val) => !isNaN(new Date(val).getTime()),
-        "Start date must be a valid date"
-      ),
-    endDate: z
-      .string()
-      .refine(
-        (val) => !isNaN(new Date(val).getTime()),
-        "End date must be a valid date"
-      ),
-  }),
+      .url("Please enter a valid URL")
+      .optional()
+      .or(z.literal("")),
 
-  relievingLetter: z.string().optional(),
-  expertiseAreas: z
-    .array(z.string().min(1))
-    .min(1, "Select at least one area of expertise"),
-
-  // Education fields
-  education: z
-    .array(
-      z.object({
-        degree: z.string().min(1, "Degree is required"),
-        institution: z.string().min(1, "Institution is required"),
-        startDate: z
+    // Training Information (all optional)
+    teachingExperience: z.number().optional(),
+    teachingStyle: z.string().optional(),
+    certifications: z
+      .array(
+        z.object({
+          name: z.string().optional(),
+          issuer: z.string().optional(),
+          date: z.string().optional(),
+        })
+      )
+      .optional(),
+    education: z
+      .array(
+        z.object({
+          institution: z.string().optional(),
+          degree: z.string().optional(),
+          graduationYear: z.number().optional(),
+        })
+      )
+      .optional(),
+    socialMedia: z
+      .object({
+        linkedin: z
           .string()
-          .refine(
-            (val) => !isNaN(new Date(val).getTime()),
-            "Start date must be a valid date"
-          ),
-        endDate: z
+          .url("Please enter a valid LinkedIn URL")
+          .optional()
+          .or(z.literal("")),
+        twitter: z
           .string()
-          .refine(
-            (val) => !isNaN(new Date(val).getTime()),
-            "End date must be a valid date"
-          ),
-        document: z.string().optional(),
-        fieldOfStudy: z.string().min(1, "Field of study is required"),
+          .url("Please enter a valid Twitter URL")
+          .optional()
+          .or(z.literal("")),
+        youtube: z
+          .string()
+          .url("Please enter a valid YouTube URL")
+          .optional()
+          .or(z.literal("")),
       })
-    )
-    .min(1, "At least one education entry is required"),
+      .optional(),
 
-  // Certificate fields
-  certificates: z
-    .array(
-      z.object({
-        title: z.string().min(1, "Certificate title is required"),
-        organisation: z.string().min(1, "Organisation name is required"),
-        issueDate: z.string().min(1, "Issue date is required"),
-        expiryDate: z.string().optional(),
-      })
-    )
-    .min(1, "At least one certificate is required"),
-});
+    // Availability and Rates (all optional)
+    isAvailableForTraining: z.boolean().optional(),
+    hourlyRate: z.number().optional(),
+    currency: z.string().optional(),
+    preferredTrainingTypes: z.array(z.string()).optional(),
+
+    // Password Update (optional - if provided, all three fields required)
+    currentPassword: z.string().optional(),
+    newPassword: z.string().optional(),
+    confirmPassword: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      // If any password field is provided, all three must be provided
+      const passwordFields = [
+        data.currentPassword,
+        data.newPassword,
+        data.confirmPassword,
+      ];
+      const hasPasswordFields = passwordFields.some(
+        (field) => field && field.trim() !== ""
+      );
+
+      if (hasPasswordFields) {
+        return passwordFields.every((field) => field && field.trim() !== "");
+      }
+      return true;
+    },
+    {
+      message: "If updating password, all password fields are required",
+      path: ["newPassword"],
+    }
+  )
+  .refine(
+    (data) => {
+      // If password fields are provided, newPassword and confirmPassword must match
+      if (data.newPassword && data.confirmPassword) {
+        return data.newPassword === data.confirmPassword;
+      }
+      return true;
+    },
+    {
+      message: "New password and confirm password must match",
+      path: ["confirmPassword"],
+    }
+  );
 
 const EditTrainerForm = ({ trainer, onClose, onSave }) => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    profilePicture: "",
-    phone: {
-      countryCode: "+91",
-      number: "",
-    },
+    // Personal Information
+    firstName: "",
+    lastName: "",
     email: "",
-    currentAddress: {
-      city: "",
-      pincode: "",
-      state: "",
-      address: "",
-    },
-    permanentAddress: {
-      city: "",
-      pincode: "",
-      state: "",
-      address: "",
-    },
-    resume: "",
-    panDetails: {
-      number: "",
-      image: "",
-    },
-    aadharDetails: {
-      number: "",
-      image: "",
-    },
-    bankDetails: {
-      accountNumber: "",
-      accountHolderName: "",
-      branchName: "",
-      ifscCode: "",
-    },
-    cancelChequeOrPassbookImage: "",
-    expertiseLevel: "",
-    totalYearsExperience: "",
-    totalMonthsExperience: "",
-    linkedin: "",
-    WorkingDetails: {
-      companyName: "",
-      designation: "",
-      startDate: "",
-      endDate: "",
-    },
-    relievingLetter: "",
-    expertiseAreas: [],
-    education: [
+    phoneNumber: "",
+    profileImage: "",
+    location: "",
+
+    // Professional Information
+    bio: "",
+    specialization: "",
+    experience: "",
+    skills: [],
+    languages: [],
+    linkedinProfile: "",
+    portfolio: "",
+    website: "",
+
+    // Training Information
+    teachingExperience: "",
+    teachingStyle: "",
+    certifications: [
       {
-        degree: "",
-        institution: "",
-        studyType: "",
-        startDate: "",
-        endDate: "",
-        document: "",
-        fieldOfStudy: "",
+        name: "",
+        issuer: "",
+        date: "",
       },
     ],
-    certificates: [
-      { title: "", organisation: "", issueDate: "", expiryDate: "" },
+    education: [
+      {
+        institution: "",
+        degree: "",
+        graduationYear: "",
+      },
     ],
+    socialMedia: {
+      linkedin: "",
+      twitter: "",
+      youtube: "",
+    },
+
+    // Availability and Rates
+    isAvailableForTraining: true,
+    hourlyRate: "",
+    currency: "USD",
+    preferredTrainingTypes: [],
+
+    // Password Update
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
   });
 
-  const [fileName, setFileName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { mutate: UploadImage } = useUpload();
 
   // Populate form with trainer data
   useEffect(() => {
     if (trainer) {
       setFormData({
-        fullName:
-          trainer.fullName || trainer.firstName + " " + trainer.lastName || "",
-        profilePicture: trainer.profilePicture || trainer.profileImage || "",
-        phone: {
-          countryCode: trainer.phone?.countryCode || "+91",
-          number: trainer.phone?.number || trainer.phone || "",
-        },
+        // Personal Information
+        firstName: trainer.firstName || "",
+        lastName: trainer.lastName || "",
         email: trainer.email || "",
-        currentAddress: {
-          city: trainer.currentAddress?.city || "",
-          pincode: trainer.currentAddress?.pincode || "",
-          state: trainer.currentAddress?.state || "",
-          address: trainer.currentAddress?.address || "",
+        phoneNumber: trainer.phoneNumber || trainer.phone || "",
+        profileImage: trainer.profileImage || trainer.profilePicture || "",
+        location: trainer.location || "",
+
+        // Professional Information
+        bio: trainer.bio || "",
+        specialization: trainer.specialization || "",
+        experience: trainer.experience || "",
+        skills: trainer.skills || [],
+        languages: trainer.languages || [],
+        linkedinProfile: trainer.linkedinProfile || trainer.linkedin || "",
+        portfolio: trainer.portfolio || "",
+        website: trainer.website || "",
+
+        // Training Information
+        teachingExperience: trainer.teachingExperience || "",
+        teachingStyle: trainer.teachingStyle || "",
+        certifications: trainer.certifications || [
+          {
+            name: "",
+            issuer: "",
+            date: "",
+          },
+        ],
+        education: trainer.education || [
+          {
+            institution: "",
+            degree: "",
+            graduationYear: "",
+          },
+        ],
+        socialMedia: trainer.socialMedia || {
+          linkedin: "",
+          twitter: "",
+          youtube: "",
         },
-        permanentAddress: {
-          city: trainer.permanentAddress?.city || "",
-          pincode: trainer.permanentAddress?.pincode || "",
-          state: trainer.permanentAddress?.state || "",
-          address: trainer.permanentAddress?.address || "",
-        },
-        resume: trainer.resume || "",
-        panDetails: {
-          number: trainer.panDetails?.number || "",
-          image: trainer.panDetails?.image || "",
-        },
-        aadharDetails: {
-          number: trainer.aadharDetails?.number || "",
-          image: trainer.aadharDetails?.image || "",
-        },
-        bankDetails: {
-          accountNumber: trainer.bankDetails?.accountNumber || "",
-          accountHolderName: trainer.bankDetails?.accountHolderName || "",
-          branchName: trainer.bankDetails?.branchName || "",
-          ifscCode: trainer.bankDetails?.ifscCode || "",
-        },
-        cancelChequeOrPassbookImage: trainer.cancelChequeOrPassbookImage || "",
-        expertiseLevel: trainer.expertiseLevel || "",
-        totalYearsExperience: trainer.totalYearsExperience || "",
-        totalMonthsExperience: trainer.totalMonthsExperience || "",
-        linkedin: trainer.linkedin || "",
-        WorkingDetails: {
-          companyName: trainer.WorkingDetails?.companyName || "",
-          designation: trainer.WorkingDetails?.designation || "",
-          startDate: trainer.WorkingDetails?.startDate || "",
-          endDate: trainer.WorkingDetails?.endDate || "",
-        },
-        relievingLetter: trainer.relievingLetter || "",
-        expertiseAreas: trainer.expertiseAreas || trainer.expertise || [],
-        education:
-          trainer.education && trainer.education.length > 0
-            ? trainer.education
-            : [
-                {
-                  degree: "",
-                  institution: "",
-                  studyType: "",
-                  startDate: "",
-                  endDate: "",
-                  document: "",
-                  fieldOfStudy: "",
-                },
-              ],
-        certificates:
-          trainer.certificates && trainer.certificates.length > 0
-            ? trainer.certificates
-            : [{ title: "", organisation: "", issueDate: "", expiryDate: "" }],
+
+        // Availability and Rates
+        isAvailableForTraining:
+          trainer.isAvailableForTraining !== undefined
+            ? trainer.isAvailableForTraining
+            : true,
+        hourlyRate: trainer.hourlyRate || "",
+        currency: trainer.currency || "USD",
+        preferredTrainingTypes: trainer.preferredTrainingTypes || [],
+
+        // Password Update
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
       });
     }
   }, [trainer]);
-
-  const handleUpload = (file, callback) => {
-    UploadImage(file, {
-      onSuccess: (data) => {
-        const fileUrl = data?.data?.fileUrl;
-        const fileName = data?.data?.fileName;
-        if (callback) {
-          callback(fileUrl, fileName);
-        }
-      },
-    });
-  };
-
-  const handleUpload2 = (file, callback) => {
-    UploadImage(file, {
-      onSuccess: (data) => {
-        const fileUrl = data?.data?.fileUrl;
-        const fileName = data?.data?.fileName;
-        if (callback) {
-          callback(fileUrl, fileName);
-        }
-      },
-    });
-  };
-
-  const handleRemoveFile = () => {
-    setFormData((prev) => setNestedValue(prev, "resume", ""));
-    setFileName("");
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const payload = { ...formData };
+      // Transform form data to match API structure
+      const payload = {
+        // Personal Information
+        firstName: formData.firstName || undefined,
+        lastName: formData.lastName || undefined,
+        email: formData.email || undefined,
+        phoneNumber: formData.phoneNumber || undefined,
+        profileImage: formData.profileImage || undefined,
+        location: formData.location || undefined,
 
-      // Handle same address logic
-      if (formData.sameAs) {
-        payload.permanentAddress = { ...formData.currentAddress };
+        // Professional Information
+        bio: formData.bio || undefined,
+        specialization: formData.specialization || undefined,
+        experience: formData.experience
+          ? parseInt(formData.experience)
+          : undefined,
+        skills: formData.skills.length > 0 ? formData.skills : undefined,
+        languages:
+          formData.languages.length > 0 ? formData.languages : undefined,
+        linkedinProfile: formData.linkedinProfile || undefined,
+        portfolio: formData.portfolio || undefined,
+        website: formData.website || undefined,
+
+        // Training Information
+        teachingExperience: formData.teachingExperience
+          ? parseInt(formData.teachingExperience)
+          : undefined,
+        teachingStyle: formData.teachingStyle || undefined,
+        certifications:
+          formData.certifications.filter(
+            (cert) => cert.name || cert.issuer || cert.date
+          ).length > 0
+            ? formData.certifications.filter(
+                (cert) => cert.name || cert.issuer || cert.date
+              )
+            : undefined,
+        education:
+          formData.education.filter(
+            (edu) => edu.institution || edu.degree || edu.graduationYear
+          ).length > 0
+            ? formData.education
+                .filter(
+                  (edu) => edu.institution || edu.degree || edu.graduationYear
+                )
+                .map((edu) => ({
+                  institution: edu.institution || undefined,
+                  degree: edu.degree || undefined,
+                  graduationYear: edu.graduationYear
+                    ? parseInt(edu.graduationYear)
+                    : undefined,
+                }))
+            : undefined,
+        socialMedia: {
+          linkedin: formData.socialMedia.linkedin || undefined,
+          twitter: formData.socialMedia.twitter || undefined,
+          youtube: formData.socialMedia.youtube || undefined,
+        },
+
+        // Availability and Rates
+        isAvailableForTraining: formData.isAvailableForTraining,
+        hourlyRate: formData.hourlyRate
+          ? parseFloat(formData.hourlyRate)
+          : undefined,
+        currency: formData.currency || undefined,
+        preferredTrainingTypes:
+          formData.preferredTrainingTypes.length > 0
+            ? formData.preferredTrainingTypes
+            : undefined,
+
+        // Password Update (only include if provided)
+        ...(formData.currentPassword && {
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
+          confirmPassword: formData.confirmPassword,
+        }),
+      };
+
+      // Remove undefined values
+      Object.keys(payload).forEach((key) => {
+        if (payload[key] === undefined) {
+          delete payload[key];
+        }
+      });
+
+      // Remove empty socialMedia object
+      if (
+        payload.socialMedia &&
+        !payload.socialMedia.linkedin &&
+        !payload.socialMedia.twitter &&
+        !payload.socialMedia.youtube
+      ) {
+        delete payload.socialMedia;
       }
 
       const isValid = validateFormData(editTrainerSchema, payload);
@@ -366,50 +390,354 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Basic Information */}
+          {/* Personal Information */}
           <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
-            <div className="space-y-4">
-              <CommonForm
-                formControls={trainerFormControls1}
-                formData={formData}
-                setFormData={setFormData}
-                handleUpload={handleUpload}
-              />
-              <Address setFormData={setFormData} formData={formData} />
-              <UploadResume
-                setFormData={setFormData}
-                fileName={fileName}
-                setFileName={setFileName}
-                handleRemoveFile={handleRemoveFile}
-                handleUpload={handleUpload2}
-              />
+            <h3 className="text-lg font-semibold mb-4">Personal Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, firstName: e.target.value })
+                  }
+                  placeholder="Enter first name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) =>
+                    setFormData({ ...formData, lastName: e.target.value })
+                  }
+                  placeholder="Enter last name"
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  placeholder="Enter email address"
+                />
+              </div>
+              <div>
+                <Label htmlFor="phoneNumber">Phone Number</Label>
+                <Input
+                  id="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phoneNumber: e.target.value })
+                  }
+                  placeholder="Enter phone number"
+                />
+              </div>
+              <div>
+                <Label htmlFor="profileImage">Profile Image URL</Label>
+                <Input
+                  id="profileImage"
+                  value={formData.profileImage}
+                  onChange={(e) =>
+                    setFormData({ ...formData, profileImage: e.target.value })
+                  }
+                  placeholder="Enter profile image URL"
+                />
+              </div>
+              <div>
+                <Label htmlFor="location">Location</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) =>
+                    setFormData({ ...formData, location: e.target.value })
+                  }
+                  placeholder="Enter location"
+                />
+              </div>
             </div>
           </div>
 
-          {/* KYC Verification */}
+          {/* Professional Information */}
           <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold mb-4">KYC Verification</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Professional Information
+            </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={kycBankFormControls}
-                formData={formData}
-                setFormData={setFormData}
-                handleUpload={handleUpload}
-              />
+              <div>
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea
+                  id="bio"
+                  value={formData.bio}
+                  onChange={(e) =>
+                    setFormData({ ...formData, bio: e.target.value })
+                  }
+                  placeholder="Enter your bio"
+                  rows={4}
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="specialization">Specialization</Label>
+                  <Input
+                    id="specialization"
+                    value={formData.specialization}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        specialization: e.target.value,
+                      })
+                    }
+                    placeholder="Enter specialization"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="experience">Experience (years)</Label>
+                  <Input
+                    id="experience"
+                    type="number"
+                    value={formData.experience}
+                    onChange={(e) =>
+                      setFormData({ ...formData, experience: e.target.value })
+                    }
+                    placeholder="Enter years of experience"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="linkedinProfile">LinkedIn Profile</Label>
+                  <Input
+                    id="linkedinProfile"
+                    value={formData.linkedinProfile}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        linkedinProfile: e.target.value,
+                      })
+                    }
+                    placeholder="Enter LinkedIn profile URL"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="portfolio">Portfolio</Label>
+                  <Input
+                    id="portfolio"
+                    value={formData.portfolio}
+                    onChange={(e) =>
+                      setFormData({ ...formData, portfolio: e.target.value })
+                    }
+                    placeholder="Enter portfolio URL"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="website">Website</Label>
+                  <Input
+                    id="website"
+                    value={formData.website}
+                    onChange={(e) =>
+                      setFormData({ ...formData, website: e.target.value })
+                    }
+                    placeholder="Enter website URL"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="skills">Skills (comma-separated)</Label>
+                <Input
+                  id="skills"
+                  value={formData.skills.join(", ")}
+                  onChange={(e) => {
+                    const skillsArray = e.target.value
+                      .split(",")
+                      .map((skill) => skill.trim())
+                      .filter((skill) => skill);
+                    setFormData({ ...formData, skills: skillsArray });
+                  }}
+                  placeholder="Enter skills separated by commas"
+                />
+              </div>
+              <div>
+                <Label htmlFor="languages">Languages (comma-separated)</Label>
+                <Input
+                  id="languages"
+                  value={formData.languages.join(", ")}
+                  onChange={(e) => {
+                    const languagesArray = e.target.value
+                      .split(",")
+                      .map((lang) => lang.trim())
+                      .filter((lang) => lang);
+                    setFormData({ ...formData, languages: languagesArray });
+                  }}
+                  placeholder="Enter languages separated by commas"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Professional Details */}
+          {/* Training Information */}
           <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold mb-4">Professional Details</h3>
+            <h3 className="text-lg font-semibold mb-4">Training Information</h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={experienceFormControls}
-                formData={formData}
-                setFormData={setFormData}
-                handleUpload={handleUpload}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="teachingExperience">
+                    Teaching Experience (years)
+                  </Label>
+                  <Input
+                    id="teachingExperience"
+                    type="number"
+                    value={formData.teachingExperience}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        teachingExperience: e.target.value,
+                      })
+                    }
+                    placeholder="Enter teaching experience"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="hourlyRate">Hourly Rate</Label>
+                  <Input
+                    id="hourlyRate"
+                    type="number"
+                    value={formData.hourlyRate}
+                    onChange={(e) =>
+                      setFormData({ ...formData, hourlyRate: e.target.value })
+                    }
+                    placeholder="Enter hourly rate"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="currency">Currency</Label>
+                  <Select
+                    value={formData.currency}
+                    onValueChange={(value) =>
+                      setFormData({ ...formData, currency: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select currency" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">USD</SelectItem>
+                      <SelectItem value="EUR">EUR</SelectItem>
+                      <SelectItem value="GBP">GBP</SelectItem>
+                      <SelectItem value="INR">INR</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="isAvailableForTraining"
+                    checked={formData.isAvailableForTraining}
+                    onCheckedChange={(checked) =>
+                      setFormData({
+                        ...formData,
+                        isAvailableForTraining: checked,
+                      })
+                    }
+                  />
+                  <Label htmlFor="isAvailableForTraining">
+                    Available for Training
+                  </Label>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="teachingStyle">Teaching Style</Label>
+                <Textarea
+                  id="teachingStyle"
+                  value={formData.teachingStyle}
+                  onChange={(e) =>
+                    setFormData({ ...formData, teachingStyle: e.target.value })
+                  }
+                  placeholder="Describe your teaching style"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="preferredTrainingTypes">
+                  Preferred Training Types (comma-separated)
+                </Label>
+                <Input
+                  id="preferredTrainingTypes"
+                  value={formData.preferredTrainingTypes.join(", ")}
+                  onChange={(e) => {
+                    const typesArray = e.target.value
+                      .split(",")
+                      .map((type) => type.trim())
+                      .filter((type) => type);
+                    setFormData({
+                      ...formData,
+                      preferredTrainingTypes: typesArray,
+                    });
+                  }}
+                  placeholder="e.g., online, workshop, bootcamp"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Social Media */}
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <h3 className="text-lg font-semibold mb-4">Social Media</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="linkedin">LinkedIn</Label>
+                <Input
+                  id="linkedin"
+                  value={formData.socialMedia.linkedin}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      socialMedia: {
+                        ...formData.socialMedia,
+                        linkedin: e.target.value,
+                      },
+                    })
+                  }
+                  placeholder="LinkedIn URL"
+                />
+              </div>
+              <div>
+                <Label htmlFor="twitter">Twitter</Label>
+                <Input
+                  id="twitter"
+                  value={formData.socialMedia.twitter}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      socialMedia: {
+                        ...formData.socialMedia,
+                        twitter: e.target.value,
+                      },
+                    })
+                  }
+                  placeholder="Twitter URL"
+                />
+              </div>
+              <div>
+                <Label htmlFor="youtube">YouTube</Label>
+                <Input
+                  id="youtube"
+                  value={formData.socialMedia.youtube}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      socialMedia: {
+                        ...formData.socialMedia,
+                        youtube: e.target.value,
+                      },
+                    })
+                  }
+                  placeholder="YouTube URL"
+                />
+              </div>
             </div>
           </div>
 
@@ -436,14 +764,54 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
                       </Button>
                     </div>
                   )}
-                  <CommonForm
-                    i={index}
-                    formType="education"
-                    formControls={jobSeekerEducationFormControls}
-                    formData={formData}
-                    setFormData={setFormData}
-                    handleUpload={handleUpload}
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor={`education-${index}-institution`}>
+                        Institution
+                      </Label>
+                      <Input
+                        id={`education-${index}-institution`}
+                        value={item.institution}
+                        onChange={(e) => {
+                          const newEducation = [...formData.education];
+                          newEducation[index].institution = e.target.value;
+                          setFormData({ ...formData, education: newEducation });
+                        }}
+                        placeholder="Enter institution name"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`education-${index}-degree`}>
+                        Degree
+                      </Label>
+                      <Input
+                        id={`education-${index}-degree`}
+                        value={item.degree}
+                        onChange={(e) => {
+                          const newEducation = [...formData.education];
+                          newEducation[index].degree = e.target.value;
+                          setFormData({ ...formData, education: newEducation });
+                        }}
+                        placeholder="Enter degree"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`education-${index}-graduationYear`}>
+                        Graduation Year
+                      </Label>
+                      <Input
+                        id={`education-${index}-graduationYear`}
+                        type="number"
+                        value={item.graduationYear}
+                        onChange={(e) => {
+                          const newEducation = [...formData.education];
+                          newEducation[index].graduationYear = e.target.value;
+                          setFormData({ ...formData, education: newEducation });
+                        }}
+                        placeholder="Enter graduation year"
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
               <Button
@@ -455,13 +823,9 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
                     education: [
                       ...formData.education,
                       {
-                        degree: "",
                         institution: "",
-                        studyType: "",
-                        startDate: "",
-                        endDate: "",
-                        document: "",
-                        fieldOfStudy: "",
+                        degree: "",
+                        graduationYear: "",
                       },
                     ],
                   });
@@ -476,7 +840,7 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
           <div className="bg-white rounded-lg shadow-sm border p-6">
             <h3 className="text-lg font-semibold mb-4">Certifications</h3>
             <div className="space-y-4">
-              {formData.certificates.map((item, index) => (
+              {formData.certifications.map((item, index) => (
                 <div key={index} className="border rounded-lg p-4">
                   {index > 0 && (
                     <div className="flex justify-between items-center mb-4">
@@ -486,11 +850,13 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          const newCertificates = [...formData.certificates];
-                          newCertificates.splice(index, 1);
+                          const newCertifications = [
+                            ...formData.certifications,
+                          ];
+                          newCertifications.splice(index, 1);
                           setFormData({
                             ...formData,
-                            certificates: newCertificates,
+                            certifications: newCertifications,
                           });
                         }}
                       >
@@ -498,14 +864,64 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
                       </Button>
                     </div>
                   )}
-                  <CommonForm
-                    formControls={certificateFormControls}
-                    formData={formData}
-                    setFormData={setFormData}
-                    key={index}
-                    i={index}
-                    formType="certificates"
-                  />
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                      <Label htmlFor={`cert-${index}-name`}>
+                        Certificate Name
+                      </Label>
+                      <Input
+                        id={`cert-${index}-name`}
+                        value={item.name}
+                        onChange={(e) => {
+                          const newCertifications = [
+                            ...formData.certifications,
+                          ];
+                          newCertifications[index].name = e.target.value;
+                          setFormData({
+                            ...formData,
+                            certifications: newCertifications,
+                          });
+                        }}
+                        placeholder="Enter certificate name"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`cert-${index}-issuer`}>Issuer</Label>
+                      <Input
+                        id={`cert-${index}-issuer`}
+                        value={item.issuer}
+                        onChange={(e) => {
+                          const newCertifications = [
+                            ...formData.certifications,
+                          ];
+                          newCertifications[index].issuer = e.target.value;
+                          setFormData({
+                            ...formData,
+                            certifications: newCertifications,
+                          });
+                        }}
+                        placeholder="Enter issuer name"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor={`cert-${index}-date`}>Date</Label>
+                      <Input
+                        id={`cert-${index}-date`}
+                        type="date"
+                        value={item.date}
+                        onChange={(e) => {
+                          const newCertifications = [
+                            ...formData.certifications,
+                          ];
+                          newCertifications[index].date = e.target.value;
+                          setFormData({
+                            ...formData,
+                            certifications: newCertifications,
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
               ))}
               <Button
@@ -514,13 +930,12 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
                 onClick={() => {
                   setFormData({
                     ...formData,
-                    certificates: [
-                      ...formData.certificates,
+                    certifications: [
+                      ...formData.certifications,
                       {
-                        title: "",
-                        organisation: "",
-                        issueDate: "",
-                        expiryDate: "",
+                        name: "",
+                        issuer: "",
+                        date: "",
                       },
                     ],
                   });
@@ -528,6 +943,57 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
               >
                 Add Certificate
               </Button>
+            </div>
+          </div>
+
+          {/* Password Update */}
+          <div className="bg-white rounded-lg shadow-sm border p-6">
+            <h3 className="text-lg font-semibold mb-4">
+              Password Update (Optional)
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Label htmlFor="currentPassword">Current Password</Label>
+                <Input
+                  id="currentPassword"
+                  type="password"
+                  value={formData.currentPassword}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      currentPassword: e.target.value,
+                    })
+                  }
+                  placeholder="Enter current password"
+                />
+              </div>
+              <div>
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={formData.newPassword}
+                  onChange={(e) =>
+                    setFormData({ ...formData, newPassword: e.target.value })
+                  }
+                  placeholder="Enter new password"
+                />
+              </div>
+              <div>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      confirmPassword: e.target.value,
+                    })
+                  }
+                  placeholder="Confirm new password"
+                />
+              </div>
             </div>
           </div>
 

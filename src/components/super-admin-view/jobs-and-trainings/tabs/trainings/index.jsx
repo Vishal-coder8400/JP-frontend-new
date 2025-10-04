@@ -5,6 +5,7 @@ import FilterComponent from "../../../../common/filterComponent";
 import { jobsAndTrainingsFilters } from "../../utils";
 import { useGetAllTrainings } from "../../../../../hooks/super-admin/useTraining";
 import { useState } from "react";
+import ErrorDisplay from "@/components/common/ErrorDisplay";
 
 const TrainingsTab = () => {
   const [filters, setFilters] = useState({
@@ -68,11 +69,7 @@ const TrainingsTab = () => {
     return (
       <div className="space-y-6 min-w-0">
         <h1 className="text-2xl font-bold">Trainings</h1>
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-red-500">
-            Error loading trainings: {error.message}
-          </div>
-        </div>
+        <ErrorDisplay error={error} title="Error loading trainings" />
       </div>
     );
   }

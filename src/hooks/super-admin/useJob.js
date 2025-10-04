@@ -7,18 +7,35 @@ import {
 import { toast } from "sonner";
 
 export const useGetAllJobs = (params = {}) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-jobs", params],
+    queryKey: ["superAdmin-jobs", token, params],
     queryFn: ({ signal }) => getAllJobs({ signal, ...params }),
+    enabled: !!token,
     keepPreviousData: true,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 
 export const useGetJobDetails = (id, { enabled = true } = {}) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-job", id],
+    queryKey: ["superAdmin-job", token, id],
     queryFn: ({ signal }) => getJobById({ signal, id }),
-    enabled: enabled && !!id,
+    enabled: enabled && !!id && !!token,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 

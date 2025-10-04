@@ -31,7 +31,16 @@ api.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
     if (status === 401) {
-      // window.location.href = "/unauthorized";
+      // Extract the API error message for better user experience
+      const apiMessage = error.response?.data?.message;
+      if (apiMessage) {
+        // Create a custom error with the API message
+        const customError = new Error(apiMessage);
+        customError.status = 401;
+        customError.response = error.response;
+        customError.isApiError = true;
+        return Promise.reject(customError);
+      }
     }
     return Promise.reject(error);
   }

@@ -8,10 +8,18 @@ import {
 import { toast } from "sonner";
 
 export const useGetSectoralOptions = ({ enabled = true } = {}) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-sectoral-options"],
+    queryKey: ["superAdmin-sectoral-options", token],
     queryFn: ({ signal }) => getSectoralOptions({ signal }),
-    enabled,
+    enabled: enabled && !!token,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 

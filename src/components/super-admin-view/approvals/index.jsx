@@ -1,5 +1,5 @@
 import { approvalTabs } from "./utils";
-import useApprovalsTabStore from "./zustand";
+import useApprovalsUIStore from "../../../stores/useApprovalsUIStore";
 import CompaniesTabApprovals from "./tabs/companies";
 import RecruitersTab from "./tabs/recruiters";
 import TrainersTabApprovals from "./tabs/trainers";
@@ -8,7 +8,7 @@ import TabNavigation from "@/components/common/TabNavigation";
 import TabContent from "@/components/common/TabContent";
 
 const Approvals = () => {
-  const { activeTab, setActiveTab } = useApprovalsTabStore();
+  const { activeTab, setActiveTab } = useApprovalsUIStore();
 
   const tabComponents = {
     companies: CompaniesTabApprovals,

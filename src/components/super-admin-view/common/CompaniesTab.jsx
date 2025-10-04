@@ -5,11 +5,14 @@ import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../common/filterComponent";
 import { companiesFilters } from "../database/tabs/companies/utils";
 import { getApprovalFilters } from "../approvals/utils";
-import useCompaniesStore from "../database/tabs/companies/zustand";
-import useApprovalsCompaniesStore from "../approvals/tabs/companies/zustand";
-import { useGetAllCompanies } from "../../../hooks/super-admin/useCompanies";
+import { useGetApprovalsCompanies } from "../../../hooks/super-admin/useApprovals";
+import { useGetDatabaseCompanies } from "../../../hooks/super-admin/useDatabase";
+import useApprovalsUIStore from "../../../stores/useApprovalsUIStore";
+import useDatabaseUIStore from "../../../stores/useDatabaseUIStore";
 import { useDebounce } from "@/hooks/common/useDebounce";
 import StatusTabs from "../approvals/common/StatusTabs";
+import { formatApiError } from "../../../utils/commonFunctions";
+import ErrorDisplay from "../../common/ErrorDisplay";
 
 const CompaniesTab = ({ context = "database" }) => {
   const isApprovalsContext = context === "approvals";
@@ -19,28 +22,19 @@ const CompaniesTab = ({ context = "database" }) => {
     return Array.isArray(value) ? value.join(",") : value;
   };
 
-  // Use different stores based on context
-  const databaseStore = useCompaniesStore();
-  const approvalsStore = useApprovalsCompaniesStore();
-
-  const store = isApprovalsContext ? approvalsStore : databaseStore;
+  // Use different UI stores based on context
+  const approvalsUIStore = useApprovalsUIStore();
+  const databaseUIStore = useDatabaseUIStore();
 
   const {
     filters,
     currentPage,
-    loading,
-    error,
-    companyOptions,
-    setFormData,
-    setSearchData,
-    clearAllFilters,
+    setFilters: setFormData,
     setCurrentPage,
-    handleDeleteCompany,
-    getPaginatedCompanies,
-    getTotalPages,
-    getFilteredCount,
-    fetchCompanies,
-  } = store;
+    clearFilters: clearAllFilters,
+  } = isApprovalsContext
+    ? approvalsUIStore.companies
+    : databaseUIStore.companies;
 
   // Local search state for debouncing
   const [searchText, setSearchText] = useState(filters.search || "");
@@ -52,9 +46,9 @@ const CompaniesTab = ({ context = "database" }) => {
   // Sync debounced search to filters
   useEffect(() => {
     if (debouncedSearch !== filters.search) {
-      setSearchData({ search: debouncedSearch });
+      setFormData({ search: debouncedSearch });
     }
-  }, [debouncedSearch, filters.search, setSearchData]);
+  }, [debouncedSearch, filters.search, setFormData]);
 
   // Sync filters.search to searchText on mount and when filters change externally
   useEffect(() => {
@@ -72,17 +66,12 @@ const CompaniesTab = ({ context = "database" }) => {
     setCurrentPage(1);
   };
 
-  // Fetch companies on component mount and when status changes
-  useEffect(() => {
-    fetchCompanies();
-  }, [fetchCompanies, activeStatus]);
-
-  // Database context uses API hook
+  // Database context uses React Query hook
   const {
-    data: companiesData,
-    isLoading: apiLoading,
-    error: apiError,
-  } = useGetAllCompanies({
+    data: databaseData,
+    isLoading: databaseLoading,
+    error: databaseError,
+  } = useGetDatabaseCompanies({
     page: currentPage,
     limit: 10,
     search: filters.search,
@@ -95,32 +84,97 @@ const CompaniesTab = ({ context = "database" }) => {
     sortOrder: filters.sortOrder,
   });
 
-  // Update store with API data for database context
-  useEffect(() => {
-    if (isApprovalsContext) return;
+  // Approvals context uses React Query hook
+  const {
+    data: approvalsData,
+    isLoading: approvalsLoading,
+    error: approvalsError,
+  } = useGetApprovalsCompanies({
+    page: currentPage,
+    limit: 10,
+    search: filters.search,
+    status: filters.status,
+    location: safeJoin(filters.location),
+    industry: safeJoin(filters.industry),
+    company: safeJoin(filters.company),
+    dateFrom: filters.dateFrom,
+    dateTo: filters.dateTo,
+  });
 
-    if (companiesData?.data) {
-      const { corporates, pagination } = companiesData.data;
-      useCompaniesStore.getState().setCompanies(corporates || []);
-      useCompaniesStore.getState().setTotalCount(pagination?.total || 0);
-    }
-  }, [companiesData, isApprovalsContext]);
+  // No need to update store - React Query handles data management
+
+  // Process approvals data
+  const processApprovalsData = (data) => {
+    if (!data?.data?.data?.approvals) return { companies: [], pagination: {} };
+
+    const approvals = data.data.data.approvals;
+    const pagination = data.data.data.pagination || {};
+
+    const companies = approvals.map((approval) => {
+      const companyData = approval.data || {};
+      const basicInfo = companyData.basicInformation || {};
+      const spocInfo = companyData.spocInformation || {};
+
+      return {
+        id: approval._id,
+        name: basicInfo.companyName || "N/A",
+        email: basicInfo.companyEmail || "N/A",
+        contact: basicInfo.companyContactNumber
+          ? `${basicInfo.companyContactNumber.countryCode} ${basicInfo.companyContactNumber.number}`
+          : "N/A",
+        industry: basicInfo.companyType || "N/A",
+        location: "",
+        status: approval.status || "pending",
+        approvalStatus: approval.status || "pending",
+        joinedDate: companyData.createdAt
+          ? new Date(companyData.createdAt).toISOString().split("T")[0]
+          : "N/A",
+        lastUpdated: companyData.updatedAt
+          ? new Date(companyData.updatedAt).toISOString().split("T")[0]
+          : "N/A",
+        _id: approval._id,
+        type: approval.type,
+        applicantId: approval.applicantId,
+        applicantType: approval.applicantType,
+        submittedAt: approval.submittedAt,
+        version: approval.version,
+        isActive: approval.isActive,
+        createdAt: approval.createdAt,
+        updatedAt: approval.updatedAt,
+        fullCompanyData: companyData,
+        spocName: spocInfo.fullName || "N/A",
+        spocEmail: spocInfo.email || "N/A",
+        spocContact: spocInfo.contactNumber
+          ? `${spocInfo.contactNumber.countryCode} ${spocInfo.contactNumber.number}`
+          : "N/A",
+        companyLogo: basicInfo.companyLogo || "",
+        websiteURL: basicInfo.websiteURL || "",
+      };
+    });
+
+    return { companies, pagination };
+  };
 
   // Get computed data based on context
+  const { companies: approvalsCompanies, pagination: approvalsPagination } =
+    isApprovalsContext
+      ? processApprovalsData(approvalsData)
+      : { companies: [], pagination: {} };
+
   const paginatedCompanies = isApprovalsContext
-    ? getPaginatedCompanies()
-    : companiesData?.data?.data?.corporates || [];
+    ? approvalsCompanies
+    : databaseData?.data?.data?.corporates || [];
 
   const totalPages = isApprovalsContext
-    ? getTotalPages()
-    : companiesData?.data?.pagination?.totalPages || 0;
+    ? Math.ceil((approvalsPagination?.totalApprovals || 0) / 10)
+    : databaseData?.data?.pagination?.totalPages || 0;
 
   const filteredCount = isApprovalsContext
-    ? getFilteredCount()
-    : companiesData?.data?.pagination?.total || 0;
+    ? approvalsPagination?.totalApprovals || 0
+    : databaseData?.data?.pagination?.total || 0;
 
-  const isLoading = isApprovalsContext ? loading : apiLoading;
-  const hasError = isApprovalsContext ? error : apiError;
+  const isLoading = isApprovalsContext ? approvalsLoading : databaseLoading;
+  const hasError = isApprovalsContext ? approvalsError : databaseError;
 
   // Loading state
   if (isLoading) {
@@ -139,18 +193,14 @@ const CompaniesTab = ({ context = "database" }) => {
     return (
       <div className="space-y-6">
         <h1 className="text-2xl font-bold">Companies</h1>
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-red-600">
-            Error loading companies: {hasError.message || hasError}
-          </div>
-        </div>
+        <ErrorDisplay error={hasError} title="Error loading companies" />
       </div>
     );
   }
 
   const getFilterControls = () => {
     if (isApprovalsContext) {
-      return getApprovalFilters("companies", { companyOptions });
+      return getApprovalFilters("companies", { companyOptions: [] });
     }
     return companiesFilters;
   };
@@ -169,14 +219,7 @@ const CompaniesTab = ({ context = "database" }) => {
 
       {/* Error Message */}
       {hasError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="text-red-800 font-medium">
-            Error loading companies
-          </div>
-          <div className="text-red-600 text-sm">
-            {hasError.message || hasError}
-          </div>
-        </div>
+        <ErrorDisplay error={hasError} title="Error loading companies" />
       )}
 
       {/* Main Content Layout */}
@@ -222,8 +265,8 @@ const CompaniesTab = ({ context = "database" }) => {
             <CompaniesTable
               paginatedCompanies={paginatedCompanies}
               context={context}
-              handleDeleteCompany={handleDeleteCompany}
-              onRevalidate={fetchCompanies}
+              handleDeleteCompany={null} // No delete functionality in either context
+              onRevalidate={() => {}} // React Query handles revalidation automatically
             />
           </div>
 

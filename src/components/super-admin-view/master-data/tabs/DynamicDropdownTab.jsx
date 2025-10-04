@@ -4,7 +4,8 @@ import { Button } from "../../../ui/button";
 import AddValueModal from "./AddValueModal";
 import EditValueModal from "./EditValueModal";
 import DeleteValueModal from "./DeleteValueModal";
-import { PencilIcon, Trash2Icon, TrashIcon } from "lucide-react";
+import { PencilIcon, Trash2Icon } from "lucide-react";
+import ErrorDisplay from "@/components/common/ErrorDisplay";
 
 const DynamicDropdownTab = ({ dropdown }) => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -34,10 +35,7 @@ const DynamicDropdownTab = ({ dropdown }) => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-purple"></div>
           </div>
         ) : valuesError ? (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h4 className="text-red-800 font-medium">Error loading values</h4>
-            <p className="text-red-600 text-sm mt-1">{valuesError.message}</p>
-          </div>
+          <ErrorDisplay error={valuesError} title="Error loading values" />
         ) : valuesData?.data?.values ? (
           <div className="space-y-4 w-full">
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden w-full">

@@ -1,13 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, YourImageIcon, YourPdfIcon } from "@/utils/icon";
 import { Link } from "react-router-dom";
-import { toast } from "sonner";
 import {
   useApprovals,
   useGetApprovalDetails,
 } from "@/hooks/super-admin/useApprovals";
 import AdminStatusBadge from "@/components/super-admin-view/shared/AdminStatusBadge";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
+import HoldReasonModal from "@/components/common/HoldReasonModal";
 import { useState } from "react";
 
 const RecruiterDetails = ({
@@ -17,6 +17,7 @@ const RecruiterDetails = ({
   onRevalidate,
 }) => {
   const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [showHoldModal, setShowHoldModal] = useState(false);
   const {
     isLoading: isApprovalLoading,
     approveApplication,
@@ -77,8 +78,27 @@ const RecruiterDetails = ({
     setShowRejectionModal(true);
   };
 
-  const handleHold = async () => {
-    toast.info("Recruiter is on hold");
+  const handleHold = async (holdReason) => {
+    try {
+      await holdApplication(
+        displayRecruiter.id || displayRecruiter._id,
+        holdReason
+      );
+      // Revalidate the list data before closing
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+      // Close the drawer after successful hold and revalidation
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to hold displayRecruiter:", error);
+    }
+  };
+
+  const handleHoldClick = () => {
+    setShowHoldModal(true);
   };
 
   const pdfObject = {
@@ -174,7 +194,7 @@ const RecruiterDetails = ({
                   </Button>
                   <Button
                     variant={"black"}
-                    onClick={handleHold}
+                    onClick={handleHoldClick}
                     disabled={isLoading}
                   >
                     {isLoading ? "Processing..." : "Hold Recruiter"}
@@ -188,6 +208,13 @@ const RecruiterDetails = ({
                       <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs">
                         <strong>Rejection Reason:</strong>{" "}
                         {displayRecruiter.rejectionReason}
+                      </div>
+                    )}
+                  {displayRecruiter?.status === "hold" &&
+                    displayRecruiter?.holdReason && (
+                      <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs">
+                        <strong>Hold Reason:</strong>{" "}
+                        {displayRecruiter.holdReason}
                       </div>
                     )}
                 </div>
@@ -629,6 +656,15 @@ const RecruiterDetails = ({
         isOpen={showRejectionModal}
         onClose={() => setShowRejectionModal(false)}
         onConfirm={handleReject}
+        isLoading={isLoading}
+        entityType="recruiter"
+      />
+
+      {/* Hold Reason Modal */}
+      <HoldReasonModal
+        isOpen={showHoldModal}
+        onClose={() => setShowHoldModal(false)}
+        onConfirm={handleHold}
         isLoading={isLoading}
         entityType="recruiter"
       />

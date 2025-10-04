@@ -11,7 +11,9 @@ import {
 import { useState } from "react";
 import EditJobDrawer from "./EditJobDrawer";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
+import HoldReasonModal from "@/components/common/HoldReasonModal";
 import { useGetJobDetails } from "../../../../hooks/super-admin/useJob";
+import { formatApiError } from "../../../../utils/commonFunctions";
 import {
   useApprovals,
   useGetApprovalDetails,
@@ -25,6 +27,7 @@ const JobDetailsDrawer = ({
 }) => {
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [showHoldModal, setShowHoldModal] = useState(false);
 
   // Determine which hook to use based on context
   const isApprovalContext = context === "approval";
@@ -75,8 +78,22 @@ const JobDetailsDrawer = ({
     setShowRejectionModal(true);
   };
 
-  const handleHold = async () => {
-    toast.info("Job is on hold");
+  const handleHold = async (holdReason) => {
+    try {
+      await holdApplication(jobId, holdReason);
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to hold job:", error);
+    }
+  };
+
+  const handleHoldClick = () => {
+    setShowHoldModal(true);
   };
 
   if (isLoading) {
@@ -93,9 +110,7 @@ const JobDetailsDrawer = ({
     return (
       <div className="min-h-full flex flex-col bg-white p-6">
         <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-red-500">
-            Error loading job details: {error.message}
-          </div>
+          <div className="text-lg text-red-500">{formatApiError(error)}</div>
         </div>
       </div>
     );
@@ -170,7 +185,7 @@ const JobDetailsDrawer = ({
             </Button>
             <Button
               variant="black"
-              onClick={handleHold}
+              onClick={handleHoldClick}
               disabled={isLoadingApprovals}
             >
               {isLoadingApprovals ? "Processing..." : "Hold Job"}
@@ -414,6 +429,17 @@ const JobDetailsDrawer = ({
           isOpen={showRejectionModal}
           onClose={() => setShowRejectionModal(false)}
           onConfirm={handleReject}
+          isLoading={isLoadingApprovals}
+          entityType="job"
+        />
+      )}
+
+      {/* Hold Reason Modal - only for approval context */}
+      {context === "approval" && (
+        <HoldReasonModal
+          isOpen={showHoldModal}
+          onClose={() => setShowHoldModal(false)}
+          onConfirm={handleHold}
           isLoading={isLoadingApprovals}
           entityType="job"
         />

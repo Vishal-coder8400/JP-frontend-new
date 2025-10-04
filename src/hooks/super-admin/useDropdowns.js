@@ -10,21 +10,38 @@ import {
 } from "../../api/super-admin/dropdowns";
 
 export const useGetDropdowns = () => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["dropdowns"],
-    queryFn: getDropdowns,
+    queryKey: ["dropdowns", token],
+    queryFn: ({ signal }) => getDropdowns({ signal }),
+    enabled: !!token,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 
 export const useGetDropdownValues = (dropdownId) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["dropdownValues", dropdownId],
-    queryFn: getDropdownValues,
-    enabled: !!dropdownId, // Only run query if dropdownId exists
+    queryKey: ["dropdownValues", token, dropdownId],
+    queryFn: ({ signal }) => getDropdownValues(dropdownId, { signal }),
+    enabled: !!dropdownId && !!token, // Only run query if dropdownId and token exist
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 

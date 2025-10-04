@@ -4,41 +4,98 @@ import Pagination from "@/components/common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "@/components/common/filterComponent";
 import { candidatesFilters } from "./utils";
-import useCandidatesStore from "./zustand";
+import { useGetDatabaseCandidates } from "../../../../hooks/super-admin/useDatabase";
+import useDatabaseUIStore from "../../../../stores/useDatabaseUIStore";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, MoveLeftIcon } from "lucide-react";
+import { MoveLeftIcon } from "lucide-react";
+import ErrorDisplay from "@/components/common/ErrorDisplay";
 
 const CandidatesTab = ({ title = "Candidates", isBackBtnEnabled = false }) => {
   const navigate = useNavigate();
 
+  // Use UI store for filters and pagination
+  const databaseUIStore = useDatabaseUIStore();
   const {
     filters,
     currentPage,
-    loading,
-    error,
-    setFormData,
-    clearAllFilters,
+    setFilters: setFormData,
     setCurrentPage,
-    handleDeleteCandidate,
-    getPaginatedCandidates,
-    getTotalPages,
-    getFilteredCount,
-    fetchCandidates,
-  } = useCandidatesStore();
+    clearFilters: clearAllFilters,
+  } = databaseUIStore.candidates;
 
-  // Fetch candidates on component mount
-  useEffect(() => {
-    fetchCandidates();
-  }, [fetchCandidates]);
+  // Helper function to safely join array filters
+  const safeJoin = (value) => {
+    return Array.isArray(value) ? value.join(",") : value;
+  };
 
-  // Get computed data
-  const paginatedCandidates = getPaginatedCandidates();
-  const totalPages = getTotalPages();
-  const filteredCount = getFilteredCount();
+  // Use React Query for API calls
+  const {
+    data: candidatesData,
+    isLoading,
+    error,
+  } = useGetDatabaseCandidates({
+    page: currentPage,
+    limit: 10,
+    search: filters.search,
+    status: safeJoin(filters.status),
+    industry: safeJoin(filters.industry),
+    location: safeJoin(filters.location),
+    experience: safeJoin(filters.experience),
+    education: safeJoin(filters.education),
+    skills: safeJoin(filters.skills),
+    sortBy: filters.sortBy,
+    sortOrder: filters.sortOrder,
+  });
+
+  // Get computed data from React Query
+  const paginatedCandidates = candidatesData?.data?.data?.candidates || [];
+  const totalPages = candidatesData?.data?.pagination?.totalPages || 0;
+  const filteredCount = candidatesData?.data?.pagination?.total || 0;
 
   const handleBackClick = () => {
     navigate(-1); // Go back to previous page
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          {isBackBtnEnabled && (
+            <MoveLeftIcon
+              onClick={handleBackClick}
+              className="w-5 h-5 text-gray-600 cursor-pointer"
+            />
+          )}
+          <h1 className="text-2xl font-bold">{title}</h1>
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">Loading candidates...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          {isBackBtnEnabled && (
+            <MoveLeftIcon
+              onClick={handleBackClick}
+              className="w-5 h-5 text-gray-600 cursor-pointer"
+            />
+          )}
+          <h1 className="text-2xl font-bold">{title}</h1>
+        </div>
+        <ErrorDisplay
+          error={error}
+          title={`Error loading ${title.toLowerCase()}`}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -51,16 +108,6 @@ const CandidatesTab = ({ title = "Candidates", isBackBtnEnabled = false }) => {
         )}
         <h1 className="text-2xl font-bold">{title}</h1>
       </div>
-
-      {/* Error Message */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="text-red-800 font-medium">
-            Error loading candidates
-          </div>
-          <div className="text-red-600 text-sm">{error}</div>
-        </div>
-      )}
 
       {/* Main Content Layout */}
       <div className="flex flex-col lg:flex-row gap-6 min-h-0">

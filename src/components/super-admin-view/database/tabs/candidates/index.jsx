@@ -4,25 +4,21 @@ import Pagination from "@/components/common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "@/components/common/filterComponent";
 import { candidatesFilters } from "./utils";
-import useCandidatesStore from "./zustand";
+import { useGetDatabaseCandidates } from "../../../../../hooks/super-admin/useDatabase";
+import useDatabaseUIStore from "../../../../../stores/useDatabaseUIStore";
 import { useDebounce } from "@/hooks/common/useDebounce";
+import ErrorDisplay from "@/components/common/ErrorDisplay";
 
 const CandidatesTab = () => {
+  // Use UI store for filters and pagination
+  const databaseUIStore = useDatabaseUIStore();
   const {
     filters,
     currentPage,
-    loading,
-    error,
-    setFormData,
-    setSearchData,
-    clearAllFilters,
+    setFilters: setFormData,
     setCurrentPage,
-    handleDeleteCandidate,
-    getPaginatedCandidates,
-    getTotalPages,
-    getFilteredCount,
-    fetchCandidates,
-  } = useCandidatesStore();
+    clearFilters: clearAllFilters,
+  } = databaseUIStore.candidates;
 
   // Local search state for debouncing
   const [searchText, setSearchText] = useState(filters.search || "");
@@ -30,12 +26,17 @@ const CandidatesTab = () => {
   // Debounce search text
   const debouncedSearch = useDebounce(searchText, 500);
 
+  // Helper function to safely join array filters
+  const safeJoin = (value) => {
+    return Array.isArray(value) ? value.join(",") : value;
+  };
+
   // Sync debounced search to filters
   useEffect(() => {
     if (debouncedSearch !== filters.search) {
-      setSearchData({ search: debouncedSearch });
+      setFormData({ search: debouncedSearch });
     }
-  }, [debouncedSearch, filters.search, setSearchData]);
+  }, [debouncedSearch, filters.search, setFormData]);
 
   // Sync filters.search to searchText on mount and when filters change externally
   useEffect(() => {
@@ -44,29 +45,55 @@ const CandidatesTab = () => {
     }
   }, [filters.search]);
 
-  // Fetch candidates on component mount
-  useEffect(() => {
-    fetchCandidates();
-  }, [fetchCandidates]);
+  // Use React Query for API calls
+  const {
+    data: candidatesData,
+    isLoading,
+    error,
+  } = useGetDatabaseCandidates({
+    page: currentPage,
+    limit: 10,
+    search: filters.search,
+    status: safeJoin(filters.status),
+    industry: safeJoin(filters.industry),
+    location: safeJoin(filters.location),
+    experience: safeJoin(filters.experience),
+    education: safeJoin(filters.education),
+    skills: safeJoin(filters.skills),
+    sortBy: filters.sortBy,
+    sortOrder: filters.sortOrder,
+  });
 
-  // Get computed data
-  const paginatedCandidates = getPaginatedCandidates();
-  const totalPages = getTotalPages();
-  const filteredCount = getFilteredCount();
+  // Get computed data from React Query
+  const paginatedCandidates = candidatesData?.data?.data?.candidates || [];
+  const totalPages = candidatesData?.data?.pagination?.totalPages || 0;
+  const filteredCount = candidatesData?.data?.pagination?.total || 0;
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Candidates</h1>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">Loading candidates...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold">Candidates</h1>
+        <ErrorDisplay error={error} title="Error loading candidates" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Candidates</h1>
-
-      {/* Error Message */}
-      {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="text-red-800 font-medium">
-            Error loading candidates
-          </div>
-          <div className="text-red-600 text-sm">{error}</div>
-        </div>
-      )}
 
       {/* Main Content Layout */}
       <div className="flex flex-col lg:flex-row gap-6">
@@ -101,23 +128,14 @@ const CandidatesTab = () => {
             <SearchComponent value={searchText} handleSearch={setSearchText} />
           </div>
 
-          {/* Loading State */}
-          {loading && (
-            <div className="flex justify-center items-center py-8">
-              <div className="text-gray-500">Loading candidates...</div>
-            </div>
-          )}
-
           {/* Candidates Table */}
-          {!loading && (
-            <CandidatesTable
-              paginatedCandidates={paginatedCandidates}
-              handleDeleteCandidate={handleDeleteCandidate}
-            />
-          )}
+          <CandidatesTable
+            paginatedCandidates={paginatedCandidates}
+            handleDeleteCandidate={null} // No delete functionality
+          />
 
           {/* Pagination */}
-          {!loading && filteredCount > 0 && (
+          {filteredCount > 0 && (
             <div className="flex justify-center">
               <Pagination
                 currentPage={currentPage}

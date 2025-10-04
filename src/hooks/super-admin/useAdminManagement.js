@@ -11,18 +11,35 @@ import {
 import { toast } from "sonner";
 
 export const useGetAllAdmins = (params = {}) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-admins", params],
-    queryFn: ({ signal }) => getAllAdmins(),
+    queryKey: ["superAdmin-admins", token, params],
+    queryFn: ({ signal }) => getAllAdmins({ signal }),
+    enabled: !!token,
     keepPreviousData: true,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 
 export const useGetAdminById = (id, { enabled = true } = {}) => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-admin", id],
+    queryKey: ["superAdmin-admin", token, id],
     queryFn: ({ signal }) => getAdminById(id, { signal }),
-    enabled: enabled && !!id,
+    enabled: enabled && !!id && !!token,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 
@@ -69,13 +86,22 @@ export const useDeleteAdmin = () => {
 };
 
 export const useGetFeatures = () => {
+  const token = localStorage.getItem("token");
+
   return useQuery({
-    queryKey: ["superAdmin-features"],
+    queryKey: ["superAdmin-features", token],
     queryFn: async ({ signal }) => {
       const response = await getFeatures({ signal });
       return response;
     },
+    enabled: !!token,
     staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 };
 

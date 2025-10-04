@@ -168,3 +168,27 @@ export const omit = (obj, keysToOmit) =>
   Object.fromEntries(
     Object.entries(obj).filter(([key]) => !keysToOmit.includes(key))
   );
+
+export const formatApiError = (error) => {
+  // Check if it's a custom error from our axios interceptor
+  if (error.isApiError && error.status === 401) {
+    return error.message;
+  }
+
+  // Check if it's a standard axios error with API message
+  if (error.response?.status === 401 && error.response?.data?.message) {
+    return error.response.data.message;
+  }
+
+  // Check for other API error messages
+  if (error.response?.data?.message) {
+    return error.response.data.message;
+  }
+
+  // Fallback to generic error message
+  if (error.message) {
+    return error.message;
+  }
+
+  return "An unexpected error occurred";
+};

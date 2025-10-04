@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LocationIcon } from "@/utils/icon";
-import { toast } from "sonner";
 import {
   ClockIcon,
   DollarSignIcon,
@@ -10,11 +9,13 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useGetTrainingDetails } from "../../../../hooks/super-admin/useTraining";
+import { formatApiError } from "../../../../utils/commonFunctions";
 import {
   useApprovals,
   useGetApprovalDetails,
 } from "../../../../hooks/super-admin/useApprovals";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
+import HoldReasonModal from "@/components/common/HoldReasonModal";
 import EditTrainingDrawer from "./EditTrainingDrawer";
 
 const TrainingDetailsDrawer = ({
@@ -26,6 +27,7 @@ const TrainingDetailsDrawer = ({
   onRevalidate,
 }) => {
   const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [showHoldModal, setShowHoldModal] = useState(false);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
 
   // For jobs-and-trainings context
@@ -87,8 +89,27 @@ const TrainingDetailsDrawer = ({
     setShowRejectionModal(true);
   };
 
-  const handleHold = async () => {
-    toast.info("Training is on hold");
+  const handleHold = async (holdReason) => {
+    try {
+      await holdApplication(
+        displayTraining.id || displayTraining._id,
+        holdReason
+      );
+      // Revalidate the list data before closing
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+      // Close the drawer after successful hold and revalidation
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to hold displayTraining:", error);
+    }
+  };
+
+  const handleHoldClick = () => {
+    setShowHoldModal(true);
   };
 
   if (isLoading) {
@@ -107,9 +128,7 @@ const TrainingDetailsDrawer = ({
     return (
       <div className="min-h-screen flex flex-col bg-white p-6">
         <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-red-500">
-            Error loading training details: {error.message}
-          </div>
+          <div className="text-lg text-red-500">{formatApiError(error)}</div>
         </div>
       </div>
     );
@@ -194,7 +213,7 @@ const TrainingDetailsDrawer = ({
             </Button>
             <Button
               variant="black"
-              onClick={handleHold}
+              onClick={handleHoldClick}
               disabled={isApprovalActionLoading}
             >
               Hold Training
@@ -661,6 +680,17 @@ const TrainingDetailsDrawer = ({
           isOpen={showRejectionModal}
           onClose={() => setShowRejectionModal(false)}
           onConfirm={handleReject}
+          isLoading={isApprovalActionLoading}
+          entityType="training"
+        />
+      )}
+
+      {/* Hold Reason Modal - Only for approvals context */}
+      {context === "approvals" && (
+        <HoldReasonModal
+          isOpen={showHoldModal}
+          onClose={() => setShowHoldModal(false)}
+          onConfirm={handleHold}
           isLoading={isApprovalActionLoading}
           entityType="training"
         />

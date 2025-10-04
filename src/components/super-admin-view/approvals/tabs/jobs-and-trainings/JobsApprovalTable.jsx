@@ -64,6 +64,8 @@ const JobsApprovalTable = ({
         return <XCircle className="h-4 w-4 text-red-500" />;
       case "pending":
         return <Clock className="h-4 w-4 text-yellow-500" />;
+      case "hold":
+        return <Clock className="h-4 w-4 text-orange-500" />;
       default:
         return <Clock className="h-4 w-4 text-gray-500" />;
     }

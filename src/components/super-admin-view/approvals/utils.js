@@ -32,6 +32,7 @@ export const getApprovalFilters = (tabType, additionalOptions = {}) => {
         { id: "approved", label: "Approved" },
         { id: "pending", label: "Pending" },
         { id: "rejected", label: "Rejected" },
+        { id: "hold", label: "Hold" },
       ],
     },
     {
