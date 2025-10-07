@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Building2, Briefcase } from "lucide-react";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import CompanyDetailsTab from "./CompanyDetailsTab";
 import JobListingTab from "../database/tabs/companies/tabs/JobListingTab";
 import CompanyStats from "../database/tabs/companies/CompanyStats";
@@ -25,14 +25,15 @@ const CompanyDetailsDrawer = ({
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showHoldModal, setShowHoldModal] = useState(false);
   const [showEditDrawer, setShowEditDrawer] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
   const { isLoading, approveApplication, rejectApplication, holdApplication } =
     useApprovals();
 
   // Conditionally call hooks based on context
   const companyDetailsQuery =
     context === "database"
-      ? useCompanyDetails(companyId, { enabled: !!companyId })
-      : { data: null, loading: false, error: null };
+      ? useCompanyDetails(companyId)
+      : { data: null, loading: false, error: null, refetch: () => {} };
 
   const approvalDetailsQuery =
     context === "approvals"
@@ -49,6 +50,12 @@ const CompanyDetailsDrawer = ({
   const approvalDetails = approvalDetailsQuery.data;
   const isLoadingDetails = approvalDetailsQuery.isLoading;
   const detailsError = approvalDetailsQuery.error;
+
+  useEffect(() => {
+    if (companyData) {
+      setRefreshKey((prev) => prev + 1);
+    }
+  }, [companyData]);
 
   // Determine which data to use based on context
   const getDisplayData = () => {
@@ -133,6 +140,16 @@ const CompanyDetailsDrawer = ({
 
   const handleEditClose = () => {
     setShowEditDrawer(false);
+  };
+
+  const handleCompanyUpdate = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    if (companyDetailsQuery.refetch) {
+      await companyDetailsQuery.refetch(true);
+    }
+    if (onRevalidate) {
+      await onRevalidate();
+    }
   };
 
   // Handle loading state
@@ -261,14 +278,21 @@ const CompanyDetailsDrawer = ({
   return (
     <div className="w-full h-full p-10 bg-white rounded-l-2xl inline-flex flex-col gap-8 overflow-y-auto">
       {/* Header */}
-      <div className="w-full border-1 border-gray2 p-4 rounded-lg grid grid-cols-12 gap-4 items-start">
+      <div
+        key={`header-${refreshKey}`}
+        className="w-full border-1 border-gray2 p-4 rounded-lg grid grid-cols-12 gap-4 items-start"
+      >
         <div className="col-span-1 flex justify-center">
-          {displayCompany.companyLogo || displayCompany.logo ? (
+          {displayCompany?.basicInformation?.companyLogo ||
+          displayCompany.logo ? (
             <img
-              src={displayCompany.companyLogo || displayCompany.logo}
+              src={
+                displayCompany?.basicInformation?.companyLogo ||
+                displayCompany.logo
+              }
               alt={`${displayCompany.companyName || displayCompany.name} logo`}
-              className="object-contain h-fit"
-              width={24}
+              className="object-fill rounded-full aspect-square"
+              width={50}
             />
           ) : (
             <Building2 className="h-6 w-6 text-gray-400" />
@@ -278,7 +302,7 @@ const CompanyDetailsDrawer = ({
         <div className="col-span-8">
           <h3 className="text-xl font-medium">
             {context === "database"
-              ? `Company ID: ${displayCompany._id || "N/A"}`
+              ? `${displayCompany?.basicInformation?.companyName}`
               : displayCompany.companyName ||
                 displayCompany.name ||
                 "Company Name"}
@@ -294,63 +318,8 @@ const CompanyDetailsDrawer = ({
         <div className="col-span-3 space-y-3">{renderActionButtons()}</div>
       </div>
 
-      {/* Company Information - Only show for database context */}
-      {context === "database" && (
-        <div className="w-full">
-          <div className="justify-start text-gray-900 text-xl font-semibold leading-tight mb-4">
-            Company Information
-          </div>
-          <div className="self-stretch flex flex-col justify-start items-start gap-4">
-            <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
-              <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
-                Company ID
-              </div>
-              <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
-                {displayCompany?._id || "N/A"}
-              </div>
-            </div>
-            <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
-              <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
-                Status
-              </div>
-              <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
-                {displayCompany?.status || "N/A"}
-              </div>
-            </div>
-            <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
-              <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
-                Verification Status
-              </div>
-              <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
-                {displayCompany?.verificationStatus || "N/A"}
-              </div>
-            </div>
-            <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
-              <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
-                Created At
-              </div>
-              <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
-                {displayCompany?.createdAt
-                  ? new Date(displayCompany.createdAt).toLocaleDateString()
-                  : "N/A"}
-              </div>
-            </div>
-            <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
-              <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
-                Updated At
-              </div>
-              <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
-                {displayCompany?.updatedAt
-                  ? new Date(displayCompany.updatedAt).toLocaleDateString()
-                  : "N/A"}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Details Grid */}
-      <CompanyStats company={displayCompany} />
+      <CompanyStats key={`stats-${refreshKey}`} company={displayCompany} />
 
       {/* Tabs */}
       <div className="w-full">
@@ -378,7 +347,7 @@ const CompanyDetailsDrawer = ({
         </div>
 
         {/* Tab Content */}
-        <div className="w-full">
+        <div className="w-full" key={`tab-content-${refreshKey}`}>
           {activeTab === "details" && (
             <CompanyDetailsTab company={displayCompany} />
           )}
@@ -414,7 +383,7 @@ const CompanyDetailsDrawer = ({
           isOpen={showEditDrawer}
           onClose={handleEditClose}
           company={displayCompany}
-          onRevalidate={onRevalidate}
+          onRevalidate={handleCompanyUpdate}
         />
       )}
     </div>

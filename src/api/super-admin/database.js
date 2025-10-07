@@ -15,8 +15,17 @@ export const getAllCompanies = ({ signal, page = 1, limit = 10, ...params }) =>
     params: { page, limit, ...params },
   });
 
-export const getCompanyById = ({ signal, id }) =>
-  api.get(`/admin/corporates/${id}`, { signal });
+export const getCompanyById = ({ signal, id, bustCache = false }) =>
+  api.get(`/admin/corporates/${id}`, {
+    signal,
+    ...(bustCache && {
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      },
+      params: { _t: Date.now() },
+    }),
+  });
 
 export const getAllRecruiters = ({ signal, page = 1, limit = 10, ...params }) =>
   api.get("/admin/recruiters", {

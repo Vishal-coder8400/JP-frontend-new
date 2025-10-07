@@ -14,6 +14,34 @@ import { useGetCandidateDetails } from "@/hooks/super-admin/useApplicant";
 import { useState } from "react";
 
 const CandidatesTable = ({ paginatedCandidates }) => {
+  const getRelativeTime = (date) => {
+    if (!date) return "N/A";
+
+    const now = new Date();
+    const updatedDate = new Date(date);
+    const diffInSeconds = Math.floor((now - updatedDate) / 1000);
+
+    if (diffInSeconds < 60) return "Just now";
+    if (diffInSeconds < 3600) {
+      const minutes = Math.floor(diffInSeconds / 60);
+      return `${minutes} ${minutes === 1 ? "minute" : "minutes"} ago`;
+    }
+    if (diffInSeconds < 86400) {
+      const hours = Math.floor(diffInSeconds / 3600);
+      return `${hours} ${hours === 1 ? "hour" : "hours"} ago`;
+    }
+    if (diffInSeconds < 2592000) {
+      const days = Math.floor(diffInSeconds / 86400);
+      return `${days} ${days === 1 ? "day" : "days"} ago`;
+    }
+    if (diffInSeconds < 31536000) {
+      const months = Math.floor(diffInSeconds / 2592000);
+      return `${months} ${months === 1 ? "month" : "months"} ago`;
+    }
+    const years = Math.floor(diffInSeconds / 31536000);
+    return `${years} ${years === 1 ? "year" : "years"} ago`;
+  };
+
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [candidateIdForDetails, setCandidateIdForDetails] = useState(null);
@@ -49,10 +77,7 @@ const CandidatesTable = ({ paginatedCandidates }) => {
                   ID
                 </TableHead>
                 <TableHead className="min-w-[250px] font-semibold">
-                  Candidates
-                </TableHead>
-                <TableHead className="min-w-[150px] font-semibold">
-                  Applied for
+                  Candidate Name
                 </TableHead>
                 <TableHead className="min-w-[150px] font-semibold">
                   Skills
@@ -60,8 +85,8 @@ const CandidatesTable = ({ paginatedCandidates }) => {
                 <TableHead className="min-w-[150px] font-semibold">
                   Experience
                 </TableHead>
-                <TableHead className="min-w-[180px] font-semibold">
-                  Contact
+                <TableHead className="min-w-[150px] font-semibold">
+                  Last Updated
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -83,7 +108,9 @@ const CandidatesTable = ({ paginatedCandidates }) => {
                         className="w-4 h-4 text-primary-purple border-2 border-gray-300 focus:ring-2 focus:ring-primary-purple/50 focus:ring-offset-0 cursor-pointer appearance-none rounded-full checked:bg-primary-purple checked:border-primary-purple relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:transform before:-translate-x-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:bg-white before:rounded-full before:opacity-0 checked:before:opacity-100"
                       />
                     </TableCell>
-                    <TableCell>{candidate?._id}</TableCell>
+                    <TableCell title={candidate?._id}>
+                      {candidate?._id ? candidate._id.slice(0, 4) : "N/A"}
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         {candidate?.profilePicture ? (
@@ -109,7 +136,6 @@ const CandidatesTable = ({ paginatedCandidates }) => {
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell>{candidate?.roleLookingFor || "N/A"}</TableCell>
                     <TableCell>
                       {Array.isArray(candidate?.skills) &&
                       candidate.skills.length > 0
@@ -128,19 +154,13 @@ const CandidatesTable = ({ paginatedCandidates }) => {
                       )}
                     </TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-1">
-                        <span>
-                          {candidate?.phone?.countryCode}{" "}
-                          {candidate?.phone?.number}
-                        </span>
-                        <span>{candidate?.email}</span>
-                      </div>
+                      {getRelativeTime(candidate?.updatedAt)}
                     </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={6} className="text-center py-8">
                     <div className="flex flex-col items-center justify-center space-y-2">
                       <User className="h-8 w-8 text-gray-400" />
                       <span className="text-gray-500">
