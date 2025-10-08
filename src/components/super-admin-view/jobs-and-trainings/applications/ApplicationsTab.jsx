@@ -5,7 +5,7 @@ import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "@/components/common/filterComponent";
 import { applicationsFilters } from "./utils";
 import useApplicationsStore from "./zustand";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { MoveLeftIcon } from "lucide-react";
 import ErrorDisplay from "@/components/common/ErrorDisplay";
 
@@ -15,6 +15,8 @@ const ApplicationsTab = ({
 }) => {
   const navigate = useNavigate();
   const { id: jobId } = useParams();
+  const [searchParams] = useSearchParams();
+  const type = searchParams.get("type");
 
   const {
     filters,
@@ -31,15 +33,16 @@ const ApplicationsTab = ({
     fetchApplications,
     refetchApplications,
     setCurrentJobId,
+    setCurrentType,
   } = useApplicationsStore();
 
-  // Set jobId and fetch applications on component mount
   useEffect(() => {
     if (jobId) {
       setCurrentJobId(jobId);
-      fetchApplications(jobId);
+      setCurrentType(type);
+      fetchApplications(jobId, type);
     }
-  }, [fetchApplications, jobId, setCurrentJobId]);
+  }, [fetchApplications, jobId, setCurrentJobId, setCurrentType, type]);
 
   // Get computed data
   const paginatedApplications = getPaginatedApplications();

@@ -6,13 +6,13 @@ import {
 } from "../../api/super-admin/database";
 import { toast } from "sonner";
 
-export const useGetAllTrainers = () => {
+export const useGetAllTrainers = (enabled = true) => {
   const token = localStorage.getItem("token");
 
   return useQuery({
     queryKey: ["superAdmin-trainers", token],
     queryFn: ({ signal }) => getAllTrainers({ signal }),
-    enabled: !!token,
+    enabled: enabled && !!token,
     keepPreviousData: true,
     retry: (failureCount, error) => {
       if (error?.response?.status === 401 || error?.status === 401) {
@@ -41,15 +41,16 @@ export const useGetTrainerDetails = (id, { enabled = true } = {}) => {
 
 export const useUpdateTrainer = () => {
   const queryClient = useQueryClient();
+  const token = localStorage.getItem("token");
 
   return useMutation({
     mutationFn: ({ id, data }) => updateTrainer({ id, data }),
     onSuccess: (data, variables) => {
       toast.success("Trainer updated successfully!");
 
-      // Invalidate and refetch trainer details
+      // Invalidate and refetch trainer details with proper queryKey
       queryClient.invalidateQueries({
-        queryKey: ["superAdmin-trainer", variables.id],
+        queryKey: ["superAdmin-trainer", token, variables.id],
       });
 
       // Invalidate and refetch trainers list

@@ -52,26 +52,54 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
             },
           email: company.spocInformation?.email || company.spocEmail || "",
         },
-        currentAddress: company.currentAddress || {
-          address: "",
-          city: "",
-          state: "",
-          pincode: "",
+        currentAddress: company.companyDetails?.currentAddress ||
+          company.currentAddress || {
+            address: "",
+            city: "",
+            state: "",
+            pincode: "",
+          },
+        industryType:
+          company.companyDetails?.industryType || company.industryType || "",
+        panCardNumber:
+          company.companyDetails?.panCardNumber || company.panCardNumber || "",
+        panCardFile:
+          company.companyDetails?.panCardFile || company.panCardFile || "",
+        gstin: company.companyDetails?.gstin || company.gstin || "",
+        aadharCardNumber:
+          company.companyDetails?.aadharCardNumber ||
+          company.aadharCardNumber ||
+          "",
+        aadharCardFile:
+          company.companyDetails?.aadharCardFile ||
+          company.aadharCardFile ||
+          "",
+        bankDetails: {
+          bankName:
+            company.companyDetails?.bankName ||
+            company.bankDetails?.bankName ||
+            "",
+          accountNumber:
+            company.companyDetails?.bankAccountNumber ||
+            company.bankDetails?.accountNumber ||
+            "",
+          accountHolderName:
+            company.companyDetails?.accountHolderName ||
+            company.bankDetails?.accountHolderName ||
+            "",
+          branchName:
+            company.companyDetails?.branchName ||
+            company.bankDetails?.branchName ||
+            "",
+          ifscCode:
+            company.companyDetails?.ifscCode ||
+            company.bankDetails?.ifscCode ||
+            "",
         },
-        industryType: company.industryType || "",
-        panCardNumber: company.panCardNumber || "",
-        panCardFile: company.panCardFile || "",
-        gstin: company.gstin || "",
-        aadharCardNumber: company.aadharCardNumber || "",
-        aadharCardFile: company.aadharCardFile || "",
-        bankDetails: company.bankDetails || {
-          bankName: "",
-          accountNumber: "",
-          accountHolderName: "",
-          branchName: "",
-          ifscCode: "",
-        },
-        cancelChequeOrPassbookImage: company.cancelChequeOrPassbookImage || "",
+        cancelChequeOrPassbookImage:
+          company.companyDetails?.chequeOrStatementFile ||
+          company.cancelChequeOrPassbookImage ||
+          "",
       });
     }
   }, [company]);
@@ -117,7 +145,7 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
 
   return (
     <div className="w-full h-full p-6 bg-white overflow-y-auto">
-      <div className="max-w-4xl mx-auto">
+      <div className="w-full max-w-none">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">
             Edit Company Profile
@@ -127,7 +155,7 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Basic Information */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -206,7 +234,7 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 sticky bottom-0 bg-white">
             <ButtonComponent
               type="button"
               color="gray"

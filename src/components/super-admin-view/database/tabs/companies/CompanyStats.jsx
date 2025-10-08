@@ -6,7 +6,7 @@ const CompanyStats = ({ company }) => {
           <div>
             <p className="font-medium text-[16px]">Total Applications</p>
             <p className="text-lg font-semibold bg-gray2 p-2 mt-2 w-fit">
-              {company.totalApplicants}
+              {company.totalApplications}
             </p>
           </div>
         </div>
@@ -17,7 +17,7 @@ const CompanyStats = ({ company }) => {
           <div>
             <p className="font-medium text-[16px]">Accepted Candidates</p>
             <p className="text-lg font-semibold bg-success2 text-success1 p-2 mt-2 w-fit">
-              {company.acceptedApplicants}
+              {company.acceptedCandidates}
             </p>
           </div>
         </div>
@@ -28,7 +28,7 @@ const CompanyStats = ({ company }) => {
           <div>
             <p className="font-medium text-[16px]">Rejected Candidates</p>
             <p className="text-lg font-semibold bg-danger2 text-danger1 p-2 mt-2 w-fit">
-              {company.rejectedApplicants}
+              {company.rejectedCandidates}
             </p>
           </div>
         </div>
@@ -39,7 +39,7 @@ const CompanyStats = ({ company }) => {
           <div>
             <p className="font-medium text-[16px]">Hold/Under Review</p>
             <p className="text-lg font-semibold bg-warning2 text-warning1 p-2 mt-2 w-fit">
-              {company.pendingApplicants}
+              {company.holdUnderReview}
             </p>
           </div>
         </div>

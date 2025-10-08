@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import JobsApprovalTable from "./JobsApprovalTable";
+import JobsTable from "../../../common/JobsTable";
 import Pagination from "@/components/common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "@/components/common/filterComponent";
@@ -47,6 +47,7 @@ const JobApprovalTab = ({ onError }) => {
       const job = approval.data || {};
       return {
         id: approval._id,
+        jobId: job._id,
         title: job.title || "N/A",
         company: job.company || "N/A",
         location: job.location || "N/A",
@@ -179,8 +180,9 @@ const JobApprovalTab = ({ onError }) => {
               {!isLoading && (
                 <div className="w-full overflow-x-auto min-h-[300px]">
                   <div className="min-w-[1200px]">
-                    <JobsApprovalTable
+                    <JobsTable
                       paginatedJobs={jobs}
+                      context="approval"
                       handleDeleteJob={handleDeleteJob}
                       onRevalidate={refetch}
                     />

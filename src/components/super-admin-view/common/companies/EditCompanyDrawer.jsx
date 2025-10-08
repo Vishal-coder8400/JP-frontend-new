@@ -32,7 +32,7 @@ const EditCompanyDrawer = ({ isOpen, onClose, company, onRevalidate }) => {
         side="right"
         className="
           w-full h-screen 
-          lg:max-w-[1000px] 
+          lg:max-w-[1200px] 
           md:max-w-full
           sm:max-w-full 
           overflow-y-auto border-transparent [&>button.absolute]:hidden"

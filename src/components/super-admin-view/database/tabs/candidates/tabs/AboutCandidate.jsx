@@ -1,14 +1,17 @@
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, MailIcon, PhoneCallIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const AboutCandidate = ({ candidate }) => {
-  const skills = Array.isArray(candidate?.skills) ? candidate.skills : [];
-  const educations = candidate?.data?.education;
-  const certifications = Array.isArray(candidate?.certifications)
-    ? candidate.certifications
+  const skills = Array.isArray(candidate?.data?.skills)
+    ? candidate.data.skills
     : [];
-  const experiences = Array.isArray(candidate?.experience)
-    ? candidate.experience
+  const educations = candidate?.data?.education || [];
+  const certifications = Array.isArray(candidate?.data?.certifications)
+    ? candidate.data.certifications
+    : [];
+  const experiences = Array.isArray(candidate?.data?.experienceDetails)
+    ? candidate.data.experienceDetails
     : [];
 
   const workingStatus = candidate?.data?.currentWorkingStatus ?? "-";
@@ -56,7 +59,7 @@ const AboutCandidate = ({ candidate }) => {
       <div className="grid grid-cols-9 gap-4">
         <div className="p-4 border-1 col-span-2 border-gray2 rounded text-sm flex flex-col justify-center">
           <span className="text-gray1/50">Location</span>
-          <p className="">-</p>
+          <p className="">{candidate?.data?.currentAddress?.address || "-"}</p>
         </div>
 
         <div className="p-4 border-1 col-span-2 border-gray2 rounded text-sm flex flex-col justify-center">
@@ -66,15 +69,23 @@ const AboutCandidate = ({ candidate }) => {
 
         <div className="p-4 border-1 col-span-2 border-gray2 rounded text-sm flex flex-col justify-center space-y-2">
           <span className="text-gray1/50">Resume</span>
-          <p className="bg-gray2 rounded px-3 py-2 text-center">resume.pdf</p>
+          <Link
+            to={candidate?.data?.resume || "/resume.pdf"}
+            target="_blank"
+            className="bg-gray2 rounded px-3 py-2 text-center"
+          >
+            Resume.pdf
+          </Link>
         </div>
 
         <div className="p-4 border-1 col-span-3 border-gray2 rounded text-sm flex flex-col justify-center spcace-y-3">
           <span className="text-gray1/50">Contact Information</span>
           <p className="flex items-center gap-2 mt-2">
             <PhoneCallIcon className="w-4 h-4" />{" "}
-            {`${candidate?.data?.phone?.countryCode}-${candidate?.data?.phone?.number}` ||
-              "-"}
+            {candidate?.data?.phone?.countryCode &&
+            candidate?.data?.phone?.number
+              ? `${candidate.data.phone.countryCode}-${candidate.data.phone.number}`
+              : "-"}
           </p>
           <p className="flex items-center gap-2 mt-2">
             <MailIcon className="w-4 h-4 text-black" />{" "}
@@ -222,17 +233,17 @@ const AboutCandidate = ({ candidate }) => {
             },
             {
               label: "Have you handled a team?",
-              value: candidate?.data?.handleTeam
+              value: candidate?.data?.handelTeams
                 ? "YES"
-                : candidate?.data?.handleTeam === false
+                : candidate?.data?.handelTeams === false
                 ? "NO"
                 : "-",
             },
             {
               label: "Are you willing to work 6 days a week?",
-              value: candidate?.data?.willingTo6DayWork
+              value: candidate?.data?.willingToWork6Days
                 ? "YES"
-                : candidate?.data?.willingTo6DayWork === false
+                : candidate?.data?.willingToWork6Days === false
                 ? "NO"
                 : "-",
             },
@@ -246,25 +257,25 @@ const AboutCandidate = ({ candidate }) => {
             },
             {
               label: "Are you open to joining an early-stage startup?",
-              value: candidate?.data?.earlyStageStartup
+              value: candidate?.data?.joinInStartup
                 ? "YES"
-                : candidate?.data?.earlyStageStartup === false
+                : candidate?.data?.joinInStartup === false
                 ? "NO"
                 : "-",
             },
             {
               label: "Are you Differently Abled?",
-              value: candidate?.data?.differentlyAbled
+              value: candidate?.data?.isDifferentlyAbled
                 ? "YES"
-                : candidate?.data?.differentlyAbled === false
+                : candidate?.data?.isDifferentlyAbled === false
                 ? "NO"
                 : "-",
             },
             {
               label: "Are you suffering from any medical problem?",
-              value: candidate?.data?.medicalProblem
+              value: candidate?.data?.hasMedicalProblem
                 ? "YES"
-                : candidate?.data?.medicalProblem === false
+                : candidate?.data?.hasMedicalProblem === false
                 ? "NO"
                 : "-",
             },

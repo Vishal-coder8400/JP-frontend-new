@@ -62,6 +62,7 @@ const RecruitersTab = ({ context = "database" }) => {
           const recruiter = approval.data || {};
           return {
             id: approval._id,
+            recruiterId: recruiter._id,
             name: recruiter.name || "N/A",
             email: recruiter.email || "N/A",
             contact: recruiter.phone
@@ -89,7 +90,6 @@ const RecruitersTab = ({ context = "database" }) => {
             submittedAt: approval.submittedAt,
             version: approval.version,
             isActive: approval.isActive,
-            recruiterId: recruiter.recruiterId,
             currentAddress: recruiter.currentAddress,
             resume: recruiter.resume,
             sectorSpecialization: recruiter.sectorSpecialization,

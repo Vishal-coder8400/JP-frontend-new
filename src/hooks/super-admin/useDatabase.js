@@ -8,11 +8,12 @@ import {
 
 export const useGetDatabaseCompanies = (params = {}) => {
   const token = localStorage.getItem("token");
+  const { enabled = true, ...queryParams } = params;
 
   return useQuery({
-    queryKey: ["database-companies", token, params],
-    queryFn: ({ signal }) => getAllCompanies({ signal, ...params }),
-    enabled: !!token,
+    queryKey: ["database-companies", token, queryParams],
+    queryFn: ({ signal }) => getAllCompanies({ signal, ...queryParams }),
+    enabled: enabled && !!token,
     keepPreviousData: true,
     retry: (failureCount, error) => {
       if (error?.response?.status === 401 || error?.status === 401) {

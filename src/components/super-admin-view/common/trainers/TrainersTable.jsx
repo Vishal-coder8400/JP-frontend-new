@@ -16,7 +16,6 @@ import TrainerDetailsDrawer from "./TrainerDetailsDrawer";
 const TrainersTable = ({
   paginatedTrainers,
   showStatusColumn = false,
-  areApprovalBtnsVisible = false,
   onRevalidate,
   context = "database", // "database" or "approvals"
 }) => {
@@ -29,7 +28,6 @@ const TrainersTable = ({
   };
 
   const handleRowClick = (trainer, event) => {
-    // Don't open drawer if radio button was clicked
     if (event.target.type === "radio") {
       return;
     }
@@ -37,6 +35,38 @@ const TrainersTable = ({
     setSelectedTrainer(trainer);
     setDrawerOpen(true);
   };
+
+  const getRelativeTime = (date) => {
+    if (!date) return "N/A";
+
+    const now = new Date();
+    const updatedDate = new Date(date);
+    const diffInMs = now - updatedDate;
+    const diffInSeconds = Math.floor(diffInMs / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    const diffInMonths = Math.floor(diffInDays / 30);
+    const diffInYears = Math.floor(diffInDays / 365);
+
+    if (diffInSeconds < 60) return "just now";
+    if (diffInMinutes < 60)
+      return `${diffInMinutes} ${
+        diffInMinutes === 1 ? "minute" : "minutes"
+      } ago`;
+    if (diffInHours < 24)
+      return `${diffInHours} ${diffInHours === 1 ? "hour" : "hours"} ago`;
+    if (diffInDays < 7)
+      return `${diffInDays} ${diffInDays === 1 ? "day" : "days"} ago`;
+    if (diffInWeeks < 4)
+      return `${diffInWeeks} ${diffInWeeks === 1 ? "week" : "weeks"} ago`;
+    if (diffInMonths < 12)
+      return `${diffInMonths} ${diffInMonths === 1 ? "month" : "months"} ago`;
+    return `${diffInYears} ${diffInYears === 1 ? "year" : "years"} ago`;
+  };
+
+  console.log("paginatedTrainers", paginatedTrainers);
 
   return (
     <>
@@ -53,11 +83,11 @@ const TrainersTable = ({
                   <TableHead className="min-w-[250px] font-semibold">
                     Name
                   </TableHead>
-                  <TableHead className="min-w-[120px] font-semibold">
-                    Expertise
+                  <TableHead className="min-w-[150px] font-semibold">
+                    Industry
                   </TableHead>
                   <TableHead className="min-w-[150px] font-semibold">
-                    Specialization
+                    Skills
                   </TableHead>
                   <TableHead className="min-w-[100px] font-semibold">
                     Experience
@@ -118,14 +148,17 @@ const TrainersTable = ({
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{trainer.contact || "N/A"}</TableCell>
-                      <TableCell>{trainer.skills || "N/A"}</TableCell>
-                      <TableCell>{trainer.industry || "N/A"}</TableCell>
                       <TableCell>
-                        {trainer.lastUpdated ||
-                          (trainer.updatedAt
-                            ? new Date(trainer.updatedAt).toLocaleDateString()
-                            : "N/A")}
+                        {trainer.industryExperience || "N/A"}
+                      </TableCell>
+                      <TableCell>{trainer.expertiseAreas || "N/A"}</TableCell>
+                      <TableCell>
+                        {trainer.totalYearOfExperience || ""}
+                      </TableCell>
+                      <TableCell>
+                        {getRelativeTime(
+                          trainer.lastUpdated || trainer.updatedAt
+                        )}
                       </TableCell>
                       {showStatusColumn && (
                         <TableCell>
@@ -175,6 +208,12 @@ const TrainersTable = ({
             <TrainerDetailsDrawer
               trainer={selectedTrainer}
               context={context}
+              approvalId={context === "approvals" ? selectedTrainer?.id : null}
+              trainerId={
+                context === "approvals"
+                  ? selectedTrainer?.trainerId
+                  : selectedTrainer?._id
+              }
               onClose={() => setDrawerOpen(false)}
               onRevalidate={onRevalidate}
             />

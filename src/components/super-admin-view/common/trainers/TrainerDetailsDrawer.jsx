@@ -10,20 +10,19 @@ import {
   UserIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { toast } from "sonner";
-import {
-  useApprovals,
-  useGetApprovalDetails,
-} from "@/hooks/super-admin/useApprovals";
+import { useApprovals } from "@/hooks/super-admin/useApprovals";
 import { useGetTrainerDetails } from "@/hooks/super-admin/useTrainers";
 import EditTrainerDrawer from "./EditTrainerDrawer";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import AdminStatusBadge from "../../shared/AdminStatusBadge";
+import { toast } from "sonner";
 
 const TrainerDetailsDrawer = ({
   trainer,
   context = "other", // "database", "approvals", or "other"
+  approvalId,
+  trainerId,
   onClose,
   onRevalidate,
 }) => {
@@ -39,38 +38,23 @@ const TrainerDetailsDrawer = ({
     holdApplication,
   } = useApprovals();
 
-  // Fetch detailed trainer data using appropriate endpoint based on context
-  const {
-    data: approvalDetails,
-    isLoading: isLoadingApprovalDetails,
-    error: approvalDetailsError,
-  } = useGetApprovalDetails(trainer?._id || trainer?.id, {
-    enabled: !!(trainer?._id || trainer?.id) && context === "approvals",
-  });
-
   const {
     data: trainerDetails,
     isLoading: isLoadingTrainerDetails,
     error: trainerDetailsError,
-  } = useGetTrainerDetails(trainer?._id || trainer?.id, {
-    enabled: !!(trainer?._id || trainer?.id) && context !== "approvals",
+    refetch: refetchTrainerDetails,
+  } = useGetTrainerDetails(trainerId || trainer?._id || trainer?.id, {
+    enabled: !!(trainerId || trainer?._id || trainer?.id),
   });
 
-  // Use appropriate data based on which API was called
-  const displayTrainer =
-    context === "approvals"
-      ? approvalDetails?.data?.data || trainer
-      : trainerDetails?.data?.data || trainer;
-  const isLoading =
-    context === "approvals"
-      ? isLoadingApprovalDetails
-      : isLoadingTrainerDetails;
-  const error =
-    context === "approvals" ? approvalDetailsError : trainerDetailsError;
+  const displayTrainer = trainerDetails?.data?.data || trainer;
+  const isLoading = isLoadingTrainerDetails;
+  const error = trainerDetailsError;
 
+  console.log("displayTrainer", displayTrainer);
   const handleApprove = async () => {
     try {
-      await approveApplication(displayTrainer._id);
+      await approveApplication(approvalId);
       setHasApprovalAction(true);
       if (onRevalidate) {
         await onRevalidate();
@@ -80,12 +64,16 @@ const TrainerDetailsDrawer = ({
       }
     } catch (error) {
       console.error("Failed to approve trainer:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to approve trainer. Please try again."
+      );
     }
   };
 
   const handleReject = async (rejectionReason) => {
     try {
-      await rejectApplication(displayTrainer._id, rejectionReason);
+      await rejectApplication(approvalId, rejectionReason);
       setHasApprovalAction(true);
       if (onRevalidate) {
         await onRevalidate();
@@ -95,6 +83,10 @@ const TrainerDetailsDrawer = ({
       }
     } catch (error) {
       console.error("Failed to reject trainer:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to reject trainer. Please try again."
+      );
     }
   };
 
@@ -104,20 +96,19 @@ const TrainerDetailsDrawer = ({
 
   const handleHold = async (holdReason) => {
     try {
-      await holdApplication(
-        displayTrainer.id || displayTrainer._id,
-        holdReason
-      );
-      // Revalidate the list data before closing
+      await holdApplication(approvalId, holdReason);
       if (onRevalidate) {
         await onRevalidate();
       }
-      // Close the drawer after successful hold and revalidation
       if (onClose) {
         onClose();
       }
     } catch (error) {
-      console.error("Failed to hold displayTrainer:", error);
+      console.error("Failed to hold trainer:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to hold trainer. Please try again."
+      );
     }
   };
 
@@ -127,6 +118,14 @@ const TrainerDetailsDrawer = ({
 
   const handleEdit = () => {
     setIsEditDrawerOpen(true);
+  };
+
+  const handleTrainerUpdate = async () => {
+    // Only trigger parent component revalidation for list updates
+    // Trainer details are automatically refetched by React Query's invalidateQueries
+    if (onRevalidate) {
+      await onRevalidate();
+    }
   };
 
   // Handle loading state
@@ -181,42 +180,16 @@ const TrainerDetailsDrawer = ({
     );
   }
 
-  const pdfObject = {
-    Resume: displayTrainer?.resume || "",
-    "Relieving Letter": displayTrainer?.relievingLetter || "",
-    Certificates: displayTrainer?.certificates || "",
-  };
-
-  const pdfFiles = Object.entries(pdfObject).reduce(
-    (acc, [customKey, value]) => {
-      if (value) {
-        acc[customKey] = value;
-      }
-      return acc;
-    },
-    {}
-  );
+  const pdfFiles = displayTrainer?.qualificationDocuments || [];
 
   // Render action buttons based on context
   const renderActionButtons = () => {
-    if (context === "database") {
-      return (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleEdit}
-          className="flex items-center gap-2 cursor-pointer"
-        >
-          <SquarePenIcon className="w-4 h-4" />
-          Edit Trainer
-        </Button>
-      );
-    } else if (context === "approvals") {
+    if (context === "approvals") {
       // Get approval status from the trainer data
       const approvalStatus =
         displayTrainer?.approvalStatus || displayTrainer?.status;
 
-      if (approvalStatus !== "pending") {
+      if (approvalStatus === "approved") {
         return (
           <div className="flex flex-col gap-2">
             <AdminStatusBadge status={approvalStatus} />
@@ -231,7 +204,7 @@ const TrainerDetailsDrawer = ({
         );
       }
 
-      // Show approval buttons only for pending trainers and if no action has been taken
+      // Show approval buttons in every case except approved and if no action has been taken
       if (!hasApprovalAction) {
         return (
           <div className="flex items-center gap-4">
@@ -283,7 +256,6 @@ const TrainerDetailsDrawer = ({
             <h1 className="text-xl font-semibold">
               {displayTrainer?.firstName} {displayTrainer?.lastName}
             </h1>
-            <p className="text-sm text-gray-600">{displayTrainer?.email}</p>
           </div>
           {renderActionButtons()}
         </div>
@@ -299,7 +271,9 @@ const TrainerDetailsDrawer = ({
               Experience
             </div>
             <span className="text-gray1/50">
-              {displayTrainer?.experience || "Not specified"}
+              {displayTrainer?.totalYearsExperience
+                ? `${displayTrainer.totalYearsExperience} years`
+                : "Not specified"}
             </span>
           </div>
 
@@ -309,11 +283,14 @@ const TrainerDetailsDrawer = ({
               Expertise
             </div>
             <div className="text-gray1/50">
-              {displayTrainer?.expertise && displayTrainer.expertise.length > 0
-                ? displayTrainer.expertise.map((skill, index) => (
+              {displayTrainer?.expertiseAreas &&
+              displayTrainer.expertiseAreas.length > 0
+                ? displayTrainer.expertiseAreas.map((skill, index) => (
                     <span key={index} className="inline-block">
                       {skill}
-                      {index < displayTrainer.expertise.length - 1 && <br />}
+                      {index < displayTrainer.expertiseAreas.length - 1 && (
+                        <br />
+                      )}
                     </span>
                   ))
                 : "Not specified"}
@@ -327,7 +304,10 @@ const TrainerDetailsDrawer = ({
             </div>
             <span className="text-gray1/50 inline-flex items-center gap-2">
               <PhoneCallIcon className="w-4" />
-              {displayTrainer?.phone || "Not provided"}
+              {typeof displayTrainer?.phoneNumber === "object" &&
+              displayTrainer?.phoneNumber?.countryCode
+                ? `${displayTrainer.phoneNumber.countryCode} ${displayTrainer.phoneNumber.number}`
+                : displayTrainer?.phoneNumber || "-"}
             </span>
             <span className="text-gray1/50 inline-flex items-center gap-2">
               <MailIcon className="w-4" />
@@ -343,8 +323,8 @@ const TrainerDetailsDrawer = ({
               Address
             </div>
             <span className="text-gray1/50">
-              {displayTrainer?.address ||
-                displayTrainer?.location ||
+              {displayTrainer?.currentAddress ||
+                displayTrainer?.permanentAddress ||
                 "Not specified"}
             </span>
           </div>
@@ -355,64 +335,23 @@ const TrainerDetailsDrawer = ({
       <div className="px-6 pb-6">
         <h2 className="text-lg font-semibold">Documents</h2>
         <div className="flex flex-wrap gap-3 mt-2">
-          {Object.entries(pdfFiles).map(([key, value]) => {
-            const isPdf = key === "Resume" || key === "Relieving Letter";
-            const fileName = value?.split("/").pop();
-            const handleDownload = () => {
-              if (!value) return;
-              const link = document.createElement("a");
-              link.href = value;
-              link.target = "_blank";
-              link.download = fileName || `${key}.pdf`;
-              document.body.appendChild(link);
-              link.click();
-              document.body.removeChild(link);
-            };
-            return (
-              <div
-                key={key}
-                className="relative overflow-hidden p-3 w-[180px] h-[100px] flex flex-col bg-stone-50 rounded-lg gap-2"
+          {pdfFiles.length > 0 ? (
+            pdfFiles.map((doc, index) => (
+              <a
+                key={index}
+                href={doc}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 underline"
               >
-                <div className="flex justify-between items-center w-full mb-2">
-                  <div className="flex items-center gap-1">
-                    {isPdf ? <YourPdfIcon /> : <YourImageIcon />}
-                    <div className="text-neutral-900 text-xs font-medium leading-none">
-                      {key}
-                    </div>
-                  </div>
-                  {value?.trim() && (
-                    <div className="cursor-pointer" onClick={handleDownload}>
-                      <DownloadIcon className="w-4 h-4" />
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 w-full overflow-hidden rounded-sm mb-2">
-                  {value?.trim() ? (
-                    isPdf ? (
-                      <iframe
-                        src={`${value}#toolbar=0&navpanes=0&scrollbar=0`}
-                        title={key}
-                        className="w-full h-full border-none no-scrollbar"
-                      />
-                    ) : (
-                      <img
-                        src={value}
-                        alt={key}
-                        className="w-full h-full object-cover rounded-sm"
-                      />
-                    )
-                  ) : (
-                    <div className="text-center text-gray-400 text-xs h-full flex items-center justify-center">
-                      No file found
-                    </div>
-                  )}
-                </div>
-                <div className="absolute bottom-0 left-0 w-full px-3 py-1 bg-stone-50 text-zinc-600 text-xs truncate border-t border-stone-200">
-                  {fileName}
-                </div>
-              </div>
-            );
-          })}
+                Qualification Document {index + 1}
+              </a>
+            ))
+          ) : (
+            <span className="text-gray-500">
+              No qualification documents available
+            </span>
+          )}
         </div>
       </div>
 
@@ -422,36 +361,106 @@ const TrainerDetailsDrawer = ({
           <div className="space-y-2 mt-3">
             <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
               <span className="text-gray1/50 inline-block w-50 text-wrap">
-                Specialization
+                LinkedIn
               </span>
               <span className="font-medium">
-                {displayTrainer?.specialization || "Not specified"}
+                {displayTrainer?.linkedin || "Not specified"}
               </span>
             </div>
             <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
               <span className="text-gray1/50 inline-block w-50 text-wrap">
-                Industry
+                Experience In
               </span>
               <span className="font-medium">
-                {displayTrainer?.industry || "Not specified"}
-              </span>
-            </div>
-            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
-              <span className="text-gray1/50 inline-block w-50 text-wrap">
-                Status
-              </span>
-              <span className="font-medium">
-                {displayTrainer?.status || "Active"}
-              </span>
-            </div>
-            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
-              <span className="text-gray1/50 inline-block w-50 text-wrap">
-                Created
-              </span>
-              <span className="font-medium">
-                {displayTrainer?.createdAt
-                  ? new Date(displayTrainer.createdAt).toLocaleDateString()
+                {displayTrainer?.expertiseAreas &&
+                displayTrainer.expertiseAreas.length > 0
+                  ? displayTrainer.expertiseAreas.join(", ")
                   : "Not specified"}
+              </span>
+            </div>
+            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
+              <span className="text-gray1/50 inline-block w-50 text-wrap">
+                Last Organization Name
+              </span>
+              <span className="font-medium">
+                {displayTrainer?.WorkingDetails?.lastOrganizationName ||
+                  "Not specified"}
+              </span>
+            </div>
+            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
+              <span className="text-gray1/50 inline-block w-50 text-wrap">
+                Designation in last Organization
+              </span>
+              <span className="font-medium">
+                {displayTrainer?.WorkingDetails?.lastDesignation ||
+                  "Not specified"}
+              </span>
+            </div>
+            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
+              <span className="text-gray1/50 inline-block w-50 text-wrap">
+                Latest Qualification
+              </span>
+              <span className="font-medium">
+                {displayTrainer?.latestQualification || "Not specified"}
+              </span>
+            </div>
+            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
+              <span className="text-gray1/50 inline-block w-50 text-wrap">
+                Why you want to proceed ahead with this Gig Training assignment
+                ?
+              </span>
+              <span className="font-medium">
+                {displayTrainer?.whyProceedWithGigTraining || "Not specified"}
+              </span>
+            </div>
+            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
+              <span className="text-gray1/50 inline-block w-50 text-wrap">
+                How many average number of monthly sessions were you able to
+                make in your last work assignment
+              </span>
+              <span className="font-medium">
+                {displayTrainer?.averageMonthlySessions || "Not specified"}
+              </span>
+            </div>
+            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
+              <span className="text-gray1/50 inline-block w-50 text-wrap">
+                How do you come to know about this opportunity
+              </span>
+              <span className="font-medium">
+                {displayTrainer?.howDidYouKnowAboutOpportunity ||
+                  "Not specified"}
+              </span>
+            </div>
+            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
+              <span className="text-gray1/50 inline-block w-50 text-wrap">
+                Father Name
+              </span>
+              <span className="font-medium">
+                {displayTrainer?.fatherName || "Not specified"}
+              </span>
+            </div>
+            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
+              <span className="text-gray1/50 inline-block w-50 text-wrap">
+                Mother Name
+              </span>
+              <span className="font-medium">
+                {displayTrainer?.motherName || "Not specified"}
+              </span>
+            </div>
+            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
+              <span className="text-gray1/50 inline-block w-50 text-wrap">
+                Any Medical problem
+              </span>
+              <span className="font-medium">
+                {displayTrainer?.hasMedicalProblem ? "Yes" : "No"}
+              </span>
+            </div>
+            <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
+              <span className="text-gray1/50 inline-block w-50 text-wrap">
+                Any professional achievement which you will like to highlight
+              </span>
+              <span className="font-medium">
+                {displayTrainer?.professionalAchievements || "Not specified"}
               </span>
             </div>
           </div>
@@ -507,7 +516,7 @@ const TrainerDetailsDrawer = ({
         isOpen={isEditDrawerOpen}
         onClose={() => setIsEditDrawerOpen(false)}
         trainer={displayTrainer}
-        onRevalidate={onRevalidate}
+        onRevalidate={handleTrainerUpdate}
       />
 
       {/* Rejection Reason Modal */}

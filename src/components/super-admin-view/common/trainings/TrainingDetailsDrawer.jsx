@@ -10,19 +10,18 @@ import {
 import { useState } from "react";
 import { useGetTrainingDetails } from "../../../../hooks/super-admin/useTraining";
 import { formatApiError } from "../../../../utils/commonFunctions";
-import {
-  useApprovals,
-  useGetApprovalDetails,
-} from "../../../../hooks/super-admin/useApprovals";
+import { useApprovals } from "../../../../hooks/super-admin/useApprovals";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import EditTrainingDrawer from "./EditTrainingDrawer";
+import { toast } from "sonner";
 
 const TrainingDetailsDrawer = ({
   trainingId,
   training, // For approvals context
   context = "default", // "jobs-and-trainings", "approvals", "default"
   areApprovalBtnsVisible = false,
+  approvalId,
   onClose,
   onRevalidate,
 }) => {
@@ -30,22 +29,12 @@ const TrainingDetailsDrawer = ({
   const [showHoldModal, setShowHoldModal] = useState(false);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
 
-  // For jobs-and-trainings context
   const {
     data: trainingData,
     isLoading: isLoadingDetails,
     error: detailsError,
   } = useGetTrainingDetails(trainingId, {
-    enabled: !!trainingId && context !== "approvals",
-  });
-
-  // For approvals context
-  const {
-    data: approvalData,
-    isLoading: isLoadingApprovals,
-    error: approvalError,
-  } = useGetApprovalDetails(training?.id, {
-    enabled: !!training?.id && context === "approvals",
+    enabled: !!trainingId,
   });
 
   const {
@@ -55,12 +44,12 @@ const TrainingDetailsDrawer = ({
     holdApplication,
   } = useApprovals();
 
-  const isLoading = isLoadingDetails || isLoadingApprovals;
-  const error = detailsError || approvalError;
+  const isLoading = isLoadingDetails;
+  const error = detailsError;
 
   const handleApprove = async () => {
     try {
-      await approveApplication(training?.id);
+      await approveApplication(approvalId);
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -69,12 +58,16 @@ const TrainingDetailsDrawer = ({
       }
     } catch (error) {
       console.error("Failed to approve training:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to approve training. Please try again."
+      );
     }
   };
 
   const handleReject = async (rejectionReason) => {
     try {
-      await rejectApplication(training?.id, rejectionReason);
+      await rejectApplication(approvalId, rejectionReason);
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -83,6 +76,10 @@ const TrainingDetailsDrawer = ({
       }
     } catch (error) {
       console.error("Failed to reject training:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to reject training. Please try again."
+      );
     }
   };
 
@@ -92,12 +89,6 @@ const TrainingDetailsDrawer = ({
 
   const handleHold = async (holdReason) => {
     try {
-      const approvalId =
-        training?.id || displayApprovalData?._id || displayApprovalData?.id;
-      if (!approvalId) {
-        console.error("Missing approval id for hold action");
-        return;
-      }
       await holdApplication(approvalId, holdReason);
       if (onRevalidate) {
         await onRevalidate();
@@ -107,7 +98,11 @@ const TrainingDetailsDrawer = ({
         onClose();
       }
     } catch (error) {
-      console.error("Failed to hold displayTraining:", error);
+      console.error("Failed to hold training:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to hold training. Please try again."
+      );
     }
   };
 
@@ -143,9 +138,10 @@ const TrainingDetailsDrawer = ({
   let displayApprovalData;
 
   if (context === "approvals") {
-    // For approvals: approvalData.data.data.data contains the training details
-    const detailedTraining = approvalData?.data?.data?.data;
-    const applicant = approvalData?.data?.data?.applicant;
+    // For approvals: trainingData.data contains the approval data
+    const approvalData = trainingData?.data;
+    const detailedTraining = approvalData?.data;
+    const applicant = approvalData?.applicant;
 
     if (!detailedTraining) {
       return (
@@ -161,7 +157,7 @@ const TrainingDetailsDrawer = ({
 
     displayTraining = detailedTraining;
     displayApplicant = applicant;
-    displayApprovalData = approvalData?.data?.data;
+    displayApprovalData = approvalData;
   } else {
     // For jobs-and-trainings context
     if (!trainingData?.data?.data?.training) {
@@ -196,8 +192,8 @@ const TrainingDetailsDrawer = ({
     }
 
     if (context === "approvals" && areApprovalBtnsVisible) {
-      // Show approval buttons only when status is pending
-      if (displayApprovalData?.status === "pending") {
+      // Show approval buttons in every case except approved
+      if (displayApprovalData?.status !== "approved") {
         return (
           <div className="flex flex-col gap-2">
             <Button
