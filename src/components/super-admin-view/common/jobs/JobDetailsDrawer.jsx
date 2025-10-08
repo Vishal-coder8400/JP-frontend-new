@@ -14,14 +14,12 @@ import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import { useGetJobDetails } from "../../../../hooks/super-admin/useJob";
 import { formatApiError } from "../../../../utils/commonFunctions";
-import {
-  useApprovals,
-  useGetApprovalDetails,
-} from "../../../../hooks/super-admin/useApprovals";
+import { useApprovals } from "../../../../hooks/super-admin/useApprovals";
 
 const JobDetailsDrawer = ({
   jobId,
   context = "view", // "edit", "approval", "view"
+  approvalId,
   onRevalidate,
   onClose,
 }) => {
@@ -29,15 +27,8 @@ const JobDetailsDrawer = ({
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showHoldModal, setShowHoldModal] = useState(false);
 
-  // Determine which hook to use based on context
   const isApprovalContext = context === "approval";
-  const {
-    data: jobData,
-    isLoading,
-    error,
-  } = isApprovalContext
-    ? useGetApprovalDetails(jobId)
-    : useGetJobDetails(jobId);
+  const { data: jobData, isLoading, error } = useGetJobDetails(jobId);
 
   const {
     isLoading: isLoadingApprovals,
@@ -48,7 +39,7 @@ const JobDetailsDrawer = ({
 
   const handleApprove = async () => {
     try {
-      await approveApplication(jobId);
+      await approveApplication(approvalId);
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -57,12 +48,16 @@ const JobDetailsDrawer = ({
       }
     } catch (error) {
       console.error("Failed to approve job:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to approve job. Please try again."
+      );
     }
   };
 
   const handleReject = async (rejectionReason) => {
     try {
-      await rejectApplication(jobId, rejectionReason);
+      await rejectApplication(approvalId, rejectionReason);
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -71,6 +66,10 @@ const JobDetailsDrawer = ({
       }
     } catch (error) {
       console.error("Failed to reject job:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to reject job. Please try again."
+      );
     }
   };
 
@@ -80,7 +79,7 @@ const JobDetailsDrawer = ({
 
   const handleHold = async (holdReason) => {
     try {
-      await holdApplication(jobId, holdReason);
+      await holdApplication(approvalId, holdReason);
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -89,6 +88,10 @@ const JobDetailsDrawer = ({
       }
     } catch (error) {
       console.error("Failed to hold job:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to hold job. Please try again."
+      );
     }
   };
 
@@ -164,9 +167,9 @@ const JobDetailsDrawer = ({
     }
 
     if (context === "approval") {
-      const isPending = approvalData?.data?.status === "pending";
+      const isNotApproved = approvalData?.data?.status !== "approved";
 
-      if (isPending) {
+      if (isNotApproved) {
         return (
           <div className="flex flex-col gap-2">
             <Button

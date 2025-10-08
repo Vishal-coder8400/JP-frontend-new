@@ -10,8 +10,7 @@ import { Sheet, SheetContent } from "../../ui/sheet";
 import { User } from "lucide-react";
 import { useState } from "react";
 import AdminStatusBadge from "../shared/AdminStatusBadge";
-import RecruiterDetailsApprovals from "../approvals/tabs/recruiters/RecruiterDetails";
-import RecruiterDetailsDatabase from "../database/tabs/recruiters/RecruiterDetails";
+import RecruiterDetailsApprovals from "../approvals/tabs/recruiters/RecruiterDetailsDrawer";
 
 const RecruitersTable = ({
   paginatedRecruiters = [],
@@ -52,12 +51,10 @@ const RecruitersTable = ({
   };
 
   const getRecruiterPhone = (recruiter) => {
-    if (context === "approvals") {
-      return recruiter.phone?.countryCode && recruiter.phone?.number
-        ? `${recruiter.phone.countryCode} ${recruiter.phone.number}`
-        : recruiter.contact || "N/A";
+    if (recruiter.phone?.countryCode && recruiter.phone?.number) {
+      return `${recruiter.phone.countryCode} ${recruiter.phone.number}`;
     }
-    return recruiter.phone || "N/A";
+    return recruiter.contact || "N/A";
   };
 
   const getRecruiterCompany = (recruiter) => {
@@ -216,16 +213,17 @@ const RecruitersTable = ({
             sm:max-w-full 
             overflow-y-auto border-transparent [&>button.absolute]:hidden"
         >
-          <div className="w-full h-full">
+          <div className="w-full">
             {context === "approvals" ? (
               <RecruiterDetailsApprovals
-                recruiter={selectedRecruiter}
+                recruiterId={selectedRecruiter?.recruiterId}
                 areApprovalBtnsVisible={true}
+                approvalId={selectedRecruiter?.id}
                 onClose={() => setDrawerOpen(false)}
                 onRevalidate={onRevalidate}
               />
             ) : (
-              <RecruiterDetailsDatabase
+              <RecruiterDetailsApprovals
                 recruiterId={selectedRecruiter?._id}
                 onRevalidate={onRevalidate}
               />

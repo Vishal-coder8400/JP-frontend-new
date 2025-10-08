@@ -42,14 +42,16 @@ const CandidateDetailsDrawer = ({ candidate, isLoading }) => {
     );
   }
 
+  console.log("candidate", candidate);
+
   return (
     <div className="w-full h-full bg-white rounded-l-2xl inline-flex flex-col gap-8 overflow-y-auto">
       <img src="/Group_1000005865.jpg" className="w-full object-contain" />
 
       <div className="bg-white p-6 w-[800px] mx-auto rounded-lg shadow-md -mt-20 flex items-center gap-6">
-        {candidate?.profilePicture ? (
+        {candidate?.data?.profilePicture ? (
           <img
-            src={candidate.profilePicture}
+            src={candidate?.data?.profilePicture}
             alt={candidate?.name}
             className="h-12 w-12 rounded-full object-cover"
           />
@@ -60,9 +62,8 @@ const CandidateDetailsDrawer = ({ candidate, isLoading }) => {
         )}
         <div className="flex-1">
           <h3 className="font-semibold capitalize">
-            {candidate?.name || "N/A"}
+            {candidate?.data?.name || "-"}
           </h3>
-          <p className="text-gray1 break-all">{candidate?.email || ""}</p>
         </div>
         <Button
           variant={"purple"}

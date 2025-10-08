@@ -26,40 +26,37 @@ const useApplicationsStore = create((set, get) => ({
   showDeleteDialog: false,
   selectedApplication: null,
 
-  // Store current jobId for API calls
+  // Store current jobId and type for API calls
   currentJobId: null,
+  currentType: null,
 
-  // Actions
   setCurrentJobId: (jobId) => set({ currentJobId: jobId }),
+  setCurrentType: (type) => set({ currentType: type }),
 
   setFilter: (filterName, value) => {
     set((state) => ({
       filters: { ...state.filters, [filterName]: value },
-      currentPage: 1, // Reset to first page when filtering
+      currentPage: 1,
     }));
-    // Trigger API call after setting filter
-    const { currentJobId } = get();
+    const { currentJobId, currentType } = get();
     if (currentJobId) {
-      setTimeout(() => get().fetchApplications(currentJobId), 0);
+      setTimeout(() => get().fetchApplications(currentJobId, currentType), 0);
     }
   },
 
   updateFilters: (newFilters) => {
     set((state) => ({
       filters: { ...state.filters, ...newFilters },
-      currentPage: 1, // Reset to first page when filtering
+      currentPage: 1,
     }));
-    // Trigger API call after updating filters
-    const { currentJobId } = get();
+    const { currentJobId, currentType } = get();
     if (currentJobId) {
-      setTimeout(() => get().fetchApplications(currentJobId), 0);
+      setTimeout(() => get().fetchApplications(currentJobId, currentType), 0);
     }
   },
 
-  // Method to handle FilterComponent updates
   setFormData: (newFormData) => {
     set((state) => {
-      // Handle both function updates (from MultiSelectFilter) and object updates (from other components)
       const updatedFilters =
         typeof newFormData === "function"
           ? newFormData(state.filters)
@@ -71,10 +68,9 @@ const useApplicationsStore = create((set, get) => ({
         currentPage: 1,
       };
     });
-    // Trigger API call after setting form data
-    const { currentJobId } = get();
+    const { currentJobId, currentType } = get();
     if (currentJobId) {
-      setTimeout(() => get().fetchApplications(currentJobId), 0);
+      setTimeout(() => get().fetchApplications(currentJobId, currentType), 0);
     }
   },
 
@@ -91,19 +87,17 @@ const useApplicationsStore = create((set, get) => ({
       },
       currentPage: 1,
     });
-    // Trigger API call after clearing filters
-    const { currentJobId } = get();
+    const { currentJobId, currentType } = get();
     if (currentJobId) {
-      setTimeout(() => get().fetchApplications(currentJobId), 0);
+      setTimeout(() => get().fetchApplications(currentJobId, currentType), 0);
     }
   },
 
   setCurrentPage: (page) => {
     set({ currentPage: page });
-    // Trigger API call after changing page
-    const { currentJobId } = get();
+    const { currentJobId, currentType } = get();
     if (currentJobId) {
-      setTimeout(() => get().fetchApplications(currentJobId), 0);
+      setTimeout(() => get().fetchApplications(currentJobId, currentType), 0);
     }
   },
 
@@ -118,20 +112,20 @@ const useApplicationsStore = create((set, get) => ({
       showDeleteDialog: true,
     }),
 
-  // API actions
-  fetchApplications: async (jobId) => {
+  fetchApplications: async (jobId, type) => {
     const { filters, currentPage, itemsPerPage } = get();
 
     set({ loading: true, error: null });
 
     try {
-      // Import the API function
-      const { getJobApplications } = await import(
+      const { getJobApplications, getTrainingApplications } = await import(
         "@/api/super-admin/jobsAndTrainings"
       );
 
-      // Make API call with jobId
-      const response = await getJobApplications({
+      const apiCall =
+        type === "training" ? getTrainingApplications : getJobApplications;
+
+      const response = await apiCall({
         id: jobId,
         signal: new AbortController().signal,
       });
@@ -159,7 +153,10 @@ const useApplicationsStore = create((set, get) => ({
   },
 
   refetchApplications: () => {
-    get().fetchApplications();
+    const { currentJobId, currentType } = get();
+    if (currentJobId) {
+      get().fetchApplications(currentJobId, currentType);
+    }
   },
 
   confirmDelete: () => {

@@ -72,6 +72,7 @@ const CompaniesTab = ({ context = "database" }) => {
     isLoading: databaseLoading,
     error: databaseError,
   } = useGetDatabaseCompanies({
+    enabled: !isApprovalsContext,
     page: currentPage,
     limit: 10,
     search: filters.search,
@@ -90,6 +91,7 @@ const CompaniesTab = ({ context = "database" }) => {
     isLoading: approvalsLoading,
     error: approvalsError,
   } = useGetApprovalsCompanies({
+    enabled: isApprovalsContext,
     page: currentPage,
     limit: 10,
     search: filters.search,
@@ -101,7 +103,17 @@ const CompaniesTab = ({ context = "database" }) => {
     dateTo: filters.dateTo,
   });
 
-  // No need to update store - React Query handles data management
+  // Process database data
+  const processDatabaseData = (data) => {
+    const corporates = data?.data?.data?.corporates || [];
+
+    return corporates.map((company) => ({
+      ...company,
+      lastUpdated: company.updatedAt
+        ? new Date(company.updatedAt).toISOString().split("T")[0]
+        : "-",
+    }));
+  };
 
   // Process approvals data
   const processApprovalsData = (data) => {
@@ -114,16 +126,19 @@ const CompaniesTab = ({ context = "database" }) => {
       const companyData = approval.data || {};
       const basicInfo = companyData.basicInformation || {};
       const spocInfo = companyData.spocInformation || {};
+      const address = basicInfo.address || {};
 
       return {
         id: approval._id,
+        companyId: companyData._id,
         name: basicInfo.companyName || "N/A",
         email: basicInfo.companyEmail || "N/A",
         contact: basicInfo.companyContactNumber
           ? `${basicInfo.companyContactNumber.countryCode} ${basicInfo.companyContactNumber.number}`
           : "N/A",
         industry: basicInfo.companyType || "N/A",
-        location: "",
+        location: address.city || address.state || address.country || "-",
+        jobs: companyData.jobsPosted || "-",
         status: approval.status || "pending",
         approvalStatus: approval.status || "pending",
         joinedDate: companyData.createdAt
@@ -163,7 +178,7 @@ const CompaniesTab = ({ context = "database" }) => {
 
   const paginatedCompanies = isApprovalsContext
     ? approvalsCompanies
-    : databaseData?.data?.data?.corporates || [];
+    : processDatabaseData(databaseData);
 
   const totalPages = isApprovalsContext
     ? Math.ceil((approvalsPagination?.totalApprovals || 0) / 10)

@@ -1,35 +1,43 @@
 const CompanyDetailsTab = ({ company }) => {
   const details = [
-    { label: "Name", value: company?.name || company?.companyName || "N/A" },
-    { label: "Website", value: company?.website || "N/A" },
+    { label: "Name", value: company?.basicInformation?.companyName || "-" },
+    { label: "Website", value: company?.basicInformation?.websiteURL || "-" },
     {
       label: "Company Owner",
-      value: company?.owner || company?.companyOwner || "N/A",
+      value: company?.spocInformation?.fullName || "-",
     },
     {
       label: "Mobile Number",
-      value: company?.mobile || company?.phone || "N/A",
+      value:
+        `${company?.spocInformation?.contactNumber?.countryCode}-${company?.spocInformation?.contactNumber?.number}` ||
+        "-",
     },
     {
       label: "Company Type",
-      value: company?.type || company?.companyType || "N/A",
+      value: company?.basicInformation?.companyType || "-",
     },
     {
       label: "Company Address",
-      value: company?.address || company?.companyAddress || "N/A",
+      value: company?.companyDetails?.currentAddress || "-",
     },
     {
       label: "Industry Type",
-      value: company?.industry || company?.industryType || "N/A",
+      value: company?.companyDetails?.industryType || "-",
     },
     {
       label: "PAN Card Number",
-      value: company?.pan || company?.panCard || "N/A",
+      value: company?.companyDetails?.panCardNumber || "-",
     },
-    { label: "GSTIN", value: company?.gstin || "N/A" },
-    { label: "Bank Name", value: company?.bankName || "N/A" },
-    { label: "Bank Account Number", value: company?.bankAccount || "N/A" },
-    { label: "Cancelled Cheque", value: company?.cancelledCheque || "N/A" },
+    { label: "GSTIN", value: company?.companyDetails?.gstin || "-" },
+    { label: "Bank Name", value: company?.companyDetails?.bankName || "-" },
+    {
+      label: "Bank Account Number",
+      value: company?.companyDetails?.bankAccountNumber || "-",
+    },
+    {
+      label: "Cancelled Cheque",
+      value: company?.companyDetails?.chequeOrStatementFile || "-",
+    },
   ];
 
   return (

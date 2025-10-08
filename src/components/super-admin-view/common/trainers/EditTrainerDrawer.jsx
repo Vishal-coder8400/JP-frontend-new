@@ -4,7 +4,7 @@ import EditTrainerForm from "./EditTrainerForm";
 import { useUpdateTrainer } from "@/hooks/super-admin/useTrainers";
 
 const EditTrainerDrawer = ({ isOpen, onClose, trainer, onRevalidate }) => {
-  const { mutate: updateTrainer, isPending } = useUpdateTrainer();
+  const { mutateAsync: updateTrainer, isPending } = useUpdateTrainer();
 
   const handleSave = async (formData) => {
     try {
@@ -22,7 +22,7 @@ const EditTrainerDrawer = ({ isOpen, onClose, trainer, onRevalidate }) => {
       onClose();
     } catch (error) {
       console.error("Error saving trainer:", error);
-      throw error; // Re-throw to let the form handle the error
+      throw error;
     }
   };
 

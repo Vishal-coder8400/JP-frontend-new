@@ -47,6 +47,7 @@ const TrainingApprovalTab = ({ onError }) => {
       const training = approval.data || {};
       return {
         id: approval._id,
+        trainingId: training._id,
         title: training.title || "N/A",
         trainer: training.trainer || "N/A",
         category: training.category || "N/A",
@@ -62,6 +63,7 @@ const TrainingApprovalTab = ({ onError }) => {
         applicantId: approval.applicantId,
         applicantType: approval.applicantType,
         submittedAt: approval.submittedAt,
+        data: training,
       };
     }) || [];
 

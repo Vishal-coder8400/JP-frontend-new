@@ -1,23 +1,27 @@
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, YourImageIcon, YourPdfIcon } from "@/utils/icon";
 import { Link } from "react-router-dom";
-import {
-  useApprovals,
-  useGetApprovalDetails,
-} from "@/hooks/super-admin/useApprovals";
+import { useApprovals } from "@/hooks/super-admin/useApprovals";
+import { useRecruiterDetails } from "@/hooks/super-admin/useRecruiterDetails";
 import AdminStatusBadge from "@/components/super-admin-view/shared/AdminStatusBadge";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
+import EditRecruiterDrawer from "../../../common/recruiters/EditRecruiterDrawer";
 import { useState } from "react";
+import { toast } from "sonner";
+import { Edit } from "lucide-react";
 
 const RecruiterDetails = ({
-  recruiter,
+  recruiterId,
   areApprovalBtnsVisible = false,
+  approvalId,
   onClose,
   onRevalidate,
 }) => {
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showHoldModal, setShowHoldModal] = useState(false);
+  const [showEditDrawer, setShowEditDrawer] = useState(false);
+
   const {
     isLoading: isApprovalLoading,
     approveApplication,
@@ -25,52 +29,53 @@ const RecruiterDetails = ({
     holdApplication,
   } = useApprovals();
 
-  // Fetch detailed recruiter data using unified approval endpoint
   const {
-    data: approvalDetails,
+    data: recruiterDetails,
     isLoading: isLoadingDetails,
     error: detailsError,
-  } = useGetApprovalDetails(recruiter?._id || recruiter?.id, {
-    enabled: !!(recruiter?._id || recruiter?.id),
+  } = useRecruiterDetails(recruiterId, {
+    enabled: !!recruiterId,
   });
 
-  // Use detailed data if available, otherwise fall back to basic recruiter data
-  const displayRecruiter = approvalDetails?.data?.data || recruiter;
+  // Get recruiter data from the hook response
+  const displayRecruiter =
+    recruiterDetails?.data?.data?.recruiter || recruiterDetails?.data?.data;
   const isLoading = isLoadingDetails;
   const error = detailsError;
 
   const handleApprove = async () => {
     try {
-      await approveApplication(displayRecruiter.id || displayRecruiter._id);
-      // Revalidate the list data before closing
+      await approveApplication(approvalId);
       if (onRevalidate) {
         await onRevalidate();
       }
-      // Close the drawer after successful approval and revalidation
       if (onClose) {
         onClose();
       }
     } catch (error) {
-      console.error("Failed to approve displayRecruiter:", error);
+      console.error("Failed to approve recruiter:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to approve recruiter. Please try again."
+      );
     }
   };
 
   const handleReject = async (rejectionReason) => {
     try {
-      await rejectApplication(
-        displayRecruiter.id || displayRecruiter._id,
-        rejectionReason
-      );
-      // Revalidate the list data before closing
+      await rejectApplication(approvalId, rejectionReason);
       if (onRevalidate) {
         await onRevalidate();
       }
-      // Close the drawer after successful rejection and revalidation
       if (onClose) {
         onClose();
       }
     } catch (error) {
-      console.error("Failed to reject displayRecruiter:", error);
+      console.error("Failed to reject recruiter:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to reject recruiter. Please try again."
+      );
     }
   };
 
@@ -80,20 +85,19 @@ const RecruiterDetails = ({
 
   const handleHold = async (holdReason) => {
     try {
-      await holdApplication(
-        displayRecruiter.id || displayRecruiter._id,
-        holdReason
-      );
-      // Revalidate the list data before closing
+      await holdApplication(approvalId, holdReason);
       if (onRevalidate) {
         await onRevalidate();
       }
-      // Close the drawer after successful hold and revalidation
       if (onClose) {
         onClose();
       }
     } catch (error) {
-      console.error("Failed to hold displayRecruiter:", error);
+      console.error("Failed to hold recruiter:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to hold recruiter. Please try again."
+      );
     }
   };
 
@@ -102,17 +106,19 @@ const RecruiterDetails = ({
   };
 
   const pdfObject = {
-    Resume: "resume",
-    "PAN Card": "kycDetails.panDetails.image",
-    "Aadhar Card": "kycDetails.aadharDetails.image",
-    "Cancel Cheque": "kycDetails.cancelChequeOrPassbookImage",
-    "Relieving Letter": "relievingLetter",
+    Resume: "documents.resume",
+    "PAN Card": "documents.panCard",
+    "Aadhar Card": "documents.aadharCard",
+    "Cancel Cheque": "documents.cancelledCheque",
+    "Relieving Letter": "documents.relievingLetter",
     "Latest Qualification": "latestQualification",
   };
   const pdfFiles = Object.entries(pdfObject).reduce(
     (acc, [customKey, path]) => {
-      // acc[customKey] = getValue(displayRecruiter, path);
-      acc[customKey] = "test.pdf";
+      const value = path
+        .split(".")
+        .reduce((obj, key) => obj?.[key], displayRecruiter);
+      acc[customKey] = value || null;
       return acc;
     },
     {}
@@ -159,95 +165,78 @@ const RecruiterDetails = ({
 
   return (
     <div className="flex flex-col w-full gap-[24px]">
-      <div className="relative flex w-full bg-white pt-[120px] px-[48px] pb-[47px] rounded-t-[16px] overflow-hidden ">
-        <div class="absolute top-0 left-0 h-[186px] w-full bg-[url('/Group_1000005865.jpg')] bg-cover bg-center"></div>
-        <div className="w-full flex flex-col gap-[36px] ">
-          <div className="self-stretch pl-52 pr-10 py-5 relative bg-white rounded-2xl shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)] outline-1 outline-offset-[-1px] outline-neutral-300 inline-flex justify-start items-center gap-2.5">
-            <div className="flex-1 inline-flex flex-col justify-start items-start gap-1.5">
-              <div className="text-center justify-start text-black text-xl font-semibold leading-tight">
-                {displayRecruiter?.name}
-              </div>
-            </div>
-            <img
-              className="size-28 left-[42px] top-[-21px] absolute object-cover rounded-full outline-2 outline-white"
-              src={displayRecruiter?.profileImage || "/person.png"}
-              alt={displayRecruiter?.name}
-            />
-            <div className="size- inline-flex flex-col justify-center items-start gap-2.5">
-              {/* Show approval buttons only when status is pending */}
-              {areApprovalBtnsVisible &&
-              displayRecruiter.status === "pending" ? (
-                <div className="flex items-center gap-4">
-                  <Button
-                    variant={"purple"}
-                    onClick={handleApprove}
-                    disabled={isLoading}
+      <div className="relative w-full bg-white rounded-t-[16px] overflow-hidden">
+        <div className="absolute top-0 left-0 h-[186px] w-full bg-[url('/Group_1000005865.jpg')] bg-cover bg-center"></div>
+        <div className="relative w-full flex flex-col gap-[36px] pt-[120px] px-[48px] pb-[47px]">
+          <div className="relative bg-white rounded-2xl shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)] outline-1 outline-offset-[-1px] outline-neutral-300 p-6">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-6">
+                <div className="relative">
+                  <img
+                    className="size-20 object-cover rounded-full outline-2 outline-white"
+                    src={displayRecruiter?.profileImage || "/person.png"}
+                    alt={displayRecruiter?.name}
+                  />
+                  <button
+                    onClick={() => setShowEditDrawer(true)}
+                    className="absolute -bottom-2 -right-2 p-2 bg-white rounded-lg flex justify-center items-center hover:bg-gray-50 transition-colors cursor-pointer"
                   >
-                    {isLoading ? "Processing..." : "Approve Recruiter"}
-                  </Button>
-                  <Button
-                    variant={"destructive"}
-                    onClick={handleRejectClick}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Processing..." : "Reject Recruiter"}
-                  </Button>
-                  <Button
-                    variant={"black"}
-                    onClick={handleHoldClick}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Processing..." : "Hold Recruiter"}
-                  </Button>
+                    <Edit className="w-3 h-3 text-[#6945ED]" />
+                  </button>
                 </div>
-              ) : (
                 <div className="flex flex-col gap-2">
-                  <AdminStatusBadge status={displayRecruiter?.status} />
-                  {displayRecruiter?.status === "rejected" &&
-                    displayRecruiter?.rejectionReason && (
-                      <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs">
-                        <strong>Rejection Reason:</strong>{" "}
-                        {displayRecruiter.rejectionReason}
-                      </div>
-                    )}
-                  {displayRecruiter?.status === "hold" &&
-                    displayRecruiter?.holdReason && (
-                      <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs">
-                        <strong>Hold Reason:</strong>{" "}
-                        {displayRecruiter.holdReason}
-                      </div>
-                    )}
+                  <div className="text-lg font-medium">
+                    {displayRecruiter?.name}
+                  </div>
+                </div>
+              </div>
+              {areApprovalBtnsVisible && (
+                <div className="flex items-center gap-4">
+                  {displayRecruiter.status !== "approved" ? (
+                    <>
+                      <Button
+                        variant={"purple"}
+                        onClick={handleApprove}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? "Processing..." : "Approve Recruiter"}
+                      </Button>
+                      <Button
+                        variant={"destructive"}
+                        onClick={handleRejectClick}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? "Processing..." : "Reject Recruiter"}
+                      </Button>
+                      <Button
+                        variant={"black"}
+                        onClick={handleHoldClick}
+                        disabled={isLoading}
+                      >
+                        {isLoading ? "Processing..." : "Hold Recruiter"}
+                      </Button>
+                    </>
+                  ) : (
+                    <div className="flex flex-col gap-2">
+                      <AdminStatusBadge status={displayRecruiter?.status} />
+                      {displayRecruiter?.status === "rejected" &&
+                        displayRecruiter?.rejectionReason && (
+                          <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs">
+                            <strong>Rejection Reason:</strong>{" "}
+                            {displayRecruiter.rejectionReason}
+                          </div>
+                        )}
+                      {displayRecruiter?.status === "hold" &&
+                        displayRecruiter?.holdReason && (
+                          <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs">
+                            <strong>Hold Reason:</strong>{" "}
+                            {displayRecruiter.holdReason}
+                          </div>
+                        )}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
-            <div className="size- p-2 left-[123px] top-[66px] absolute bg-white rounded-lg flex justify-start items-center gap-2.5">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="13"
-                height="13"
-                viewBox="0 0 13 13"
-                fill="none"
-              >
-                <g clip-path="url(#clip0_2310_12132)">
-                  <path
-                    d="M5.95801 2.1665H2.16634C1.87902 2.1665 1.60347 2.28064 1.40031 2.4838C1.19714 2.68697 1.08301 2.96252 1.08301 3.24984V10.8332C1.08301 11.1205 1.19714 11.396 1.40031 11.5992C1.60347 11.8024 1.87902 11.9165 2.16634 11.9165H9.74967C10.037 11.9165 10.3125 11.8024 10.5157 11.5992C10.7189 11.396 10.833 11.1205 10.833 10.8332V7.0415"
-                    stroke="#6945ED"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <path
-                    d="M10.0205 1.35413C10.236 1.13864 10.5283 1.01758 10.833 1.01758C11.1378 1.01758 11.43 1.13864 11.6455 1.35413C11.861 1.56962 11.9821 1.86188 11.9821 2.16663C11.9821 2.47137 11.861 2.76364 11.6455 2.97913L6.49967 8.12496L4.33301 8.66663L4.87467 6.49996L10.0205 1.35413Z"
-                    stroke="#6945ED"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </g>
-                <defs>
-                  <clipPath id="clip0_2310_12132">
-                    <rect width="13" height="13" fill="white" />
-                  </clipPath>
-                </defs>
-              </svg>
             </div>
           </div>
           <div className="self-stretch inline-flex flex-col justify-start items-start gap-6">
@@ -304,7 +293,7 @@ const RecruiterDetails = ({
                   </div>
                 </div>
                 <div className="text-[#61758A] text-base font-normal">
-                  8 YOE
+                  {displayRecruiter?.latestQualification || "Not specified"}
                 </div>
               </div>
               <div className="max-w-[237px] w-full h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
@@ -400,7 +389,10 @@ const RecruiterDetails = ({
                   </div>
                 </div>
                 <div className="text-[#61758A] text-base font-normal leading-tight line-clamp-2">
-                  {`${displayRecruiter?.currentAddress?.address}, ${displayRecruiter?.currentAddress?.city}, ${displayRecruiter?.currentAddress?.state}`}
+                  {displayRecruiter?.currentAddress?.address &&
+                  displayRecruiter?.currentAddress?.city
+                    ? `${displayRecruiter.currentAddress.address}, ${displayRecruiter.currentAddress.city}`
+                    : displayRecruiter?.location || "Not specified"}
                 </div>
               </div>
             </div>
@@ -487,9 +479,10 @@ const RecruiterDetails = ({
                     Sectoral Specialization
                   </div>
                   <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
-                    {displayRecruiter?.sectorSpecialization
-                      ?.map((item) => item.name)
-                      ?.join(", ") || "Not specified"}
+                    {displayRecruiter?.sectorSpecialization?.length > 0
+                      ? displayRecruiter.sectorSpecialization.join(", ")
+                      : displayRecruiter?.otherSectorSpecification ||
+                        "Not specified"}
                   </div>
                 </div>
                 <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
@@ -561,7 +554,7 @@ const RecruiterDetails = ({
                       Father’s Name
                     </div>
                     <div className="font-normal text-base text-[#61758A]">
-                      {displayRecruiter?.fatherName}
+                      {displayRecruiter?.fatherName || "Not specified"}
                     </div>
                   </div>
                 </div>
@@ -587,7 +580,7 @@ const RecruiterDetails = ({
                       Mother's Name
                     </div>
                     <div className="font-normal text-base text-[#61758A]">
-                      {displayRecruiter?.motherName}
+                      {displayRecruiter?.motherName || "Not specified"}
                     </div>
                   </div>
                 </div>
@@ -639,7 +632,8 @@ const RecruiterDetails = ({
                       Medical Problems
                     </div>
                     <div className="font-normal text-base text-[#61758A]">
-                      {displayRecruiter?.medicalProblemDetails === ""
+                      {displayRecruiter?.medicalProblemDetails === "" ||
+                      !displayRecruiter?.medicalProblemDetails
                         ? "None"
                         : displayRecruiter?.medicalProblemDetails}
                     </div>
@@ -667,6 +661,14 @@ const RecruiterDetails = ({
         onConfirm={handleHold}
         isLoading={isLoading}
         entityType="recruiter"
+      />
+
+      {/* Edit Recruiter Drawer */}
+      <EditRecruiterDrawer
+        isOpen={showEditDrawer}
+        onClose={() => setShowEditDrawer(false)}
+        recruiter={displayRecruiter}
+        onRevalidate={onRevalidate}
       />
     </div>
   );

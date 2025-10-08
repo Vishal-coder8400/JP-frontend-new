@@ -112,12 +112,63 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
     });
   };
 
+  const transformFormDataToPayload = (formData) => {
+    return {
+      // Personal Information
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      email: formData.email,
+      phoneNumber:
+        formData.phone?.countryCode && formData.phone?.number
+          ? `${formData.phone.countryCode}${formData.phone.number}`
+          : undefined,
+      profilePicture: formData.profileImage,
+      location:
+        formData.currentAddress?.city && formData.currentAddress?.state
+          ? `${formData.currentAddress.city}, ${formData.currentAddress.state}`
+          : formData.currentAddress?.city || formData.currentAddress?.state,
+
+      // Professional Information
+      companyName: formData.lastOrganization?.name,
+      position: formData.lastOrganization?.position,
+      about: formData.joinReason,
+      experience: formData.totalExperience,
+      skills: formData.experienceLevel || [],
+      specializations:
+        formData.sectorSpecialization?.map((item) =>
+          typeof item === "string" ? item : item.name || item.label
+        ) || [],
+      linkedinProfile: formData.linkedinProfile,
+
+      // Additional Information
+      certifications: formData.latestQualification
+        ? [
+            {
+              name: formData.latestQualification,
+              issuer: "Not specified",
+              date: new Date().toISOString().split("T")[0],
+            },
+          ]
+        : undefined,
+
+      // Password fields (if provided)
+      ...(formData.currentPassword &&
+        formData.newPassword &&
+        formData.confirmPassword && {
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
+          confirmPassword: formData.confirmPassword,
+        }),
+    };
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      await onSave(formData);
+      const payload = transformFormDataToPayload(formData);
+      await onSave(payload);
     } catch (error) {
       console.error("Error updating recruiter:", error);
     } finally {

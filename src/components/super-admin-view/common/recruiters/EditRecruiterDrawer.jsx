@@ -22,6 +22,11 @@ const EditRecruiterDrawer = ({ isOpen, onClose, recruiter, onRevalidate }) => {
       queryClient.invalidateQueries({
         queryKey: ["superAdmin-recruiters"],
       });
+
+      // Invalidate recruiter details query used in RecruiterDetailsDrawer
+      queryClient.invalidateQueries({
+        queryKey: ["superAdmin-recruiter-details"],
+      });
     },
     onError: (error) => {
       toast.error(

@@ -7,19 +7,18 @@ import {
 
 export const useGetApprovalsCompanies = (params = {}) => {
   const token = localStorage.getItem("token");
+  const { enabled = true, ...queryParams } = params;
 
   return useQuery({
-    queryKey: ["approvals-companies", token, params],
+    queryKey: ["approvals-companies", token, queryParams],
     queryFn: ({ signal }) =>
-      getApprovalsList("corporate", { signal, ...params }),
-    enabled: !!token,
+      getApprovalsList("corporate", { signal, ...queryParams }),
+    enabled: enabled && !!token,
     keepPreviousData: true,
     retry: (failureCount, error) => {
-      // Don't retry on 401 errors (permission denied)
       if (error?.response?.status === 401 || error?.status === 401) {
         return false;
       }
-      // Use default retry logic for other errors
       return failureCount < 3;
     },
   });
@@ -27,11 +26,13 @@ export const useGetApprovalsCompanies = (params = {}) => {
 
 export const useGetApprovalsTrainers = (params = {}) => {
   const token = localStorage.getItem("token");
+  const { enabled = true, ...queryParams } = params;
 
   return useQuery({
-    queryKey: ["approvals-trainers", token, params],
-    queryFn: ({ signal }) => getApprovalsList("trainer", { signal, ...params }),
-    enabled: !!token,
+    queryKey: ["approvals-trainers", token, queryParams],
+    queryFn: ({ signal }) =>
+      getApprovalsList("trainer", { signal, ...queryParams }),
+    enabled: enabled && !!token,
     keepPreviousData: true,
     retry: (failureCount, error) => {
       if (error?.response?.status === 401 || error?.status === 401) {

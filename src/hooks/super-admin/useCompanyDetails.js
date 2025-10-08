@@ -41,12 +41,12 @@ export const useCompanyDetails = (companyId) => {
     data,
     loading,
     error,
-    refetch: () => {
+    refetch: (bustCache = true) => {
       if (!companyId) return;
 
       setLoading(true);
       setError(null);
-      getCompanyById({ id: companyId })
+      getCompanyById({ id: companyId, bustCache })
         .then((response) => {
           if (response.data?.status) {
             setData(response.data.data?.corporate);

@@ -59,7 +59,7 @@ const TrainersTab = ({
     data: databaseData,
     isLoading: databaseLoading,
     error: databaseError,
-  } = useGetAllTrainers();
+  } = useGetAllTrainers(context === "database");
 
   // Approvals context: use React Query hook
   const {
@@ -76,6 +76,7 @@ const TrainersTab = ({
     skills: filters.skills?.join(","),
     dateFrom: filters.dateFrom,
     dateTo: filters.dateTo,
+    enabled: context === "approvals",
   });
 
   // Process approvals data
@@ -89,6 +90,7 @@ const TrainersTab = ({
       const trainer = approval.data || {};
       return {
         id: approval._id,
+        trainerId: trainer._id,
         name:
           trainer.firstName && trainer.lastName
             ? `${trainer.firstName} ${trainer.lastName}`
@@ -97,6 +99,10 @@ const TrainersTab = ({
         contact: trainer.phoneNumber || "N/A",
         skills: trainer.skills?.length > 0 ? trainer.skills.join(", ") : "N/A",
         industry: trainer.industry || "N/A",
+        industryExperience: trainer.industryExperience || "N/A",
+        expertiseAreas: trainer.expertiseAreas || "N/A",
+        totalYearOfExperience:
+          trainer.totalYearsExperience || trainer.totalYearOfExperience,
         experience: trainer.experience || "N/A",
         location: trainer.location || "N/A",
         status: approval.status || "pending",

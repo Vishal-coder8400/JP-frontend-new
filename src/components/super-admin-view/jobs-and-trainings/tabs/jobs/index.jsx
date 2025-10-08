@@ -1,4 +1,4 @@
-import JobsTable from "./JobsTable";
+import JobsTable from "../../../common/JobsTable";
 import Pagination from "../../../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../../common/filterComponent";
@@ -10,7 +10,7 @@ import ErrorDisplay from "@/components/common/ErrorDisplay";
 const JobsTab = () => {
   const [filters, setFilters] = useState({
     search: "",
-    status: [],
+    status: ["active"], // Only fetch active jobs in database context
     jobType: [],
     experienceLevel: [],
     city: [],
@@ -22,16 +22,37 @@ const JobsTab = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Fetch jobs data
-  const {
-    data: jobsData,
-    isLoading,
-    error,
-  } = useGetAllJobs({
+  // Prepare API parameters - send arrays as comma-separated strings or single values
+  const apiParams = {
     page: currentPage,
     limit: itemsPerPage,
-    ...filters,
-  });
+    search: filters.search,
+    // Convert arrays to comma-separated strings or single values
+    jobType: Array.isArray(filters.jobType)
+      ? filters.jobType.join(",")
+      : filters.jobType,
+    experienceLevel: Array.isArray(filters.experienceLevel)
+      ? filters.experienceLevel.join(",")
+      : filters.experienceLevel,
+    city: Array.isArray(filters.city) ? filters.city.join(",") : filters.city,
+    state: Array.isArray(filters.state)
+      ? filters.state.join(",")
+      : filters.state,
+    modeOfWork: Array.isArray(filters.modeOfWork)
+      ? filters.modeOfWork.join(",")
+      : filters.modeOfWork,
+    genderPreference: Array.isArray(filters.genderPreference)
+      ? filters.genderPreference.join(",")
+      : filters.genderPreference,
+    isWalkInInterview: Array.isArray(filters.isWalkInInterview)
+      ? filters.isWalkInInterview.join(",")
+      : filters.isWalkInInterview,
+    // Send status as a simple string
+    status: "active",
+  };
+
+  // Fetch jobs data
+  const { data: jobsData, isLoading, error } = useGetAllJobs(apiParams);
 
   // Jobs are already filtered from backend
   const jobs = jobsData?.data?.data?.jobs || [];
@@ -39,9 +60,24 @@ const JobsTab = () => {
   const setFormData = (newFilters) => {
     setFilters((prev) => {
       // Handle both function updates (from MultiSelectFilter) and object updates (from other components)
-      return typeof newFilters === "function"
-        ? newFilters(prev)
-        : { ...prev, ...newFilters };
+      const updatedFilters =
+        typeof newFilters === "function"
+          ? newFilters(prev)
+          : { ...prev, ...newFilters };
+
+      // Ensure status always includes "active" for database context
+      if (updatedFilters.status !== undefined) {
+        const statusArray = Array.isArray(updatedFilters.status)
+          ? updatedFilters.status
+          : [updatedFilters.status];
+
+        // If status filter is being modified, ensure "active" is always included
+        if (statusArray.length > 0 && !statusArray.includes("active")) {
+          updatedFilters.status = ["active"];
+        }
+      }
+
+      return updatedFilters;
     });
     setCurrentPage(1); // Reset to first page when filters change
   };
@@ -49,7 +85,7 @@ const JobsTab = () => {
   const clearAllFilters = () => {
     setFilters({
       search: "",
-      status: [],
+      status: ["active"], // Always keep active status when clearing filters
       jobType: [],
       experienceLevel: [],
       city: [],
@@ -129,7 +165,7 @@ const JobsTab = () => {
 
           {/* Jobs Table */}
           <div className="min-w-0">
-            <JobsTable paginatedJobs={jobs} />
+            <JobsTable paginatedJobs={jobs} context="database" />
           </div>
 
           {/* Pagination */}

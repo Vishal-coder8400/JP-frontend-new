@@ -39,18 +39,6 @@ const CompaniesTable = ({
     return context === "approvals" ? company.id : company._id;
   };
 
-  const getCompanyName = (company) => {
-    return company.name || "-";
-  };
-
-  const getCompanyIndustry = (company) => {
-    return company.industry || "-";
-  };
-
-  const getCompanyContact = (company) => {
-    return company.contact || company.email || "-";
-  };
-
   const renderStatusColumn = () => {
     if (context !== "approvals") return null;
 
@@ -69,60 +57,23 @@ const CompaniesTable = ({
     );
   };
 
-  const renderLastUpdatedColumn = () => {
-    if (context !== "approvals") return null;
-
-    return (
-      <TableHead className="min-w-[120px] font-semibold">
-        Last Updated
-      </TableHead>
-    );
-  };
-
-  const renderLastUpdatedCell = (company) => {
-    if (context !== "approvals") return null;
-
-    return <TableCell>{company.lastUpdated || "-"}</TableCell>;
-  };
-
-  const renderJobsColumn = () => {
-    if (context !== "database") return null;
-
-    return (
-      <TableHead className="min-w-[100px] font-semibold">Jobs Posted</TableHead>
-    );
-  };
-
-  const renderJobsCell = (company) => {
-    if (context !== "database") return null;
-
-    return <TableCell>{company.jobs || "-"}</TableCell>;
-  };
-
-  const renderLocationColumn = () => {
-    if (context !== "database") return null;
-
-    return (
-      <TableHead className="min-w-[150px] font-semibold">Location</TableHead>
-    );
-  };
-
-  const renderLocationCell = (company) => {
-    if (context !== "database") return null;
-
-    return <TableCell>{company.location || "-"}</TableCell>;
-  };
-
   const getColSpan = () => {
-    return context === "approvals" ? 7 : 8;
+    return context === "approvals" ? 9 : 8;
   };
+
+  console.log("paginatedCompanies", paginatedCompanies);
 
   const renderDrawer = () => {
     return (
       <CompanyDetailsDrawer
-        companyId={selectedCompany?._id}
+        companyId={
+          context === "approvals"
+            ? selectedCompany?.companyId
+            : selectedCompany?._id
+        }
         company={selectedCompany}
         context={context}
+        approvalId={context === "approvals" ? selectedCompany?.id : null}
         onClose={() => setDrawerOpen(false)}
         onRevalidate={onRevalidate}
       />
@@ -133,11 +84,7 @@ const CompaniesTable = ({
     <>
       <div className="bg-white rounded-lg border overflow-hidden">
         <div className="overflow-x-auto">
-          <div
-            className={
-              context === "approvals" ? "min-w-[1000px]" : "max-w-[900px]"
-            }
-          >
+          <div className="min-w-[1200px]">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -154,9 +101,15 @@ const CompaniesTable = ({
                   <TableHead className="min-w-[180px] font-semibold">
                     Contact
                   </TableHead>
-                  {renderJobsColumn()}
-                  {renderLocationColumn()}
-                  {renderLastUpdatedColumn()}
+                  <TableHead className="min-w-[100px] font-semibold">
+                    Jobs Posted
+                  </TableHead>
+                  <TableHead className="min-w-[150px] font-semibold">
+                    Location
+                  </TableHead>
+                  <TableHead className="min-w-[120px] font-semibold">
+                    Last Updated
+                  </TableHead>
                   {renderStatusColumn()}
                 </TableRow>
               </TableHeader>
@@ -176,19 +129,40 @@ const CompaniesTable = ({
                           onChange={() =>
                             handleSelectCompany(getCompanyId(company))
                           }
-                          aria-label={`Select company ${getCompanyName(
-                            company
-                          )}`}
+                          aria-label={`Select company ${
+                            context === "approvals"
+                              ? company.basicInformation?.company || "-"
+                              : company.companyName || "-"
+                          }`}
                           className="w-4 h-4 text-primary-purple border-2 border-gray-300 focus:ring-2 focus:ring-primary-purple/50 focus:ring-offset-0 cursor-pointer appearance-none rounded-full checked:bg-primary-purple checked:border-primary-purple relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:transform before:-translate-x-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:bg-white before:rounded-full before:opacity-0 checked:before:opacity-100"
                         />
                       </TableCell>
                       <TableCell>{getCompanyId(company)}</TableCell>
-                      <TableCell>{getCompanyName(company)}</TableCell>
-                      <TableCell>{getCompanyIndustry(company)}</TableCell>
-                      <TableCell>{getCompanyContact(company)}</TableCell>
-                      {renderJobsCell(company)}
-                      {renderLocationCell(company)}
-                      {renderLastUpdatedCell(company)}
+                      <TableCell>
+                        {context === "approvals"
+                          ? company?.fullCompanyData?.basicInformation
+                              ?.companyName || "-"
+                          : company?.companyName || "-"}
+                      </TableCell>
+                      <TableCell>
+                        {context === "approvals"
+                          ? company.fullCompanyData?.basicInformation
+                              ?.companyType || "-"
+                          : company.industryType || "-"}
+                      </TableCell>
+                      <TableCell className="flex flex-col gap-2">
+                        {company?.spocContact?.countryCode &&
+                          company?.spocContact?.number && (
+                            <span>
+                              {company?.spocContact?.countryCode}-
+                              {company?.spocContact?.number}
+                            </span>
+                          )}
+                        <span>{company.email || "-"}</span>
+                      </TableCell>
+                      <TableCell>{company?.jobsPosted}</TableCell>
+                      <TableCell>{company.location || "-"}</TableCell>
+                      <TableCell>{company.lastUpdated || "-"}</TableCell>
                       {renderStatusCell(company)}
                     </TableRow>
                   ))

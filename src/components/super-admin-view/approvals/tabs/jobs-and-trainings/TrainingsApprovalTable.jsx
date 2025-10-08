@@ -141,9 +141,11 @@ const TrainingsApprovalTable = ({
             overflow-y-auto border-transparent [&>button.absolute]:hidden bg-white"
         >
           <TrainingDetailsDrawer
+            trainingId={selectedTraining?.trainingId}
             training={selectedTraining}
             context="approvals"
             areApprovalBtnsVisible={true}
+            approvalId={selectedTraining?.id}
             onClose={() => setDrawerOpen(false)}
             onRevalidate={onRevalidate}
           />
