@@ -2,15 +2,6 @@ import { useState, useEffect } from "react";
 import CommonForm from "../../../common/form";
 import ButtonComponent from "../../../common/button";
 import { useUpload } from "../../../../hooks/common/useUpload";
-import { setNestedValue } from "../../../../utils/commonFunctions";
-import {
-  basicCorporateInformation,
-  basicInformationControls,
-  spocInformationControls,
-  corporateFormControls,
-  formControlsForIndividual,
-  formControlsBankDetails,
-} from "../../../../config";
 
 const EditCompanyForm = ({ company, onSave, onClose }) => {
   const [formData, setFormData] = useState({});
@@ -23,21 +14,6 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
         basicInformation: {
           companyName:
             company.basicInformation?.companyName || company.companyName || "",
-          companyLogo:
-            company.basicInformation?.companyLogo ||
-            company.companyLogo ||
-            company.logo ||
-            "",
-          companyContactNumber: company.basicInformation
-            ?.companyContactNumber ||
-            company.companyContactNumber || {
-              number: "",
-              countryCode: "+91",
-            },
-          companyEmail:
-            company.basicInformation?.companyEmail ||
-            company.companyEmail ||
-            "",
           websiteURL:
             company.basicInformation?.websiteURL || company.websiteURL || "",
           companyType:
@@ -50,56 +26,32 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
               number: "",
               countryCode: "+91",
             },
-          email: company.spocInformation?.email || company.spocEmail || "",
         },
-        currentAddress: company.companyDetails?.currentAddress ||
-          company.currentAddress || {
-            address: "",
-            city: "",
-            state: "",
-            pincode: "",
-          },
-        industryType:
-          company.companyDetails?.industryType || company.industryType || "",
-        panCardNumber:
-          company.companyDetails?.panCardNumber || company.panCardNumber || "",
-        panCardFile:
-          company.companyDetails?.panCardFile || company.panCardFile || "",
-        gstin: company.companyDetails?.gstin || company.gstin || "",
-        aadharCardNumber:
-          company.companyDetails?.aadharCardNumber ||
-          company.aadharCardNumber ||
-          "",
-        aadharCardFile:
-          company.companyDetails?.aadharCardFile ||
-          company.aadharCardFile ||
-          "",
-        bankDetails: {
+        companyDetails: {
+          currentAddress:
+            company.companyDetails?.currentAddress ||
+            company.currentAddress ||
+            "",
+          industryType:
+            company.companyDetails?.industryType || company.industryType || "",
+          panCardNumber:
+            company.companyDetails?.panCardNumber ||
+            company.panCardNumber ||
+            "",
+          gstin: company.companyDetails?.gstin || company.gstin || "",
           bankName:
             company.companyDetails?.bankName ||
             company.bankDetails?.bankName ||
             "",
-          accountNumber:
+          bankAccountNumber:
             company.companyDetails?.bankAccountNumber ||
             company.bankDetails?.accountNumber ||
             "",
-          accountHolderName:
-            company.companyDetails?.accountHolderName ||
-            company.bankDetails?.accountHolderName ||
-            "",
-          branchName:
-            company.companyDetails?.branchName ||
-            company.bankDetails?.branchName ||
-            "",
-          ifscCode:
-            company.companyDetails?.ifscCode ||
-            company.bankDetails?.ifscCode ||
+          chequeOrStatementFile:
+            company.companyDetails?.chequeOrStatementFile ||
+            company.cancelChequeOrPassbookImage ||
             "",
         },
-        cancelChequeOrPassbookImage:
-          company.companyDetails?.chequeOrStatementFile ||
-          company.cancelChequeOrPassbookImage ||
-          "",
       });
     }
   }, [company]);
@@ -132,16 +84,108 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
     }
   };
 
-  const getFormControls = () => {
-    const companyType =
-      formData.basicInformation?.companyType ||
-      company?.basicInformation?.companyType ||
-      company?.companyType;
+  const basicInfoControls = [
+    {
+      name: "basicInformation.companyName",
+      label: "Company Name",
+      placeholder: "Enter company name",
+      componentType: "input",
+      type: "text",
+    },
+    {
+      name: "basicInformation.websiteURL",
+      label: "Website URL",
+      componentType: "input",
+      type: "text",
+      placeholder: "Enter Website URL",
+    },
+    {
+      name: "basicInformation.companyType",
+      label: "Company Type",
+      componentType: "select",
+      placeholder: "Select a type",
+      options: [
+        { id: "privateCompany", label: "Private company" },
+        { id: "proprietorship", label: "Proprietorship" },
+        { id: "lld", label: "LLD" },
+      ],
+    },
+  ];
 
-    return companyType === "privateCompany"
-      ? corporateFormControls
-      : formControlsForIndividual;
-  };
+  const spocControls = [
+    {
+      name: "spocInformation.fullName",
+      label: "Company Owner",
+      componentType: "input",
+      type: "text",
+      placeholder: "Enter full name",
+    },
+    {
+      name: "spocInformation.contactNumber",
+      label: "Mobile Number",
+      componentType: "phone",
+      placeholder: "Ex. XXXXXXXXXX",
+    },
+  ];
+
+  const companyDetailsControls = [
+    {
+      label: "Company Address",
+      name: "companyDetails.currentAddress",
+      placeholder: "Enter company address",
+      componentType: "textarea",
+    },
+    {
+      label: "Industry Type",
+      name: "companyDetails.industryType",
+      placeholder: "Select industry type",
+      componentType: "select",
+      options: [
+        { id: "manufacturing", label: "Manufacturing" },
+        { id: "services", label: "Services" },
+        { id: "trading", label: "Trading" },
+        { id: "other", label: "Other" },
+      ],
+    },
+    {
+      label: "PAN Card Number",
+      name: "companyDetails.panCardNumber",
+      placeholder: "Enter PAN Card Number",
+      componentType: "input",
+      type: "text",
+    },
+    {
+      label: "GSTIN",
+      name: "companyDetails.gstin",
+      placeholder: "Enter GSTIN",
+      componentType: "input",
+      type: "text",
+    },
+  ];
+
+  const bankDetailsControls = [
+    {
+      label: "Bank Name",
+      name: "companyDetails.bankName",
+      placeholder: "Enter Bank Name",
+      componentType: "input",
+      type: "text",
+    },
+    {
+      label: "Bank Account Number",
+      name: "companyDetails.bankAccountNumber",
+      placeholder: "Enter Account Number",
+      componentType: "input",
+      type: "text",
+    },
+    {
+      label: "Cancel Cheque / Account Statement",
+      name: "companyDetails.chequeOrStatementFile",
+      placeholder: "Upload Cheque / Statement",
+      componentType: "file",
+      formats: "JPG, PNG, PDF.",
+    },
+  ];
 
   return (
     <div className="w-full h-full p-6 bg-white overflow-y-auto">
@@ -163,7 +207,7 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
             </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={basicCorporateInformation}
+                formControls={basicInfoControls}
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
@@ -171,46 +215,29 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
             </div>
           </div>
 
-          {/* Additional Basic Information */}
+          {/* Company Owner Information */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Company Owner Information
+            </h3>
+            <div className="space-y-4">
+              <CommonForm
+                formControls={spocControls}
+                formData={formData}
+                setFormData={setFormData}
+                handleUpload={handleUpload}
+              />
+            </div>
+          </div>
+
+          {/* Company Details */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Company Details
             </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={basicInformationControls}
-                formData={formData}
-                setFormData={setFormData}
-                handleUpload={handleUpload}
-              />
-            </div>
-          </div>
-
-          {/* SPOC Information */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              SPOC Information
-            </h3>
-            <div className="space-y-4">
-              <CommonForm
-                formControls={spocInformationControls}
-                formData={formData}
-                setFormData={setFormData}
-                handleUpload={handleUpload}
-              />
-            </div>
-          </div>
-
-          {/* Company Type Specific Information */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              {formData.basicInformation?.companyType === "privateCompany"
-                ? "Private Limited Company Details"
-                : "Individual Company Details"}
-            </h3>
-            <div className="space-y-4">
-              <CommonForm
-                formControls={getFormControls()}
+                formControls={companyDetailsControls}
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
@@ -225,7 +252,7 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
             </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={formControlsBankDetails}
+                formControls={bankDetailsControls}
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}

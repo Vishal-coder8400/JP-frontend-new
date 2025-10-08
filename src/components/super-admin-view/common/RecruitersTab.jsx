@@ -25,6 +25,7 @@ const RecruitersTab = ({ context = "database" }) => {
     }
     return {
       search: "",
+      status: "active",
       jobStatus: [],
       postedDate: null,
       location: [],

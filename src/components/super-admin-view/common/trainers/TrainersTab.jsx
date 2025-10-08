@@ -54,12 +54,31 @@ const TrainersTab = ({
   );
   const itemsPerPage = 10;
 
+  // Helper function to safely join array filters
+  const safeJoin = (value) => {
+    return Array.isArray(value) ? value.join(",") : value;
+  };
+
   // Database context: use hook for direct API call
   const {
     data: databaseData,
     isLoading: databaseLoading,
     error: databaseError,
-  } = useGetAllTrainers(context === "database");
+  } = useGetAllTrainers(
+    {
+      page: currentPage,
+      limit: itemsPerPage,
+      search: filters.search,
+      status: filters.status,
+      skills: safeJoin(filters.skills),
+      industry: safeJoin(filters.industry),
+      experience: safeJoin(filters.experience),
+      location: safeJoin(filters.location),
+      sortBy: filters.sortBy,
+      sortOrder: filters.sortOrder,
+    },
+    context === "database"
+  );
 
   // Approvals context: use React Query hook
   const {
