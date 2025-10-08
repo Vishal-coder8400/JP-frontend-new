@@ -536,8 +536,9 @@ const BasicDetails = () => {
             <div className="self-stretch flex flex-col justify-end items-end gap-2.5">
               <ButtonComponent
                 color={"#6945ED"}
+                type="submit"
                 isPending={isPending}
-                buttonText={"Save & Update Profile"}
+                buttonText={"Continue"}
               />
             </div>
           </form>

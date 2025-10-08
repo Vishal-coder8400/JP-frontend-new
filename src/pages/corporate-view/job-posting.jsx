@@ -277,6 +277,7 @@ const JobPosting = () => {
           </div>
           <div className="self-stretch flex flex-col justify-start items-end gap-10">
             <ButtonComponent
+              type="submit"
               color={"#6945ED"}
               isPending={isPending}
               buttonText={"Continue"}

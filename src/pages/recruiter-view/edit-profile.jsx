@@ -165,6 +165,7 @@ const EditProfile = ({
 
               <div className="self-stretch flex flex-col justify-end items-end gap-2.5">
                 <ButtonComponent
+                  type="submit"
                   isPending={isPending}
                   color={"#6945ED"}
                   buttonText={"Save & Update Profile"}

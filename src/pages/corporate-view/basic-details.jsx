@@ -185,7 +185,8 @@ const CorporateBasicDetails = () => {
         <ButtonComponent
           color={"#6945ED"}
           isPending={isPending}
-          buttonText={"Save & Update Profile"}
+          buttonText={"Continue"}
+          type="submit"
         />
       </div>
     </form>

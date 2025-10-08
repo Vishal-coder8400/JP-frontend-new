@@ -422,6 +422,7 @@ const Index = () => {
               color={"#6945ED"}
               isPending={isPending}
               buttonText={"Continue"}
+              type="submit"
             />
           </div>
         </form>

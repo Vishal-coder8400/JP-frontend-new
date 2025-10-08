@@ -433,6 +433,7 @@ const CandidateReleventDetails = () => {
             <div className="self-stretch flex justify-between items-end gap-10">
               <PrevButton link={"/recruiter/candidates/candidate-create"} />
               <ButtonComponent
+                type="submit"
                 color={"#6945ED"}
                 isPending={isPending}
                 buttonText={"Continue"}

@@ -181,6 +181,7 @@ const TrainningPosting = () => {
 
           <div className="self-stretch flex flex-col justify-start items-end gap-2.5">
             <ButtonComponent
+              type="submit"
               color={"#6945ED"}
               isPending={isPending}
               buttonText={"Continue"}

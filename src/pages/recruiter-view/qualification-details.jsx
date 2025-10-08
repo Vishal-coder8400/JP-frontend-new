@@ -156,7 +156,8 @@ const QualificationDetails = () => {
           <ButtonComponent
             isPending={isPending}
             color={"#6945ED"}
-            buttonText={"Save & Update Profile"}
+            buttonText={"Continue"}
+            type="submit"
           />
         </div>
       </form>
