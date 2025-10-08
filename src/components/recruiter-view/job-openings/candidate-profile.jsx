@@ -365,7 +365,7 @@ const CandidateProfile = ({ applicantData }) => {
                           </td>
                         </tr>
                       )}
-                      <tr className="border-b">
+                      {/* <tr className="border-b">
                         <td className="p-2 font-medium">Willing to Relocate</td>
                         <td className="p-2">
                           {applicantData?.data?.willingToRelocate
@@ -388,7 +388,7 @@ const CandidateProfile = ({ applicantData }) => {
                             ? "Yes"
                             : "No"}
                         </td>
-                      </tr>
+                      </tr> */}
                     </tbody>
                   </table>
                 </div>

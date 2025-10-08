@@ -8,12 +8,57 @@ import ButtonComponent from "../common/button";
 import CommonForm from "../common/form";
 import useAuthStore from "../../stores/useAuthStore";
 import Navbar from "../recruiter-view/navbar";
+import z from "zod";
+import { validateFormData } from "../../utils/commonFunctions";
+import { useCorporateSignupStage2 } from "../../hooks/corporate/useAuth";
+import { useUpload } from "../../hooks/common/useUpload";
+const stage2Schema = z.object({
+  currentAddress: z.string().min(1, "Current address is required"),
+  city: z.string().min(1, "City is required"),
+  state: z.string().min(1, "State is required"),
+  pincode: z.string().regex(/^\d{6}$/, "Pincode must be a 6-digit number"),
+  industryType: z.string().optional(), // Only for private companies
+  panCardNumber: z.string().min(1, "PAN card number is required"),
+  panCardFile: z.string().min(1, "PAN card file is required"),
+  gstin: z.string().min(1, "GSTIN is required"),
+  bankName: z.string().min(1, "Bank name is required"),
+  bankAccountNumber: z.string().min(1, "Bank account number is required"),
+  ifscCode: z.string().min(1, "IFSC code is required"),
+  chequeOrStatementFile: z
+    .string()
+    .min(1, "Cancel cheque or statement file is required"),
+});
 
 const FinalSetup = () => {
   const { user } = useAuthStore();
   const [formData, setFormData] = useState({});
+  const { mutate, isPending } = useCorporateSignupStage2();
+  const onSubmit = (e) => {
+    e.preventDefault();
+    const isValid = validateFormData(stage2Schema, formData);
+    if (!isValid) return;
+    mutate(formData);
+  };
+  console.log(formData);
+  const { mutate: UploadImage } = useUpload();
+
+  const handleUpload = (file, callback) => {
+    UploadImage(file, {
+      onSuccess: (data) => {
+        const fileUrl = data?.data?.fileUrl;
+        const fileName = data?.data?.fileName;
+        if (callback) {
+          callback(fileUrl, fileName);
+        }
+      },
+    });
+  };
+
   return (
-    <div className="w-full self-stretch px-36 py-0 pb-[32px] inline-flex flex-col justify-start items-start gap-12">
+    <form
+      onSubmit={onSubmit}
+      className="w-full self-stretch px-36 py-0 pb-[32px] inline-flex flex-col justify-start items-start gap-12"
+    >
       <Navbar onlySupport={false} />
       <div className="w-full flex flex-col justify-start items-start gap-8">
         <div className="self-stretch flex flex-col justify-start items-start gap-7">
@@ -42,6 +87,7 @@ const FinalSetup = () => {
                 }
                 formData={formData}
                 setFormData={setFormData}
+                handleUpload={handleUpload}
               />
             </div>
           </div>
@@ -57,6 +103,7 @@ const FinalSetup = () => {
                 formControls={formControlsBankDetails}
                 formData={formData}
                 setFormData={setFormData}
+                handleUpload={handleUpload}
               />
             </div>
           </div>
@@ -65,10 +112,11 @@ const FinalSetup = () => {
       <div className="self-stretch flex flex-col justify-end items-end gap-2.5">
         <ButtonComponent
           color={"#6945ED"}
+          isPending={isPending}
           buttonText={"Save & Update Profile"}
         />
       </div>
-    </div>
+    </form>
   );
 };
 

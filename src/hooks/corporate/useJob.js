@@ -16,8 +16,8 @@ export const useFilteredJobs = (filters) => {
   return useQuery({
     queryKey: ["filteredJobs", sanitizedFilters],
     queryFn: getFilteredJobs,
-    keepPreviousData: true, // helpful for pagination
-    enabled: filters.jobType === "job", // ensure filters is not null
+    keepPreviousData: true,
+    retry: false, // helpful for pagination
   });
 };
 export const useCorporateJobPost = () => {
@@ -33,7 +33,7 @@ export const useCorporateJobPost = () => {
         applicantId: data.data.data._id,
         applicantType: "job",
       });
-      navigate(`/${user?.role}/dashboard`);
+      navigate(`/${user?.role}/job-posting/listing`);
     },
     onError: (error) => {
       toast.error(error.response.data.message, {});
@@ -41,11 +41,10 @@ export const useCorporateJobPost = () => {
   });
 };
 
-export const useCorporateJobById = (id, jobType) => {
+export const useCorporateJobById = (id) => {
   return useQuery({
     queryKey: ["corporateJobById", id],
     queryFn: () => corporateJobById(id),
-    enabled: jobType === "job",
     retry: false,
   });
 };

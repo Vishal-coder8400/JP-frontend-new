@@ -12,7 +12,6 @@ import {
 import { useFilteredJobs, useGetJobById } from "../../hooks/recruiter/useJob";
 import Navbar from "../../components/recruiter-view/navbar";
 import { useDebounce } from "../../hooks/common/useDebounce";
-import { useGetTrainningById } from "../../hooks/recruiter/useTraining";
 import useJobSeekerProfileStore from "../../stores/useJobSeekerProfileStore";
 
 const JobOpenings = () => {
@@ -139,8 +138,7 @@ const JobOpenings = () => {
             <JobDescription
               setOpen1={setOpen1}
               setOpen={setOpen}
-              useGetTrainningById={useGetTrainningById}
-              useGetJobById={useGetJobById}
+              hook={useGetJobById}
             />
           </div>
         </SheetContent>

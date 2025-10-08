@@ -9,3 +9,8 @@ export const getUserProgress = async ({ signal }) => {
   const response = await api.get("/recruiter/multistage/progress", { signal });
   return response.data;
 };
+
+export const updateUserDetails = async (data) => {
+  const response = await api.put("/recruiter/profile/profile", data);
+  return response.data;
+};

@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import useJobSeekerProfileStore from "../../stores/useJobSeekerProfileStore";
+import { useApproval } from "../common/useApproval";
 
 export const useGetAllApplicant = (filters) => {
   return useQuery({
@@ -20,11 +21,17 @@ export const useGetAllApplicant = (filters) => {
 export const useCreateApplicant = () => {
   const navigate = useNavigate();
   const { setJobSeekerProfile } = useJobSeekerProfileStore();
+  const { mutate: approve } = useApproval();
   return useMutation({
     mutationFn: createJobSeeker,
     onSuccess: (data) => {
       toast.success(data.data.message);
       localStorage.setItem("seekerID", data.data.data._id);
+      approve({
+        type: "jobseeker",
+        applicantId: data?.data?.data?._id,
+        applicantType: "jobseeker",
+      });
       setJobSeekerProfile(data.data.data);
       navigate("/recruiter/candidates/relevent-details");
     },

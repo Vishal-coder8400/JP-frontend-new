@@ -2,7 +2,11 @@ import { useNavigate } from "react-router-dom";
 import { kycDetails, sectoralDetails } from "../../api/recruiter/auth";
 import { toast } from "sonner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserDetails, getUserProgress } from "../../api/recruiter/user";
+import {
+  getUserDetails,
+  getUserProgress,
+  updateUserDetails,
+} from "../../api/recruiter/user";
 import useAuthStore from "../../stores/useAuthStore";
 import { useApproval } from "../common/useApproval";
 
@@ -63,5 +67,19 @@ export const useGetUserProgress = () => {
     queryFn: ({ signal }) => getUserProgress({ signal }),
     enabled: !!token,
     retry: false,
+  });
+};
+
+export const useUpdateUserDetails = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: updateUserDetails,
+    onSuccess: (data) => {
+      toast.success(data.message);
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+    },
+    onError: (error) => {
+      toast.error(error.response.data.message, {});
+    },
   });
 };

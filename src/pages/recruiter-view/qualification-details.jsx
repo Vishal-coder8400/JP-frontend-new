@@ -26,7 +26,13 @@ const formDataSchema = z
       .string()
       .min(1, "Qualification PDF is required")
       .url("Must be a valid URL"),
-    joinReason: z.string().min(1, "Join reason is required"),
+    joinReason: z
+      .string()
+      .min(1, "Join reason is required")
+      .refine((val) => val.trim().split(/\s+/).length <= 30, {
+        message: "Join reason must be within 30 words",
+      }),
+
     monthlyClosures: z
       .number()
       .int()
@@ -103,6 +109,7 @@ const QualificationDetails = () => {
       },
     });
   };
+  // console.log(formData)
   return (
     <div className="w-full self-stretch lg:px-36 lg:py-[0px] lg:pb-[32px] p-[20px] inline-flex flex-col justify-start items-start lg:gap-2 gap-[10px]">
       <Navbar onlySupport={true} />

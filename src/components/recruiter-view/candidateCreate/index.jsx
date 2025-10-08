@@ -59,8 +59,10 @@ const formDataSchema = z.object({
 
   profilePicture: z
     .string()
-    .min(1, "Profile Image is Required")
-    .url("Profile picture must be a valid URL"),
+    .optional()
+    .refine((val) => !val || val.length === 0 || /^https?:\/\/\S+$/.test(val), {
+      message: "Profile picture must be a valid URL",
+    }),
 
   phone: z.object({
     number: z

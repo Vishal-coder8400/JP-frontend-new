@@ -3,6 +3,7 @@ import { omit } from "../../utils/commonFunctions";
 import {
   corporateTrainingById,
   corporateTrainingPost,
+  getCandidatesByTrainingId,
   getTrainingList,
 } from "../../api/corporate/training";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +17,6 @@ export const useTraining = (filters) => {
     queryKey: ["trainingList", sanotizedFilters],
     queryFn: getTrainingList,
     keepPreviousData: true, // helpful for pagination
-    enabled: filters?.jobType === "training",
   });
 };
 
@@ -33,7 +33,7 @@ export const useCorporateTrainingPost = () => {
         applicantId: data.data.data._id,
         applicantType: "training",
       });
-      navigate(`/${user?.role}/dashboard`);
+      navigate(`/${user?.role}/training-listing`);
     },
     onError: (error) => {
       toast.error(error.response.data.message, {});
@@ -41,11 +41,19 @@ export const useCorporateTrainingPost = () => {
   });
 };
 
-export const useGetTrainningById = (id, jobType) => {
+export const useGetTrainningById = (id) => {
   return useQuery({
     queryKey: ["corporateTrainingById", id],
     queryFn: () => corporateTrainingById(id),
-    enabled: jobType === "training",
+    retry: false,
+  });
+};
+
+export const useGetCandidatesByTrainingId = (id, filters) => {
+  return useQuery({
+    queryKey: ["candidatesByTrainingId", id, filters],
+    queryFn: getCandidatesByTrainingId,
+    enabled: !!id,
     retry: false,
   });
 };

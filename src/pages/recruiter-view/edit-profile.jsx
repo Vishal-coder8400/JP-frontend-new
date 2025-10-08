@@ -14,10 +14,11 @@ import { Slate } from "../../utils/icon";
 import { useSectorOptions } from "../../hooks/recruiter/useSectoralOption";
 import { useState } from "react";
 import useAuthStore from "../../stores/useAuthStore";
+import { useUpdateUserDetails } from "../../hooks/recruiter/useProfile";
+import { useUpload } from "../../hooks/common/useUpload";
 
 const EditProfile = ({
   handleRemoveFile,
-  handleUpload,
   handleUpload2,
   fileName,
   setFileName,
@@ -30,6 +31,24 @@ const EditProfile = ({
       ? { ...field, options: sectorOptions }
       : field
   );
+  const { mutate: UploadImage } = useUpload();
+  const { mutate: updateProfile, isPending } = useUpdateUserDetails();
+  const onSubmit = (e) => {
+    e.preventDefault();
+    updateProfile(formData);
+    setIsEditOpen(false);
+  };
+  const handleUpload = (file, callback) => {
+    UploadImage(file, {
+      onSuccess: (data) => {
+        const fileUrl = data?.data?.fileUrl;
+        const fileName = data?.data?.fileName;
+        if (callback) {
+          callback(fileUrl, fileName);
+        }
+      },
+    });
+  };
   return (
     <div className="min-h-screen overflow-y-auto bg-white">
       <div className="p-6">
@@ -42,7 +61,7 @@ const EditProfile = ({
         <div className="w-full self-stretch flex flex-col justify-start items-start gap-10">
           <div className="self-stretch inline-flex justify-start items-start gap-2.5">
             <form
-              //   onSubmit={onSubmit}
+              onSubmit={onSubmit}
               className="w-full inline-flex flex-col justify-start items-start gap-4"
             >
               <div className="relative cursor-pointer p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4">
@@ -146,7 +165,7 @@ const EditProfile = ({
 
               <div className="self-stretch flex flex-col justify-end items-end gap-2.5">
                 <ButtonComponent
-                  //   isPending={isPending}
+                  isPending={isPending}
                   color={"#6945ED"}
                   buttonText={"Save & Update Profile"}
                 />

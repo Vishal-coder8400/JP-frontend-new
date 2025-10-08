@@ -17,12 +17,11 @@ export const useFilteredJobs = (filters) => {
     keepPreviousData: true, // helpful for pagination
   });
 };
-export const useGetJobById = (id, jobType) => {
+export const useGetJobById = (id) => {
   return useQuery({
     queryKey: ["job-by-id", id],
     queryFn: () => getJobById(id),
     retry: false,
-    enabled: jobType === "job",
   });
 };
 export const useApplySingle = () => {
@@ -46,10 +45,10 @@ export const useBulkApplySingle = () => {
     onSuccess: (data) => {
       if (data.data.failed > 0) {
         toast.error(data.data.message);
-        queryClient.invalidateQueries({ queryKey: ["applicants"] });
       } else {
         toast.success(data.data.message);
       }
+      queryClient.invalidateQueries({ queryKey: ["applicants"] });
     },
     onError: (error) => {
       console.log(error);

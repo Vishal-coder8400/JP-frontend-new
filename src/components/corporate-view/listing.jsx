@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import HeroProfile from "../recruiter-view/common/hero-profile";
 import JobCard from "../recruiter-view/job-openings/jobCard";
 import SearchComponent from "../common/searchComponent";
@@ -14,9 +14,9 @@ const Listing = ({
   setOpen,
   handleSearch,
   searchText,
-  open1,
   setOpen1,
 }) => {
+  const location = useLocation();
   // console.log(jobPosts);
   const totalPages = Math.ceil(jobPosts?.pagination?.total / 10);
   return (
@@ -24,21 +24,23 @@ const Listing = ({
       <div className="w-full">
         <HeroProfile />
       </div>
-      <div className="inline-flex justify-start items-center gap-5">
-        <div className="w-28 p-3  bg-[#6945ED]  rounded-[69px]   flex justify-center items-center gap-6 overflow-hidden">
-          <div className="justify-center text-white text-base font-normal leading-snug">
-            Listings
+      {location.pathname.includes("job-posting") && (
+        <div className="inline-flex justify-start items-center gap-5">
+          <div className="w-28 p-3  bg-[#6945ED]  rounded-[69px]   flex justify-center items-center gap-6 overflow-hidden">
+            <div className="justify-center text-white text-base font-normal leading-snug">
+              Listings
+            </div>
           </div>
+          <Link
+            to={"/corporate/job-posting/analytics"}
+            className="w-28 p-3 bg-white outline-neutral-400  outline-1 outline-offset-[-1px] rounded-[69px] flex justify-center items-center gap-6 overflow-hidden"
+          >
+            <div className="justify-center text-neutral-400 text-base font-normal leading-snug">
+              Analytics
+            </div>
+          </Link>
         </div>
-        <Link
-          to={"/corporate/job-posting/analytics"}
-          className="w-28 p-3 bg-white outline-neutral-400  outline-1 outline-offset-[-1px] rounded-[69px] flex justify-center items-center gap-6 overflow-hidden"
-        >
-          <div className="justify-center text-neutral-400 text-base font-normal leading-snug">
-            Analytics
-          </div>
-        </Link>
-      </div>
+      )}
       <div className="self-stretch inline-flex justify-start items-start gap-10">
         <div className="w-[196px] hidden lg:flex flex-col gap-[23px]">
           <div className="text-lg text-[#171923] font-semibold">Filters</div>

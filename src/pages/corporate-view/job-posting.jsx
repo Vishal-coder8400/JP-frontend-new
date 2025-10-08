@@ -1,6 +1,12 @@
 import { useState } from "react";
 import CommonForm from "../../components/common/form";
-import { jobController1, jobController2, walkinAdress } from "../../config";
+import {
+  jobController1,
+  jobController2,
+  jobController3,
+  regionalLanguage,
+  walkinAdress,
+} from "../../config";
 import Navbar from "../../components/recruiter-view/navbar";
 import { PostJobIcon } from "../../utils/icon";
 import { useCorporateJobPost } from "../../hooks/corporate/useJob";
@@ -15,7 +21,7 @@ const formSchema = z
       .string({ required_error: "Job title is required" })
       .min(1, "Job title cannot be empty"),
 
-    jobType: z.enum(["Full-Time", "Part-Time", "Both", "Night-Time"], {
+    jobType: z.enum(["Full-Time", "Part-Time", "Internship"], {
       errorMap: () => ({ message: "Select a valid job type" }),
     }),
 
@@ -72,11 +78,11 @@ const formSchema = z
     }),
 
     preferredAgeRange: z
-      .string({ required_error: "Preferred age range is required" })
-      .regex(
-        /^\d{2}-\d{2}$/,
-        "Age range must be in format 'xx-yy' (e.g., 22-35)"
-      ),
+      .string()
+      .optional()
+      .refine((val) => !val || /^\d{2}-\d{2}$/.test(val), {
+        message: "Age range must be in format 'xx-yy' (e.g., 22-35)",
+      }),
 
     salaryRange: z
       .object({
@@ -246,6 +252,18 @@ const JobPosting = () => {
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-1 outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4">
             <CommonForm
               formControls={jobController2}
+              formData={formData}
+              setFormData={setFormData}
+            />
+            {formData?.regionalLanguageRequired === "yes" && (
+              <CommonForm
+                formControls={regionalLanguage}
+                formData={formData}
+                setFormData={setFormData}
+              />
+            )}
+            <CommonForm
+              formControls={jobController3}
               formData={formData}
               setFormData={setFormData}
             />

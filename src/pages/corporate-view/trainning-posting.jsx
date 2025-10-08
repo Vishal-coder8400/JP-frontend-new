@@ -1,7 +1,6 @@
 import { useState } from "react";
 import CommonForm from "../../components/common/form";
 import {
-  certificationUpload,
   trainingAddress,
   trainingController1,
   trainingController2,
@@ -15,6 +14,7 @@ import { useCorporateTrainingPost } from "../../hooks/corporate/useTraining";
 import { validateFormData } from "../../utils/commonFunctions";
 import ButtonComponent from "../../components/common/button";
 import { z } from "zod";
+import { useUpload } from "../../hooks/common/useUpload";
 
 export const TrainingSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -31,10 +31,6 @@ export const TrainingSchema = z.object({
 
   minimumExperience: z.string().optional().nullable().default(""),
   subjectMatterExpertise: z.string().optional().nullable().default(""),
-  qualificationsRequired: z.string().optional().nullable().default(""),
-
-  // If certificationUpload represents a URL or filename
-  certificationUpload: z.string().optional().nullable().default(""),
 
   sessionsExpected: z.number().int().nonnegative().default(0),
 
@@ -45,7 +41,6 @@ export const TrainingSchema = z.object({
 
   studyMaterialsProvided: z.boolean().default(false),
   demoSessionBeforeConfirming: z.boolean().default(false),
-  recommendationsFromPastClients: z.boolean().default(false),
 });
 
 const TrainningPosting = () => {
@@ -59,8 +54,6 @@ const TrainningPosting = () => {
     hoursPerDay: 0,
     minimumExperience: "",
     subjectMatterExpertise: "",
-    qualificationsRequired: "",
-    certificationUpload: "",
     sessionsExpected: 0,
     certificationUploadRequired: "",
     travelRequired: false,
@@ -68,10 +61,11 @@ const TrainningPosting = () => {
     participantsPerBatch: 0,
     studyMaterialsProvided: false,
     demoSessionBeforeConfirming: false,
-    recommendationsFromPastClients: false,
     budgetPerSession: "",
   });
   const { mutate, isPending, isError, error } = useCorporateTrainingPost();
+  const { mutate: UploadImage } = useUpload();
+
   const onSubmit = (e) => {
     e.preventDefault();
     let payload = { ...formData };
@@ -80,6 +74,9 @@ const TrainningPosting = () => {
       : 0;
     payload.participantsPerBatch = formData.participantsPerBatch
       ? parseInt(formData.participantsPerBatch)
+      : 0;
+    payload.totalDurationDays = formData.totalDurationDays
+      ? parseInt(formData.totalDurationDays)
       : 0;
     const booleanFields = [
       "travelRequired",
@@ -94,7 +91,18 @@ const TrainningPosting = () => {
     if (!isValid) return;
     mutate(payload);
   };
-  console.log(formData);
+  const handleUpload = (file, callback) => {
+    UploadImage(file, {
+      onSuccess: (data) => {
+        const fileUrl = data?.data?.fileUrl;
+        const fileName = data?.data?.fileName;
+        if (callback) {
+          callback(fileUrl, fileName);
+        }
+      },
+    });
+  };
+  // console.log(formData);
   return (
     <div className="w-full self-stretch px-36 py-0 pb-[32px] inline-flex flex-col justify-start items-start gap-5">
       <Navbar onlySupport={false} />
@@ -130,11 +138,13 @@ const TrainningPosting = () => {
               formControls={trainingController1}
               formData={formData}
               setFormData={setFormData}
+              handleUpload={handleUpload}
             />
             <CommonForm
               formControls={trainingMode}
               formData={formData}
               setFormData={setFormData}
+              handleUpload={handleUpload}
             />
             {formData?.trainingMode === "In-person / On-site" ||
             formData.trainingMode === "Hybrid" ? (
@@ -142,12 +152,14 @@ const TrainningPosting = () => {
                 formControls={trainingAddress}
                 formData={formData}
                 setFormData={setFormData}
+                handleUpload={handleUpload}
               />
             ) : null}
             <CommonForm
               formControls={trainingController2}
               formData={formData}
               setFormData={setFormData}
+              handleUpload={handleUpload}
             />
           </div>
         </div>
@@ -157,18 +169,13 @@ const TrainningPosting = () => {
               formControls={trainingController3}
               formData={formData}
               setFormData={setFormData}
+              handleUpload={handleUpload}
             />
-            {formData?.certificationUploadRequired === "yes" ? (
-              <CommonForm
-                formControls={certificationUpload}
-                formData={formData}
-                setFormData={setFormData}
-              />
-            ) : null}
             <CommonForm
               formControls={trainingController4}
               formData={formData}
               setFormData={setFormData}
+              handleUpload={handleUpload}
             />
           </div>
 

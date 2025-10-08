@@ -12,6 +12,7 @@ import { Checkbox } from "../ui/checkbox";
 import useAuthStore from "../../stores/useAuthStore";
 import { PostJobIcon, PostTrainingIcon } from "../../utils/icon";
 import { useCorporateProfileProgress } from "../../hooks/corporate/useProfile";
+import PendingApprove from "../common/pending-approve";
 const candidates = [
   {
     id: 1,
@@ -119,8 +120,13 @@ const hiringFunnelData = [
 
 const Dashboard = () => {
   const { user } = useAuthStore();
+  console.log(user)
   const { data: profileData } = useCorporateProfileProgress();
   console.log(profileData);
+  const nextStagePath =
+    profileData?.data?.currentStage === 2
+      ? "/corporate/profile-setup/final-setup"
+      : "/corporate/dashboard";
 
   return (
     <div className="w-full flex flex-col gap-12">
@@ -147,11 +153,11 @@ const Dashboard = () => {
         </div>
 
         {/* Profile Completion */}
-        {!user?.bankDetails && (
+        {profileData?.data?.signupProgress < 100 ? (
           <div className="p-10 bg-white rounded-2xl shadow-sm border border-gray-200 flex gap-12">
             <div className="flex flex-col gap-4">
               <h2 className="text-7xl font-semibold text-gray-900">
-                NAN%
+                {profileData?.data?.signupProgress}%
               </h2>
               <p className="text-sm font-semibold text-gray-900 opacity-70">
                 Of your profile is complete
@@ -162,30 +168,34 @@ const Dashboard = () => {
                 Complete your profile to post jobs!
               </h3>
               <div className="flex gap-2">
-                {Object.values(user?.profileCompletion || {}).map(
-                  (step, index) => (
-                    <div
-                      key={index}
-                      className={`flex-1 h-2 ${
-                        step ? "bg-lime-600" : "bg-zinc-300"
-                      } rounded-xl`}
-                    />
-                  )
-                )}
+                {Array.from({
+                  length: profileData?.data?.totalStages,
+                }).map((_, index) => (
+                  <div
+                    key={index}
+                    className={`flex-1 h-2 ${
+                      profileData?.data?.completedStages.includes(index + 1)
+                        ? "bg-lime-600"
+                        : "bg-zinc-300"
+                    } rounded-xl`}
+                  />
+                ))}
               </div>
               <div className="flex justify-between items-center">
                 <p className="flex-1 text-sm text-gray-900 opacity-70">
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit.
                 </p>
-                {/* <Link
-                  to={stepRoutes[nextStep]?.route || "#"}
+                <Link
+                  to={nextStagePath || "#"}
                   className="px-4 py-3 bg-gray-800 text-white rounded-md font-semibold text-xs hover:bg-gray-700"
                 >
                   Proceed to Complete
-                </Link> */}
+                </Link>
               </div>
             </div>
           </div>
+        ) : (
+          user?.status !== "active" && <PendingApprove />
         )}
       </div>
 

@@ -9,18 +9,15 @@ import {
 } from "../../../utils/icon";
 import { formatSalaryRange, timeAgo } from "../../../utils/commonFunctions";
 import { useLocation } from "react-router-dom";
+import { IndianRupee } from "lucide-react";
 
-const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const jobType = queryParams.get("jobType");
+const JobDescription = ({ setOpen1, hook }) => {
   const { jobPost } = useJobPostStore();
 
-  const { data: jobDetail } = useGetJobById(jobPost?._id, jobType);
-  const { data: trainningDetails } = useGetTrainningById(jobPost?._id, jobType);
+  const { data } = hook(jobPost?._id);
+  // console.log(data);
   // console.log(trainningDetails);
 
-  const data = jobType === "job" ? jobDetail : trainningDetails;
   // console.log(data, "data");
 
   return (
@@ -84,8 +81,13 @@ const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
                   </div>
                   <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
                   <div className="flex justify-start items-center gap-1.5">
-                    <div className="w-4 h-4 relative">
-                      <CurrencyIcon className="h-full w-full" />
+                    <div className="w-4 h-4 relative flex items-center justify-center">
+                      <IndianRupee
+                        width={12}
+                        height={12}
+                        color="#141414"
+                        strokeWidth={1.5}
+                      />
                     </div>
                     <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
                       {formatSalaryRange(
@@ -398,7 +400,12 @@ const JobDescription = ({ setOpen1, useGetJobById, useGetTrainningById }) => {
                 <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
                 <div className="flex justify-start items-center gap-1.5">
                   <div className="w-4 h-4 relative">
-                    <CurrencyIcon className="h-full w-full" />
+                    <IndianRupee
+                      width={12}
+                      height={12}
+                      color="#141414"
+                      strokeWidth={1.5}
+                    />
                   </div>
                   <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
                     {formatSalaryRange(

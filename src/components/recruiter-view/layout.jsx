@@ -54,19 +54,19 @@ const dashboardMenuCorporate = [
     icon: <Cubed className="h-[20px] w-[20px]" />,
   },
   {
-    name: "Job Postings",
+    name: "Jobs",
     link: "/corporate/job-posting/listing",
+    icon: <Bag className="h-[20px] w-[20px]" />,
+  },
+  {
+    name: "Trainings",
+    link: "/corporate/training-listing",
     icon: <Bag className="h-[20px] w-[20px]" />,
   },
   {
     name: "Resume Filtering",
     link: "/corporate/resume-filtering",
     icon: <Slate2 className="h-[20px] w-[20px]" />,
-  },
-  {
-    name: "Referral Management",
-    link: "/corporate/referal-management",
-    icon: <CursorIcon className="h-[20px] w-[20px]" />,
   },
 ];
 const dashboardMenus = {

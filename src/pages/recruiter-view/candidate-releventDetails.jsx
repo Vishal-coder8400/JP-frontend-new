@@ -26,12 +26,15 @@ const experienceDetailSchema = z
       .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, "Start date must be in MM/YY format"),
     endDate: z
       .string()
-      .min(1, "End date is required")
-      .regex(/^(0[1-9]|1[0-2])\/\d{2}$/, "End date must be in MM/YY format"), // Allow empty string if currentlyWorking is true
+      .optional()
+      .refine((val) => !val || /^(0[1-9]|1[0-2])\/\d{2}$/.test(val), {
+        message: "End date must be in MM/YY format",
+      }),
     currentlyWorking: z.boolean().optional(),
   })
   .refine(
     (data) => {
+      if (!data.endDate) return true;
       const parseDate = (str) => {
         const [month, year] = str.split("/").map(Number);
         const fullYear = year >= 50 ? 1900 + year : 2000 + year;
@@ -197,7 +200,7 @@ const CandidateReleventDetails = () => {
                           ...prev,
                           currentWorkingStatus: "serving-notice-period",
                           experienceDetails: prev.experienceDetails.map(
-                            (item) => ({ ...item, currentlyWorking: true })
+                            (item) => ({ ...item, currentlyWorking: false })
                           ),
                         }))
                       }

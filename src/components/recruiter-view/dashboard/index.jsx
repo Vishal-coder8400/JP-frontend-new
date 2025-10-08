@@ -11,8 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getNextIncompleteStep } from "../../../utils/profileCompletion/calculate";
-import { calculateProfileCompletionPercentage } from "../../../utils/profileCompletion/rule";
 import { useGetUserProgress } from "../../../hooks/recruiter/useProfile";
 
 const data = [
@@ -28,11 +26,11 @@ const Index = () => {
   const { user } = useAuthStore();
   const { data: progress } = useGetUserProgress();
   const nextStagePath =
-    progress?.data?.currentStage === 1
+    progress?.data?.currentStage === 2
       ? "/recruiter/profile-setup/kyc-verification"
-      : progress?.data?.currentStage === 2
-      ? "/recruiter/profile-setup/sectoral-details"
       : progress?.data?.currentStage === 3
+      ? "/recruiter/profile-setup/sectoral-details"
+      : progress?.data?.currentStage === 4
       ? "/recruiter/profile-setup/qualification-details"
       : "/recruiter/dashboard";
 

@@ -289,6 +289,65 @@ export default function CommonForm({
             )}
           </div>
         );
+      case "textarea-count":
+        // You can set either word-based or char-based limit
+        const maxWords = getControlItem.maxWords || null;
+        const maxChars = getControlItem.maxChars || null;
+
+        const currentValue = value || "";
+        const wordCount =
+          currentValue.trim() === ""
+            ? 0
+            : currentValue.trim().split(/\s+/).length;
+        const charCount = currentValue.length;
+
+        const isWordLimitExceeded = maxWords && wordCount > maxWords;
+        const isCharLimitExceeded = maxChars && charCount > maxChars;
+
+        return (
+          <div className="relative flex flex-col gap-1">
+            <Textarea
+              {...commonInputProps}
+              id={getControlItem.id || getControlItem.name}
+              rows={4}
+              onChange={(e) => {
+                const newVal = e.target.value;
+                if (maxWords) {
+                  const count =
+                    newVal.trim() === ""
+                      ? 0
+                      : newVal.trim().split(/\s+/).length;
+                  if (count > maxWords) return; // prevent exceeding words
+                }
+                if (maxChars && newVal.length > maxChars) return; // prevent exceeding chars
+                setFormData((prev) =>
+                  setNestedValue(prev, nameWithIndex, newVal)
+                );
+              }}
+            />
+
+            {/* Word count or char count */}
+            {maxWords && (
+              <span
+                className={`absolute bottom-[-16px] right-0 text-xs ${
+                  isWordLimitExceeded ? "text-red-500" : "text-gray-500"
+                } self-end`}
+              >
+                {wordCount} / {maxWords} words
+              </span>
+            )}
+            {maxChars && (
+              <span
+                className={`absolute bottom-[-16px] right-0 text-xs ${
+                  isCharLimitExceeded ? "text-red-500" : "text-gray-500"
+                } self-end`}
+              >
+                {charCount} / {maxChars} characters
+              </span>
+            )}
+          </div>
+        );
+
       case "textarea":
         return (
           <Textarea

@@ -181,10 +181,10 @@ const CandidateSelection = ({
                   Candidates
                 </TableHead>
                 <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
-                  Applied for
+                  Location
                 </TableHead>
                 <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
-                  Skills
+                  Organization
                 </TableHead>
                 <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                   Experience
@@ -233,8 +233,8 @@ const CandidateSelection = ({
                     </TableCell>
                     <TableCell className="px-[16px] py-[12px]">
                       <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                        {item?.skills.length > 0
-                          ? item?.skills?.join(", ")
+                        {item?.experienceDetails[0]
+                          ? item?.experienceDetails[0]?.companyName
                           : "N/A"}
                       </div>
                     </TableCell>
@@ -317,10 +317,10 @@ const CandidateSelection = ({
                   Candidates
                 </TableHead>
                 <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
-                  Applied for
+                  Location
                 </TableHead>
                 <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
-                  Skills
+                  Organization
                 </TableHead>
                 <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                   Experience
@@ -365,8 +365,8 @@ const CandidateSelection = ({
                     </TableCell>
                     <TableCell className="px-[16px] py-[12px]">
                       <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                        {item?.skills?.length > 0
-                          ? item?.skills?.join(", ")
+                        {item?.experienceDetails[0]
+                          ? item?.experienceDetails[0]?.companyName
                           : "N/A"}
                       </div>
                     </TableCell>

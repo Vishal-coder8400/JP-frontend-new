@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import CorporateListing from "../../components/corporate-view/listing";
-import {
-  useCorporateJobById,
-  useFilteredJobs,
-} from "../../hooks/corporate/useJob";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import JobDescription from "../../components/recruiter-view/job-openings/job-description";
 import Navbar from "../../components/recruiter-view/navbar";
 import { useSearchParams } from "react-router-dom";
 import { useDebounce } from "../../hooks/common/useDebounce";
+import {
+  useGetTrainningById,
+  useTraining,
+} from "../../hooks/corporate/useTraining";
 
-const Listing = () => {
+const TrainingListing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // console.log(jobPost)
@@ -27,9 +27,11 @@ const Listing = () => {
       search: params.search || "",
       sortBy: params.sortBy || "",
       jobStatus: params.jobStatus || "",
+      status: params.status || "",
     };
   });
-  const { data: jobPosts, isLoading } = useFilteredJobs(filters);
+  const { data: trainingPosts, isLoading: isLoading2 } = useTraining(filters);
+  //   console.log(trainingPosts);
 
   // 👇 Sync filters.search to searchText on mount
   useEffect(() => {
@@ -73,9 +75,11 @@ const Listing = () => {
       search: "",
       sortBy: "",
       jobStatus: "",
+      status: "",
     }));
     setSearchText("");
   };
+
   return (
     <div className="w-full">
       <Sheet open={open} onOpenChange={setOpen}>
@@ -89,13 +93,13 @@ const Listing = () => {
             overflow-y-auto border-transparent"
         >
           <div className="w-full h-full">
-            <JobDescription hook={useCorporateJobById} />
+            <JobDescription hook={useGetTrainningById} />
           </div>
         </SheetContent>
       </Sheet>
       <Navbar onlySupport={false} />
       <CorporateListing
-        jobPosts={jobPosts}
+        jobPosts={trainingPosts?.data}
         formData={filters}
         setFormData={setFilters}
         setOpen={setOpen}
@@ -109,4 +113,4 @@ const Listing = () => {
   );
 };
 
-export default Listing;
+export default TrainingListing;

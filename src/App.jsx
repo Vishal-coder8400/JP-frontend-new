@@ -75,6 +75,9 @@ import TrainerSearch from "./pages/trainner-view/search";
 import { useGetTrainerProfile } from "./hooks/trainer/useProfile";
 import SuperAdminAuth from "./components/common/superAdminAuth";
 import Congratulation from "./pages/common/congratulation";
+import TrainingListing from "./pages/corporate-view/trainingListing";
+import AppliedCandidatesJobs from "./pages/corporate-view/applied-candidates-jobs";
+import AppliedCandidatesTrainings from "./pages/corporate-view/applied-candidates-trainings";
 
 function App() {
   useEffect(() => {
@@ -252,6 +255,15 @@ function App() {
           <Route path="dashboard" element={<CorporateDashboard />} />
           <Route path="job-posting/analytics" element={<Analytics />} />
           <Route path="job-posting/listing" element={<Listing />} />
+          <Route
+            path="job-posting/listing/:jobID"
+            element={<AppliedCandidatesJobs />}
+          />
+          <Route path="training-listing" element={<TrainingListing />} />
+          <Route
+            path="training-listing/:trainingID"
+            element={<AppliedCandidatesTrainings />}
+          />
           <Route path="resume-filtering" element={<ResumeFiltering />} />
           <Route path="profile" element={<CorporateProfile />} />
         </Route>
