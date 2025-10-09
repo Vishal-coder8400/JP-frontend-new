@@ -177,12 +177,6 @@ const RecruiterDetails = ({
                     src={displayRecruiter?.profileImage || "/person.png"}
                     alt={displayRecruiter?.name}
                   />
-                  <button
-                    onClick={() => setShowEditDrawer(true)}
-                    className="absolute -bottom-2 -right-2 p-2 bg-white rounded-lg flex justify-center items-center hover:bg-gray-50 transition-colors cursor-pointer"
-                  >
-                    <Edit className="w-3 h-3 text-[#6945ED]" />
-                  </button>
                 </div>
                 <div className="flex flex-col gap-2">
                   <div className="text-lg font-medium">
@@ -190,53 +184,61 @@ const RecruiterDetails = ({
                   </div>
                 </div>
               </div>
-              {areApprovalBtnsVisible && (
-                <div className="flex items-center gap-4">
-                  {displayRecruiter.status !== "approved" ? (
-                    <>
-                      <Button
-                        variant={"purple"}
-                        onClick={handleApprove}
-                        disabled={isLoading}
-                      >
-                        {isLoading ? "Processing..." : "Approve Recruiter"}
-                      </Button>
-                      <Button
-                        variant={"destructive"}
-                        onClick={handleRejectClick}
-                        disabled={isLoading}
-                      >
-                        {isLoading ? "Processing..." : "Reject Recruiter"}
-                      </Button>
-                      <Button
-                        variant={"black"}
-                        onClick={handleHoldClick}
-                        disabled={isLoading}
-                      >
-                        {isLoading ? "Processing..." : "Hold Recruiter"}
-                      </Button>
-                    </>
-                  ) : (
-                    <div className="flex flex-col gap-2">
-                      <AdminStatusBadge status={displayRecruiter?.status} />
-                      {displayRecruiter?.status === "rejected" &&
-                        displayRecruiter?.rejectionReason && (
-                          <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs">
-                            <strong>Rejection Reason:</strong>{" "}
-                            {displayRecruiter.rejectionReason}
-                          </div>
-                        )}
-                      {displayRecruiter?.status === "hold" &&
-                        displayRecruiter?.holdReason && (
-                          <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs">
-                            <strong>Hold Reason:</strong>{" "}
-                            {displayRecruiter.holdReason}
-                          </div>
-                        )}
-                    </div>
-                  )}
-                </div>
-              )}
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setShowEditDrawer(true)}
+                  className="p-2 bg-white rounded-lg flex justify-center items-center hover:bg-gray-50 transition-colors cursor-pointer border border-gray-200 gap-2"
+                >
+                  <Edit className="w-4 h-4" /> Edit Recruiter
+                </button>
+                {areApprovalBtnsVisible && (
+                  <>
+                    {displayRecruiter.status !== "approved" ? (
+                      <>
+                        <Button
+                          variant={"purple"}
+                          onClick={handleApprove}
+                          disabled={isLoading}
+                        >
+                          {isLoading ? "Processing..." : "Approve Recruiter"}
+                        </Button>
+                        <Button
+                          variant={"destructive"}
+                          onClick={handleRejectClick}
+                          disabled={isLoading}
+                        >
+                          {isLoading ? "Processing..." : "Reject Recruiter"}
+                        </Button>
+                        <Button
+                          variant={"black"}
+                          onClick={handleHoldClick}
+                          disabled={isLoading}
+                        >
+                          {isLoading ? "Processing..." : "Hold Recruiter"}
+                        </Button>
+                      </>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        <AdminStatusBadge status={displayRecruiter?.status} />
+                        {displayRecruiter?.status === "rejected" &&
+                          displayRecruiter?.rejectionReason && (
+                            <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs">
+                              <strong>Rejection Reason:</strong>{" "}
+                              {displayRecruiter.rejectionReason}
+                            </div>
+                          )}
+                        {displayRecruiter?.status === "hold" &&
+                          displayRecruiter?.holdReason && (
+                            <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs">
+                              <strong>Hold Reason:</strong>{" "}
+                              {displayRecruiter.holdReason}
+                            </div>
+                          )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </div>
           <div className="self-stretch inline-flex flex-col justify-start items-start gap-6">
