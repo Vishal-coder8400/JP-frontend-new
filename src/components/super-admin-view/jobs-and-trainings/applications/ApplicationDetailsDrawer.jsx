@@ -5,16 +5,15 @@ import AboutCandidate from "../../database/tabs/candidates/tabs/AboutCandidate";
 import { Button } from "@/components/ui/button";
 import { useGetCandidateDetails } from "../../../../hooks/super-admin/useApplicant";
 import { useApplicationApprovals } from "../../../../hooks/super-admin/useApplicationApprovals";
-import RejectionReasonModal from "../../../../components/common/RejectionReasonModal";
-import HoldReasonModal from "../../../../components/common/HoldReasonModal";
+import ApplicationActionModal from "../../../../components/common/ApplicationActionModal";
 import { toast } from "sonner";
 
 const ApplicationDetailsDrawer = ({ application, onRevalidate }) => {
   const [activeTab, setActiveTab] = useState("aboutCandidate");
-  const [showRejectionModal, setShowRejectionModal] = useState(false);
-  const [showHoldModal, setShowHoldModal] = useState(false);
+  const [showActionModal, setShowActionModal] = useState(false);
+  const [actionType, setActionType] = useState("approve");
   const applicantId = application?.applicantId;
-
+  console.log(applicantId);
   const {
     data: candidateDetails,
     isLoading,
@@ -32,60 +31,42 @@ const ApplicationDetailsDrawer = ({ application, onRevalidate }) => {
 
   const candidate = candidateDetails?.data;
 
-  const handleApprove = async () => {
-    try {
-      await approveApplication(
-        application._id,
-        "Application approved by admin",
-        "Candidate meets requirements"
-      );
-      toast.success("Application approved successfully");
-      if (onRevalidate) {
-        await onRevalidate();
-      }
-    } catch (error) {
-      console.error("Failed to approve application:", error);
-      toast.error("Failed to approve application");
-    }
+  const handleApproveClick = () => {
+    setActionType("approve");
+    setShowActionModal(true);
   };
 
-  const handleReject = async (rejectionReason) => {
-    try {
-      await rejectApplication(
-        application._id,
-        rejectionReason,
-        rejectionReason
-      );
-      toast.success("Application rejected successfully");
-      setShowRejectionModal(false);
-      if (onRevalidate) {
-        await onRevalidate();
-      }
-    } catch (error) {
-      console.error("Failed to reject application:", error);
-      toast.error("Failed to reject application");
-    }
-  };
-
-  const handleHoldApplication = async (holdReason) => {
-    try {
-      await handleHold(
-        application._id,
-        holdReason,
-        "Pending additional information"
-      );
-      toast.success("Application put on hold");
-      if (onRevalidate) {
-        await onRevalidate();
-      }
-    } catch (error) {
-      console.error("Failed to put application on hold:", error);
-      toast.error("Failed to put application on hold");
-    }
+  const handleRejectClick = () => {
+    setActionType("reject");
+    setShowActionModal(true);
   };
 
   const handleHoldClick = () => {
-    setShowHoldModal(true);
+    setActionType("hold");
+    setShowActionModal(true);
+  };
+
+  const handleActionConfirm = async ({ notes, feedback }) => {
+    try {
+      if (actionType === "approve") {
+        await approveApplication(application._id, notes, feedback);
+        toast.success("Application approved successfully");
+      } else if (actionType === "reject") {
+        await rejectApplication(application._id, notes, feedback);
+        toast.success("Application rejected successfully");
+      } else if (actionType === "hold") {
+        await handleHold(application._id, notes, feedback);
+        toast.success("Application put on hold");
+      }
+
+      setShowActionModal(false);
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+    } catch (error) {
+      console.error(`Failed to ${actionType} application:`, error);
+      toast.error(`Failed to ${actionType} application`);
+    }
   };
 
   const tabs = [
@@ -153,7 +134,7 @@ const ApplicationDetailsDrawer = ({ application, onRevalidate }) => {
         <div className="flex gap-2">
           <Button
             variant={"destructive"}
-            onClick={() => setShowRejectionModal(true)}
+            onClick={handleRejectClick}
             disabled={isApprovalLoading}
           >
             Reject Application
@@ -168,7 +149,7 @@ const ApplicationDetailsDrawer = ({ application, onRevalidate }) => {
 
           <Button
             variant={"purple"}
-            onClick={handleApprove}
+            onClick={handleApproveClick}
             disabled={isApprovalLoading}
           >
             Accept Application
@@ -201,22 +182,15 @@ const ApplicationDetailsDrawer = ({ application, onRevalidate }) => {
         </div>
       </div>
 
-      {/* Rejection Reason Modal */}
-      <RejectionReasonModal
-        isOpen={showRejectionModal}
-        onClose={() => setShowRejectionModal(false)}
-        onConfirm={handleReject}
+      {/* Application Action Modal */}
+      <ApplicationActionModal
+        isOpen={showActionModal}
+        onClose={() => setShowActionModal(false)}
+        onConfirm={handleActionConfirm}
         isLoading={isApprovalLoading}
+        actionType={actionType}
         entityType="application"
-      />
-
-      {/* Hold Reason Modal */}
-      <HoldReasonModal
-        isOpen={showHoldModal}
-        onClose={() => setShowHoldModal(false)}
-        onConfirm={handleHoldApplication}
-        isLoading={isApprovalLoading}
-        entityType="application"
+        showFeedback={true}
       />
     </div>
   );

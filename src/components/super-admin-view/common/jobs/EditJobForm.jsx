@@ -1,193 +1,221 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import CommonForm from "@/components/common/form";
+import CommonForm from "../../../common/form";
+import ButtonComponent from "../../../common/button";
 import { validateFormData } from "@/utils/commonFunctions";
-import { jobController1, jobController2, walkinAdress } from "@/config";
 import { z } from "zod";
 import { toast } from "sonner";
 
-// Validation schema matching the job creation form
-const editJobSchema = z
-  .object({
-    jobTitle: z
-      .string({ required_error: "Job title is required" })
-      .min(1, "Job title cannot be empty"),
+// Form controllers for job editing - only fields displayed in JobDetailsDrawer
+const jobBasicInfo = [
+  {
+    name: "jobTitle",
+    label: "Job Title",
+    placeholder: "Enter job title",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    name: "jobType",
+    label: "Job Type",
+    componentType: "select",
+    placeholder: "Select job type",
+    options: [
+      { id: "Full-Time", label: "Full-Time" },
+      { id: "Part-Time", label: "Part-Time" },
+      { id: "Both", label: "Both" },
+      { id: "Night-Time", label: "Night-Time" },
+    ],
+  },
+  {
+    name: "jobDescription",
+    label: "Job Description",
+    placeholder: "Enter job description",
+    componentType: "textarea",
+    rows: 4,
+  },
+  {
+    name: "keyResponsibilities",
+    label: "Key Responsibilities (one per line)",
+    placeholder: "Enter key responsibilities, one per line",
+    componentType: "textarea",
+    rows: 4,
+  },
+];
 
-    jobType: z.enum(["Full-Time", "Part-Time", "Both", "Night-Time"], {
-      errorMap: () => ({ message: "Select a valid job type" }),
-    }),
+const jobDetails = [
+  {
+    row: [
+      {
+        name: "minimumEducation",
+        label: "Education",
+        componentType: "select",
+        placeholder: "Select education",
+        options: [
+          { id: "10th Pass", label: "10th Pass" },
+          { id: "12th Pass", label: "12th Pass" },
+          { id: "Diploma", label: "Diploma" },
+          { id: "Graduate", label: "Graduate" },
+          { id: "Postgraduate", label: "Postgraduate" },
+        ],
+      },
+      {
+        name: "experienceLevel",
+        label: "Experience Level",
+        componentType: "select",
+        placeholder: "Select experience",
+        options: [
+          { id: "0-1 year", label: "0-1 year" },
+          { id: "1-2 year", label: "1-2 year" },
+          { id: "2-3 years", label: "2-3 years" },
+          { id: "3-4 years", label: "3-4 years" },
+          { id: "4-5 years", label: "4-5 years" },
+          { id: "5-7 years", label: "5-7 years" },
+          { id: "7-10 years", label: "7-10 years" },
+          { id: "10+ years", label: "10+ years" },
+        ],
+      },
+    ],
+  },
+  {
+    row: [
+      {
+        name: "modeOfWork",
+        label: "Mode of Work",
+        componentType: "select",
+        placeholder: "Select mode",
+        options: [
+          { id: "Work from Office", label: "Work from Office" },
+          { id: "Work from Home", label: "Work from Home" },
+          { id: "Hybrid", label: "Hybrid" },
+        ],
+      },
+      {
+        name: "modeOfInterview",
+        label: "Mode of Interview",
+        placeholder: "e.g. Walk In, Online",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  {
+    row: [
+      {
+        name: "workingHours",
+        label: "Working Hours",
+        placeholder: "e.g. 8 hours/day",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "genderPreference",
+        label: "Gender Preference",
+        componentType: "select",
+        placeholder: "Select preference",
+        options: [
+          { id: "Male", label: "Male" },
+          { id: "Female", label: "Female" },
+          { id: "Any", label: "Any" },
+        ],
+      },
+    ],
+  },
+  {
+    name: "officeLocation",
+    label: "Office Location",
+    placeholder: "Enter office address",
+    componentType: "textarea",
+    rows: 2,
+  },
+  {
+    row: [
+      {
+        name: "city",
+        label: "City",
+        placeholder: "Enter city",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "state",
+        label: "State",
+        placeholder: "Enter state",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  {
+    name: "salaryRange",
+    label: "Salary Range",
+    placeholder: "e.g. ₹50,000 - ₹75,000",
+    componentType: "input",
+    type: "text",
+  },
+];
 
-    workingHours: z
-      .string({ required_error: "Working hours are required" })
-      .min(1, "Working hours cannot be empty"),
+const jobAdditionalInfo = [
+  {
+    name: "regionalLanguageRequired",
+    label: "Regional Language Required",
+    componentType: "checkbox",
+  },
+  {
+    name: "requiredSkills",
+    label: "Required Skills (comma separated)",
+    placeholder: "Enter required skills separated by commas",
+    componentType: "textarea",
+    rows: 2,
+  },
+  {
+    name: "contactEmail",
+    label: "Contact Email",
+    placeholder: "Enter contact email",
+    componentType: "input",
+    type: "email",
+  },
+];
 
-    workingDays: z
-      .string({ required_error: "Working days are required" })
-      .min(1, "Working days cannot be empty"),
-
-    isSundayWorking: z.boolean({
-      required_error: "Please specify if Sunday is working or not",
-    }),
-
-    officeLocation: z
-      .string({ required_error: "Office location is required" })
-      .min(1, "Office location cannot be empty"),
-
-    city: z
-      .string({ required_error: "City is required" })
-      .min(1, "City cannot be empty"),
-
-    state: z
-      .string({ required_error: "State is required" })
-      .min(1, "State cannot be empty"),
-
-    pincode: z
-      .string({ required_error: "Pincode is required" })
-      .regex(/^\d{6}$/, "Pincode must be a 6-digit number"),
-
-    modeOfWork: z.enum(["Work from Office", "Work from Home", "Hybrid"], {
-      errorMap: () => ({ message: "Select a valid mode of work" }),
-    }),
-
-    experienceLevel: z
-      .string({ required_error: "Experience level is required" })
-      .min(1, "Experience level cannot be empty"),
-
-    genderPreference: z.enum(["Male", "Female", "Any"], {
-      errorMap: () => ({ message: "Select a valid gender preference" }),
-    }),
-
-    minimumEducation: z
-      .string({ required_error: "Minimum education is required" })
-      .min(1, "Minimum education cannot be empty"),
-
-    englishLevel: z.enum(["basic", "moderate", "fluent"], {
-      errorMap: () => ({ message: "Select a valid English level" }),
-    }),
-
-    regionalLanguageRequired: z.boolean({
-      required_error: "Please specify if regional language is required",
-    }),
-
-    preferredAgeRange: z
-      .string({ required_error: "Preferred age range is required" })
-      .regex(
-        /^\d{2}-\d{2}$/,
-        "Age range must be in format 'xx-yy' (e.g., 22-35)"
-      ),
-
-    salaryRange: z
-      .object({
-        min: z.number().min(1, "Minimum salary is required"),
-        max: z.number().min(1, "Maximum salary is required"),
-      })
-      .refine((data) => parseInt(data.min, 10) <= parseInt(data.max, 10), {
-        message: "Minimum salary cannot be greater than maximum salary",
-        path: ["min"],
-      }),
-
-    twoWheelerMandatory: z.boolean({
-      required_error: "Please specify if two-wheeler is mandatory",
-    }),
-
-    jobDescription: z
-      .string({ required_error: "Job description is required" })
-      .min(50, "Job description must be at least 50 characters"),
-
-    isWalkInInterview: z.boolean({
-      required_error: "Please specify if it's a walk-in interview",
-    }),
-
-    // These fields are optional by default
-    walkInDate: z.string().optional(),
-    walkInTime: z.string().optional(),
-    walkInAddress: z.string().optional(),
-    spocName: z.string().optional(),
-    spocNumber: z.string().optional(),
-  })
-  .superRefine((data, ctx) => {
-    // Only validate these if isWalkInInterview is true
-    if (data.isWalkInInterview) {
-      if (!data.walkInDate?.trim()) {
-        ctx.addIssue({
-          path: ["walkInDate"],
-          message: "Date is required",
-          code: z.ZodIssueCode.custom,
-        });
-      }
-      if (!data.walkInTime?.trim()) {
-        ctx.addIssue({
-          path: ["walkInTime"],
-          message: "Time is required",
-          code: z.ZodIssueCode.custom,
-        });
-      }
-      if (!data.walkInAddress?.trim()) {
-        ctx.addIssue({
-          path: ["walkInAddress"],
-          message: "Address is required",
-          code: z.ZodIssueCode.custom,
-        });
-      }
-      if (!data.spocName?.trim()) {
-        ctx.addIssue({
-          path: ["spocName"],
-          message: "Name is required",
-          code: z.ZodIssueCode.custom,
-        });
-      }
-      if (!/^\d{10}$/.test(data.spocNumber || "")) {
-        ctx.addIssue({
-          path: ["spocNumber"],
-          message: "Phone number must be exactly 10 digits",
-          code: z.ZodIssueCode.custom,
-        });
-      }
-    }
-  });
+// Validation schema for fields displayed in JobDetailsDrawer
+const editJobSchema = z.object({
+  jobTitle: z.string().optional(),
+  jobType: z.string().optional(),
+  jobDescription: z.string().optional(),
+  keyResponsibilities: z.array(z.string()).optional(),
+  minimumEducation: z.string().optional(),
+  experienceLevel: z.string().optional(),
+  modeOfWork: z.string().optional(),
+  modeOfInterview: z.string().optional(),
+  officeLocation: z.string().optional(),
+  city: z.string().optional(),
+  state: z.string().optional(),
+  salaryRange: z.string().optional(),
+  workingHours: z.string().optional(),
+  genderPreference: z.string().optional(),
+  regionalLanguageRequired: z.boolean().optional(),
+  requiredSkills: z.array(z.string()).optional(),
+  contactEmail: z.string().email().optional().or(z.literal("")),
+});
 
 const EditJobForm = ({ job, onClose, onSave }) => {
   const [formData, setFormData] = useState({
     jobTitle: "",
     jobType: "",
-    workingHours: "",
-    workingDays: "",
-    isSundayWorking: "",
+    jobDescription: "",
+    keyResponsibilities: "",
+    minimumEducation: "",
+    experienceLevel: "",
+    modeOfWork: "",
+    modeOfInterview: "",
     officeLocation: "",
     city: "",
     state: "",
-    pincode: "",
-    modeOfWork: "",
-    experienceLevel: "",
+    salaryRange: "",
+    workingHours: "",
     genderPreference: "",
-    minimumEducation: "",
-    englishLevel: "",
-    regionalLanguageRequired: "",
-    preferredAgeRange: "",
-    requiredSkills: [],
-    salaryRange: {
-      min: "",
-      max: "",
-    },
-    twoWheelerMandatory: "",
-    jobDescription: "",
-    isWalkInInterview: "",
-    walkInDate: "",
-    walkInTime: "",
-    walkInAddress: "",
-    spocName: "",
-    spocNumber: "",
+    regionalLanguageRequired: false,
+    requiredSkills: "",
+    contactEmail: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -198,161 +226,154 @@ const EditJobForm = ({ job, onClose, onSave }) => {
       setFormData({
         jobTitle: job.jobTitle || job.title || "",
         jobType: job.jobType || "",
-        workingHours: job.workingHours || "",
-        workingDays: job.workingDays || "",
-        isSundayWorking:
-          job.isSundayWorking === true
-            ? "yes"
-            : job.isSundayWorking === false
-            ? "no"
-            : "",
+        jobDescription: job.jobDescription || job.description || "",
+        keyResponsibilities: Array.isArray(job.keyResponsibilities)
+          ? job.keyResponsibilities.join("\n")
+          : job.keyResponsibilities || "",
+        minimumEducation: job.minimumEducation || "",
+        experienceLevel: job.experienceLevel || "",
+        modeOfWork: job.modeOfWork || "",
+        modeOfInterview: job.modeOfInterview || "",
         officeLocation: job.officeLocation || job.location || "",
         city: job.city || "",
         state: job.state || "",
-        pincode: job.pincode || "",
-        modeOfWork: job.modeOfWork || "",
-        experienceLevel: job.experienceLevel || "",
+        salaryRange: job.salaryRange || "",
+        workingHours: job.workingHours || "",
         genderPreference: job.genderPreference || "",
-        minimumEducation: job.minimumEducation || "",
-        englishLevel: job.englishLevel || "",
-        regionalLanguageRequired:
-          job.regionalLanguageRequired === true
-            ? "yes"
-            : job.regionalLanguageRequired === false
-            ? "no"
-            : "",
-        preferredAgeRange: job.preferredAgeRange || "",
-        requiredSkills: job.requiredSkills || [],
-        salaryRange: {
-          min: job.salaryRange?.min || job.minSalary || "",
-          max: job.salaryRange?.max || job.maxSalary || "",
-        },
-        twoWheelerMandatory:
-          job.twoWheelerMandatory === true
-            ? "yes"
-            : job.twoWheelerMandatory === false
-            ? "no"
-            : "",
-        jobDescription: job.jobDescription || job.description || "",
-        isWalkInInterview:
-          job.isWalkInInterview === true
-            ? "yes"
-            : job.isWalkInInterview === false
-            ? "no"
-            : "",
-        walkInDate: job.walkInDate || "",
-        walkInTime: job.walkInTime || "",
-        walkInAddress: job.walkInAddress || "",
-        spocName: job.spocName || "",
-        spocNumber: job.spocNumber || "",
+        regionalLanguageRequired: job.regionalLanguageRequired || false,
+        requiredSkills: Array.isArray(job.requiredSkills)
+          ? job.requiredSkills.join(", ")
+          : job.requiredSkills || "",
+        contactEmail: job.contactEmail || "",
       });
     }
   }, [job]);
+
+  const transformFormDataToPayload = (formData) => {
+    return {
+      jobTitle: formData.jobTitle || undefined,
+      jobType: formData.jobType || undefined,
+      jobDescription: formData.jobDescription || undefined,
+      keyResponsibilities: formData.keyResponsibilities
+        ? formData.keyResponsibilities.split("\n").filter((item) => item.trim())
+        : undefined,
+      minimumEducation: formData.minimumEducation || undefined,
+      experienceLevel: formData.experienceLevel || undefined,
+      modeOfWork: formData.modeOfWork || undefined,
+      modeOfInterview: formData.modeOfInterview || undefined,
+      officeLocation: formData.officeLocation || undefined,
+      city: formData.city || undefined,
+      state: formData.state || undefined,
+      salaryRange: formData.salaryRange || undefined,
+      workingHours: formData.workingHours || undefined,
+      genderPreference: formData.genderPreference || undefined,
+      regionalLanguageRequired: formData.regionalLanguageRequired,
+      requiredSkills: formData.requiredSkills
+        ? formData.requiredSkills
+            .split(",")
+            .map((skill) => skill.trim())
+            .filter((skill) => skill)
+        : undefined,
+      contactEmail: formData.contactEmail || undefined,
+    };
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      let payload = { ...formData };
-
-      // Convert boolean fields from "yes"/"no" to boolean
-      const booleanFields = [
-        "isWalkInInterview",
-        "twoWheelerMandatory",
-        "regionalLanguageRequired",
-        "isSundayWorking",
-      ];
-      booleanFields.forEach((field) => {
-        payload[field] = formData[field] === "yes";
-      });
-
-      // Convert salary range to numbers
-      payload.salaryRange = {
-        min: Number(payload.salaryRange.min),
-        max: Number(payload.salaryRange.max),
-      };
-
-      const isValid = validateFormData(editJobSchema, payload);
-      if (!isValid) {
-        setIsSubmitting(false);
+      const validationResult = validateFormData(formData, editJobSchema);
+      if (!validationResult.isValid) {
+        toast.error("Please fix the validation errors");
         return;
       }
 
-      // Call the save function passed from parent
-      if (onSave) {
-        await onSave(payload);
-      }
+      const payload = transformFormDataToPayload(formData);
 
-      toast.success("Job updated successfully!");
-      if (onClose) {
-        onClose();
-      }
+      // Remove undefined values to keep payload clean
+      Object.keys(payload).forEach((key) => {
+        if (payload[key] === undefined || payload[key] === "") {
+          delete payload[key];
+        }
+      });
+
+      await onSave(payload);
     } catch (error) {
       console.error("Error updating job:", error);
-      toast.error("Failed to update job");
+      toast.error("Failed to update job. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="h-full overflow-y-auto bg-white">
-      <div className="p-6">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Edit Job</h2>
-          <p className="text-gray-600 mt-1">Update job information</p>
+    <div className="w-full h-full p-6 bg-white overflow-y-auto">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Edit Job</h2>
+          <p className="text-gray-600">Update job information and details</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Job Basic Information */}
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold mb-4">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Job Basic Information
             </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={jobController1}
+                formControls={jobBasicInfo}
                 formData={formData}
                 setFormData={setFormData}
               />
             </div>
           </div>
 
-          {/* Job Requirements */}
-          <div className="bg-white rounded-lg shadow-sm border p-6">
-            <h3 className="text-lg font-semibold mb-4">Job Requirements</h3>
+          {/* Job Details */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Job Details
+            </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={jobController2}
+                formControls={jobDetails}
                 formData={formData}
                 setFormData={setFormData}
               />
-
-              {/* Walk-in Interview Details */}
-              {formData?.isWalkInInterview === "yes" && (
-                <div className="mt-6">
-                  <h4 className="text-md font-semibold mb-4">
-                    Walk-in Interview Details
-                  </h4>
-                  <CommonForm
-                    formControls={walkinAdress}
-                    formData={formData}
-                    setFormData={setFormData}
-                  />
-                </div>
-              )}
             </div>
           </div>
 
-          {/* Form Actions */}
-          <div className="flex justify-end gap-4 pb-6">
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save Changes"}
-            </Button>
+          {/* Additional Information */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Additional Information
+            </h3>
+            <div className="space-y-4">
+              <CommonForm
+                formControls={jobAdditionalInfo}
+                formData={formData}
+                setFormData={setFormData}
+              />
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <ButtonComponent
+              type="button"
+              color="gray"
+              buttonText="Cancel"
+              onClick={onClose}
+              className="px-6 py-2"
+            />
+            <ButtonComponent
+              type="submit"
+              color="#6945ED"
+              buttonText={isSubmitting ? "Updating..." : "Update Job"}
+              isPending={isSubmitting}
+              className="px-6 py-2"
+            />
           </div>
         </form>
       </div>

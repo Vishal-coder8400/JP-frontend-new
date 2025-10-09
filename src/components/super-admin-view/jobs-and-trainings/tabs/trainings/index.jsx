@@ -10,7 +10,7 @@ import ErrorDisplay from "@/components/common/ErrorDisplay";
 const TrainingsTab = () => {
   const [filters, setFilters] = useState({
     search: "",
-    status: [],
+    status: "active",
     postedDate: null,
     location: [],
     company: [],

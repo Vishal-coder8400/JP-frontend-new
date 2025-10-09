@@ -43,6 +43,24 @@ const trainerPersonalInfo = [
   {
     row: [
       {
+        name: "fatherName",
+        label: "Father Name",
+        placeholder: "Enter father name",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "motherName",
+        label: "Mother Name",
+        placeholder: "Enter mother name",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  {
+    row: [
+      {
         name: "profileImage",
         label: "Profile Image",
         placeholder: "Upload Profile Image",
@@ -50,101 +68,117 @@ const trainerPersonalInfo = [
         accept: "image",
       },
       {
-        name: "location",
-        label: "Location",
-        placeholder: "Enter location",
-        componentType: "input",
-        type: "text",
+        name: "hasMedicalProblem",
+        label: "Any Medical Problem",
+        componentType: "select",
+        options: [
+          { label: "No", value: false },
+          { label: "Yes", value: true },
+        ],
       },
     ],
+  },
+  {
+    name: "currentAddress",
+    label: "Address",
+    placeholder: "Enter current address",
+    componentType: "textarea",
+    rows: 2,
   },
 ];
 
 const trainerProfessionalInfo = [
   {
-    name: "bio",
-    label: "Bio",
-    placeholder: "Enter your bio",
-    componentType: "textarea",
-    rows: 4,
-  },
-  {
     row: [
       {
-        name: "specialization",
-        label: "Specialization",
-        placeholder: "Enter specialization",
-        componentType: "input",
-        type: "text",
-      },
-      {
-        name: "experience",
-        label: "Experience (years)",
+        name: "totalYearsExperience",
+        label: "Total Years Experience",
         placeholder: "Enter years of experience",
         componentType: "input",
         type: "number",
       },
-    ],
-  },
-  {
-    row: [
       {
-        name: "linkedinProfile",
-        label: "LinkedIn Profile",
+        name: "linkedin",
+        label: "LinkedIn",
         placeholder: "Enter LinkedIn profile URL",
         componentType: "input",
         type: "text",
       },
+    ],
+  },
+  {
+    row: [
       {
-        name: "portfolio",
-        label: "Portfolio",
-        placeholder: "Enter portfolio URL",
+        name: "latestQualification",
+        label: "Latest Qualification",
+        placeholder: "Enter latest qualification",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "lastOrganizationName",
+        label: "Last Organization Name",
+        placeholder: "Enter last organization name",
         componentType: "input",
         type: "text",
       },
     ],
   },
   {
-    name: "website",
-    label: "Website",
-    placeholder: "Enter website URL",
-    componentType: "input",
-    type: "text",
-  },
-  {
-    name: "expertise",
-    label: "Skills",
-    placeholder: "Enter skills separated by commas",
-    componentType: "input",
-    type: "text",
-  },
-];
-
-const trainerTrainingInfo = [
-  {
     row: [
       {
-        name: "teachingExperience",
-        label: "Teaching Experience (years)",
-        placeholder: "Enter teaching experience",
+        name: "lastDesignation",
+        label: "Designation in Last Organization",
+        placeholder: "Enter last designation",
         componentType: "input",
-        type: "number",
+        type: "text",
       },
       {
-        name: "hourlyRate",
-        label: "Hourly Rate",
-        placeholder: "Enter hourly rate",
+        name: "averageMonthlySessions",
+        label: "Average Monthly Sessions",
+        placeholder: "Enter average monthly sessions",
         componentType: "input",
         type: "number",
       },
     ],
   },
   {
-    name: "teachingStyle",
-    label: "Teaching Style",
-    placeholder: "Describe your teaching style",
+    name: "expertiseAreas",
+    label: "Expertise Areas",
+    placeholder: "Enter expertise areas separated by commas",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    name: "certifications",
+    label: "Certifications",
+    placeholder: "Enter certifications separated by commas",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    name: "professionalAchievements",
+    label: "Professional Achievements",
+    placeholder: "Enter professional achievements",
     componentType: "textarea",
     rows: 3,
+  },
+];
+
+const trainerAdditionalInfo = [
+  {
+    name: "whyProceedWithGigTraining",
+    label: "Why do you want to proceed with this Gig Training assignment?",
+    placeholder: "Enter your reason",
+    componentType: "textarea",
+    rows: 3,
+  },
+  {
+    name: "howDidYouKnowAboutOpportunity",
+    label: "How did you come to know about this opportunity?",
+    placeholder: "Enter your response",
+    componentType: "textarea",
+    rows: 2,
   },
 ];
 
@@ -155,25 +189,41 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
 
   useEffect(() => {
     if (trainer) {
+      const phoneNumber =
+        typeof trainer.phoneNumber === "object"
+          ? `${trainer.phoneNumber?.countryCode || ""} ${
+              trainer.phoneNumber?.number || ""
+            }`
+          : trainer.phoneNumber || "";
+
       setFormData({
         firstName: trainer.firstName || "",
         lastName: trainer.lastName || "",
         email: trainer.email || "",
-        phoneNumber: trainer.phoneNumber || trainer.phone || "",
-        profileImage: trainer.profileImage || trainer.profilePicture || "",
-        location: trainer.location || trainer.address || "",
-        bio: trainer.bio || "",
-        specialization: trainer.specialization || "",
-        experience: trainer.experience || "",
-        expertise: Array.isArray(trainer.expertise)
-          ? trainer.expertise.join(", ")
-          : trainer.expertise || "",
-        linkedinProfile: trainer.linkedinProfile || trainer.linkedin || "",
-        portfolio: trainer.portfolio || "",
-        website: trainer.website || "",
-        teachingExperience: trainer.teachingExperience || "",
-        teachingStyle: trainer.teachingStyle || "",
-        hourlyRate: trainer.hourlyRate || "",
+        phoneNumber: phoneNumber,
+        fatherName: trainer.fatherName || "",
+        motherName: trainer.motherName || "",
+        profileImage: trainer.profileImage || "",
+        hasMedicalProblem: trainer.hasMedicalProblem || false,
+        currentAddress:
+          trainer.currentAddress || trainer.permanentAddress || "",
+        totalYearsExperience: trainer.totalYearsExperience || "",
+        linkedin: trainer.linkedin || "",
+        latestQualification: trainer.latestQualification || "",
+        lastOrganizationName:
+          trainer.WorkingDetails?.lastOrganizationName || "",
+        lastDesignation: trainer.WorkingDetails?.lastDesignation || "",
+        averageMonthlySessions: trainer.averageMonthlySessions || "",
+        expertiseAreas: Array.isArray(trainer.expertiseAreas)
+          ? trainer.expertiseAreas.join(", ")
+          : "",
+        certifications: Array.isArray(trainer.certifications)
+          ? trainer.certifications.join(", ")
+          : "",
+        professionalAchievements: trainer.professionalAchievements || "",
+        whyProceedWithGigTraining: trainer.whyProceedWithGigTraining || "",
+        howDidYouKnowAboutOpportunity:
+          trainer.howDidYouKnowAboutOpportunity || "",
       });
     }
   }, [trainer]);
@@ -198,47 +248,66 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
     setIsSubmitting(true);
 
     try {
-      const payload = {
-        // Personal Information
-        firstName: formData.firstName || "",
-        lastName: formData.lastName || "",
-        email: formData.email || "",
-        phoneNumber: formData.phoneNumber || "",
-        profileImage: formData.profileImage || "",
-        location: formData.location || "",
+      const payload = {};
 
-        // Professional Information
-        bio: formData.bio || "",
-        specialization: formData.specialization || "",
-        experience: formData.experience
-          ? parseInt(formData.experience)
-          : undefined,
-        skills: formData.expertise
-          ? formData.expertise
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : [],
-        linkedinProfile: formData.linkedinProfile || "",
-        portfolio: formData.portfolio || "",
-        website: formData.website || "",
+      if (formData.firstName) payload.firstName = formData.firstName;
+      if (formData.lastName) payload.lastName = formData.lastName;
+      if (formData.email) payload.email = formData.email;
+      if (formData.phoneNumber) payload.phoneNumber = formData.phoneNumber;
+      if (formData.fatherName) payload.fatherName = formData.fatherName;
+      if (formData.motherName) payload.motherName = formData.motherName;
+      if (formData.profileImage) payload.profileImage = formData.profileImage;
+      if (formData.hasMedicalProblem !== undefined)
+        payload.hasMedicalProblem = formData.hasMedicalProblem;
+      if (formData.currentAddress)
+        payload.currentAddress = formData.currentAddress;
 
-        // Training Information
-        teachingExperience: formData.teachingExperience
-          ? parseInt(formData.teachingExperience)
-          : undefined,
-        teachingStyle: formData.teachingStyle || "",
-        hourlyRate: formData.hourlyRate
-          ? parseFloat(formData.hourlyRate)
-          : undefined,
-      };
+      if (formData.totalYearsExperience) {
+        payload.totalYearsExperience = parseInt(formData.totalYearsExperience);
+      }
 
-      // Remove undefined values to keep payload clean
-      Object.keys(payload).forEach((key) => {
-        if (payload[key] === undefined || payload[key] === "") {
-          delete payload[key];
-        }
-      });
+      if (formData.linkedin) payload.linkedin = formData.linkedin;
+      if (formData.latestQualification)
+        payload.latestQualification = formData.latestQualification;
+
+      if (formData.lastOrganizationName || formData.lastDesignation) {
+        payload.WorkingDetails = {};
+        if (formData.lastOrganizationName)
+          payload.WorkingDetails.lastOrganizationName =
+            formData.lastOrganizationName;
+        if (formData.lastDesignation)
+          payload.WorkingDetails.lastDesignation = formData.lastDesignation;
+      }
+
+      if (formData.averageMonthlySessions) {
+        payload.averageMonthlySessions = parseInt(
+          formData.averageMonthlySessions
+        );
+      }
+
+      if (formData.expertiseAreas) {
+        const areas = formData.expertiseAreas
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+        if (areas.length > 0) payload.expertiseAreas = areas;
+      }
+
+      if (formData.certifications) {
+        const certs = formData.certifications
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+        if (certs.length > 0) payload.certifications = certs;
+      }
+
+      if (formData.professionalAchievements)
+        payload.professionalAchievements = formData.professionalAchievements;
+      if (formData.whyProceedWithGigTraining)
+        payload.whyProceedWithGigTraining = formData.whyProceedWithGigTraining;
+      if (formData.howDidYouKnowAboutOpportunity)
+        payload.howDidYouKnowAboutOpportunity =
+          formData.howDidYouKnowAboutOpportunity;
 
       await onSave(payload);
     } catch (error) {
@@ -291,14 +360,14 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
             </div>
           </div>
 
-          {/* Training Information */}
+          {/* Additional Information */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Training Information
+              Additional Information
             </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={trainerTrainingInfo}
+                formControls={trainerAdditionalInfo}
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}

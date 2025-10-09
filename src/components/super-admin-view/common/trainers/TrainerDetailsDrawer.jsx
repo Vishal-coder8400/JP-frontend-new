@@ -180,19 +180,47 @@ const TrainerDetailsDrawer = ({
     );
   }
 
-  const pdfFiles = displayTrainer?.qualificationDocuments || [];
+  const pdfObject = {
+    "Adhaar Card": "aadharImage",
+    "PAN Card": "panCardImage",
+    "Cancel Cheque": "cancelledChequeImage",
+    "Relieving Letter": "relievingLetter",
+    Resume: "resume",
+  };
+
+  const pdfFiles = Object.entries(pdfObject).reduce(
+    (acc, [customKey, path]) => {
+      const value = path
+        .split(".")
+        .reduce((obj, key) => obj?.[key], displayTrainer);
+
+      if (Array.isArray(value) && value.length > 0) {
+        value.forEach((doc, index) => {
+          acc[`${customKey} ${index + 1}`] = doc;
+        });
+      } else {
+        acc[customKey] = value || null;
+      }
+      return acc;
+    },
+    {}
+  );
 
   // Render action buttons based on context
   const renderActionButtons = () => {
     if (context === "approvals") {
-      // Get approval status from the trainer data
       const approvalStatus =
         displayTrainer?.approvalStatus || displayTrainer?.status;
 
       if (approvalStatus === "approved") {
         return (
           <div className="flex flex-col gap-2">
-            <AdminStatusBadge status={approvalStatus} />
+            <div className="flex items-center gap-4">
+              <Button variant="black" onClick={handleEdit}>
+                Edit Trainer
+              </Button>
+              <AdminStatusBadge status={approvalStatus} />
+            </div>
             {approvalStatus === "rejected" &&
               displayTrainer?.rejectionReason && (
                 <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs">
@@ -204,10 +232,12 @@ const TrainerDetailsDrawer = ({
         );
       }
 
-      // Show approval buttons in every case except approved and if no action has been taken
       if (!hasApprovalAction) {
         return (
           <div className="flex items-center gap-4">
+            <Button variant="black" onClick={handleEdit}>
+              Edit Trainer
+            </Button>
             <Button
               variant="purple"
               onClick={handleApprove}
@@ -233,7 +263,12 @@ const TrainerDetailsDrawer = ({
         );
       }
     }
-    return null;
+
+    return (
+      <Button variant="purple" onClick={handleEdit}>
+        Edit Trainer
+      </Button>
+    );
   };
 
   return (
@@ -245,12 +280,6 @@ const TrainerDetailsDrawer = ({
           alt={`${displayTrainer?.firstName} ${displayTrainer?.lastName}`}
           className="w-28 h-auto aspect-square object-cover rounded-full absolute -top-[30%] left-[3%]"
         />
-        {context === "database" && (
-          <SquarePenIcon
-            className="absolute -bottom-[32%] left-[12%] text-primary-purple bg-white p-1.5 rounded cursor-pointer"
-            onClick={handleEdit}
-          />
-        )}
         <div className="ml-36 flex items-center justify-between w-full">
           <div>
             <h1 className="text-xl font-semibold">
@@ -334,24 +363,60 @@ const TrainerDetailsDrawer = ({
       {/* Documents */}
       <div className="px-6 pb-6">
         <h2 className="text-lg font-semibold">Documents</h2>
-        <div className="flex flex-wrap gap-3 mt-2">
-          {pdfFiles.length > 0 ? (
-            pdfFiles.map((doc, index) => (
-              <a
-                key={index}
-                href={doc}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline"
+        <div className="flex flex-wrap gap-3 mt-3">
+          {Object.entries(pdfFiles).map(([key, value]) => {
+            if (!value || typeof value !== "string") return null;
+            const isPdf =
+              key.includes("Qualification") ||
+              key.includes("Resume") ||
+              key.includes("Relieving Letter");
+            const fileName = value.split("/").pop();
+            const handleDownload = () => {
+              const link = document.createElement("a");
+              link.href = value;
+              link.target = "_blank";
+              link.download = fileName || `${key}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            };
+            return (
+              <div
+                key={key}
+                className="relative overflow-hidden p-3 w-[180px] h-[100px] flex flex-col bg-stone-50 rounded-lg gap-2"
               >
-                Qualification Document {index + 1}
-              </a>
-            ))
-          ) : (
-            <span className="text-gray-500">
-              No qualification documents available
-            </span>
-          )}
+                <div className="flex justify-between items-center w-full mb-2">
+                  <div className="flex items-center gap-1">
+                    {isPdf ? <YourPdfIcon /> : <YourImageIcon />}
+                    <div className="text-neutral-900 text-xs font-medium leading-none">
+                      {key}
+                    </div>
+                  </div>
+                  <div className="cursor-pointer" onClick={handleDownload}>
+                    <DownloadIcon className="w-4 h-4" />
+                  </div>
+                </div>
+                <div className="flex-1 w-full overflow-hidden rounded-sm mb-2">
+                  {isPdf ? (
+                    <iframe
+                      src={`${value}#toolbar=0&navpanes=0&scrollbar=0`}
+                      title={key}
+                      className="w-full h-full border-none no-scrollbar"
+                    />
+                  ) : (
+                    <img
+                      src={value}
+                      alt={key}
+                      className="w-full h-full object-cover rounded-sm"
+                    />
+                  )}
+                </div>
+                <div className="absolute bottom-0 left-0 w-full px-3 py-1 bg-stone-50 text-zinc-600 text-xs truncate border-t border-stone-200">
+                  {fileName}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -493,14 +558,50 @@ const TrainerDetailsDrawer = ({
             <div className="flex flex-wrap gap-3 mt-2">
               {displayTrainer?.trainingImages &&
               displayTrainer.trainingImages.length > 0 ? (
-                displayTrainer.trainingImages.map((img, i) => (
-                  <img
-                    key={i}
-                    src={img}
-                    alt={`Training ${i + 1}`}
-                    className="w-24 h-24 object-cover rounded-lg"
-                  />
-                ))
+                displayTrainer.trainingImages.map((img, i) => {
+                  if (!img || typeof img !== "string") return null;
+                  const fileName = img.split("/").pop();
+                  const handleDownload = () => {
+                    const link = document.createElement("a");
+                    link.href = img;
+                    link.target = "_blank";
+                    link.download = fileName || `Training-${i + 1}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  };
+                  return (
+                    <div
+                      key={i}
+                      className="relative overflow-hidden p-3 w-[180px] h-[100px] flex flex-col bg-stone-50 rounded-lg gap-2"
+                    >
+                      <div className="flex justify-between items-center w-full mb-2">
+                        <div className="flex items-center gap-1">
+                          <YourImageIcon />
+                          <div className="text-neutral-900 text-xs font-medium leading-none">
+                            Training {i + 1}
+                          </div>
+                        </div>
+                        <div
+                          className="cursor-pointer"
+                          onClick={handleDownload}
+                        >
+                          <DownloadIcon className="w-4 h-4" />
+                        </div>
+                      </div>
+                      <div className="flex-1 w-full overflow-hidden rounded-sm mb-2">
+                        <img
+                          src={img}
+                          alt={`Training ${i + 1}`}
+                          className="w-full h-full object-cover rounded-sm"
+                        />
+                      </div>
+                      <div className="absolute bottom-0 left-0 w-full px-3 py-1 bg-stone-50 text-zinc-600 text-xs truncate border-t border-stone-200">
+                        {fileName}
+                      </div>
+                    </div>
+                  );
+                })
               ) : (
                 <span className="text-gray-500">
                   No training images available

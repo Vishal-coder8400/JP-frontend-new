@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import TrainingsApprovalTable from "./TrainingsApprovalTable";
+import TrainingsTable from "../../../jobs-and-trainings/tabs/trainings/TrainingsTable";
 import Pagination from "@/components/common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "@/components/common/filterComponent";
@@ -181,10 +181,11 @@ const TrainingApprovalTab = ({ onError }) => {
               {!isLoading && (
                 <div className="w-full overflow-x-auto min-h-[300px]">
                   <div className="min-w-[1200px]">
-                    <TrainingsApprovalTable
+                    <TrainingsTable
                       paginatedTrainings={trainings}
                       handleDeleteTraining={handleDeleteTraining}
                       onRevalidate={refetch}
+                      context="approvals"
                     />
                   </div>
                 </div>

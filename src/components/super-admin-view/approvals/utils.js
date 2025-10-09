@@ -19,6 +19,11 @@ export const approvalTabs = [
     name: "Recruiters",
     icon: null,
   },
+  {
+    id: "candidates",
+    name: "Candidates",
+    icon: null,
+  },
 ];
 
 export const getApprovalFilters = (tabType, additionalOptions = {}) => {
@@ -65,6 +70,13 @@ export const getApprovalFilters = (tabType, additionalOptions = {}) => {
       { id: "company", label: "Company" },
     ],
     trainers: [
+      { id: "submittedAt", label: "Submitted At" },
+      { id: "createdAt", label: "Created At" },
+      { id: "updatedAt", label: "Updated At" },
+      { id: "name", label: "Name" },
+      { id: "email", label: "Email" },
+    ],
+    candidates: [
       { id: "submittedAt", label: "Submitted At" },
       { id: "createdAt", label: "Created At" },
       { id: "updatedAt", label: "Updated At" },

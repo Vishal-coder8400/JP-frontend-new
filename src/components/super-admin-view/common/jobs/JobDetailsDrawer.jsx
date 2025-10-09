@@ -1,12 +1,12 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { LocationIcon } from "@/utils/icon";
 import { toast } from "sonner";
 import {
   ClockIcon,
   DollarSignIcon,
   CalendarIcon,
   SquarePenIcon,
+  MapPinIcon,
 } from "lucide-react";
 import { useState } from "react";
 import EditJobDrawer from "./EditJobDrawer";
@@ -150,22 +150,6 @@ const JobDetailsDrawer = ({
 
   // Render buttons based on context
   const renderButtons = () => {
-    if (context === "edit") {
-      return (
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setIsEditDrawerOpen(true)}
-            className="flex items-center gap-2"
-          >
-            <SquarePenIcon className="w-4 h-4" />
-            Edit Job
-          </Button>
-        </div>
-      );
-    }
-
     if (context === "approval") {
       const isNotApproved = approvalData?.data?.status !== "approved";
 
@@ -219,202 +203,254 @@ const JobDetailsDrawer = ({
       }
     }
 
-    // Default: no buttons for "view" context
-    return null;
+    // For all other contexts (edit, view), show edit button
+    return (
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setIsEditDrawerOpen(true)}
+          className="flex items-center gap-2"
+        >
+          <SquarePenIcon className="w-4 h-4" />
+          Edit Job
+        </Button>
+      </div>
+    );
   };
+
+  console.log(job);
 
   return (
     <div className="min-h-full flex flex-col bg-white p-6">
       {/* Header */}
-      <div className="flex justify-between gap-4 p-6 border-1 border-gray2 rounded-lg">
-        <div className="flex-1">
-          <div className="flex items-center gap-4">
-            <p className="text-xl font-medium">{job.jobTitle}</p>
-            {context === "approval" ? (
-              <Badge className="text-primary-purple bg-light-purple text-xs">
-                {job.applicationsCount || job.candidates || 2} Applied
-              </Badge>
-            ) : (
-              <Badge
-                className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  job.status === "active"
-                    ? "bg-success2 text-success1"
-                    : "bg-danger2 text-danger1"
-                }`}
-              >
-                {job.status?.charAt(0).toUpperCase() + job.status?.slice(1)}
-              </Badge>
-            )}
+      <div className="p-6 border-1 border-gray2 rounded-lg bg-white">
+        {/* Company Logo and Name */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-full">
+            <img
+              src={job.postedBy?.companyLogo}
+              alt={job.postedBy?.companyName}
+              className="w-full h-full object-cover"
+            />
           </div>
-          <div className="text-gray1 flex items-center gap-6 mt-2">
-            {job.officeLocation && (
-              <div className="flex items-center gap-2">
-                <LocationIcon className="h-4 w-4 text-gray1" />
-                {job.officeLocation}, {job.city}, {job.state}
-              </div>
-            )}
-            {job.jobType && (
-              <div className="flex items-center gap-2">
-                <ClockIcon className="h-4 w-4 text-gray1" />
-                {job.jobType}
-              </div>
-            )}
-            {job.experienceLevel && (
-              <div className="flex items-center gap-2">
-                <DollarSignIcon className="h-4 w-4 text-gray1" />
-                {job.experienceLevel}
-              </div>
-            )}
+          <div className="text-lg font-medium text-gray-900">
+            {job.postedBy?.companyName || "Company Name"}
           </div>
+        </div>
 
-          {job.createdAt && (
-            <div className="text-gray1 flex items-center gap-2 mt-2">
-              <CalendarIcon className="h-4 w-4 text-gray1" />
-              Posted on {new Date(job.createdAt).toLocaleDateString()}
+        {/* Job Title and Deadline */}
+        <div className="flex justify-between items-start mb-4">
+          <h1 className="text-2xl font-bold text-gray-900">{job.jobTitle}</h1>
+          {job.applicationDeadline && (
+            <Badge className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-medium">
+              Deadline:{" "}
+              {new Date(job.applicationDeadline).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
+            </Badge>
+          )}
+        </div>
+
+        {/* Job Details Row */}
+        <div className="flex items-center gap-6 text-gray-600">
+          {job.jobType && (
+            <div className="flex items-center gap-2">
+              <ClockIcon className="h-4 w-4" />
+              <span className="text-sm">{job.jobType}</span>
+            </div>
+          )}
+          {job.experienceLevel && (
+            <div className="flex items-center gap-2">
+              <MapPinIcon className="h-4 w-4" />
+              <span className="text-sm">{job.experienceLevel}</span>
+            </div>
+          )}
+          {job.salaryRange && (
+            <div className="flex items-center gap-2">
+              <DollarSignIcon className="h-4 w-4" />
+              <span className="text-sm">{job.salaryRange}</span>
+            </div>
+          )}
+          {job.workingHours && (
+            <div className="flex items-center gap-2">
+              <CalendarIcon className="h-4 w-4" />
+              <span className="text-sm">{job.workingHours}</span>
             </div>
           )}
         </div>
-        {renderButtons()}
+
+        {/* Action Buttons */}
+        {renderButtons() && (
+          <div className="flex justify-end">{renderButtons()}</div>
+        )}
       </div>
 
       {/* Content */}
       <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
         <div>
-          <h3 className="text-lg font-semibold">About the job</h3>
-          <div className="text-gray1 mt-4 space-y-4">
-            {job.jobDescription && (
-              <>
-                <h4 className="font-semibold">Job Description</h4>
-                <p>{job.jobDescription}</p>
-              </>
-            )}
+          <h3 className="text-lg font-semibold mb-6">About the job</h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h4 className="font-semibold">Job Details</h4>
-                <ul className="space-y-1 mt-2">
-                  <li>
-                    <strong>Job Type:</strong> {job.jobType}
-                  </li>
-                  <li>
-                    <strong>Experience Level:</strong> {job.experienceLevel}
-                  </li>
-                  <li>
-                    <strong>Mode of Work:</strong> {job.modeOfWork}
-                  </li>
-                  <li>
-                    <strong>Working Hours:</strong> {job.workingHours}
-                  </li>
-                  <li>
-                    <strong>Working Days:</strong> {job.workingDays}
-                  </li>
-                  {job.isSundayWorking && (
-                    <li>
-                      <strong>Sunday Working:</strong> Yes
-                    </li>
-                  )}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-semibold">Requirements</h4>
-                <ul className="space-y-1 mt-2">
-                  <li>
-                    <strong>Minimum Education:</strong> {job.minimumEducation}
-                  </li>
-                  <li>
-                    <strong>English Level:</strong> {job.englishLevel}
-                  </li>
-                  <li>
-                    <strong>Gender Preference:</strong> {job.genderPreference}
-                  </li>
-                  <li>
-                    <strong>Age Range:</strong> {job.preferredAgeRange}
-                  </li>
-                  <li>
-                    <strong>Regional Language:</strong>{" "}
-                    {job.regionalLanguageRequired ? "Required" : "Not Required"}
-                  </li>
-                  <li>
-                    <strong>Two Wheeler:</strong>{" "}
-                    {job.twoWheelerMandatory ? "Mandatory" : "Not Mandatory"}
-                  </li>
-                </ul>
-              </div>
+          {/* Job Overview */}
+          {job.jobDescription && (
+            <div className="mb-6">
+              <h4 className="font-semibold text-gray-900 mb-2">
+                Job Overview:
+              </h4>
+              <p className="text-gray-700 leading-relaxed">
+                {job.jobDescription}
+              </p>
             </div>
+          )}
 
-            <div>
-              <h4 className="font-semibold">Location Details</h4>
-              <ul className="space-y-1 mt-2">
-                <li>
-                  <strong>Office Location:</strong> {job.officeLocation}
-                </li>
-                <li>
-                  <strong>City:</strong> {job.city}
-                </li>
-                <li>
-                  <strong>State:</strong> {job.state}
-                </li>
-                <li>
-                  <strong>Pincode:</strong> {job.pincode}
-                </li>
+          {/* Key Responsibilities */}
+          {job.keyResponsibilities && job.keyResponsibilities.length > 0 && (
+            <div className="mb-6">
+              <h4 className="font-semibold text-gray-900 mb-3">
+                Key Responsibilities:
+              </h4>
+              <ul className="space-y-2">
+                {job.keyResponsibilities.map((responsibility, index) => (
+                  <li key={index} className="flex items-start gap-2">
+                    <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                    <span className="text-gray-700">{responsibility}</span>
+                  </li>
+                ))}
               </ul>
             </div>
+          )}
 
-            {job.requiredSkills && job.requiredSkills.length > 0 && (
-              <div>
-                <h4 className="font-semibold">Required Skills</h4>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {job.requiredSkills.map((skill, index) => (
-                    <span
-                      key={index}
-                      className="inline-block px-3 py-1 text-xs font-medium bg-light-purple text-primary-purple rounded-full"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
+          {/* Job Details */}
+          <div className="space-y-4">
+            {job.minimumEducation && (
+              <div className="flex flex-col">
+                <span className="font-bold text-gray-700">Education:</span>
+                <span className="text-gray-700">{job.minimumEducation}</span>
               </div>
             )}
 
-            {job.isWalkInInterview && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h4 className="font-semibold text-yellow-800">
-                  Walk-in Interview
-                </h4>
-                <p className="text-yellow-700 mt-1">
-                  This job allows walk-in interviews.
-                </p>
+            {job.experienceLevel && (
+              <div className="flex flex-col">
+                <span className="font-bold text-gray-700">
+                  Experience Level:
+                </span>
+                <span className="text-gray-700">{job.experienceLevel}</span>
+              </div>
+            )}
+
+            {job.modeOfWork && (
+              <div className="flex flex-col">
+                <span className="font-bold text-gray-700">Mode of work:</span>
+                <span className="text-gray-700">{job.modeOfWork}</span>
+              </div>
+            )}
+
+            {job.modeOfInterview && (
+              <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                <span className="font-medium text-gray-900">
+                  Mode of Interview:
+                </span>
+                <span className="text-gray-700">{job.modeOfInterview}</span>
               </div>
             )}
           </div>
+
+          {/* Other Details */}
+          <div className="mt-6">
+            <h4 className="font-semibold text-gray-900 mb-3">Other Details:</h4>
+            <ul className="space-y-2">
+              {job.officeLocation && (
+                <li className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-gray-700">
+                    <strong>Location:</strong> {job.officeLocation}
+                    {job.city && `, ${job.city}`}
+                    {job.state && `, ${job.state}`}
+                  </span>
+                </li>
+              )}
+              {job.salaryRange && (
+                <li className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-gray-700">
+                    <strong>Salary:</strong> {job.salaryRange}
+                  </span>
+                </li>
+              )}
+              {job.workingHours && (
+                <li className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-gray-700">
+                    <strong>Duration:</strong> {job.workingHours}
+                  </span>
+                </li>
+              )}
+              {job.genderPreference && (
+                <li className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-gray-700">
+                    <strong>Gender Preference:</strong> {job.genderPreference}
+                  </span>
+                </li>
+              )}
+              <li className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700">
+                  <strong>Regional Language Required:</strong>{" "}
+                  {job.regionalLanguageRequired ? "Required" : "None"}
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Contact Information */}
+          {job.contactEmail && (
+            <div className="mt-6">
+              <p className="text-gray-700">
+                <strong>Contact Information:</strong> For additional
+                information, you can reach out to me at {job.contactEmail}
+              </p>
+            </div>
+          )}
+
+          {/* Closing Remark */}
+          <div className="mt-6">
+            <p className="text-gray-700 italic">
+              Looking forward to seeing some great applications!
+            </p>
+          </div>
+
+          {/* Skills/Tags */}
+          {job.requiredSkills && job.requiredSkills.length > 0 && (
+            <div className="mt-6">
+              <div className="flex flex-wrap gap-2">
+                {job.requiredSkills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="px-3 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full border"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Applicant Information - only for approval context */}
-      {context === "approval" && applicant && (
-        <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
-          <h4>About the Applicant</h4>
-          <div className="text-gray1 mt-4 space-y-2">
-            <p>
-              <strong>Name:</strong> {applicant.name}
-            </p>
-            <p>
-              <strong>Email:</strong> {applicant.email}
-            </p>
-            <p>
-              <strong>Type:</strong> {applicant.type}
-            </p>
-            <p>
-              <strong>Status:</strong> {applicant.status}
-            </p>
-            <p>
-              <strong>Applied On:</strong>{" "}
-              {new Date(approvalData.submittedAt).toLocaleDateString()}
-            </p>
-          </div>
-        </div>
-      )}
+      <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
+        <h4 className="font-bold text-gray-700">About the Company</h4>
+        <p className="text-gray-700">
+          {job.postedBy?.companyDescription || "-"}
+        </p>
+        {job.postedBy?.currentAddress && (
+          <p className="text-gray-700">
+            <strong>Address:</strong> {job.postedBy?.currentAddress}
+          </p>
+        )}
+      </div>
 
       {/* Edit Job Drawer - only for edit context */}
       {context === "edit" && (

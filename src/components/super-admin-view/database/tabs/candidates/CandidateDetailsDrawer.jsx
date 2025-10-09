@@ -4,10 +4,102 @@ import JobsApplied from "./tabs/JobsApplied";
 import AboutCandidate from "./tabs/AboutCandidate";
 import { Button } from "@/components/ui/button";
 import EditCandidateDrawer from "@/components/super-admin-view/common/candidates/EditCandidateDrawer";
+import { useApprovals } from "@/hooks/super-admin/useApprovals";
+import AdminStatusBadge from "@/components/super-admin-view/shared/AdminStatusBadge";
+import RejectionReasonModal from "@/components/common/RejectionReasonModal";
+import HoldReasonModal from "@/components/common/HoldReasonModal";
+import { toast } from "sonner";
 
-const CandidateDetailsDrawer = ({ candidate, isLoading }) => {
+const CandidateDetailsDrawer = ({
+  candidate,
+  isLoading,
+  context = "database",
+  onRevalidate,
+  areApprovalBtnsVisible = false,
+  approvalId,
+  onClose,
+}) => {
   const [activeTab, setActiveTab] = useState("aboutCandidate");
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [showRejectionModal, setShowRejectionModal] = useState(false);
+  const [showHoldModal, setShowHoldModal] = useState(false);
+
+  const {
+    isLoading: isApprovalLoading,
+    approveApplication,
+    rejectApplication,
+    holdApplication,
+  } = useApprovals();
+
+  const displayCandidate =
+    context === "approvals" ? candidate?.data : candidate?.data;
+  const candidateStatus =
+    context === "approvals" ? candidate?.status : displayCandidate?.status;
+
+  const handleApprove = async () => {
+    try {
+      await approveApplication(approvalId);
+      toast.success("Candidate approved successfully");
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to approve candidate:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to approve candidate. Please try again."
+      );
+    }
+  };
+
+  const handleReject = async (rejectionReason) => {
+    try {
+      await rejectApplication(approvalId, rejectionReason);
+      toast.success("Candidate rejected successfully");
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to reject candidate:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to reject candidate. Please try again."
+      );
+    }
+  };
+
+  const handleRejectClick = () => {
+    setShowRejectionModal(true);
+  };
+
+  const handleHold = async (holdReason) => {
+    try {
+      await holdApplication(approvalId, holdReason);
+      toast.success("Candidate put on hold successfully");
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+      if (onClose) {
+        onClose();
+      }
+    } catch (error) {
+      console.error("Failed to hold candidate:", error);
+      toast.error(
+        error?.response?.data?.message ||
+          "Failed to hold candidate. Please try again."
+      );
+    }
+  };
+
+  const handleHoldClick = () => {
+    setShowHoldModal(true);
+  };
 
   const tabs = [
     {
@@ -42,17 +134,15 @@ const CandidateDetailsDrawer = ({ candidate, isLoading }) => {
     );
   }
 
-  console.log("candidate", candidate);
-
   return (
     <div className="w-full h-full bg-white rounded-l-2xl inline-flex flex-col gap-8 overflow-y-auto">
       <img src="/Group_1000005865.jpg" className="w-full object-contain" />
 
       <div className="bg-white p-6 w-[800px] mx-auto rounded-lg shadow-md -mt-20 flex items-center gap-6">
-        {candidate?.data?.profilePicture ? (
+        {displayCandidate?.profilePicture ? (
           <img
-            src={candidate?.data?.profilePicture}
-            alt={candidate?.name}
+            src={displayCandidate?.profilePicture}
+            alt={displayCandidate?.name}
             className="h-12 w-12 rounded-full object-cover"
           />
         ) : (
@@ -62,16 +152,65 @@ const CandidateDetailsDrawer = ({ candidate, isLoading }) => {
         )}
         <div className="flex-1">
           <h3 className="font-semibold capitalize">
-            {candidate?.data?.name || "-"}
+            {displayCandidate?.name || "-"}
           </h3>
         </div>
-        <Button
-          variant={"purple"}
-          className={"w-fit"}
-          onClick={() => setIsEditOpen(true)}
-        >
-          Edit Candidate
-        </Button>
+        <div className="flex items-center gap-4">
+          {!areApprovalBtnsVisible && (
+            <Button
+              variant={"purple"}
+              className={"w-fit"}
+              onClick={() => setIsEditOpen(true)}
+            >
+              Edit Candidate
+            </Button>
+          )}
+          {areApprovalBtnsVisible && (
+            <>
+              {candidateStatus !== "approved" ? (
+                <>
+                  <Button
+                    variant={"purple"}
+                    onClick={handleApprove}
+                    disabled={isApprovalLoading}
+                  >
+                    {isApprovalLoading ? "Processing..." : "Approve Candidate"}
+                  </Button>
+                  <Button
+                    variant={"destructive"}
+                    onClick={handleRejectClick}
+                    disabled={isApprovalLoading}
+                  >
+                    {isApprovalLoading ? "Processing..." : "Reject Candidate"}
+                  </Button>
+                  <Button
+                    variant={"black"}
+                    onClick={handleHoldClick}
+                    disabled={isApprovalLoading}
+                  >
+                    {isApprovalLoading ? "Processing..." : "Hold Candidate"}
+                  </Button>
+                </>
+              ) : (
+                <div className="flex flex-col gap-2">
+                  <AdminStatusBadge status={candidateStatus} />
+                  {candidateStatus === "rejected" &&
+                    candidate?.rejectionReason && (
+                      <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs">
+                        <strong>Rejection Reason:</strong>{" "}
+                        {candidate.rejectionReason}
+                      </div>
+                    )}
+                  {candidateStatus === "hold" && candidate?.holdReason && (
+                    <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs">
+                      <strong>Hold Reason:</strong> {candidate.holdReason}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
 
       <div className="px-6">
@@ -101,10 +240,28 @@ const CandidateDetailsDrawer = ({ candidate, isLoading }) => {
         </div>
       </div>
 
-      <EditCandidateDrawer
-        isOpen={isEditOpen}
-        onClose={() => setIsEditOpen(false)}
-        candidate={candidate}
+      {!areApprovalBtnsVisible && (
+        <EditCandidateDrawer
+          isOpen={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          candidate={candidate}
+        />
+      )}
+
+      <RejectionReasonModal
+        isOpen={showRejectionModal}
+        onClose={() => setShowRejectionModal(false)}
+        onConfirm={handleReject}
+        isLoading={isApprovalLoading}
+        entityType="candidate"
+      />
+
+      <HoldReasonModal
+        isOpen={showHoldModal}
+        onClose={() => setShowHoldModal(false)}
+        onConfirm={handleHold}
+        isLoading={isApprovalLoading}
+        entityType="candidate"
       />
     </div>
   );

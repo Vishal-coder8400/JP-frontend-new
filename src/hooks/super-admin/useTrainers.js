@@ -6,12 +6,12 @@ import {
 } from "../../api/super-admin/database";
 import { toast } from "sonner";
 
-export const useGetAllTrainers = (enabled = true) => {
+export const useGetAllTrainers = (params = {}, enabled = true) => {
   const token = localStorage.getItem("token");
 
   return useQuery({
-    queryKey: ["superAdmin-trainers", token],
-    queryFn: ({ signal }) => getAllTrainers({ signal }),
+    queryKey: ["superAdmin-trainers", token, params],
+    queryFn: ({ signal }) => getAllTrainers({ signal, ...params }),
     enabled: enabled && !!token,
     keepPreviousData: true,
     retry: (failureCount, error) => {

@@ -1,15 +1,16 @@
 import { useState } from "react";
-import RecruitersTable from "./RecruitersTable";
+import CandidatesTable from "../database/tabs/candidates/CandidatesTable";
 import Pagination from "../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../common/filterComponent";
-import { getRecruitersFilters } from "./recruitersFilters";
-import { useGetApprovalsRecruiters } from "../../../hooks/super-admin/useApprovals";
-import { useRecruiters } from "../../../hooks/super-admin/useRecruiters";
+import { candidatesFilters } from "../database/tabs/candidates/utils";
+import { useGetApprovalsCandidates } from "../../../hooks/super-admin/useApprovals";
+import { useGetDatabaseCandidates } from "../../../hooks/super-admin/useDatabase";
 import StatusTabs from "../approvals/common/StatusTabs";
 import ErrorDisplay from "@/components/common/ErrorDisplay";
+import { getApprovalFilters } from "../approvals/utils";
 
-const RecruitersTab = ({ context = "database" }) => {
+const CandidatesTab = ({ context = "database" }) => {
   const [activeStatus, setActiveStatus] = useState("pending");
 
   const [filters, setFilters] = useState(() => {
@@ -25,56 +26,66 @@ const RecruitersTab = ({ context = "database" }) => {
     }
     return {
       search: "",
-      status: "active",
-      jobStatus: [],
-      postedDate: null,
-      location: [],
-      company: [],
+      status: [],
       industry: [],
+      location: [],
+      experience: [],
+      education: [],
+      skills: [],
+      sortBy: "createdAt",
+      sortOrder: "desc",
     };
   });
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Query parameters
+  const safeJoin = (value) => {
+    return Array.isArray(value) ? value.join(",") : value;
+  };
+
   const queryParams = {
     page: currentPage,
     limit: itemsPerPage,
     search: filters.search || "",
-    status: filters.status || "pending",
+    status: context === "approvals" ? filters.status : safeJoin(filters.status),
     sortBy: filters.sortBy || "submittedAt",
     sortOrder: filters.sortOrder || "desc",
     ...(filters.dateFrom && { dateFrom: filters.dateFrom }),
     ...(filters.dateTo && { dateTo: filters.dateTo }),
   };
 
-  // Use appropriate query hook based on context
-  const approvalsQuery = useGetApprovalsRecruiters(queryParams);
-  const databaseQuery = useRecruiters(filters, currentPage, itemsPerPage);
+  if (context === "database") {
+    queryParams.industry = safeJoin(filters.industry);
+    queryParams.location = safeJoin(filters.location);
+    queryParams.experience = safeJoin(filters.experience);
+    queryParams.education = safeJoin(filters.education);
+    queryParams.skills = safeJoin(filters.skills);
+  }
+
+  const approvalsQuery = useGetApprovalsCandidates(queryParams);
+  const databaseQuery = useGetDatabaseCandidates(queryParams);
 
   const { data, isLoading, error, refetch } =
     context === "approvals" ? approvalsQuery : databaseQuery;
 
-  // Process the data based on context
-  const paginatedRecruiters =
+  const paginatedCandidates =
     context === "approvals"
       ? data?.data?.data?.approvals?.map((approval) => {
-          const recruiter = approval.data || {};
+          const candidate = approval.data || {};
           return {
             id: approval._id,
-            recruiterId: recruiter._id,
-            name: recruiter.name || "N/A",
-            email: recruiter.email || "N/A",
-            contact: recruiter.phone
-              ? `${recruiter.phone.countryCode} ${recruiter.phone.number}`
-              : "N/A",
-            company: recruiter.company || "N/A",
-            designation: recruiter.designation || "N/A",
-            industry: recruiter.industry || "N/A",
-            location: recruiter.currentAddress?.city || "N/A",
+            candidateId: candidate._id,
+            name: candidate.name || "N/A",
+            email: candidate.email || "N/A",
+            contact: candidate.phoneNumber || "N/A",
+            skills: candidate.skills || [],
+            roleLookingFor: candidate.roleLookingFor || "N/A",
+            totalExperience: candidate.totalExperience,
+            totalExperienceInMonth: candidate.totalExperienceInMonth,
+            profilePicture: candidate.profilePicture,
+            location: candidate.location || "N/A",
             jobStatus: approval.status || "pending",
-            candidatesCount: recruiter.candidatesCount || 0,
             postedDate: approval.createdAt
               ? new Date(approval.createdAt).toISOString().split("T")[0]
               : "N/A",
@@ -82,7 +93,6 @@ const RecruitersTab = ({ context = "database" }) => {
               ? new Date(approval.updatedAt).toISOString().split("T")[0]
               : "N/A",
             _id: approval._id,
-            phone: recruiter.phone,
             createdAt: approval.createdAt,
             updatedAt: approval.updatedAt,
             approvalStatus: approval.status,
@@ -91,25 +101,15 @@ const RecruitersTab = ({ context = "database" }) => {
             submittedAt: approval.submittedAt,
             version: approval.version,
             isActive: approval.isActive,
-            currentAddress: recruiter.currentAddress,
-            resume: recruiter.resume,
-            sectorSpecialization: recruiter.sectorSpecialization,
-            experienceLevel: recruiter.experienceLevel,
-            isVerified: recruiter.isVerified,
-            signupProgress: recruiter.signupProgress,
-            completedStages: recruiter.completedStages,
-            currentStage: recruiter.currentStage,
-            status: recruiter.status,
-            references: recruiter.references,
-            kycDetails: recruiter.kycDetails,
-            profileImage: recruiter.profileImage,
+            rejectionReason: approval.reviewerNotes,
+            holdReason: approval.reviewerNotes,
           };
         }) || []
-      : data?.data?.data?.recruiters || [];
+      : data?.data?.data?.jobSeekers || [];
 
   const totalCount =
     context === "approvals"
-      ? data?.data?.pagination?.totalApprovals || paginatedRecruiters.length
+      ? data?.data?.pagination?.totalApprovals || paginatedCandidates.length
       : data?.data?.pagination?.total || 0;
 
   const totalPages =
@@ -147,32 +147,35 @@ const RecruitersTab = ({ context = "database" }) => {
     } else {
       setFilters({
         search: "",
-        jobStatus: [],
-        postedDate: null,
-        location: [],
-        company: [],
+        status: [],
         industry: [],
+        location: [],
+        experience: [],
+        education: [],
+        skills: [],
+        sortBy: "createdAt",
+        sortOrder: "desc",
       });
     }
     setCurrentPage(1);
   };
 
-  const handleDeleteRecruiter = (recruiter) => {
-    // TODO: Implement delete logic
-    console.log("Delete recruiter:", recruiter);
+  const getFilterConfig = () => {
+    if (context === "approvals") {
+      return getApprovalFilters("candidates");
+    } else {
+      return candidatesFilters;
+    }
   };
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Recruiters</h1>
+      <h1 className="text-2xl font-bold">Candidates</h1>
 
-      {/* Error State */}
-      {error && <ErrorDisplay error={error} title="Error loading recruiters" />}
+      {error && <ErrorDisplay error={error} title="Error loading candidates" />}
 
-      {/* Show content only when there's no error */}
       {!error && (
         <>
-          {/* Status Tabs for Approvals */}
           {context === "approvals" && (
             <StatusTabs
               activeStatus={activeStatus}
@@ -180,9 +183,7 @@ const RecruitersTab = ({ context = "database" }) => {
             />
           )}
 
-          {/* Main Content Layout */}
           <div className="flex flex-col lg:flex-row gap-6 min-h-0">
-            {/* Filters Section */}
             <div className="w-full lg:w-64 flex-shrink-0">
               <div className="bg-white rounded-lg border p-4">
                 <div className="flex flex-col gap-4">
@@ -198,7 +199,7 @@ const RecruitersTab = ({ context = "database" }) => {
                     </div>
                   </div>
                   <FilterComponent
-                    formControls={getRecruitersFilters(context)}
+                    formControls={getFilterConfig()}
                     formData={filters}
                     setFormData={setFormData}
                   />
@@ -206,9 +207,7 @@ const RecruitersTab = ({ context = "database" }) => {
               </div>
             </div>
 
-            {/* Main Content */}
             <div className="flex-1 min-w-0 space-y-6">
-              {/* Header Actions */}
               <div className="flex justify-between items-center min-w-0">
                 <div className="max-w-sm w-full">
                   <SearchComponent
@@ -218,24 +217,21 @@ const RecruitersTab = ({ context = "database" }) => {
                 </div>
               </div>
 
-              {/* Loading State */}
               {isLoading && (
                 <div className="flex justify-center items-center py-8">
-                  <div className="text-gray-500">Loading recruiters...</div>
+                  <div className="text-gray-500">Loading candidates...</div>
                 </div>
               )}
 
-              {/* Recruiters Table */}
               {!isLoading && (
-                <RecruitersTable
-                  paginatedRecruiters={paginatedRecruiters}
+                <CandidatesTable
+                  paginatedCandidates={paginatedCandidates}
                   onRevalidate={refetch}
                   showStatusColumn={context === "approvals"}
                   context={context}
                 />
               )}
 
-              {/* Pagination */}
               {!isLoading && totalCount > 0 && (
                 <div className="flex justify-center">
                   <Pagination
@@ -253,4 +249,4 @@ const RecruitersTab = ({ context = "database" }) => {
   );
 };
 
-export default RecruitersTab;
+export default CandidatesTab;

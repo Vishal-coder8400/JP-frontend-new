@@ -31,6 +31,8 @@ const ApplicationsTable = ({ paginatedApplications, onRevalidate }) => {
     setDrawerOpen(true);
   };
 
+  console.log(paginatedApplications);
+
   return (
     <>
       <div className="bg-white rounded-lg border overflow-hidden">
@@ -85,22 +87,36 @@ const ApplicationsTable = ({ paginatedApplications, onRevalidate }) => {
                       <TableCell>{application._id}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                            <User className="h-5 w-5 text-gray-400" />
+                          <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                            {application.applicantImage ? (
+                              <img
+                                src={application.applicantImage}
+                                alt={application.applicantName}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <User className="h-5 w-5 text-gray-400" />
+                            )}
                           </div>
                           <div className="flex flex-col">
                             <span className="font-medium text-gray-900">
-                              {application.applicantId || "N/A"}
+                              {application.applicantName || "N/A"}
                             </span>
                             <span className="text-sm text-gray-500">
-                              {application.applicantType || "N/A"}
+                              {application.applicantRole || "N/A"}
                             </span>
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>{application.source || "N/A"}</TableCell>
                       <TableCell>{application.status || "N/A"}</TableCell>
-                      <TableCell>{application.experience || "N/A"}</TableCell>
+                      <TableCell>
+                        {application.applicantType === "trainer"
+                          ? application.teachingExperience ||
+                            application.relevantExperience ||
+                            "N/A"
+                          : application.applicantExperience || "N/A"}
+                      </TableCell>
                       <TableCell>
                         {application.applicationDate
                           ? new Date(

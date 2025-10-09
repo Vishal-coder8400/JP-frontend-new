@@ -1,20 +1,20 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { LocationIcon } from "@/utils/icon";
 import {
   ClockIcon,
   DollarSignIcon,
   CalendarIcon,
   SquarePenIcon,
+  MapPinIcon,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useGetTrainingDetails } from "../../../../hooks/super-admin/useTraining";
 import { formatApiError } from "../../../../utils/commonFunctions";
 import { useApprovals } from "../../../../hooks/super-admin/useApprovals";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import EditTrainingDrawer from "./EditTrainingDrawer";
-import { toast } from "sonner";
 
 const TrainingDetailsDrawer = ({
   trainingId,
@@ -248,404 +248,338 @@ const TrainingDetailsDrawer = ({
   };
 
   const renderTrainingContent = () => {
-    if (context === "approvals") {
-      return (
-        <>
-          <h3 className="text-lg font-semibold">About the training</h3>
-          <div className="text-gray1 mt-4 space-y-2">
-            <h4 className="font-semibold">Training Description</h4>
-            <p>{displayTraining.description}</p>
+    return (
+      <div>
+        <h3 className="text-lg font-semibold mb-6">About the training</h3>
 
-            {displayTraining.responsibilities && (
-              <>
-                <h4 className="font-semibold">Key Responsibilities</h4>
-                <ul className="list-disc list-inside">
-                  {Array.isArray(displayTraining.responsibilities) ? (
-                    displayTraining.responsibilities.map((resp, index) => (
-                      <li key={index}>{resp}</li>
-                    ))
-                  ) : (
-                    <li>{displayTraining.responsibilities}</li>
-                  )}
-                </ul>
-              </>
-            )}
-
-            {displayTraining.requiredSkills && (
-              <>
-                <h4 className="font-semibold">Required Skills</h4>
-                <ul className="list-disc list-inside">
-                  {Array.isArray(displayTraining.requiredSkills) ? (
-                    displayTraining.requiredSkills.map((skill, index) => (
-                      <li key={index}>{skill}</li>
-                    ))
-                  ) : (
-                    <li>{displayTraining.requiredSkills}</li>
-                  )}
-                </ul>
-              </>
-            )}
-
-            {displayTraining.minimumEducation && (
-              <>
-                <h4 className="font-semibold">Education</h4>
-                <p>{displayTraining.minimumEducation}</p>
-              </>
-            )}
-
-            {(displayTraining.minimumExperience ||
-              displayTraining.trainingMode ||
-              displayTraining.sessionFrequency ||
-              displayTraining.totalDurationDays ||
-              displayTraining.hoursPerDay ||
-              displayTraining.subjectMatterExpertise ||
-              displayTraining.qualificationsRequired ||
-              displayTraining.participantsPerBatch) && (
-              <>
-                <h4 className="font-semibold">Other Details</h4>
-                <ul className="list-disc list-inside">
-                  {displayTraining.minimumExperience && (
-                    <li>
-                      Minimum Experience: {displayTraining.minimumExperience}
-                    </li>
-                  )}
-                  {displayTraining.trainingMode && (
-                    <li>Training Mode: {displayTraining.trainingMode}</li>
-                  )}
-                  {displayTraining.sessionFrequency && (
-                    <li>
-                      Session Frequency: {displayTraining.sessionFrequency}
-                    </li>
-                  )}
-                  {displayTraining.totalDurationDays && (
-                    <li>
-                      Total Duration: {displayTraining.totalDurationDays} days
-                    </li>
-                  )}
-                  {displayTraining.hoursPerDay && (
-                    <li>Hours Per Day: {displayTraining.hoursPerDay} hours</li>
-                  )}
-                  {displayTraining.subjectMatterExpertise && (
-                    <li>
-                      Subject Matter Expertise:{" "}
-                      {displayTraining.subjectMatterExpertise}
-                    </li>
-                  )}
-                  {displayTraining.qualificationsRequired && (
-                    <li>
-                      Qualifications Required:{" "}
-                      {displayTraining.qualificationsRequired}
-                    </li>
-                  )}
-                  {displayTraining.participantsPerBatch && (
-                    <li>
-                      Participants Per Batch:{" "}
-                      {displayTraining.participantsPerBatch}
-                    </li>
-                  )}
-                  {displayTraining.travelRequired !== undefined && (
-                    <li>
-                      Travel Required:{" "}
-                      {displayTraining.travelRequired ? "Yes" : "No"}
-                    </li>
-                  )}
-                  {displayTraining.studyMaterialsProvided !== undefined && (
-                    <li>
-                      Study Materials Provided:{" "}
-                      {displayTraining.studyMaterialsProvided ? "Yes" : "No"}
-                    </li>
-                  )}
-                  {displayTraining.demoSessionBeforeConfirming !==
-                    undefined && (
-                    <li>
-                      Demo Session Before Confirming:{" "}
-                      {displayTraining.demoSessionBeforeConfirming
-                        ? "Yes"
-                        : "No"}
-                    </li>
-                  )}
-                  {displayTraining.recommendationsFromPastClients !==
-                    undefined && (
-                    <li>
-                      Recommendations From Past Clients:{" "}
-                      {displayTraining.recommendationsFromPastClients
-                        ? "Yes"
-                        : "No"}
-                    </li>
-                  )}
-                </ul>
-              </>
-            )}
-
-            {displayTraining.contactEmail && (
-              <p>
-                For additional information, you can reach out to me at{" "}
-                {displayTraining.contactEmail}
-              </p>
-            )}
-
-            {displayTraining.languagesFluent &&
-              displayTraining.languagesFluent.length > 0 && (
-                <>
-                  <h4 className="font-semibold">Languages Fluent</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {displayTraining.languagesFluent.map((language, index) => (
-                      <span
-                        key={index}
-                        className="inline-block px-2 py-1 text-xs font-medium border-1 rounded-full"
-                      >
-                        {language}
-                      </span>
-                    ))}
-                  </div>
-                </>
-              )}
-
-            {displayTraining.skills && displayTraining.skills.length > 0 && (
-              <>
-                <h4 className="font-semibold">Skills</h4>
-                <div className="flex flex-wrap gap-2">
-                  {displayTraining.skills.map((skill, index) => (
-                    <span
-                      key={index}
-                      className="inline-block px-2 py-1 text-xs font-medium border-1 rounded-full"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </>
-            )}
+        {/* Training Overview */}
+        {displayTraining.description && (
+          <div className="mb-6">
+            <h4 className="font-semibold text-gray-900 mb-2">
+              Training Overview:
+            </h4>
+            <p className="text-gray-700 leading-relaxed">
+              {displayTraining.description}
+            </p>
           </div>
-        </>
-      );
-    } else {
-      // For jobs-and-trainings context
-      return (
-        <>
-          <h3 className="text-lg font-semibold">About the training</h3>
-          <div className="text-gray1 mt-4 space-y-4">
-            {displayTraining.description && (
-              <>
-                <h4 className="font-semibold">Description</h4>
-                <p>{displayTraining.description}</p>
-              </>
-            )}
+        )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {displayTraining.trainingMode && (
-                <div>
-                  <h4 className="font-semibold">Training Mode</h4>
-                  <p>{displayTraining.trainingMode}</p>
-                </div>
+        {/* Key Responsibilities */}
+        {displayTraining.responsibilities && (
+          <div className="mb-6">
+            <h4 className="font-semibold text-gray-900 mb-3">
+              Key Responsibilities:
+            </h4>
+            <ul className="space-y-2">
+              {Array.isArray(displayTraining.responsibilities) ? (
+                displayTraining.responsibilities.map(
+                  (responsibility, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                      <span className="text-gray-700">{responsibility}</span>
+                    </li>
+                  )
+                )
+              ) : (
+                <li className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-gray-700">
+                    {displayTraining.responsibilities}
+                  </span>
+                </li>
               )}
+            </ul>
+          </div>
+        )}
 
-              {displayTraining.sessionFrequency && (
-                <div>
-                  <h4 className="font-semibold">Session Frequency</h4>
-                  <p>{displayTraining.sessionFrequency}</p>
-                </div>
-              )}
-
-              {displayTraining.totalDurationDays && (
-                <div>
-                  <h4 className="font-semibold">Total Duration</h4>
-                  <p>{displayTraining.totalDurationDays} days</p>
-                </div>
-              )}
-
-              {displayTraining.hoursPerDay && (
-                <div>
-                  <h4 className="font-semibold">Hours Per Day</h4>
-                  <p>{displayTraining.hoursPerDay} hours</p>
-                </div>
-              )}
-
-              {displayTraining.sessionsExpected && (
-                <div>
-                  <h4 className="font-semibold">Expected Sessions</h4>
-                  <p>{displayTraining.sessionsExpected} sessions</p>
-                </div>
-              )}
-
-              {displayTraining.minimumExperience && (
-                <div>
-                  <h4 className="font-semibold">Minimum Experience</h4>
-                  <p>{displayTraining.minimumExperience}</p>
-                </div>
-              )}
-
-              {displayTraining.subjectMatterExpertise && (
-                <div>
-                  <h4 className="font-semibold">Subject Matter</h4>
-                  <p>{displayTraining.subjectMatterExpertise}</p>
-                </div>
-              )}
-
-              {displayTraining.participantsPerBatch && (
-                <div>
-                  <h4 className="font-semibold">Participants Per Batch</h4>
-                  <p>{displayTraining.participantsPerBatch}</p>
-                </div>
-              )}
+        {/* Training Details */}
+        <div className="space-y-4">
+          {displayTraining.qualificationsRequired && (
+            <div className="flex flex-col">
+              <span className="font-bold text-gray-700">Education:</span>
+              <span className="text-gray-700">
+                {displayTraining.qualificationsRequired}
+              </span>
             </div>
+          )}
 
-            {displayTraining.qualificationsRequired && (
-              <>
-                <h4 className="font-semibold">Qualifications Required</h4>
-                <p>{displayTraining.qualificationsRequired}</p>
-              </>
+          {displayTraining.minimumExperience && (
+            <div className="flex flex-col">
+              <span className="font-bold text-gray-700">Experience Level:</span>
+              <span className="text-gray-700">
+                {displayTraining.minimumExperience}
+              </span>
+            </div>
+          )}
+
+          {displayTraining.trainingMode && (
+            <div className="flex flex-col">
+              <span className="font-bold text-gray-700">Mode of training:</span>
+              <span className="text-gray-700">
+                {displayTraining.trainingMode}
+              </span>
+            </div>
+          )}
+
+          {displayTraining.sessionFrequency && (
+            <div className="flex justify-between items-center py-2 border-b border-gray-100">
+              <span className="font-medium text-gray-900">
+                Session Frequency:
+              </span>
+              <span className="text-gray-700">
+                {displayTraining.sessionFrequency}
+              </span>
+            </div>
+          )}
+        </div>
+
+        {/* Other Details */}
+        <div className="mt-6">
+          <h4 className="font-semibold text-gray-900 mb-3">Other Details:</h4>
+          <ul className="space-y-2">
+            {displayTraining.totalDurationDays && (
+              <li className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700">
+                  <strong>Duration:</strong> {displayTraining.totalDurationDays}{" "}
+                  days
+                </span>
+              </li>
             )}
+            {displayTraining.hoursPerDay && (
+              <li className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700">
+                  <strong>Hours Per Day:</strong> {displayTraining.hoursPerDay}{" "}
+                  hours
+                </span>
+              </li>
+            )}
+            {displayTraining.participantsPerBatch && (
+              <li className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700">
+                  <strong>Participants Per Batch:</strong>{" "}
+                  {displayTraining.participantsPerBatch}
+                </span>
+              </li>
+            )}
+            {displayTraining.subjectMatterExpertise && (
+              <li className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700">
+                  <strong>Subject Matter Expertise:</strong>{" "}
+                  {displayTraining.subjectMatterExpertise}
+                </span>
+              </li>
+            )}
+            {displayTraining.qualificationsRequired && (
+              <li className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700">
+                  <strong>Qualifications Required:</strong>{" "}
+                  {displayTraining.qualificationsRequired}
+                </span>
+              </li>
+            )}
+            <li className="flex items-start gap-2">
+              <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+              <span className="text-gray-700">
+                <strong>Travel Required:</strong>{" "}
+                {displayTraining.travelRequired !== undefined
+                  ? displayTraining.travelRequired
+                    ? "Yes"
+                    : "No"
+                  : "Not specified"}
+              </span>
+            </li>
+          </ul>
+        </div>
 
-            {displayTraining.languagesFluent &&
-              displayTraining.languagesFluent.length > 0 && (
-                <>
-                  <h4 className="font-semibold">Languages Fluent</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {displayTraining.languagesFluent.map((language, index) => (
-                      <Badge key={index} variant="secondary">
-                        {language}
-                      </Badge>
-                    ))}
-                  </div>
-                </>
-              )}
-
-            {displayTraining.technicalSkills &&
-              displayTraining.technicalSkills.length > 0 && (
-                <>
-                  <h4 className="font-semibold">Technical Skills</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {displayTraining.technicalSkills.map((skill, index) => (
-                      <Badge key={index} variant="secondary">
-                        {skill}
-                      </Badge>
-                    ))}
-                  </div>
-                </>
-              )}
+        {/* Contact Information */}
+        {displayTraining.contactEmail && (
+          <div className="mt-6">
+            <p className="text-gray-700">
+              <strong>Contact Information:</strong> For additional information,
+              you can reach out to me at {displayTraining.contactEmail}
+            </p>
           </div>
-        </>
-      );
-    }
+        )}
+
+        {/* Closing Remark */}
+        <div className="mt-6">
+          <p className="text-gray-700 italic">
+            Looking forward to seeing some great applications!
+          </p>
+        </div>
+
+        {/* Skills/Tags */}
+        {(displayTraining.requiredSkills ||
+          displayTraining.skills ||
+          displayTraining.technicalSkills ||
+          displayTraining.languagesFluent) && (
+          <div className="mt-6">
+            <div className="flex flex-wrap gap-2">
+              {displayTraining.requiredSkills &&
+                Array.isArray(displayTraining.requiredSkills) &&
+                displayTraining.requiredSkills.map((skill, index) => (
+                  <span
+                    key={`req-${index}`}
+                    className="px-3 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full border"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              {displayTraining.skills &&
+                Array.isArray(displayTraining.skills) &&
+                displayTraining.skills.map((skill, index) => (
+                  <span
+                    key={`skill-${index}`}
+                    className="px-3 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full border"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              {displayTraining.technicalSkills &&
+                Array.isArray(displayTraining.technicalSkills) &&
+                displayTraining.technicalSkills.map((skill, index) => (
+                  <span
+                    key={`tech-${index}`}
+                    className="px-3 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full border"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              {displayTraining.languagesFluent &&
+                Array.isArray(displayTraining.languagesFluent) &&
+                displayTraining.languagesFluent.map((language, index) => (
+                  <span
+                    key={`lang-${index}`}
+                    className="px-3 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full border"
+                  >
+                    {language}
+                  </span>
+                ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white p-6">
+    <div className="min-h-full flex flex-col bg-white p-6">
       {/* Header */}
-      <div className="flex justify-between gap-4 p-6 border-1 border-gray2 rounded-lg">
-        {context === "approvals" && displayTraining.companyLogo ? (
-          <img
-            src={displayTraining.companyLogo}
-            alt={displayTraining.company || displayApplicant?.name}
-            className="h-10 w-10 rounded-md"
-          />
-        ) : context === "approvals" ? (
-          <img
-            src="/google.png"
-            alt="Company Logo"
-            className="h-6 w-6 text-gray-400"
-          />
-        ) : null}
+      <div className="p-6 border-1 border-gray2 rounded-lg bg-white">
+        {/* Company Logo and Name */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-full">
+            <img
+              src={
+                displayTraining.companyLogo ||
+                displayTraining.postedBy?.companyLogo
+              }
+              alt={
+                displayTraining.company ||
+                displayTraining.postedBy?.companyName ||
+                displayApplicant?.name
+              }
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="text-lg font-medium text-gray-900">
+            {displayTraining.company ||
+              displayTraining.postedBy?.companyName ||
+              "Company Name"}
+          </div>
+        </div>
 
-        <div className="flex-1">
-          {context === "approvals" ? (
-            <>
-              {displayTraining?.company && <p>{displayTraining.company}</p>}
-              <div className="flex items-center gap-4">
-                <p className="text-xl font-medium">{displayTraining.title}</p>
-                {(displayTraining.applicationsCount ||
-                  displayTraining.candidates) && (
-                  <Badge className="text-primary-purple bg-light-purple text-xs">
-                    {displayTraining.applicationsCount ||
-                      displayTraining.candidates}{" "}
-                    Applied
-                  </Badge>
-                )}
-              </div>
-              <div className="text-gray1 flex items-center gap-6 mt-2">
-                {displayTraining.trainingMode && (
-                  <div className="flex items-center gap-2">
-                    <ClockIcon className="h-4 w-4 text-gray1" />
-                    {displayTraining.trainingMode}
-                  </div>
-                )}
-                {displayTraining.subjectMatterExpertise && (
-                  <div className="flex items-center gap-2">
-                    <LocationIcon className="h-4 w-4 text-gray1" />
-                    {displayTraining.subjectMatterExpertise}
-                  </div>
-                )}
-                {displayTraining.participantsPerBatch && (
-                  <div className="flex items-center gap-2">
-                    <DollarSignIcon className="h-4 w-4 text-gray1" />
-                    {displayTraining.participantsPerBatch} participants per
-                    batch
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex items-center gap-4">
-                {displayTraining.title && (
-                  <p className="text-xl font-medium">{displayTraining.title}</p>
-                )}
+        {/* Training Title and Status/Deadline */}
+        <div className="flex justify-between items-start mb-4">
+          <h1 className="text-2xl font-bold text-gray-900">
+            {displayTraining.title}
+          </h1>
+          {context === "approvals"
+            ? (displayTraining.applicationsCount ||
+                displayTraining.candidates) && (
+                <Badge className="text-primary-purple bg-light-purple text-xs">
+                  {displayTraining.applicationsCount ||
+                    displayTraining.candidates}{" "}
+                  Applied
+                </Badge>
+              )
+            : displayTraining.status &&
+              displayTraining.status !== "pending" && (
                 <Badge
-                  className={`text-xs ${
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${
                     displayTraining.status === "active"
-                      ? "text-green-600 bg-green-100"
-                      : displayTraining.status === "closed"
-                      ? "text-red-600 bg-red-100"
-                      : "text-gray-600 bg-gray-100"
+                      ? "bg-success2 text-success1"
+                      : "bg-danger2 text-danger1"
                   }`}
                 >
                   {displayTraining.status?.charAt(0).toUpperCase() +
                     displayTraining.status?.slice(1)}
                 </Badge>
-              </div>
-              <div className="text-gray1 flex items-center gap-6 mt-2">
-                {displayTraining.trainingMode && (
-                  <div className="flex items-center gap-2">
-                    <ClockIcon className="h-4 w-4 text-gray1" />
-                    {displayTraining.trainingMode}
-                  </div>
-                )}
-                {displayTraining.subjectMatterExpertise && (
-                  <div className="flex items-center gap-2">
-                    <LocationIcon className="h-4 w-4 text-gray1" />
-                    {displayTraining.subjectMatterExpertise}
-                  </div>
-                )}
-                {displayTraining.participantsPerBatch && (
-                  <div className="flex items-center gap-2">
-                    <DollarSignIcon className="h-4 w-4 text-gray1" />
-                    {displayTraining.participantsPerBatch} participants per
-                    batch
-                  </div>
-                )}
-              </div>
-            </>
-          )}
+              )}
+        </div>
 
-          {displayTraining.createdAt && (
-            <div className="text-gray1 flex items-center gap-2 mt-2">
-              <CalendarIcon className="h-4 w-4 text-gray1" />
-              {context === "approvals"
-                ? new Date(displayTraining.createdAt).toLocaleDateString()
-                : `Created: ${new Date(
-                    displayTraining.createdAt
-                  ).toLocaleDateString()}`}
+        {/* Training Details Row */}
+        <div className="flex items-center gap-6 text-gray-600">
+          {displayTraining.trainingMode && (
+            <div className="flex items-center gap-2">
+              <ClockIcon className="h-4 w-4" />
+              <span className="text-sm">{displayTraining.trainingMode}</span>
+            </div>
+          )}
+          {displayTraining.subjectMatterExpertise && (
+            <div className="flex items-center gap-2">
+              <MapPinIcon className="h-4 w-4" />
+              <span className="text-sm">
+                {displayTraining.subjectMatterExpertise}
+              </span>
+            </div>
+          )}
+          {displayTraining.participantsPerBatch && (
+            <div className="flex items-center gap-2">
+              <DollarSignIcon className="h-4 w-4" />
+              <span className="text-sm">
+                {displayTraining.participantsPerBatch} participants
+              </span>
+            </div>
+          )}
+          {displayTraining.totalDurationDays && (
+            <div className="flex items-center gap-2">
+              <CalendarIcon className="h-4 w-4" />
+              <span className="text-sm">
+                {displayTraining.totalDurationDays} days
+              </span>
             </div>
           )}
         </div>
 
-        {renderActionButtons()}
+        {/* Action Buttons */}
+        {renderActionButtons() && (
+          <div className="flex justify-end mt-6">{renderActionButtons()}</div>
+        )}
       </div>
 
       {/* Content */}
       <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
         {renderTrainingContent()}
+      </div>
+
+      <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
+        <h4 className="font-bold text-gray-700">About the Company</h4>
+        <p className="text-gray-700">
+          {displayTraining.postedBy?.companyDescription ||
+            displayTraining.companyDescription ||
+            "-"}
+        </p>
+        {displayTraining.postedBy?.currentAddress && (
+          <p className="text-gray-700">
+            <strong>Address:</strong> {displayTraining.postedBy?.currentAddress}
+          </p>
+        )}
       </div>
 
       {/* Applicant Information - Only for approvals context */}

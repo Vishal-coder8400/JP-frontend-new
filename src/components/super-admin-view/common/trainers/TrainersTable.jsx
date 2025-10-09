@@ -156,9 +156,7 @@ const TrainersTable = ({
                         {trainer.totalYearOfExperience || ""}
                       </TableCell>
                       <TableCell>
-                        {getRelativeTime(
-                          trainer.lastUpdated || trainer.updatedAt
-                        )}
+                        {getRelativeTime(trainer.updatedAt)}
                       </TableCell>
                       {showStatusColumn && (
                         <TableCell>

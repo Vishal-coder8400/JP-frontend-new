@@ -61,6 +61,24 @@ export const useGetApprovalsRecruiters = (params = {}) => {
   });
 };
 
+export const useGetApprovalsCandidates = (params = {}) => {
+  const token = localStorage.getItem("token");
+
+  return useQuery({
+    queryKey: ["approvals-candidates", token, params],
+    queryFn: ({ signal }) =>
+      getApprovalsList("jobseeker", { signal, ...params }),
+    enabled: !!token,
+    keepPreviousData: true,
+    retry: (failureCount, error) => {
+      if (error?.response?.status === 401 || error?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+  });
+};
+
 export const useGetApprovalsJobs = (params = {}) => {
   const token = localStorage.getItem("token");
 

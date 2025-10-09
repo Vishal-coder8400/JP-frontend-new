@@ -4,6 +4,7 @@ import CompaniesTabApprovals from "./tabs/companies";
 import RecruitersTab from "./tabs/recruiters";
 import TrainersTabApprovals from "./tabs/trainers";
 import JobTrainingsTab from "./tabs/jobs-and-trainings";
+import CandidatesTabApprovals from "./tabs/candidates";
 import TabNavigation from "@/components/common/TabNavigation";
 import TabContent from "@/components/common/TabContent";
 
@@ -15,6 +16,7 @@ const Approvals = () => {
     jobTrainings: JobTrainingsTab,
     trainers: TrainersTabApprovals,
     recruiters: RecruitersTab,
+    candidates: CandidatesTabApprovals,
   };
 
   return (
