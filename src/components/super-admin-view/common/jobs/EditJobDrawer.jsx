@@ -4,10 +4,15 @@ import EditJobForm from "./EditJobForm";
 import { useUpdateJob } from "@/hooks/super-admin/useJob";
 
 const EditJobDrawer = ({ isOpen, onClose, job, onRevalidate }) => {
-  const { mutate: updateJob, isPending } = useUpdateJob();
+  const { mutateAsync: updateJob, isPending } = useUpdateJob();
 
   const handleSave = async (formData) => {
     try {
+      console.log("Saving job with data:", {
+        id: job._id || job.id,
+        data: formData,
+      });
+
       await updateJob({
         id: job._id || job.id,
         data: formData,
