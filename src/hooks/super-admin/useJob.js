@@ -3,6 +3,7 @@ import {
   getAllJobs,
   getJobById,
   updateJob,
+  updateJobStatus,
 } from "../../api/super-admin/jobsAndTrainings";
 import { toast } from "sonner";
 
@@ -59,6 +60,32 @@ export const useUpdateJob = () => {
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || "Failed to update job");
+    },
+  });
+};
+
+export const useUpdateJobStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, status }) => updateJobStatus({ id, status }),
+    onSuccess: (data, variables) => {
+      toast.success("Job status updated successfully!");
+
+      // Invalidate and refetch job details
+      queryClient.invalidateQueries({
+        queryKey: ["superAdmin-job", variables.id],
+      });
+
+      // Invalidate and refetch jobs list
+      queryClient.invalidateQueries({
+        queryKey: ["superAdmin-jobs"],
+      });
+    },
+    onError: (error) => {
+      toast.error(
+        error.response?.data?.message || "Failed to update job status"
+      );
     },
   });
 };

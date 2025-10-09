@@ -24,11 +24,19 @@ export const getJobApplications = ({ signal, id }) =>
 export const getTrainingApplications = ({ signal, id }) =>
   api.get(`/admin/applications/trainings/${id}`, { signal });
 
-export const updateJob = ({ id, data }) =>
-  api.put(`/admin/user-profile/${id}/profile`, data);
+export const updateJob = ({ id, data }) => {
+  console.log("API call: PUT /admin/jobs/" + id, data);
+  return api.put(`/admin/jobs/${id}`, data);
+};
+
+export const updateJobStatus = ({ id, status }) =>
+  api.patch(`/admin/jobs/${id}/status`, { status });
 
 export const updateTraining = ({ id, data }) =>
-  api.put(`/admin/user-profile/${id}/profile`, data);
+  api.put(`/admin/trainings/${id}`, data);
+
+export const updateTrainingStatus = ({ id, status }) =>
+  api.patch(`/admin/trainings/${id}/status`, { status });
 
 // Application approval endpoints
 export const updateJobApplicationStatus = (applicationId, data) =>
