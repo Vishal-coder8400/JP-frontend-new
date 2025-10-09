@@ -24,10 +24,7 @@ export const getJobApplications = ({ signal, id }) =>
 export const getTrainingApplications = ({ signal, id }) =>
   api.get(`/admin/applications/trainings/${id}`, { signal });
 
-export const updateJob = ({ id, data }) => {
-  console.log("API call: PUT /admin/jobs/" + id, data);
-  return api.put(`/admin/jobs/${id}`, data);
-};
+export const updateJob = ({ id, data }) => api.put(`/admin/jobs/${id}`, data);
 
 export const updateJobStatus = ({ id, status }) =>
   api.patch(`/admin/jobs/${id}/status`, { status });

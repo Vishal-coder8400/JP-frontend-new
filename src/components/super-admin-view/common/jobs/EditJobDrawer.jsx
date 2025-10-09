@@ -8,11 +8,6 @@ const EditJobDrawer = ({ isOpen, onClose, job, onRevalidate }) => {
 
   const handleSave = async (formData) => {
     try {
-      console.log("Saving job with data:", {
-        id: job._id || job.id,
-        data: formData,
-      });
-
       await updateJob({
         id: job._id || job.id,
         data: formData,

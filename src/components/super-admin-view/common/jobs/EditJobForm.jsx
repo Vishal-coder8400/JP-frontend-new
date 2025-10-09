@@ -5,6 +5,16 @@ import { validateFormData } from "@/utils/commonFunctions";
 import { z } from "zod";
 import { toast } from "sonner";
 
+// Error display component
+const FieldError = ({ error }) => {
+  if (!error) return null;
+  return (
+    <p className="text-red-500 text-sm mt-1">
+      {Array.isArray(error) ? error[0] : error}
+    </p>
+  );
+};
+
 // Form controllers for job editing - only fields displayed in JobDetailsDrawer
 const jobBasicInfo = [
   {
@@ -176,7 +186,7 @@ const jobAdditionalInfo = [
   },
 ];
 
-// Validation schema for fields displayed in JobDetailsDrawer
+// Validation schema - all fields are optional since BE accepts all optional
 const editJobSchema = z.object({
   jobTitle: z.string().optional(),
   jobType: z.string().optional(),
@@ -194,7 +204,7 @@ const editJobSchema = z.object({
   genderPreference: z.string().optional(),
   regionalLanguageRequired: z.boolean().optional(),
   requiredSkills: z.array(z.string()).optional(),
-  contactEmail: z.string().email().optional().or(z.literal("")),
+  contactEmail: z.string().optional(), // Removed email validation since BE accepts any string
 });
 
 const EditJobForm = ({ job, onClose, onSave }) => {
@@ -219,6 +229,19 @@ const EditJobForm = ({ job, onClose, onSave }) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  // Clear field error when user starts typing
+  const handleFieldChange = (fieldName, value) => {
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
+    if (fieldErrors[fieldName]) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+    }
+  };
 
   // Populate form with job data
   useEffect(() => {
@@ -283,11 +306,8 @@ const EditJobForm = ({ job, onClose, onSave }) => {
     setIsSubmitting(true);
 
     try {
-      const validationResult = validateFormData(formData, editJobSchema);
-      if (!validationResult.isValid) {
-        toast.error("Please fix the validation errors");
-        return;
-      }
+      // Clear previous errors
+      setFieldErrors({});
 
       const payload = transformFormDataToPayload(formData);
 
@@ -322,11 +342,16 @@ const EditJobForm = ({ job, onClose, onSave }) => {
               Job Basic Information
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={jobBasicInfo}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {jobBasicInfo.map((control, index) => (
+                <div key={control.name} className="flex flex-col gap-2">
+                  <CommonForm
+                    formControls={[control]}
+                    formData={formData}
+                    setFormData={setFormData}
+                  />
+                  <FieldError error={fieldErrors[control.name]} />
+                </div>
+              ))}
             </div>
           </div>
 
@@ -336,11 +361,43 @@ const EditJobForm = ({ job, onClose, onSave }) => {
               Job Details
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={jobDetails}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {jobDetails.map((control, index) => {
+                if (control.row) {
+                  return (
+                    <div
+                      key={index}
+                      className="flex gap-[8px] w-full flex-wrap justify-end items-end"
+                    >
+                      {control.row.map((item, i) => (
+                        <div
+                          key={item.name}
+                          className="gap-[8px] flex-2/3 lg:flex-1"
+                        >
+                          <div className="flex flex-col gap-[8px]">
+                            <CommonForm
+                              formControls={[item]}
+                              formData={formData}
+                              setFormData={setFormData}
+                            />
+                            <FieldError error={fieldErrors[item.name]} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div key={control.name} className="flex flex-col gap-2">
+                      <CommonForm
+                        formControls={[control]}
+                        formData={formData}
+                        setFormData={setFormData}
+                      />
+                      <FieldError error={fieldErrors[control.name]} />
+                    </div>
+                  );
+                }
+              })}
             </div>
           </div>
 
@@ -350,11 +407,16 @@ const EditJobForm = ({ job, onClose, onSave }) => {
               Additional Information
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={jobAdditionalInfo}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {jobAdditionalInfo.map((control, index) => (
+                <div key={control.name} className="flex flex-col gap-2">
+                  <CommonForm
+                    formControls={[control]}
+                    formData={formData}
+                    setFormData={setFormData}
+                  />
+                  <FieldError error={fieldErrors[control.name]} />
+                </div>
+              ))}
             </div>
           </div>
 

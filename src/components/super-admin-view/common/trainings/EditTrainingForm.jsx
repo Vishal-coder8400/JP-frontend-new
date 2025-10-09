@@ -5,26 +5,38 @@ import { validateFormData } from "@/utils/commonFunctions";
 import { z } from "zod";
 import { toast } from "sonner";
 
-// Validation schema with only fields displayed in TrainingDetailsDrawer
+const FieldError = ({ error }) => {
+  if (!error) return null;
+  return (
+    <p className="text-red-500 text-sm mt-1">
+      {Array.isArray(error) ? error[0] : error}
+    </p>
+  );
+};
+
 const editTrainingSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
-  responsibilities: z.string().optional(), // Will be converted to array
+  responsibilities: z.array(z.string()).optional(),
   minimumEducation: z.string().optional(),
   minimumExperience: z.string().optional(),
   trainingMode: z.string().optional(),
   sessionFrequency: z.string().optional(),
   totalDurationDays: z.number().optional(),
-  hoursPerDay: z.string().optional(), // Keep as string for display
+  hoursPerDay: z.number().optional(),
   participantsPerBatch: z.number().optional(),
   subjectMatterExpertise: z.string().optional(),
   qualificationsRequired: z.string().optional(),
   travelRequired: z.boolean().optional(),
   contactEmail: z.string().email().optional().or(z.literal("")),
-  requiredSkills: z.string().optional(), // Will be converted to array
-  skills: z.string().optional(), // Will be converted to array
-  technicalSkills: z.string().optional(), // Will be converted to array
-  languagesFluent: z.string().optional(), // Will be converted to array
+  requiredSkills: z.array(z.string()).optional(),
+  skills: z.array(z.string()).optional(),
+  technicalSkills: z.array(z.string()).optional(),
+  languagesFluent: z.array(z.string()).optional(),
+  sessionsExpected: z.number().optional(),
+  studyMaterialsProvided: z.boolean().optional(),
+  demoSessionBeforeConfirming: z.boolean().optional(),
+  recommendationsFromPastClients: z.boolean().optional(),
 });
 
 // Form controllers for the simplified training form
@@ -74,6 +86,7 @@ const trainingDetails = [
         componentType: "select",
         placeholder: "Select experience",
         options: [
+          { id: "Fresher", label: "Fresher" },
           { id: "0-1 year", label: "0-1 year" },
           { id: "1-2 year", label: "1-2 year" },
           { id: "2-3 years", label: "2-3 years" },
@@ -94,6 +107,7 @@ const trainingDetails = [
         componentType: "select",
         placeholder: "Select mode",
         options: [
+          { id: "Online", label: "Online" },
           { id: "Virtual / Online", label: "Virtual / Online" },
           { id: "In-person / On-site", label: "In-person / On-site" },
           { id: "Hybrid", label: "Hybrid" },
@@ -105,13 +119,13 @@ const trainingDetails = [
         componentType: "select",
         placeholder: "Select frequency",
         options: [
-          { id: "daily", label: "Daily" },
-          { id: "alternateDays", label: "Alternate Days" },
-          { id: "weekly", label: "Weekly" },
-          { id: "monthly", label: "Monthly" },
-          { id: "quarterly", label: "Quarterly" },
-          { id: "halfYearly", label: "Half-yearly" },
-          { id: "yearly", label: "Yearly" },
+          { id: "Daily", label: "Daily" },
+          { id: "Alternate Days", label: "Alternate Days" },
+          { id: "Weekly", label: "Weekly" },
+          { id: "Monthly", label: "Monthly" },
+          { id: "Quarterly", label: "Quarterly" },
+          { id: "Half-yearly", label: "Half-yearly" },
+          { id: "Yearly", label: "Yearly" },
         ],
       },
     ],
@@ -128,9 +142,9 @@ const trainingDetails = [
       {
         name: "hoursPerDay",
         label: "Hours Per Day",
-        placeholder: "e.g. 4 hours",
+        placeholder: "Enter hours",
         componentType: "input",
-        type: "text",
+        type: "number",
       },
     ],
   },
@@ -149,8 +163,10 @@ const trainingDetails = [
         componentType: "select",
         placeholder: "Select level",
         options: [
-          { id: "high", label: "High" },
-          { id: "moderate", label: "Moderate" },
+          { id: "Beginner", label: "Beginner" },
+          { id: "Intermediate", label: "Intermediate" },
+          { id: "Advanced", label: "Advanced" },
+          { id: "Expert", label: "Expert" },
         ],
       },
     ],
@@ -162,12 +178,34 @@ const trainingDetails = [
     componentType: "input",
     type: "text",
   },
+  {
+    name: "sessionsExpected",
+    label: "Sessions Expected",
+    placeholder: "Enter number of sessions",
+    componentType: "input",
+    type: "number",
+  },
 ];
 
 const trainingAdditionalInfo = [
   {
     name: "travelRequired",
     label: "Travel Required",
+    componentType: "checkbox",
+  },
+  {
+    name: "studyMaterialsProvided",
+    label: "Study Materials Provided",
+    componentType: "checkbox",
+  },
+  {
+    name: "demoSessionBeforeConfirming",
+    label: "Demo Session Before Confirming",
+    componentType: "checkbox",
+  },
+  {
+    name: "recommendationsFromPastClients",
+    label: "Recommendations From Past Clients",
     componentType: "checkbox",
   },
   {
@@ -217,11 +255,15 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
     trainingMode: "",
     sessionFrequency: "",
     totalDurationDays: 0,
-    hoursPerDay: "",
+    hoursPerDay: 0,
     participantsPerBatch: 0,
     subjectMatterExpertise: "",
     qualificationsRequired: "",
+    sessionsExpected: 0,
     travelRequired: false,
+    studyMaterialsProvided: false,
+    demoSessionBeforeConfirming: false,
+    recommendationsFromPastClients: false,
     contactEmail: "",
     requiredSkills: "",
     skills: "",
@@ -230,8 +272,19 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
-  // Populate form with training data
+  const handleFieldChange = (fieldName, value) => {
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
+    if (fieldErrors[fieldName]) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+    }
+  };
+
   useEffect(() => {
     if (training) {
       setFormData({
@@ -245,11 +298,17 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
         trainingMode: training.trainingMode || "",
         sessionFrequency: training.sessionFrequency || "",
         totalDurationDays: training.totalDurationDays || 0,
-        hoursPerDay: training.hoursPerDay || "",
+        hoursPerDay: training.hoursPerDay || 0,
         participantsPerBatch: training.participantsPerBatch || 0,
         subjectMatterExpertise: training.subjectMatterExpertise || "",
         qualificationsRequired: training.qualificationsRequired || "",
+        sessionsExpected: training.sessionsExpected || 0,
         travelRequired: training.travelRequired || false,
+        studyMaterialsProvided: training.studyMaterialsProvided || false,
+        demoSessionBeforeConfirming:
+          training.demoSessionBeforeConfirming || false,
+        recommendationsFromPastClients:
+          training.recommendationsFromPastClients || false,
         contactEmail: training.contactEmail || "",
         requiredSkills: Array.isArray(training.requiredSkills)
           ? training.requiredSkills.join(", ")
@@ -272,10 +331,10 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
     setIsSubmitting(true);
 
     try {
-      // Transform form data to match API expectations
+      setFieldErrors({});
+
       const payload = {
         ...formData,
-        // Convert string arrays back to arrays
         responsibilities: formData.responsibilities
           ? formData.responsibilities.split("\n").filter((item) => item.trim())
           : [],
@@ -303,16 +362,20 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
               .map((lang) => lang.trim())
               .filter((lang) => lang)
           : [],
-        // Convert numeric fields
         totalDurationDays: formData.totalDurationDays
           ? Number(formData.totalDurationDays)
+          : undefined,
+        hoursPerDay: formData.hoursPerDay
+          ? Number(formData.hoursPerDay)
           : undefined,
         participantsPerBatch: formData.participantsPerBatch
           ? Number(formData.participantsPerBatch)
           : undefined,
+        sessionsExpected: formData.sessionsExpected
+          ? Number(formData.sessionsExpected)
+          : undefined,
       };
 
-      // Remove empty fields
       Object.keys(payload).forEach((key) => {
         if (
           payload[key] === "" ||
@@ -323,13 +386,14 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
         }
       });
 
-      const isValid = validateFormData(editTrainingSchema, payload);
-      if (!isValid) {
+      const validationResult = validateFormData(payload, editTrainingSchema);
+      if (!validationResult.isValid) {
+        setFieldErrors(validationResult.errors || {});
+        toast.error("Please fix validation errors");
         setIsSubmitting(false);
         return;
       }
 
-      // Call the save function passed from parent
       if (onSave) {
         await onSave(payload);
       }
@@ -365,11 +429,16 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
               Training Basic Information
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={trainingBasicInfo}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {trainingBasicInfo.map((control) => (
+                <div key={control.name} className="flex flex-col gap-2">
+                  <CommonForm
+                    formControls={[control]}
+                    formData={formData}
+                    setFormData={setFormData}
+                  />
+                  <FieldError error={fieldErrors[control.name]} />
+                </div>
+              ))}
             </div>
           </div>
 
@@ -379,11 +448,43 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
               Training Details
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={trainingDetails}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {trainingDetails.map((control, index) => {
+                if (control.row) {
+                  return (
+                    <div
+                      key={index}
+                      className="flex gap-[8px] w-full flex-wrap justify-end items-end"
+                    >
+                      {control.row.map((item) => (
+                        <div
+                          key={item.name}
+                          className="gap-[8px] flex-2/3 lg:flex-1"
+                        >
+                          <div className="flex flex-col gap-[8px]">
+                            <CommonForm
+                              formControls={[item]}
+                              formData={formData}
+                              setFormData={setFormData}
+                            />
+                            <FieldError error={fieldErrors[item.name]} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div key={control.name} className="flex flex-col gap-2">
+                      <CommonForm
+                        formControls={[control]}
+                        formData={formData}
+                        setFormData={setFormData}
+                      />
+                      <FieldError error={fieldErrors[control.name]} />
+                    </div>
+                  );
+                }
+              })}
             </div>
           </div>
 
@@ -393,11 +494,16 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
               Additional Information
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={trainingAdditionalInfo}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {trainingAdditionalInfo.map((control) => (
+                <div key={control.name} className="flex flex-col gap-2">
+                  <CommonForm
+                    formControls={[control]}
+                    formData={formData}
+                    setFormData={setFormData}
+                  />
+                  <FieldError error={fieldErrors[control.name]} />
+                </div>
+              ))}
             </div>
           </div>
 

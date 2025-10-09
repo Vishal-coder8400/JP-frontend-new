@@ -72,20 +72,17 @@ export const getDurationBetweenDates = (startDateStr, endDateStr) => {
 
   return result.trim() || "0 mon";
 };
-export const validateFormData = (validationSchema, formData) => {
-  if (!validationSchema) return true;
+export const validateFormData = (formData, validationSchema) => {
+  if (!validationSchema) return { isValid: true };
 
   const result = validationSchema.safeParse(formData);
 
   if (!result.success) {
     const allErrors = result.error.flatten().fieldErrors;
-    const firstError = Object.values(allErrors)[0]?.[0];
-
-    if (firstError) toast.error(firstError);
-    return false;
+    return { isValid: false, errors: allErrors };
   }
 
-  return true;
+  return { isValid: true };
 };
 export const formatSalaryRange = (minSalary, maxSalary) => {
   const min = Number(minSalary);

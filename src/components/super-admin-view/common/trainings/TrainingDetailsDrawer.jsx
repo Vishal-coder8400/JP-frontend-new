@@ -8,6 +8,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { useGetTrainingDetails } from "../../../../hooks/super-admin/useTraining";
+import { useQueryClient } from "@tanstack/react-query";
 import { formatApiError } from "../../../../utils/commonFunctions";
 import { useApprovals } from "../../../../hooks/super-admin/useApprovals";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
@@ -28,10 +29,13 @@ const TrainingDetailsDrawer = ({
   const [showHoldModal, setShowHoldModal] = useState(false);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
 
+  const queryClient = useQueryClient();
+
   const {
     data: trainingData,
     isLoading: isLoadingDetails,
     error: detailsError,
+    refetch: refetchTrainingDetails,
   } = useGetTrainingDetails(trainingId, {
     enabled: !!trainingId,
   });
@@ -107,6 +111,17 @@ const TrainingDetailsDrawer = ({
 
   const handleHoldClick = () => {
     setShowHoldModal(true);
+  };
+
+  const handleTrainingUpdate = async () => {
+    try {
+      await refetchTrainingDetails();
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+    } catch (error) {
+      console.error("Failed to refetch training details:", error);
+    }
   };
 
   if (isLoading) {
@@ -423,33 +438,20 @@ const TrainingDetailsDrawer = ({
               </div>
             </div>
 
-            {/* Training Title and Status/Deadline */}
+            {/* Training Title */}
             <div className="flex justify-between items-start mb-4">
               <h1 className="text-2xl font-bold text-gray-900">
                 {displayTraining.title}
               </h1>
-              {context === "approvals"
-                ? (displayTraining.applicationsCount ||
-                    displayTraining.candidates) && (
-                    <Badge className="text-primary-purple bg-light-purple text-xs">
-                      {displayTraining.applicationsCount ||
-                        displayTraining.candidates}{" "}
-                      Applied
-                    </Badge>
-                  )
-                : displayTraining.status &&
-                  displayTraining.status !== "pending" && (
-                    <Badge
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        displayTraining.status === "active"
-                          ? "bg-success2 text-success1"
-                          : "bg-danger2 text-danger1"
-                      }`}
-                    >
-                      {displayTraining.status?.charAt(0).toUpperCase() +
-                        displayTraining.status?.slice(1)}
-                    </Badge>
-                  )}
+              {context === "approvals" &&
+                (displayTraining.applicationsCount ||
+                  displayTraining.candidates) && (
+                  <Badge className="text-primary-purple bg-light-purple text-xs">
+                    {displayTraining.applicationsCount ||
+                      displayTraining.candidates}{" "}
+                    Applied
+                  </Badge>
+                )}
             </div>
 
             {/* Training Details Row */}
@@ -539,7 +541,7 @@ const TrainingDetailsDrawer = ({
           training={displayTraining}
           isOpen={isEditDrawerOpen}
           onClose={() => setIsEditDrawerOpen(false)}
-          onRevalidate={onRevalidate}
+          onRevalidate={handleTrainingUpdate}
         />
       )}
     </div>

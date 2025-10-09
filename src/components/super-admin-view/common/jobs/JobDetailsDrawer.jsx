@@ -27,7 +27,7 @@ const JobDetailsDrawer = ({
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showHoldModal, setShowHoldModal] = useState(false);
 
-  const { data: jobData, isLoading, error } = useGetJobDetails(jobId);
+  const { data: jobData, isLoading, error, refetch } = useGetJobDetails(jobId);
 
   const {
     isLoading: isLoadingApprovals,
@@ -96,6 +96,23 @@ const JobDetailsDrawer = ({
 
   const handleHoldClick = () => {
     setShowHoldModal(true);
+  };
+
+  const handleJobUpdate = async () => {
+    try {
+      // Refetch the job details to get updated data
+      await refetch();
+
+      // Call the parent's revalidate function if provided
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+
+      // Close the edit drawer
+      setIsEditDrawerOpen(false);
+    } catch (error) {
+      console.error("Failed to refetch job details:", error);
+    }
   };
 
   if (isLoading) {
@@ -392,7 +409,7 @@ const JobDetailsDrawer = ({
           isOpen={isEditDrawerOpen}
           onClose={() => setIsEditDrawerOpen(false)}
           job={job}
-          onRevalidate={onRevalidate}
+          onRevalidate={handleJobUpdate}
         />
       )}
 

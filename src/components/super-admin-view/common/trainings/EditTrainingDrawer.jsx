@@ -4,7 +4,7 @@ import EditTrainingForm from "./EditTrainingForm";
 import { useUpdateTraining } from "@/hooks/super-admin/useTraining";
 
 const EditTrainingDrawer = ({ isOpen, onClose, training, onRevalidate }) => {
-  const { mutate: updateTraining, isPending } = useUpdateTraining();
+  const { mutateAsync: updateTraining, isPending } = useUpdateTraining();
 
   const handleSave = async (formData) => {
     try {
@@ -13,16 +13,14 @@ const EditTrainingDrawer = ({ isOpen, onClose, training, onRevalidate }) => {
         data: formData,
       });
 
-      // Revalidate the list data
       if (onRevalidate) {
         await onRevalidate();
       }
 
-      // Close the drawer
       onClose();
     } catch (error) {
       console.error("Error saving training:", error);
-      throw error; // Re-throw to let the form handle the error
+      throw error;
     }
   };
 
