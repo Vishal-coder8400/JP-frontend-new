@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
 import CommonForm from "../../../common/form";
 import ButtonComponent from "../../../common/button";
-import { validateFormData } from "@/utils/commonFunctions";
+import FieldError from "../../../common/FieldError";
 import { z } from "zod";
 import { toast } from "sonner";
+import { PlusIcon, XIcon } from "lucide-react";
+import {
+  JOB_TYPES,
+  EDUCATION_LEVELS,
+  EXPERIENCE_LEVELS,
+  WORK_MODES,
+  GENDER_OPTIONS,
+  INTERVIEW_MODES,
+} from "@/constants/super-admin";
 
-// Form controllers for job editing - only fields displayed in JobDetailsDrawer
 const jobBasicInfo = [
   {
     name: "jobTitle",
@@ -19,12 +27,7 @@ const jobBasicInfo = [
     label: "Job Type",
     componentType: "select",
     placeholder: "Select job type",
-    options: [
-      { id: "Full-Time", label: "Full-Time" },
-      { id: "Part-Time", label: "Part-Time" },
-      { id: "Both", label: "Both" },
-      { id: "Night-Time", label: "Night-Time" },
-    ],
+    options: JOB_TYPES,
   },
   {
     name: "jobDescription",
@@ -35,10 +38,10 @@ const jobBasicInfo = [
   },
   {
     name: "keyResponsibilities",
-    label: "Key Responsibilities (one per line)",
-    placeholder: "Enter key responsibilities, one per line",
-    componentType: "textarea",
-    rows: 4,
+    label: "Key Responsibilities",
+    placeholder: "Enter key responsibility",
+    componentType: "input",
+    type: "text",
   },
 ];
 
@@ -50,29 +53,14 @@ const jobDetails = [
         label: "Education",
         componentType: "select",
         placeholder: "Select education",
-        options: [
-          { id: "10th Pass", label: "10th Pass" },
-          { id: "12th Pass", label: "12th Pass" },
-          { id: "Diploma", label: "Diploma" },
-          { id: "Graduate", label: "Graduate" },
-          { id: "Postgraduate", label: "Postgraduate" },
-        ],
+        options: EDUCATION_LEVELS,
       },
       {
         name: "experienceLevel",
         label: "Experience Level",
         componentType: "select",
         placeholder: "Select experience",
-        options: [
-          { id: "0-1 year", label: "0-1 year" },
-          { id: "1-2 year", label: "1-2 year" },
-          { id: "2-3 years", label: "2-3 years" },
-          { id: "3-4 years", label: "3-4 years" },
-          { id: "4-5 years", label: "4-5 years" },
-          { id: "5-7 years", label: "5-7 years" },
-          { id: "7-10 years", label: "7-10 years" },
-          { id: "10+ years", label: "10+ years" },
-        ],
+        options: EXPERIENCE_LEVELS,
       },
     ],
   },
@@ -83,18 +71,14 @@ const jobDetails = [
         label: "Mode of Work",
         componentType: "select",
         placeholder: "Select mode",
-        options: [
-          { id: "Work from Office", label: "Work from Office" },
-          { id: "Work from Home", label: "Work from Home" },
-          { id: "Hybrid", label: "Hybrid" },
-        ],
+        options: WORK_MODES,
       },
       {
         name: "modeOfInterview",
         label: "Mode of Interview",
-        placeholder: "e.g. Walk In, Online",
-        componentType: "input",
-        type: "text",
+        componentType: "select",
+        placeholder: "Select interview mode",
+        options: INTERVIEW_MODES,
       },
     ],
   },
@@ -112,11 +96,7 @@ const jobDetails = [
         label: "Gender Preference",
         componentType: "select",
         placeholder: "Select preference",
-        options: [
-          { id: "Male", label: "Male" },
-          { id: "Female", label: "Female" },
-          { id: "Any", label: "Any" },
-        ],
+        options: GENDER_OPTIONS,
       },
     ],
   },
@@ -176,7 +156,7 @@ const jobAdditionalInfo = [
   },
 ];
 
-// Validation schema for fields displayed in JobDetailsDrawer
+// Validation schema - all fields are optional since BE accepts all optional
 const editJobSchema = z.object({
   jobTitle: z.string().optional(),
   jobType: z.string().optional(),
@@ -194,7 +174,7 @@ const editJobSchema = z.object({
   genderPreference: z.string().optional(),
   regionalLanguageRequired: z.boolean().optional(),
   requiredSkills: z.array(z.string()).optional(),
-  contactEmail: z.string().email().optional().or(z.literal("")),
+  contactEmail: z.string().optional(), // Removed email validation since BE accepts any string
 });
 
 const EditJobForm = ({ job, onClose, onSave }) => {
@@ -218,7 +198,39 @@ const EditJobForm = ({ job, onClose, onSave }) => {
     contactEmail: "",
   });
 
+  const [keyResponsibilitiesList, setKeyResponsibilitiesList] = useState([]);
+  const [currentResponsibility, setCurrentResponsibility] = useState("");
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  // Clear field error when user starts typing
+  const handleFieldChange = (fieldName, value) => {
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
+    if (fieldErrors[fieldName]) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+    }
+  };
+
+  // Add responsibility to the list
+  const addResponsibility = () => {
+    if (currentResponsibility.trim()) {
+      setKeyResponsibilitiesList((prev) => [
+        ...prev,
+        currentResponsibility.trim(),
+      ]);
+      setCurrentResponsibility("");
+    }
+  };
+
+  // Remove responsibility from the list
+  const removeResponsibility = (index) => {
+    setKeyResponsibilitiesList((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // Populate form with job data
   useEffect(() => {
@@ -227,9 +239,7 @@ const EditJobForm = ({ job, onClose, onSave }) => {
         jobTitle: job.jobTitle || job.title || "",
         jobType: job.jobType || "",
         jobDescription: job.jobDescription || job.description || "",
-        keyResponsibilities: Array.isArray(job.keyResponsibilities)
-          ? job.keyResponsibilities.join("\n")
-          : job.keyResponsibilities || "",
+        keyResponsibilities: "",
         minimumEducation: job.minimumEducation || "",
         experienceLevel: job.experienceLevel || "",
         modeOfWork: job.modeOfWork || "",
@@ -246,6 +256,13 @@ const EditJobForm = ({ job, onClose, onSave }) => {
           : job.requiredSkills || "",
         contactEmail: job.contactEmail || "",
       });
+
+      // Populate responsibilities list
+      if (Array.isArray(job.keyResponsibilities)) {
+        setKeyResponsibilitiesList(job.keyResponsibilities);
+      } else if (job.keyResponsibilities) {
+        setKeyResponsibilitiesList([job.keyResponsibilities]);
+      }
     }
   }, [job]);
 
@@ -254,9 +271,10 @@ const EditJobForm = ({ job, onClose, onSave }) => {
       jobTitle: formData.jobTitle || undefined,
       jobType: formData.jobType || undefined,
       jobDescription: formData.jobDescription || undefined,
-      keyResponsibilities: formData.keyResponsibilities
-        ? formData.keyResponsibilities.split("\n").filter((item) => item.trim())
-        : undefined,
+      keyResponsibilities:
+        keyResponsibilitiesList.length > 0
+          ? keyResponsibilitiesList
+          : undefined,
       minimumEducation: formData.minimumEducation || undefined,
       experienceLevel: formData.experienceLevel || undefined,
       modeOfWork: formData.modeOfWork || undefined,
@@ -283,11 +301,8 @@ const EditJobForm = ({ job, onClose, onSave }) => {
     setIsSubmitting(true);
 
     try {
-      const validationResult = validateFormData(formData, editJobSchema);
-      if (!validationResult.isValid) {
-        toast.error("Please fix the validation errors");
-        return;
-      }
+      // Clear previous errors
+      setFieldErrors({});
 
       const payload = transformFormDataToPayload(formData);
 
@@ -308,8 +323,8 @@ const EditJobForm = ({ job, onClose, onSave }) => {
   };
 
   return (
-    <div className="w-full h-full p-6 bg-white overflow-y-auto">
-      <div className="max-w-4xl mx-auto">
+    <div className="w-full h-full bg-white overflow-y-auto">
+      <div className="w-full p-6">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Edit Job</h2>
           <p className="text-gray-600">Update job information and details</p>
@@ -322,11 +337,78 @@ const EditJobForm = ({ job, onClose, onSave }) => {
               Job Basic Information
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={jobBasicInfo}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {jobBasicInfo.map((control, index) => {
+                if (control.name === "keyResponsibilities") {
+                  return (
+                    <div key={control.name} className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-gray-700">
+                        {control.label}
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder={control.placeholder}
+                          value={currentResponsibility}
+                          onChange={(e) =>
+                            setCurrentResponsibility(e.target.value)
+                          }
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              addResponsibility();
+                            }
+                          }}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <ButtonComponent
+                          type="button"
+                          color="#6945ED"
+                          buttonText="Add"
+                          onClick={addResponsibility}
+                          className="flex items-center gap-2"
+                        >
+                          <PlusIcon className="w-4 h-4" />
+                        </ButtonComponent>
+                      </div>
+                      {keyResponsibilitiesList.length > 0 && (
+                        <div className="mt-2 space-y-2">
+                          {keyResponsibilitiesList.map(
+                            (responsibility, idx) => (
+                              <div
+                                key={idx}
+                                className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md border"
+                              >
+                                <span className="text-sm text-gray-700">
+                                  {responsibility}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => removeResponsibility(idx)}
+                                  className="text-red-500 hover:text-red-700 focus:outline-none"
+                                >
+                                  <XIcon className="w-4 h-4" />
+                                </button>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      )}
+                      <FieldError error={fieldErrors[control.name]} />
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div key={control.name} className="flex flex-col gap-2">
+                      <CommonForm
+                        formControls={[control]}
+                        formData={formData}
+                        setFormData={setFormData}
+                      />
+                      <FieldError error={fieldErrors[control.name]} />
+                    </div>
+                  );
+                }
+              })}
             </div>
           </div>
 
@@ -336,11 +418,43 @@ const EditJobForm = ({ job, onClose, onSave }) => {
               Job Details
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={jobDetails}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {jobDetails.map((control, index) => {
+                if (control.row) {
+                  return (
+                    <div
+                      key={index}
+                      className="flex gap-[8px] w-full flex-wrap justify-end items-end"
+                    >
+                      {control.row.map((item, i) => (
+                        <div
+                          key={item.name}
+                          className="gap-[8px] flex-2/3 lg:flex-1"
+                        >
+                          <div className="flex flex-col gap-[8px]">
+                            <CommonForm
+                              formControls={[item]}
+                              formData={formData}
+                              setFormData={setFormData}
+                            />
+                            <FieldError error={fieldErrors[item.name]} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div key={control.name} className="flex flex-col gap-2">
+                      <CommonForm
+                        formControls={[control]}
+                        formData={formData}
+                        setFormData={setFormData}
+                      />
+                      <FieldError error={fieldErrors[control.name]} />
+                    </div>
+                  );
+                }
+              })}
             </div>
           </div>
 
@@ -350,11 +464,16 @@ const EditJobForm = ({ job, onClose, onSave }) => {
               Additional Information
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={jobAdditionalInfo}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {jobAdditionalInfo.map((control, index) => (
+                <div key={control.name} className="flex flex-col gap-2">
+                  <CommonForm
+                    formControls={[control]}
+                    formData={formData}
+                    setFormData={setFormData}
+                  />
+                  <FieldError error={fieldErrors[control.name]} />
+                </div>
+              ))}
             </div>
           </div>
 

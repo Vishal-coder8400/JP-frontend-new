@@ -1,91 +1,42 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getAllJobs,
   getJobById,
   updateJob,
   updateJobStatus,
+  getJobsByApplicant,
 } from "../../api/super-admin/jobsAndTrainings";
-import { toast } from "sonner";
+import { useBaseListQuery, useBaseDetailsQuery } from "./useBaseQuery";
+import { useUpdateMutation, useBaseMutation } from "./useBaseMutation";
+import { QUERY_KEYS } from "../../constants/super-admin/queryKeys";
 
 export const useGetAllJobs = (params = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["superAdmin-jobs", token, params],
-    queryFn: ({ signal }) => getAllJobs({ signal, ...params }),
-    enabled: !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return useBaseListQuery(QUERY_KEYS.jobs, getAllJobs, params);
 };
 
-export const useGetJobDetails = (id, { enabled = true } = {}) => {
-  const token = localStorage.getItem("token");
+export const useGetJobsByApplicant = (applicantId, options = {}) => {
+  return useBaseListQuery(
+    `${QUERY_KEYS.jobs}-applicant-${applicantId}`,
+    getJobsByApplicant,
+    { applicantId },
+    options
+  );
+};
 
-  return useQuery({
-    queryKey: ["superAdmin-job", token, id],
-    queryFn: ({ signal }) => getJobById({ signal, id }),
-    enabled: enabled && !!id && !!token,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+export const useGetJobDetails = (id, options = {}) => {
+  return useBaseDetailsQuery(QUERY_KEYS.job, getJobById, id, options);
 };
 
 export const useUpdateJob = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, data }) => updateJob({ id, data }),
-    onSuccess: (data, variables) => {
-      toast.success("Job updated successfully!");
-
-      // Invalidate and refetch job details
-      queryClient.invalidateQueries({
-        queryKey: ["superAdmin-job", variables.id],
-      });
-
-      // Invalidate and refetch jobs list
-      queryClient.invalidateQueries({
-        queryKey: ["superAdmin-jobs"],
-      });
-    },
-    onError: (error) => {
-      toast.error(error.response?.data?.message || "Failed to update job");
-    },
-  });
+  return useUpdateMutation(({ id, data }) => updateJob({ id, data }), "Job", [
+    "superAdmin-jobs",
+    "superAdmin-job",
+  ]);
 };
 
 export const useUpdateJobStatus = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, status }) => updateJobStatus({ id, status }),
-    onSuccess: (data, variables) => {
-      toast.success("Job status updated successfully!");
-
-      // Invalidate and refetch job details
-      queryClient.invalidateQueries({
-        queryKey: ["superAdmin-job", variables.id],
-      });
-
-      // Invalidate and refetch jobs list
-      queryClient.invalidateQueries({
-        queryKey: ["superAdmin-jobs"],
-      });
-    },
-    onError: (error) => {
-      toast.error(
-        error.response?.data?.message || "Failed to update job status"
-      );
-    },
+  return useBaseMutation(({ id, status }) => updateJobStatus({ id, status }), {
+    successMessage: "Job status updated successfully!",
+    errorMessage: "Failed to update job status",
+    invalidateKeys: ["superAdmin-jobs", "superAdmin-job"],
   });
 };

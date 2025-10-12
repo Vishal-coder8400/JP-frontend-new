@@ -1,76 +1,39 @@
-import { useQuery } from "@tanstack/react-query";
 import {
   getAllCompanies,
   getAllTrainers,
   getAllRecruiters,
   getAllCandidates,
 } from "../../api/super-admin/database";
+import { useBaseListQuery } from "./useBaseQuery";
+import { QUERY_KEYS } from "../../constants/super-admin/queryKeys";
 
 export const useGetDatabaseCompanies = (params = {}) => {
-  const token = localStorage.getItem("token");
   const { enabled = true, ...queryParams } = params;
 
-  return useQuery({
-    queryKey: ["database-companies", token, queryParams],
-    queryFn: ({ signal }) => getAllCompanies({ signal, ...queryParams }),
-    enabled: enabled && !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return useBaseListQuery(
+    QUERY_KEYS.database.companies,
+    getAllCompanies,
+    queryParams,
+    { enabled }
+  );
 };
 
 export const useGetDatabaseTrainers = (params = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["database-trainers", token, params],
-    queryFn: ({ signal }) => getAllTrainers({ signal, ...params }),
-    enabled: !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return useBaseListQuery(QUERY_KEYS.database.trainers, getAllTrainers, params);
 };
 
 export const useGetDatabaseRecruiters = (params = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["database-recruiters", token, params],
-    queryFn: ({ signal }) => getAllRecruiters({ signal, ...params }),
-    enabled: !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return useBaseListQuery(
+    QUERY_KEYS.database.recruiters,
+    getAllRecruiters,
+    params
+  );
 };
 
 export const useGetDatabaseCandidates = (params = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["database-candidates", token, params],
-    queryFn: ({ signal }) => getAllCandidates({ signal, ...params }),
-    enabled: !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return useBaseListQuery(
+    QUERY_KEYS.database.candidates,
+    getAllCandidates,
+    params
+  );
 };

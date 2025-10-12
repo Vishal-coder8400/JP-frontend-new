@@ -1,78 +1,40 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getSectoralOptions,
   createSectoralOption,
   updateSectoralOption,
   deleteSectoralOption,
 } from "../../api/super-admin/sectoralOption";
-import { toast } from "sonner";
+import { useBaseListQuery } from "./useBaseQuery";
+import {
+  useCreateMutation,
+  useUpdateMutation,
+  useDeleteMutation,
+} from "./useBaseMutation";
+import { QUERY_KEYS } from "../../constants/super-admin/queryKeys";
 
-export const useGetSectoralOptions = ({ enabled = true } = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["superAdmin-sectoral-options", token],
-    queryFn: ({ signal }) => getSectoralOptions({ signal }),
-    enabled: enabled && !!token,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+export const useGetSectoralOptions = (options = {}) => {
+  return useBaseListQuery(
+    QUERY_KEYS.sectoralOptions,
+    getSectoralOptions,
+    {},
+    options
+  );
 };
 
 export const useCreateSectoralOption = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: createSectoralOption,
-    onSuccess: () => {
-      toast.success("Sectoral option created successfully");
-      queryClient.invalidateQueries({
-        queryKey: ["superAdmin-sectoral-options"],
-      });
-    },
-    onError: (error) => {
-      toast.error(
-        error.response?.data?.message || "Failed to create sectoral option"
-      );
-    },
-  });
+  return useCreateMutation(createSectoralOption, "Sectoral option", [
+    "superAdmin-sectoral-options",
+  ]);
 };
 
 export const useUpdateSectoralOption = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: updateSectoralOption,
-    onSuccess: () => {
-      toast.success("Sectoral option updated successfully");
-      queryClient.invalidateQueries({
-        queryKey: ["superAdmin-sectoral-options"],
-      });
-    },
-    onError: (error) => {
-      toast.error(
-        error.response?.data?.message || "Failed to update sectoral option"
-      );
-    },
-  });
+  return useUpdateMutation(updateSectoralOption, "Sectoral option", [
+    "superAdmin-sectoral-options",
+  ]);
 };
 
 export const useDeleteSectoralOption = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: deleteSectoralOption,
-    onSuccess: () => {
-      toast.success("Sectoral option deleted successfully");
-      queryClient.invalidateQueries({
-        queryKey: ["superAdmin-sectoral-options"],
-      });
-    },
-    onError: (error) => {
-      toast.error(
-        error.response?.data?.message || "Failed to delete sectoral option"
-      );
-    },
-  });
+  return useDeleteMutation(deleteSectoralOption, "Sectoral option", [
+    "superAdmin-sectoral-options",
+  ]);
 };

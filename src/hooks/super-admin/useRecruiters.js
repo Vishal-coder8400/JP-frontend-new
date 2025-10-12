@@ -1,20 +1,19 @@
-import { useQuery } from "@tanstack/react-query";
 import { getAllRecruiters } from "../../api/super-admin/database";
+import { useBaseListQuery } from "./useBaseQuery";
+import { QUERY_KEYS } from "../../constants/super-admin/queryKeys";
 
-export const useRecruiters = (filters = {}, page = 1, limit = 10) => {
-  const token = localStorage.getItem("token");
+export const useRecruiters = (
+  filters = {},
+  page = 1,
+  limit = 10,
+  options = {}
+) => {
   const params = { page, limit, ...filters };
 
-  return useQuery({
-    queryKey: ["database-recruiters", token, params],
-    queryFn: ({ signal }) => getAllRecruiters({ signal, ...params }),
-    enabled: !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return useBaseListQuery(
+    QUERY_KEYS.database.recruiters,
+    getAllRecruiters,
+    params,
+    options
+  );
 };

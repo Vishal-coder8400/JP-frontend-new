@@ -1,17 +1,22 @@
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import useAuthStore from "../../stores/useAuthStore";
-import { toast } from "sonner";
+import tokenService from "../../services/super-admin/tokenService";
+import { QUERY_KEYS } from "../../constants/super-admin/queryKeys";
+import { handleMutationError } from "../../services/super-admin/errorHandler";
+import { createQueryConfig } from "../../services/super-admin/queryConfigFactory";
 
 export const useGetSuperAdminProfile = ({ enabled = true } = {}) => {
-  const { token } = useAuthStore();
+  const token = tokenService.getToken();
   const navigate = useNavigate();
+
+  const config = createQueryConfig({ enabled });
+
   return useQuery({
-    queryKey: ["superAdmin-user-profile", token],
+    queryKey: QUERY_KEYS.profile(token),
     // queryFn: ({ signal }) => getUserDetails({ signal }),
-    enabled: enabled && !!token,
+    ...config,
     onError: (error) => {
-      toast.error("Session expired. Please login again.");
+      handleMutationError(error, "Session expired. Please login again.");
       navigate("/super-admin/log-in");
     },
   });

@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import CommonForm from "../../../common/form";
 import ButtonComponent from "../../../common/button";
-import { useUpload } from "../../../../hooks/common/useUpload";
+import { useUploadFile } from "../../../../hooks/super-admin/useUploadFile";
+import { INDUSTRIES } from "@/constants/super-admin";
 
 const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { mutate: uploadFile } = useUpload();
+  const { mutate: uploadFile } = useUploadFile();
 
   const basicInfoFields = [
     {
@@ -133,7 +134,7 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
       label: "Sectoral Specialization",
       componentType: "multi-select",
       max: 3,
-      options: [],
+      options: INDUSTRIES,
     },
     {
       name: "totalExperience",
@@ -239,18 +240,21 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
   }, [recruiter]);
 
   const handleUpload = (file, callback) => {
-    uploadFile(file, {
-      onSuccess: (data) => {
-        const fileUrl = data?.data?.fileUrl;
-        const fileName = data?.data?.fileName;
-        if (callback) {
-          callback(fileUrl, fileName);
-        }
-      },
-      onError: (error) => {
-        console.error("Upload error:", error);
-      },
-    });
+    uploadFile(
+      { file, role: "super-admin", folder: "documents" },
+      {
+        onSuccess: (data) => {
+          const fileUrl = data?.data?.fileUrl;
+          const fileName = data?.data?.fileName;
+          if (callback) {
+            callback(fileUrl, fileName);
+          }
+        },
+        onError: (error) => {
+          console.error("Upload error:", error);
+        },
+      }
+    );
   };
 
   const transformFormDataToPayload = (formData) => {
@@ -311,20 +315,7 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
     }
   };
 
-  const sectorOptionsFromRecruiter = Array.isArray(
-    recruiter?.sectorSpecialization
-  )
-    ? recruiter.sectorSpecialization.map((item) => ({
-        id: item?.id || item?._id || item?.name,
-        label: item?.name || item?.label || "",
-      }))
-    : [];
-
-  const updatedProfessionalFields = professionalFields.map((field) =>
-    field.name === "sectorSpecialization"
-      ? { ...field, options: sectorOptionsFromRecruiter }
-      : field
-  );
+  const updatedProfessionalFields = professionalFields;
 
   return (
     <div className="w-full h-screen p-6 bg-white overflow-y-auto overscroll-contain">

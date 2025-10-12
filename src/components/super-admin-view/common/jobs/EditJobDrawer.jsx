@@ -8,11 +8,6 @@ const EditJobDrawer = ({ isOpen, onClose, job, onRevalidate }) => {
 
   const handleSave = async (formData) => {
     try {
-      console.log("Saving job with data:", {
-        id: job._id || job.id,
-        data: formData,
-      });
-
       await updateJob({
         id: job._id || job.id,
         data: formData,
@@ -37,7 +32,7 @@ const EditJobDrawer = ({ isOpen, onClose, job, onRevalidate }) => {
         side="right"
         className="
           w-full h-screen 
-          lg:max-w-[1000px] 
+          lg:max-w-[750px] 
           md:max-w-full
           sm:max-w-full 
           overflow-y-auto border-transparent [&>button.absolute]:hidden"

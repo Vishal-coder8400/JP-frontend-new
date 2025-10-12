@@ -1,46 +1,101 @@
 import api from "../../lib/axios";
+import {
+  createGetAll,
+  createGetById,
+  createUpdate,
+  createPatch,
+} from "./baseApi";
 
-export const getAllTrainings = ({ signal, page = 1, limit = 10, ...params }) =>
-  api.get("/admin/trainings/list", {
-    signal,
-    params: { page, limit, ...params },
-  });
+export const getAllTrainings = createGetAll("/admin/trainings/list");
+export const getTrainingById = createGetById("/admin/trainings");
+export const getAllJobs = createGetAll("/admin/jobs/list");
+export const getJobById = createGetById("/admin/jobs");
 
-export const getTrainingById = ({ signal, id }) =>
-  api.get(`/admin/trainings/${id}`, { signal });
+export const getJobApplications = async ({ signal, id, ...params }) => {
+  const { dateRange, ...restParams } = params;
 
-export const getAllJobs = ({ signal, page = 1, limit = 10, ...params }) =>
-  api.get("/admin/jobs/list", {
-    signal,
-    params: { page, limit, ...params },
-  });
+  const queryParams = {
+    ...restParams,
+  };
 
-export const getJobById = ({ signal, id }) =>
-  api.get(`/admin/jobs/${id}`, { signal });
+  if (dateRange?.from) {
+    queryParams.dateFrom = new Date(dateRange.from).toISOString().split("T")[0];
+  }
+  if (dateRange?.to) {
+    queryParams.dateTo = new Date(dateRange.to).toISOString().split("T")[0];
+  }
 
-export const getJobApplications = ({ signal, id }) =>
-  api.get(`/admin/applications/jobs/${id}`, { signal });
-
-export const getTrainingApplications = ({ signal, id }) =>
-  api.get(`/admin/applications/trainings/${id}`, { signal });
-
-export const updateJob = ({ id, data }) => {
-  console.log("API call: PUT /admin/jobs/" + id, data);
-  return api.put(`/admin/jobs/${id}`, data);
+  const paramsString = new URLSearchParams(queryParams).toString();
+  const response = await api.get(
+    `/admin/applications/jobs/${id}?${paramsString}`,
+    {
+      signal,
+    }
+  );
+  return response.data;
 };
 
-export const updateJobStatus = ({ id, status }) =>
-  api.patch(`/admin/jobs/${id}/status`, { status });
+export const getJobsByApplicant = async ({ signal, applicantId }) => {
+  const response = await api.get(`/admin/applications/jobs`, {
+    signal,
+    params: { applicantId },
+  });
+  return response.data;
+};
 
-export const updateTraining = ({ id, data }) =>
-  api.put(`/admin/trainings/${id}`, data);
+export const getTrainingApplications = async ({ signal, id, ...params }) => {
+  const { dateRange, ...restParams } = params;
 
-export const updateTrainingStatus = ({ id, status }) =>
-  api.patch(`/admin/trainings/${id}/status`, { status });
+  const queryParams = {
+    ...restParams,
+  };
 
-// Application approval endpoints
-export const updateJobApplicationStatus = (applicationId, data) =>
-  api.put(`/admin/job-applications/applications/${applicationId}/status`, data);
+  if (dateRange?.from) {
+    queryParams.dateFrom = new Date(dateRange.from).toISOString().split("T")[0];
+  }
+  if (dateRange?.to) {
+    queryParams.dateTo = new Date(dateRange.to).toISOString().split("T")[0];
+  }
 
-export const updateTrainingApplicationStatus = (applicationId, data) =>
-  api.patch(`/admin/applications/${applicationId}/status`, data);
+  const paramsString = new URLSearchParams(queryParams).toString();
+  const response = await api.get(
+    `/admin/applications/trainings/${id}?${paramsString}`,
+    {
+      signal,
+    }
+  );
+  return response.data;
+};
+
+export const updateJob = async ({ id, data }) => {
+  const response = await api.put(`/admin/jobs/${id}`, data);
+  return response.data;
+};
+
+export const updateTraining = createUpdate("/admin/trainings");
+
+export const updateJobStatus = async ({ id, status }) => {
+  const response = await api.patch(`/admin/jobs/${id}/status`, { status });
+  return response.data;
+};
+
+export const updateTrainingStatus = async ({ id, status }) => {
+  const response = await api.patch(`/admin/trainings/${id}/status`, { status });
+  return response.data;
+};
+
+export const updateJobApplicationStatus = async (applicationId, data) => {
+  const response = await api.put(
+    `/admin/job-applications/applications/${applicationId}/status`,
+    data
+  );
+  return response.data;
+};
+
+export const updateTrainingApplicationStatus = async (applicationId, data) => {
+  const response = await api.patch(
+    `/admin/applications/${applicationId}/status`,
+    data
+  );
+  return response.data;
+};

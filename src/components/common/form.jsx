@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { Checkbox } from "../ui/checkbox";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import {
@@ -411,7 +412,15 @@ export default function CommonForm({
 
       case "file":
         const fileUrl = getNestedValue(formData, nameWithIndex);
-        const fileName = fileUrl ? fileUrl.split("/").pop() : "";
+        const isMultiple = getControlItem.multiple;
+
+        // Handle multiple files vs single file
+        let currentFiles = [];
+        if (isMultiple) {
+          currentFiles = Array.isArray(fileUrl) ? fileUrl : [];
+        } else {
+          const fileName = fileUrl ? fileUrl.split("/").pop() : "";
+        }
 
         const acceptType =
           getControlItem.accept === "image"
@@ -420,90 +429,212 @@ export default function CommonForm({
             ? "application/pdf"
             : "";
 
-        const handleRemoveFile = () => {
-          setFormData((prev) => setNestedValue(prev, nameWithIndex, ""));
+        const handleRemoveFile = (indexToRemove = null) => {
+          if (isMultiple && indexToRemove !== null) {
+            setFormData((prev) => {
+              const currentFiles = Array.isArray(fileUrl) ? fileUrl : [];
+              const updatedFiles = currentFiles.filter(
+                (_, index) => index !== indexToRemove
+              );
+              return setNestedValue(prev, nameWithIndex, updatedFiles);
+            });
+          } else {
+            setFormData((prev) => setNestedValue(prev, nameWithIndex, ""));
+          }
         };
 
-        return (
-          <div className="relative">
-            <div className="relative w-full cursor-pointer">
-              {!fileName && (
+        if (isMultiple) {
+          return (
+            <div className="relative">
+              <div className="relative w-full cursor-pointer">
                 <Input
                   id={getControlItem.name}
                   type="file"
                   accept={acceptType}
+                  multiple
                   className="absolute inset-0 opacity-0 cursor-pointer z-0 h-full w-full"
                   onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
+                    const files = Array.from(e.target.files || []);
+                    if (files.length === 0) return;
 
-                    const isImage = file.type.startsWith("image/");
-                    const isPdf = file.type === "application/pdf";
-                    const isValidSize = file.size <= 5 * 1024 * 1024;
+                    // Validate all files
+                    for (const file of files) {
+                      const isImage = file.type.startsWith("image/");
+                      const isPdf = file.type === "application/pdf";
+                      const isValidSize = file.size <= 5 * 1024 * 1024;
 
-                    let isValidType = false;
-                    if (getControlItem.accept === "image")
-                      isValidType = isImage;
-                    else if (getControlItem.accept === "pdf")
-                      isValidType = isPdf;
+                      let isValidType = false;
+                      if (getControlItem.accept === "image")
+                        isValidType = isImage;
+                      else if (getControlItem.accept === "pdf")
+                        isValidType = isPdf;
 
-                    if (!isValidType) {
-                      alert(
-                        getControlItem.accept === "image"
-                          ? "Only image files are allowed."
-                          : "Only PDF files are allowed."
-                      );
-                      return;
+                      if (!isValidType) {
+                        alert(
+                          getControlItem.accept === "image"
+                            ? "Only image files are allowed."
+                            : "Only PDF files are allowed."
+                        );
+                        return;
+                      }
+
+                      if (!isValidSize) {
+                        alert("File must be smaller than 5MB.");
+                        return;
+                      }
                     }
 
-                    if (!isValidSize) {
-                      alert("File must be smaller than 5MB.");
-                      return;
-                    }
+                    // Upload all files sequentially to avoid race conditions
+                    const uploadFilesSequentially = async () => {
+                      const uploadedUrls = [...currentFiles];
 
-                    handleUpload(file, (uploadedFileUrl) => {
+                      for (const file of files) {
+                        try {
+                          await new Promise((resolve, reject) => {
+                            handleUpload(file, (uploadedFileUrl) => {
+                              uploadedUrls.push(uploadedFileUrl);
+                              resolve(uploadedFileUrl);
+                            });
+                          });
+                        } catch (error) {
+                          console.error("Error uploading file:", error);
+                        }
+                      }
+
+                      // Update form data with all uploaded URLs
                       setFormData((prev) =>
-                        setNestedValue(prev, nameWithIndex, uploadedFileUrl)
+                        setNestedValue(prev, nameWithIndex, uploadedUrls)
                       );
-                    });
+                    };
+
+                    uploadFilesSequentially();
                   }}
                 />
-              )}
-              <Label
-                htmlFor={!fileName ? getControlItem.name : undefined}
-                className="flex items-center justify-between border border-[#E2E2E2] w-full rounded-[4px] py-[9px] px-[16px] cursor-pointer z-10"
-              >
-                <span
-                  className={`${
-                    fileName ? "text-black" : "text-[#9B959F]"
-                  } text-base truncate w-60`}
+                <Label
+                  htmlFor={getControlItem.name}
+                  className="flex items-center justify-between border border-[#E2E2E2] w-full rounded-[4px] py-[9px] px-[16px] cursor-pointer z-10"
                 >
-                  {fileName || getControlItem.placeholder || "Upload File"}
-                </span>
+                  <span className="text-[#9B959F] text-base truncate w-60">
+                    {getControlItem.placeholder || "Upload Files"}
+                  </span>
+                  <Plus className="h-[15px] w-[15px]" />
+                </Label>
+              </div>
 
-                <span
-                  className="flex justify-center items-center"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    if (fileName) handleRemoveFile();
-                  }}
+              {/* Display uploaded files */}
+              {currentFiles.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {currentFiles.map((file, index) => {
+                    const fileName = file.split("/").pop();
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between bg-gray-50 p-2 rounded border"
+                      >
+                        <span className="text-sm text-gray-700 truncate flex-1 mr-2">
+                          {fileName}
+                        </span>
+                        <X
+                          className="h-[15px] w-[15px] text-red-500 cursor-pointer"
+                          onClick={() => handleRemoveFile(index)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="absolute bottom-[-20px] left-0 text-xs text-[#655F5F]">
+                Supported formats:{" "}
+                {getControlItem.accept === "image" ? "Images only" : "PDF only"}
+                , Max size: 5MB per file.
+              </div>
+            </div>
+          );
+        } else {
+          const fileName = fileUrl ? fileUrl.split("/").pop() : "";
+
+          return (
+            <div className="relative">
+              <div className="relative w-full cursor-pointer">
+                {!fileName && (
+                  <Input
+                    id={getControlItem.name}
+                    type="file"
+                    accept={acceptType}
+                    className="absolute inset-0 opacity-0 cursor-pointer z-0 h-full w-full"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+
+                      const isImage = file.type.startsWith("image/");
+                      const isPdf = file.type === "application/pdf";
+                      const isValidSize = file.size <= 5 * 1024 * 1024;
+
+                      let isValidType = false;
+                      if (getControlItem.accept === "image")
+                        isValidType = isImage;
+                      else if (getControlItem.accept === "pdf")
+                        isValidType = isPdf;
+
+                      if (!isValidType) {
+                        alert(
+                          getControlItem.accept === "image"
+                            ? "Only image files are allowed."
+                            : "Only PDF files are allowed."
+                        );
+                        return;
+                      }
+
+                      if (!isValidSize) {
+                        alert("File must be smaller than 5MB.");
+                        return;
+                      }
+
+                      handleUpload(file, (uploadedFileUrl) => {
+                        setFormData((prev) =>
+                          setNestedValue(prev, nameWithIndex, uploadedFileUrl)
+                        );
+                      });
+                    }}
+                  />
+                )}
+                <Label
+                  htmlFor={!fileName ? getControlItem.name : undefined}
+                  className="flex items-center justify-between border border-[#E2E2E2] w-full rounded-[4px] py-[9px] px-[16px] cursor-pointer z-10"
                 >
-                  {fileName ? (
-                    <X className="h-[15px] w-[15px] text-red-500 cursor-pointer" />
-                  ) : (
-                    <Plus className="h-[15px] w-[15px]" />
-                  )}
-                </span>
-              </Label>
+                  <span
+                    className={`${
+                      fileName ? "text-black" : "text-[#9B959F]"
+                    } text-base truncate w-60`}
+                  >
+                    {fileName || getControlItem.placeholder || "Upload File"}
+                  </span>
+
+                  <span
+                    className="flex justify-center items-center"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      if (fileName) handleRemoveFile();
+                    }}
+                  >
+                    {fileName ? (
+                      <X className="h-[15px] w-[15px] text-red-500 cursor-pointer" />
+                    ) : (
+                      <Plus className="h-[15px] w-[15px]" />
+                    )}
+                  </span>
+                </Label>
+              </div>
+              <div className="absolute bottom-[-20px] left-0 text-xs text-[#655F5F]">
+                Supported formats:{" "}
+                {getControlItem.accept === "image" ? "Images only" : "PDF only"}
+                , Max size: 5MB.
+              </div>
             </div>
-            <div className="absolute bottom-[-20px] left-0 text-xs text-[#655F5F]">
-              Supported formats:{" "}
-              {getControlItem.accept === "image" ? "Images only" : "PDF only"},{" "}
-              Max size: 5MB.
-            </div>
-          </div>
-        );
+          );
+        }
 
       case "calendar":
         const isValidDate = value && !isNaN(new Date(value).getTime());
@@ -582,6 +713,21 @@ export default function CommonForm({
           />
         );
 
+      case "checkbox":
+        return (
+          <div className="flex items-center">
+            <Checkbox
+              id={nameWithIndex}
+              checked={!!value}
+              onCheckedChange={(checked) =>
+                setFormData((prev) =>
+                  setNestedValue(prev, nameWithIndex, checked)
+                )
+              }
+            />
+          </div>
+        );
+
       default:
         return <Input {...commonInputProps} type={getControlItem.type} />;
     }
@@ -607,7 +753,7 @@ export default function CommonForm({
                         item.componentType === "file" ? "max-sm:mb-2" : ""
                       }`}
                     >
-                      {item.label && (
+                      {item.label && item.componentType !== "checkbox" && (
                         <Label className="text-base text-[#20102B] font-semibold">
                           {item.label}
                         </Label>
@@ -626,11 +772,12 @@ export default function CommonForm({
                   controlItem.componentType === "file" ? "mb-2" : ""
                 }`}
               >
-                {controlItem.label && (
-                  <Label className="text-base text-[#20102B] font-semibold">
-                    {controlItem.label}
-                  </Label>
-                )}
+                {controlItem.label &&
+                  controlItem.componentType !== "checkbox" && (
+                    <Label className="text-base text-[#20102B] font-semibold">
+                      {controlItem.label}
+                    </Label>
+                  )}
                 {renderInputsByComponentType(controlItem, index)}
               </div>
             );

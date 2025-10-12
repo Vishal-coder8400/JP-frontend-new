@@ -1,7 +1,7 @@
 import { jobsAndTrainingsTabs } from "./utils";
 import useJobsAndTrainingsTabStore from "./zustand";
-import JobsTab from "./tabs/jobs";
-import TrainingsTab from "./tabs/trainings";
+import JobsTab from "../common/jobs/JobsTab";
+import TrainingsTab from "../common/trainings/TrainingsTab";
 import TabNavigation from "@/components/common/TabNavigation";
 import TabContent from "@/components/common/TabContent";
 
@@ -14,18 +14,20 @@ const JobsAndTrainings = () => {
   };
 
   return (
-    <div className="w-full space-y-6 min-w-0">
+    <div className="h-full w-full flex flex-col gap-6">
       <TabNavigation
         tabs={jobsAndTrainingsTabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
-
-      <TabContent
-        activeTab={activeTab}
-        tabComponents={tabComponents}
-        defaultTab="jobs"
-      />
+      <div className="flex-1 min-w-0 w-full">
+        <TabContent
+          activeTab={activeTab}
+          tabComponents={tabComponents}
+          defaultTab="jobs"
+          className="h-full w-full"
+        />
+      </div>
     </div>
   );
 };

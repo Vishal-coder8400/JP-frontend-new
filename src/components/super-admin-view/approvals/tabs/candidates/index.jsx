@@ -1,4 +1,4 @@
-import CandidatesTab from "../../../common/CandidatesTab";
+import CandidatesTab from "../../../common/candidates/CandidatesTab";
 
 const CandidatesTabApprovals = () => {
   return <CandidatesTab context="approvals" />;

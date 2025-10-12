@@ -1,30 +1,42 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import CommonForm from "@/components/common/form";
+import FieldError from "@/components/common/FieldError";
 import { validateFormData } from "@/utils/commonFunctions";
 import { z } from "zod";
 import { toast } from "sonner";
+import { PlusIcon, XIcon } from "lucide-react";
+import ButtonComponent from "@/components/common/button";
+import {
+  EDUCATION_LEVELS,
+  EXPERIENCE_LEVELS,
+  TRAINING_MODES,
+  SESSION_FREQUENCIES,
+} from "@/constants/super-admin";
 
-// Validation schema with only fields displayed in TrainingDetailsDrawer
 const editTrainingSchema = z.object({
   title: z.string().optional(),
   description: z.string().optional(),
-  responsibilities: z.string().optional(), // Will be converted to array
+  responsibilities: z.array(z.string()).optional(),
   minimumEducation: z.string().optional(),
   minimumExperience: z.string().optional(),
   trainingMode: z.string().optional(),
   sessionFrequency: z.string().optional(),
   totalDurationDays: z.number().optional(),
-  hoursPerDay: z.string().optional(), // Keep as string for display
+  hoursPerDay: z.number().optional(),
   participantsPerBatch: z.number().optional(),
   subjectMatterExpertise: z.string().optional(),
   qualificationsRequired: z.string().optional(),
   travelRequired: z.boolean().optional(),
   contactEmail: z.string().email().optional().or(z.literal("")),
-  requiredSkills: z.string().optional(), // Will be converted to array
-  skills: z.string().optional(), // Will be converted to array
-  technicalSkills: z.string().optional(), // Will be converted to array
-  languagesFluent: z.string().optional(), // Will be converted to array
+  requiredSkills: z.array(z.string()).optional(),
+  skills: z.array(z.string()).optional(),
+  technicalSkills: z.array(z.string()).optional(),
+  languagesFluent: z.array(z.string()).optional(),
+  sessionsExpected: z.number().optional(),
+  studyMaterialsProvided: z.boolean().optional(),
+  demoSessionBeforeConfirming: z.boolean().optional(),
+  recommendationsFromPastClients: z.boolean().optional(),
 });
 
 // Form controllers for the simplified training form
@@ -45,10 +57,10 @@ const trainingBasicInfo = [
   },
   {
     name: "responsibilities",
-    label: "Key Responsibilities (one per line)",
-    placeholder: "Enter key responsibilities, one per line",
-    componentType: "textarea",
-    rows: 4,
+    label: "Key Responsibilities",
+    placeholder: "Enter key responsibility",
+    componentType: "input",
+    type: "text",
   },
 ];
 
@@ -60,29 +72,14 @@ const trainingDetails = [
         label: "Education",
         componentType: "select",
         placeholder: "Select education",
-        options: [
-          { id: "10th Pass", label: "10th Pass" },
-          { id: "12th Pass", label: "12th Pass" },
-          { id: "Diploma", label: "Diploma" },
-          { id: "Graduate", label: "Graduate" },
-          { id: "Postgraduate", label: "Postgraduate" },
-        ],
+        options: EDUCATION_LEVELS,
       },
       {
         name: "minimumExperience",
         label: "Experience Level",
         componentType: "select",
         placeholder: "Select experience",
-        options: [
-          { id: "0-1 year", label: "0-1 year" },
-          { id: "1-2 year", label: "1-2 year" },
-          { id: "2-3 years", label: "2-3 years" },
-          { id: "3-4 years", label: "3-4 years" },
-          { id: "4-5 years", label: "4-5 years" },
-          { id: "5-7 years", label: "5-7 years" },
-          { id: "7-10 years", label: "7-10 years" },
-          { id: "10+ years", label: "10+ years" },
-        ],
+        options: EXPERIENCE_LEVELS,
       },
     ],
   },
@@ -93,26 +90,14 @@ const trainingDetails = [
         label: "Mode of Training",
         componentType: "select",
         placeholder: "Select mode",
-        options: [
-          { id: "Virtual / Online", label: "Virtual / Online" },
-          { id: "In-person / On-site", label: "In-person / On-site" },
-          { id: "Hybrid", label: "Hybrid" },
-        ],
+        options: TRAINING_MODES,
       },
       {
         name: "sessionFrequency",
         label: "Session Frequency",
         componentType: "select",
         placeholder: "Select frequency",
-        options: [
-          { id: "daily", label: "Daily" },
-          { id: "alternateDays", label: "Alternate Days" },
-          { id: "weekly", label: "Weekly" },
-          { id: "monthly", label: "Monthly" },
-          { id: "quarterly", label: "Quarterly" },
-          { id: "halfYearly", label: "Half-yearly" },
-          { id: "yearly", label: "Yearly" },
-        ],
+        options: SESSION_FREQUENCIES,
       },
     ],
   },
@@ -128,9 +113,9 @@ const trainingDetails = [
       {
         name: "hoursPerDay",
         label: "Hours Per Day",
-        placeholder: "e.g. 4 hours",
+        placeholder: "Enter hours",
         componentType: "input",
-        type: "text",
+        type: "number",
       },
     ],
   },
@@ -149,8 +134,10 @@ const trainingDetails = [
         componentType: "select",
         placeholder: "Select level",
         options: [
-          { id: "high", label: "High" },
-          { id: "moderate", label: "Moderate" },
+          { id: "Beginner", label: "Beginner" },
+          { id: "Intermediate", label: "Intermediate" },
+          { id: "Advanced", label: "Advanced" },
+          { id: "Expert", label: "Expert" },
         ],
       },
     ],
@@ -162,12 +149,34 @@ const trainingDetails = [
     componentType: "input",
     type: "text",
   },
+  {
+    name: "sessionsExpected",
+    label: "Sessions Expected",
+    placeholder: "Enter number of sessions",
+    componentType: "input",
+    type: "number",
+  },
 ];
 
 const trainingAdditionalInfo = [
   {
     name: "travelRequired",
     label: "Travel Required",
+    componentType: "checkbox",
+  },
+  {
+    name: "studyMaterialsProvided",
+    label: "Study Materials Provided",
+    componentType: "checkbox",
+  },
+  {
+    name: "demoSessionBeforeConfirming",
+    label: "Demo Session Before Confirming",
+    componentType: "checkbox",
+  },
+  {
+    name: "recommendationsFromPastClients",
+    label: "Recommendations From Past Clients",
     componentType: "checkbox",
   },
   {
@@ -217,11 +226,15 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
     trainingMode: "",
     sessionFrequency: "",
     totalDurationDays: 0,
-    hoursPerDay: "",
+    hoursPerDay: 0,
     participantsPerBatch: 0,
     subjectMatterExpertise: "",
     qualificationsRequired: "",
+    sessionsExpected: 0,
     travelRequired: false,
+    studyMaterialsProvided: false,
+    demoSessionBeforeConfirming: false,
+    recommendationsFromPastClients: false,
     contactEmail: "",
     requiredSkills: "",
     skills: "",
@@ -229,27 +242,68 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
     languagesFluent: "",
   });
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [responsibilitiesList, setResponsibilitiesList] = useState([]);
+  const [currentResponsibility, setCurrentResponsibility] = useState("");
 
-  // Populate form with training data
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
+
+  const handleFieldChange = (fieldName, value) => {
+    setFormData((prev) => ({ ...prev, [fieldName]: value }));
+    if (fieldErrors[fieldName]) {
+      setFieldErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[fieldName];
+        return newErrors;
+      });
+    }
+  };
+
+  const addResponsibility = () => {
+    if (currentResponsibility.trim()) {
+      setResponsibilitiesList((prev) => [
+        ...prev,
+        currentResponsibility.trim(),
+      ]);
+      setCurrentResponsibility("");
+    }
+  };
+
+  const removeResponsibility = (index) => {
+    setResponsibilitiesList((prev) => prev.filter((_, i) => i !== index));
+  };
+
   useEffect(() => {
     if (training) {
+      // Clear any existing field errors when loading training data
+      setFieldErrors({});
+
       setFormData({
         title: training.title || "",
         description: training.description || "",
-        responsibilities: Array.isArray(training.responsibilities)
-          ? training.responsibilities.join("\n")
-          : training.responsibilities || "",
+        responsibilities: "",
         minimumEducation: training.minimumEducation || "",
         minimumExperience: training.minimumExperience || "",
         trainingMode: training.trainingMode || "",
         sessionFrequency: training.sessionFrequency || "",
         totalDurationDays: training.totalDurationDays || 0,
-        hoursPerDay: training.hoursPerDay || "",
+        hoursPerDay: training.hoursPerDay || 0,
         participantsPerBatch: training.participantsPerBatch || 0,
         subjectMatterExpertise: training.subjectMatterExpertise || "",
         qualificationsRequired: training.qualificationsRequired || "",
-        travelRequired: training.travelRequired || false,
+        sessionsExpected: training.sessionsExpected || 0,
+        travelRequired:
+          training.travelRequired === true ||
+          training.travelRequired === "true",
+        studyMaterialsProvided:
+          training.studyMaterialsProvided === true ||
+          training.studyMaterialsProvided === "true",
+        demoSessionBeforeConfirming:
+          training.demoSessionBeforeConfirming === true ||
+          training.demoSessionBeforeConfirming === "true",
+        recommendationsFromPastClients:
+          training.recommendationsFromPastClients === true ||
+          training.recommendationsFromPastClients === "true",
         contactEmail: training.contactEmail || "",
         requiredSkills: Array.isArray(training.requiredSkills)
           ? training.requiredSkills.join(", ")
@@ -264,6 +318,12 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
           ? training.languagesFluent.join(", ")
           : training.languagesFluent || "",
       });
+
+      if (Array.isArray(training.responsibilities)) {
+        setResponsibilitiesList(training.responsibilities);
+      } else if (training.responsibilities) {
+        setResponsibilitiesList([training.responsibilities]);
+      }
     }
   }, [training]);
 
@@ -272,13 +332,12 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
     setIsSubmitting(true);
 
     try {
-      // Transform form data to match API expectations
+      setFieldErrors({});
+
       const payload = {
         ...formData,
-        // Convert string arrays back to arrays
-        responsibilities: formData.responsibilities
-          ? formData.responsibilities.split("\n").filter((item) => item.trim())
-          : [],
+        responsibilities:
+          responsibilitiesList.length > 0 ? responsibilitiesList : undefined,
         requiredSkills: formData.requiredSkills
           ? formData.requiredSkills
               .split(",")
@@ -303,16 +362,20 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
               .map((lang) => lang.trim())
               .filter((lang) => lang)
           : [],
-        // Convert numeric fields
         totalDurationDays: formData.totalDurationDays
           ? Number(formData.totalDurationDays)
+          : undefined,
+        hoursPerDay: formData.hoursPerDay
+          ? Number(formData.hoursPerDay)
           : undefined,
         participantsPerBatch: formData.participantsPerBatch
           ? Number(formData.participantsPerBatch)
           : undefined,
+        sessionsExpected: formData.sessionsExpected
+          ? Number(formData.sessionsExpected)
+          : undefined,
       };
 
-      // Remove empty fields
       Object.keys(payload).forEach((key) => {
         if (
           payload[key] === "" ||
@@ -323,13 +386,14 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
         }
       });
 
-      const isValid = validateFormData(editTrainingSchema, payload);
-      if (!isValid) {
+      const validationResult = validateFormData(payload, editTrainingSchema);
+      if (!validationResult.isValid) {
+        setFieldErrors(validationResult.errors || {});
+        toast.error("Please fix validation errors");
         setIsSubmitting(false);
         return;
       }
 
-      // Call the save function passed from parent
       if (onSave) {
         await onSave(payload);
       }
@@ -365,11 +429,76 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
               Training Basic Information
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={trainingBasicInfo}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {trainingBasicInfo.map((control) => {
+                if (control.name === "responsibilities") {
+                  return (
+                    <div key={control.name} className="flex flex-col gap-2">
+                      <label className="text-sm font-medium text-gray-700">
+                        {control.label}
+                      </label>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder={control.placeholder}
+                          value={currentResponsibility}
+                          onChange={(e) =>
+                            setCurrentResponsibility(e.target.value)
+                          }
+                          onKeyPress={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              addResponsibility();
+                            }
+                          }}
+                          className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <ButtonComponent
+                          type="button"
+                          color="#6945ED"
+                          buttonText="Add"
+                          onClick={addResponsibility}
+                          className="flex items-center gap-2"
+                        >
+                          <PlusIcon className="w-4 h-4" />
+                        </ButtonComponent>
+                      </div>
+                      {responsibilitiesList.length > 0 && (
+                        <div className="mt-2 space-y-2">
+                          {responsibilitiesList.map((responsibility, idx) => (
+                            <div
+                              key={idx}
+                              className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-md border"
+                            >
+                              <span className="text-sm text-gray-700">
+                                {responsibility}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => removeResponsibility(idx)}
+                                className="text-red-500 hover:text-red-700 focus:outline-none"
+                              >
+                                <XIcon className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <FieldError error={fieldErrors[control.name]} />
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div key={control.name} className="flex flex-col gap-2">
+                      <CommonForm
+                        formControls={[control]}
+                        formData={formData}
+                        setFormData={setFormData}
+                      />
+                      <FieldError error={fieldErrors[control.name]} />
+                    </div>
+                  );
+                }
+              })}
             </div>
           </div>
 
@@ -379,11 +508,43 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
               Training Details
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={trainingDetails}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {trainingDetails.map((control, index) => {
+                if (control.row) {
+                  return (
+                    <div
+                      key={index}
+                      className="flex gap-[8px] w-full flex-wrap justify-end items-end"
+                    >
+                      {control.row.map((item) => (
+                        <div
+                          key={item.name}
+                          className="gap-[8px] flex-2/3 lg:flex-1"
+                        >
+                          <div className="flex flex-col gap-[8px]">
+                            <CommonForm
+                              formControls={[item]}
+                              formData={formData}
+                              setFormData={setFormData}
+                            />
+                            <FieldError error={fieldErrors[item.name]} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div key={control.name} className="flex flex-col gap-2">
+                      <CommonForm
+                        formControls={[control]}
+                        formData={formData}
+                        setFormData={setFormData}
+                      />
+                      <FieldError error={fieldErrors[control.name]} />
+                    </div>
+                  );
+                }
+              })}
             </div>
           </div>
 
@@ -393,11 +554,38 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
               Additional Information
             </h3>
             <div className="space-y-4">
-              <CommonForm
-                formControls={trainingAdditionalInfo}
-                formData={formData}
-                setFormData={setFormData}
-              />
+              {/* Checkbox fields in a horizontal grid */}
+              <div className="grid grid-cols-2 gap-4">
+                {trainingAdditionalInfo
+                  .filter((control) => control.componentType === "checkbox")
+                  .map((control) => (
+                    <div key={control.name} className="flex flex-col gap-2">
+                      <label className="text-base text-[#20102B] font-semibold">
+                        {control.label}
+                      </label>
+                      <CommonForm
+                        formControls={[control]}
+                        formData={formData}
+                        setFormData={setFormData}
+                      />
+                      <FieldError error={fieldErrors[control.name]} />
+                    </div>
+                  ))}
+              </div>
+
+              {/* Other fields */}
+              {trainingAdditionalInfo
+                .filter((control) => control.componentType !== "checkbox")
+                .map((control) => (
+                  <div key={control.name} className="flex flex-col gap-2">
+                    <CommonForm
+                      formControls={[control]}
+                      formData={formData}
+                      setFormData={setFormData}
+                    />
+                    <FieldError error={fieldErrors[control.name]} />
+                  </div>
+                ))}
             </div>
           </div>
 

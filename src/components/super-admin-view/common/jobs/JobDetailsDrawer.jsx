@@ -17,7 +17,7 @@ import ActionButtons from "../../shared/ActionButtons";
 
 const JobDetailsDrawer = ({
   jobId,
-  context = "view", // "edit", "approval", "view"
+  context = "database", // "database", "approvals"
   approvalId,
   approvalStatus,
   onRevalidate,
@@ -27,7 +27,7 @@ const JobDetailsDrawer = ({
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showHoldModal, setShowHoldModal] = useState(false);
 
-  const { data: jobData, isLoading, error } = useGetJobDetails(jobId);
+  const { data: jobData, isLoading, error, refetch } = useGetJobDetails(jobId);
 
   const {
     isLoading: isLoadingApprovals,
@@ -98,6 +98,20 @@ const JobDetailsDrawer = ({
     setShowHoldModal(true);
   };
 
+  const handleJobUpdate = async () => {
+    try {
+      await refetch();
+
+      if (onRevalidate) {
+        await onRevalidate();
+      }
+
+      setIsEditDrawerOpen(false);
+    } catch (error) {
+      console.error("Failed to refetch job details:", error);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-full flex flex-col bg-white p-6">
@@ -118,7 +132,7 @@ const JobDetailsDrawer = ({
     );
   }
 
-  if (!jobData?.data?.data?.job) {
+  if (!jobData?.data?.job) {
     return (
       <div className="min-h-full flex flex-col bg-white p-6">
         <div className="flex justify-center items-center h-64">
@@ -128,7 +142,7 @@ const JobDetailsDrawer = ({
     );
   }
 
-  const job = jobData.data.data.job;
+  const job = jobData.data.job;
 
   const renderButtons = () => {
     return (
@@ -151,7 +165,7 @@ const JobDetailsDrawer = ({
   console.log(job);
 
   return (
-    <div className="min-h-full flex flex-col bg-white p-6">
+    <div className="h-full min-h-screen flex flex-col bg-white p-6">
       {/* Header */}
       <div className="p-6 border-1 border-gray2 rounded-lg bg-white">
         <div className="flex items-start justify-between gap-6">
@@ -386,18 +400,18 @@ const JobDetailsDrawer = ({
         )}
       </div>
 
-      {/* Edit Job Drawer - for edit and approval contexts */}
-      {(context === "edit" || context === "approval") && (
+      {/* Edit Job Drawer - for database and approvals contexts */}
+      {(context === "database" || context === "approvals") && (
         <EditJobDrawer
           isOpen={isEditDrawerOpen}
           onClose={() => setIsEditDrawerOpen(false)}
           job={job}
-          onRevalidate={onRevalidate}
+          onRevalidate={handleJobUpdate}
         />
       )}
 
-      {/* Rejection Reason Modal - only for approval context */}
-      {context === "approval" && (
+      {/* Rejection Reason Modal - only for approvals context */}
+      {context === "approvals" && (
         <RejectionReasonModal
           isOpen={showRejectionModal}
           onClose={() => setShowRejectionModal(false)}
@@ -407,8 +421,8 @@ const JobDetailsDrawer = ({
         />
       )}
 
-      {/* Hold Reason Modal - only for approval context */}
-      {context === "approval" && (
+      {/* Hold Reason Modal - only for approvals context */}
+      {context === "approvals" && (
         <HoldReasonModal
           isOpen={showHoldModal}
           onClose={() => setShowHoldModal(false)}
