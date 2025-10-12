@@ -66,8 +66,10 @@ const Layout = () => {
           ))}
         </div>
       </div>
-      <section className="lg:ml-[327px] flex-col flex lg:py-[32px] lg:px-[16px] min-w-0">
-        <Outlet />
+      <section className="lg:ml-[327px] h-screen grid grid-rows-[1fr] overflow-hidden flex-1">
+        <div className="h-full overflow-auto p-6">
+          <Outlet />
+        </div>
       </section>
     </main>
   );

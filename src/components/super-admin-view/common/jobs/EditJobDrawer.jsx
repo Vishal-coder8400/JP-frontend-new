@@ -32,7 +32,7 @@ const EditJobDrawer = ({ isOpen, onClose, job, onRevalidate }) => {
         side="right"
         className="
           w-full h-screen 
-          lg:max-w-[1000px] 
+          lg:max-w-[750px] 
           md:max-w-full
           sm:max-w-full 
           overflow-y-auto border-transparent [&>button.absolute]:hidden"

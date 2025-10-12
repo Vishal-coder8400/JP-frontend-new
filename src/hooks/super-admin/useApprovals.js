@@ -1,164 +1,68 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getApprovalsList,
   getApprovalDetails,
   reviewApproval,
 } from "../../api/super-admin/approvals";
+import { useBaseListQuery, useBaseDetailsQuery } from "./useBaseQuery";
+import { useBaseMutation } from "./useBaseMutation";
+import { QUERY_KEYS } from "../../constants/super-admin/queryKeys";
 
-export const useGetApprovalsCompanies = (params = {}) => {
-  const token = localStorage.getItem("token");
+const createApprovalsListQuery = (type, params = {}) => {
   const { enabled = true, ...queryParams } = params;
 
-  return useQuery({
-    queryKey: ["approvals-companies", token, queryParams],
-    queryFn: ({ signal }) =>
-      getApprovalsList("corporate", { signal, ...queryParams }),
-    enabled: enabled && !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return useBaseListQuery(
+    (token) => QUERY_KEYS.approvals[type](token, queryParams),
+    ({ signal }) => getApprovalsList(type, { signal, ...queryParams }),
+    queryParams,
+    { enabled }
+  );
+};
+
+export const useGetApprovalsCompanies = (params = {}) => {
+  return createApprovalsListQuery("corporate", params);
 };
 
 export const useGetApprovalsTrainers = (params = {}) => {
-  const token = localStorage.getItem("token");
-  const { enabled = true, ...queryParams } = params;
-
-  return useQuery({
-    queryKey: ["approvals-trainers", token, queryParams],
-    queryFn: ({ signal }) =>
-      getApprovalsList("trainer", { signal, ...queryParams }),
-    enabled: enabled && !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return createApprovalsListQuery("trainer", params);
 };
 
 export const useGetApprovalsRecruiters = (params = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["approvals-recruiters", token, params],
-    queryFn: ({ signal }) =>
-      getApprovalsList("recruiter", { signal, ...params }),
-    enabled: !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return createApprovalsListQuery("recruiter", params);
 };
 
 export const useGetApprovalsCandidates = (params = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["approvals-candidates", token, params],
-    queryFn: ({ signal }) =>
-      getApprovalsList("jobseeker", { signal, ...params }),
-    enabled: !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return createApprovalsListQuery("candidates", params);
 };
 
 export const useGetApprovalsJobs = (params = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["approvals-jobs", token, params],
-    queryFn: ({ signal }) => getApprovalsList("job", { signal, ...params }),
-    enabled: !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return createApprovalsListQuery("job", params);
 };
 
 export const useGetApprovalsTrainings = (params = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["approvals-trainings", token, params],
-    queryFn: ({ signal }) =>
-      getApprovalsList("training", { signal, ...params }),
-    enabled: !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return createApprovalsListQuery("training", params);
 };
 
 export const useGetApprovalsJobsAndTrainings = (params = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["approvals-jobs-trainings", token, params],
-    queryFn: ({ signal }) =>
-      getApprovalsList("job-training", { signal, ...params }),
-    enabled: !!token,
-    keepPreviousData: true,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+  return createApprovalsListQuery("jobsAndTrainings", params);
 };
 
-export const useGetApprovalDetails = (approvalId, { enabled = true } = {}) => {
-  return useQuery({
-    queryKey: ["approval-details", approvalId],
-    queryFn: ({ signal }) => getApprovalDetails(approvalId, { signal }),
-    enabled: enabled && !!approvalId,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+export const useGetApprovalDetails = (approvalId, options = {}) => {
+  return useBaseDetailsQuery(
+    QUERY_KEYS.approvals.details,
+    getApprovalDetails,
+    approvalId,
+    options
+  );
 };
 
-// Hook for approval actions (approve, reject, hold)
 export const useApprovals = () => {
-  const queryClient = useQueryClient();
-
-  const reviewApprovalMutation = useMutation({
-    mutationFn: ({ approvalId, status, reviewerNotes }) =>
+  const reviewApprovalMutation = useBaseMutation(
+    ({ approvalId, status, reviewerNotes }) =>
       reviewApproval(approvalId, { status, reviewerNotes }),
-    onSuccess: () => {
-      // Invalidate relevant queries to refresh data
-      queryClient.invalidateQueries({ queryKey: ["approvals-"] });
-      queryClient.invalidateQueries({ queryKey: ["approval-details"] });
-    },
-  });
+    {
+      invalidateKeys: [{ prefix: "approvals-" }, ["approval-details"]],
+    }
+  );
 
   const approveApplication = async (approvalId) => {
     return reviewApprovalMutation.mutateAsync({

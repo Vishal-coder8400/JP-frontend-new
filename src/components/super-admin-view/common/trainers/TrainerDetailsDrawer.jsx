@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { YourImageIcon, YourPdfIcon } from "@/utils/icon";
 import {
   DownloadIcon,
+  LinkIcon,
   MailIcon,
   MapPin,
   PhoneCallIcon,
-  SquarePenIcon,
   UserIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -28,7 +28,6 @@ const TrainerDetailsDrawer = ({
   buttonsLayout = "horizontal", // "horizontal" | "vertical"
   approvalStatus,
 }) => {
-  const [hasApprovalAction, setHasApprovalAction] = useState(false);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showHoldModal, setShowHoldModal] = useState(false);
@@ -57,7 +56,6 @@ const TrainerDetailsDrawer = ({
   const handleApprove = async () => {
     try {
       await approveApplication(approvalId);
-      setHasApprovalAction(true);
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -76,7 +74,6 @@ const TrainerDetailsDrawer = ({
   const handleReject = async (rejectionReason) => {
     try {
       await rejectApplication(approvalId, rejectionReason);
-      setHasApprovalAction(true);
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -234,7 +231,7 @@ const TrainerDetailsDrawer = ({
             onClick={handleEdit}
             className={isVertical ? "w-full" : ""}
           >
-            Edit Trainer
+            Edit
           </Button>
           {!isApproved ? (
             <>
@@ -244,7 +241,7 @@ const TrainerDetailsDrawer = ({
                 disabled={isApprovalLoading}
                 className={isVertical ? "w-full" : ""}
               >
-                {isApprovalLoading ? "Processing..." : "Approve Trainer"}
+                {isApprovalLoading ? "Processing..." : "Approve"}
               </Button>
               <Button
                 variant="destructive"
@@ -252,7 +249,7 @@ const TrainerDetailsDrawer = ({
                 disabled={isApprovalLoading}
                 className={isVertical ? "w-full" : ""}
               >
-                {isApprovalLoading ? "Processing..." : "Reject Trainer"}
+                {isApprovalLoading ? "Processing..." : "Reject"}
               </Button>
               <Button
                 variant="black"
@@ -260,7 +257,7 @@ const TrainerDetailsDrawer = ({
                 disabled={isApprovalLoading}
                 className={isVertical ? "w-full" : ""}
               >
-                {isApprovalLoading ? "Processing..." : "Hold Trainer"}
+                {isApprovalLoading ? "Processing..." : "Hold"}
               </Button>
             </>
           ) : (
@@ -291,7 +288,7 @@ const TrainerDetailsDrawer = ({
           onClick={handleEdit}
           className={isVertical ? "w-full" : ""}
         >
-          Edit Trainer
+          Edit
         </Button>
       </div>
     );
@@ -300,15 +297,15 @@ const TrainerDetailsDrawer = ({
   return (
     <div className="h-full overflow-y-auto">
       <div className="h-[186px] w-full bg-[url('/Group_1000005865.jpg')] bg-cover bg-center rounded-tl-2xl" />
-      <div className="w-4xl mx-auto flex items-center rounded-xl bg-white border border-gray2 p-4 -mt-8 shadow-lg relative">
+      <div className="w-[90%] mx-auto flex items-center rounded-xl bg-white border border-gray2 p-4 -mt-8 shadow-lg relative">
         <img
           src={displayTrainer?.profileImage || "/person.png"}
           alt={`${displayTrainer?.firstName} ${displayTrainer?.lastName}`}
-          className="w-28 h-auto aspect-square object-cover rounded-full absolute -top-[30%] left-[3%]"
+          className="w-24 h-auto aspect-square object-cover rounded-full absolute -top-[18%] left-[3%]"
         />
-        <div className="ml-36 flex items-center justify-between w-full">
+        <div className="ml-28 flex items-center justify-between w-full">
           <div>
-            <h1 className="text-xl font-semibold">
+            <h1 className="text-lg font-semibold">
               {displayTrainer?.firstName} {displayTrainer?.lastName}
             </h1>
           </div>
@@ -321,11 +318,11 @@ const TrainerDetailsDrawer = ({
         <h2 className="text-lg font-semibold mt-4">Personal Information</h2>
         <div className="grid grid-cols-4 gap-4 mt-4">
           <div className="p-4 rounded-lg border border-gray2">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 text-sm">
               <UserIcon className="w-4" />
               Experience
             </div>
-            <span className="text-gray1/50">
+            <span className="text-gray1/50 text-sm text-wrap">
               {displayTrainer?.totalYearsExperience
                 ? `${displayTrainer.totalYearsExperience} years`
                 : "Not specified"}
@@ -333,11 +330,11 @@ const TrainerDetailsDrawer = ({
           </div>
 
           <div className="p-4 rounded-lg border border-gray2">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 text-sm">
               <UserIcon className="w-4" />
               Expertise
             </div>
-            <div className="text-gray1/50">
+            <div className="text-gray1/50 text-sm text-wrap">
               {displayTrainer?.expertiseAreas &&
               displayTrainer.expertiseAreas.length > 0
                 ? displayTrainer.expertiseAreas.map((skill, index) => (
@@ -353,31 +350,31 @@ const TrainerDetailsDrawer = ({
           </div>
 
           <div className="p-4 rounded-lg border border-gray2">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 text-sm">
               <PhoneCallIcon className="w-4" />
               Contact Information
             </div>
-            <span className="text-gray1/50 inline-flex items-center gap-2">
+            <span className="text-gray1/50 inline-flex items-center gap-2 text-sm text-wrap">
               <PhoneCallIcon className="w-4" />
               {typeof displayTrainer?.phoneNumber === "object" &&
               displayTrainer?.phoneNumber?.countryCode
                 ? `${displayTrainer.phoneNumber.countryCode} ${displayTrainer.phoneNumber.number}`
                 : displayTrainer?.phoneNumber || "-"}
             </span>
-            <span className="text-gray1/50 inline-flex items-center gap-2">
+            <span className="text-gray1/50 inline-flex items-center gap-2 text-sm">
               <MailIcon className="w-4" />
-              <span className="truncate w-40">
+              <span className="break-all">
                 {displayTrainer?.email || "Not provided"}
               </span>
             </span>
           </div>
 
           <div className="p-4 rounded-lg border border-gray2">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 text-sm">
               <MapPin className="w-4" />
               Address
             </div>
-            <span className="text-gray1/50">
+            <span className="text-gray1/50 text-sm text-wrap">
               {displayTrainer?.currentAddress ||
                 displayTrainer?.permanentAddress ||
                 "Not specified"}
@@ -454,9 +451,13 @@ const TrainerDetailsDrawer = ({
               <span className="text-gray1/50 inline-block w-50 text-wrap">
                 LinkedIn
               </span>
-              <span className="font-medium">
-                {displayTrainer?.linkedin || "Not specified"}
-              </span>
+              <a
+                href={displayTrainer?.linkedin}
+                target="_blank"
+                className="font-medium flex items-center gap-1 text-blue-500"
+              >
+                <LinkIcon className="w-4 h-4" /> View
+              </a>
             </div>
             <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
               <span className="text-gray1/50 inline-block w-50 text-wrap">

@@ -5,7 +5,7 @@ const TabNavigation = ({
   activeTab,
   onTabChange,
   className = "",
-  containerClassName = "w-full space-y-6 min-w-0",
+  containerClassName = "w-full min-w-0",
   showActions = false,
   actions = null,
 }) => {

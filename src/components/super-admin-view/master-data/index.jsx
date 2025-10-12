@@ -73,7 +73,7 @@ const SuperAdminMasterData = () => {
   };
 
   return (
-    <div className="w-full space-y-6 min-w-0">
+    <div className="h-full grid grid-rows-[auto,1fr] gap-6">
       {/* Tab Navigation */}
       <div className="flex items-center justify-between min-w-0">
         <div className="flex p-1 min-w-0 overflow-x-auto flex-1 lg:max-w-3xl">
@@ -124,7 +124,7 @@ const SuperAdminMasterData = () => {
       </div>
 
       {/* Tab Content */}
-      <div className="min-w-0">{renderTabContent()}</div>
+      <div className="overflow-auto">{renderTabContent()}</div>
 
       {/* Add Dropdown Modal */}
       <AddDropdownModal

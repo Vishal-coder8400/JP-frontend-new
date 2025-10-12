@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import CommonForm from "../../../common/form";
 import ButtonComponent from "../../../common/button";
-import { useUpload } from "../../../../hooks/common/useUpload";
+import { useUploadFile } from "../../../../hooks/super-admin/useUploadFile";
+import { useUpdateTrainer } from "../../../../hooks/super-admin/useTrainers";
 
 const trainerPersonalInfo = [
   {
@@ -72,8 +73,8 @@ const trainerPersonalInfo = [
         label: "Any Medical Problem",
         componentType: "select",
         options: [
-          { label: "No", value: false },
-          { label: "Yes", value: true },
+          { label: "No", id: "false" },
+          { label: "Yes", id: "true" },
         ],
       },
     ],
@@ -84,6 +85,49 @@ const trainerPersonalInfo = [
     placeholder: "Enter current address",
     componentType: "textarea",
     rows: 2,
+  },
+  {
+    name: "trainingImages",
+    label: "Training Images",
+    placeholder: "Upload Training Images",
+    componentType: "file",
+    accept: "image",
+    multiple: true,
+  },
+  {
+    name: "aadharImage",
+    label: "Adhaar Card",
+    placeholder: "Upload Adhaar Card",
+    componentType: "file",
+    accept: "image",
+  },
+  {
+    name: "panCardImage",
+    label: "PAN Card",
+    placeholder: "Upload PAN Card",
+    componentType: "file",
+    accept: "image",
+  },
+  {
+    name: "cancelledChequeImage",
+    label: "Cancel Cheque",
+    placeholder: "Upload Cancel Cheque",
+    componentType: "file",
+    accept: "image",
+  },
+  {
+    name: "relievingLetter",
+    label: "Relieving Letter",
+    placeholder: "Upload Relieving Letter",
+    componentType: "file",
+    accept: "pdf",
+  },
+  {
+    name: "resume",
+    label: "Resume",
+    placeholder: "Upload Resume",
+    componentType: "file",
+    accept: "pdf",
   },
 ];
 
@@ -182,10 +226,11 @@ const trainerAdditionalInfo = [
   },
 ];
 
-const EditTrainerForm = ({ trainer, onClose, onSave }) => {
+const EditTrainerForm = ({ trainer, onClose, onRevalidate }) => {
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { mutate: uploadFile } = useUpload();
+  const { mutate: uploadFile } = useUploadFile();
+  const { mutateAsync: updateTrainer } = useUpdateTrainer();
 
   useEffect(() => {
     if (trainer) {
@@ -204,15 +249,24 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
         fatherName: trainer.fatherName || "",
         motherName: trainer.motherName || "",
         profileImage: trainer.profileImage || "",
-        hasMedicalProblem: trainer.hasMedicalProblem || false,
+        hasMedicalProblem: trainer.hasMedicalProblem ? "true" : "false",
+        medicalProblemDetails: trainer.medicalProblemDetails || "",
         currentAddress:
           trainer.currentAddress || trainer.permanentAddress || "",
+        trainingImages: Array.isArray(trainer.trainingImages)
+          ? trainer.trainingImages
+          : [],
+        aadharImage: trainer.aadharImage || "",
+        panCardImage: trainer.panCardImage || "",
+        cancelledChequeImage: trainer.cancelledChequeImage || "",
+        relievingLetter: trainer.relievingLetter || "",
+        resume: trainer.resume || "",
         totalYearsExperience: trainer.totalYearsExperience || "",
         linkedin: trainer.linkedin || "",
         latestQualification: trainer.latestQualification || "",
         lastOrganizationName:
-          trainer.WorkingDetails?.lastOrganizationName || "",
-        lastDesignation: trainer.WorkingDetails?.lastDesignation || "",
+          trainer.workingDetails?.lastOrganizationName || "",
+        lastDesignation: trainer.workingDetails?.lastDesignation || "",
         averageMonthlySessions: trainer.averageMonthlySessions || "",
         expertiseAreas: Array.isArray(trainer.expertiseAreas)
           ? trainer.expertiseAreas.join(", ")
@@ -229,25 +283,30 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
   }, [trainer]);
 
   const handleUpload = (file, callback) => {
-    uploadFile(file, {
-      onSuccess: (data) => {
-        const fileUrl = data?.data?.fileUrl;
-        const fileName = data?.data?.fileName;
-        if (callback) {
-          callback(fileUrl, fileName);
-        }
-      },
-      onError: (error) => {
-        console.error("Upload error:", error);
-      },
-    });
+    uploadFile(
+      { file, role: "super-admin", folder: "documents" },
+      {
+        onSuccess: (data) => {
+          const fileUrl = data?.data?.fileUrl;
+          const fileName = data?.data?.fileName;
+          if (callback) {
+            callback(fileUrl, fileName);
+          }
+        },
+        onError: (error) => {
+          console.error("Upload error:", error);
+        },
+      }
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Form submitted, setting isSubmitting to true");
     setIsSubmitting(true);
 
     try {
+      console.log("Form data:", formData);
       const payload = {};
 
       if (formData.firstName) payload.firstName = formData.firstName;
@@ -258,9 +317,27 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
       if (formData.motherName) payload.motherName = formData.motherName;
       if (formData.profileImage) payload.profileImage = formData.profileImage;
       if (formData.hasMedicalProblem !== undefined)
-        payload.hasMedicalProblem = formData.hasMedicalProblem;
+        payload.hasMedicalProblem = formData.hasMedicalProblem === "true";
+      if (formData.medicalProblemDetails)
+        payload.medicalProblemDetails = formData.medicalProblemDetails;
       if (formData.currentAddress)
         payload.currentAddress = formData.currentAddress;
+
+      if (
+        formData.trainingImages &&
+        Array.isArray(formData.trainingImages) &&
+        formData.trainingImages.length > 0
+      ) {
+        payload.trainingImages = formData.trainingImages;
+      }
+
+      if (formData.aadharImage) payload.aadharImage = formData.aadharImage;
+      if (formData.panCardImage) payload.panCardImage = formData.panCardImage;
+      if (formData.cancelledChequeImage)
+        payload.cancelledChequeImage = formData.cancelledChequeImage;
+      if (formData.relievingLetter)
+        payload.relievingLetter = formData.relievingLetter;
+      if (formData.resume) payload.resume = formData.resume;
 
       if (formData.totalYearsExperience) {
         payload.totalYearsExperience = parseInt(formData.totalYearsExperience);
@@ -271,12 +348,12 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
         payload.latestQualification = formData.latestQualification;
 
       if (formData.lastOrganizationName || formData.lastDesignation) {
-        payload.WorkingDetails = {};
+        payload.workingDetails = {};
         if (formData.lastOrganizationName)
-          payload.WorkingDetails.lastOrganizationName =
+          payload.workingDetails.lastOrganizationName =
             formData.lastOrganizationName;
         if (formData.lastDesignation)
-          payload.WorkingDetails.lastDesignation = formData.lastDesignation;
+          payload.workingDetails.lastDesignation = formData.lastDesignation;
       }
 
       if (formData.averageMonthlySessions) {
@@ -309,7 +386,25 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
         payload.howDidYouKnowAboutOpportunity =
           formData.howDidYouKnowAboutOpportunity;
 
-      await onSave(payload);
+      console.log("Payload to send:", payload);
+      console.log("About to call updateTrainer with payload");
+
+      await updateTrainer({
+        id: trainer._id || trainer.id,
+        data: payload,
+      });
+
+      console.log("updateTrainer completed successfully");
+
+      // Revalidate the list data
+      if (onRevalidate) {
+        console.log("calling onRevalidate");
+        await onRevalidate();
+      }
+
+      // Close the drawer
+      console.log("closing drawer");
+      onClose();
     } catch (error) {
       console.error("Error updating trainer:", error);
     } finally {

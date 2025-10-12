@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import CommonForm from "../../../common/form";
 import ButtonComponent from "../../../common/button";
-import { useUpload } from "../../../../hooks/common/useUpload";
+import { useUploadFile } from "../../../../hooks/super-admin/useUploadFile";
+import { COMPANY_TYPES, INDUSTRY_TYPES } from "@/constants/super-admin";
 
 const EditCompanyForm = ({ company, onSave, onClose }) => {
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { mutate: uploadFile } = useUpload();
+  const { mutate: uploadFile } = useUploadFile();
 
   useEffect(() => {
     if (company) {
@@ -57,18 +58,21 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
   }, [company]);
 
   const handleUpload = (file, callback) => {
-    uploadFile(file, {
-      onSuccess: (data) => {
-        const fileUrl = data?.data?.fileUrl;
-        const fileName = data?.data?.fileName;
-        if (callback) {
-          callback(fileUrl, fileName);
-        }
-      },
-      onError: (error) => {
-        console.error("Upload error:", error);
-      },
-    });
+    uploadFile(
+      { file, role: "super-admin", folder: "documents" },
+      {
+        onSuccess: (data) => {
+          const fileUrl = data?.data?.fileUrl;
+          const fileName = data?.data?.fileName;
+          if (callback) {
+            callback(fileUrl, fileName);
+          }
+        },
+        onError: (error) => {
+          console.error("Upload error:", error);
+        },
+      }
+    );
   };
 
   const handleSubmit = async (e) => {
@@ -104,11 +108,7 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
       label: "Company Type",
       componentType: "select",
       placeholder: "Select a type",
-      options: [
-        { id: "privateCompany", label: "Private company" },
-        { id: "proprietorship", label: "Proprietorship" },
-        { id: "lld", label: "LLD" },
-      ],
+      options: COMPANY_TYPES,
     },
   ];
 
@@ -140,12 +140,7 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
       name: "companyDetails.industryType",
       placeholder: "Select industry type",
       componentType: "select",
-      options: [
-        { id: "manufacturing", label: "Manufacturing" },
-        { id: "services", label: "Services" },
-        { id: "trading", label: "Trading" },
-        { id: "other", label: "Other" },
-      ],
+      options: INDUSTRY_TYPES,
     },
     {
       label: "PAN Card Number",
@@ -183,7 +178,8 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
       name: "companyDetails.chequeOrStatementFile",
       placeholder: "Upload Cheque / Statement",
       componentType: "file",
-      formats: "JPG, PNG, PDF.",
+      accept: "document",
+      formats: "PDF",
     },
   ];
 

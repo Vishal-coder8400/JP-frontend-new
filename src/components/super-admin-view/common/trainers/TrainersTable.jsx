@@ -12,6 +12,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 
 import { useState } from "react";
 import TrainerDetailsDrawer from "./TrainerDetailsDrawer";
+import { getRelativeTime } from "../../../../utils/relativeTime";
 
 const TrainersTable = ({
   paginatedTrainers,
@@ -36,67 +37,35 @@ const TrainersTable = ({
     setDrawerOpen(true);
   };
 
-  const getRelativeTime = (date) => {
-    if (!date) return "N/A";
-
-    const now = new Date();
-    const updatedDate = new Date(date);
-    const diffInMs = now - updatedDate;
-    const diffInSeconds = Math.floor(diffInMs / 1000);
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    const diffInDays = Math.floor(diffInHours / 24);
-    const diffInWeeks = Math.floor(diffInDays / 7);
-    const diffInMonths = Math.floor(diffInDays / 30);
-    const diffInYears = Math.floor(diffInDays / 365);
-
-    if (diffInSeconds < 60) return "just now";
-    if (diffInMinutes < 60)
-      return `${diffInMinutes} ${
-        diffInMinutes === 1 ? "minute" : "minutes"
-      } ago`;
-    if (diffInHours < 24)
-      return `${diffInHours} ${diffInHours === 1 ? "hour" : "hours"} ago`;
-    if (diffInDays < 7)
-      return `${diffInDays} ${diffInDays === 1 ? "day" : "days"} ago`;
-    if (diffInWeeks < 4)
-      return `${diffInWeeks} ${diffInWeeks === 1 ? "week" : "weeks"} ago`;
-    if (diffInMonths < 12)
-      return `${diffInMonths} ${diffInMonths === 1 ? "month" : "months"} ago`;
-    return `${diffInYears} ${diffInYears === 1 ? "year" : "years"} ago`;
-  };
-
   console.log("paginatedTrainers", paginatedTrainers);
 
   return (
     <>
       <div className="bg-white rounded-lg border overflow-hidden">
-        <div className="overflow-x-auto max-w-[900px]">
-          <div className={showStatusColumn ? "min-w-[1000px]" : ""}>
-            <Table>
+        <div className="overflow-x-auto">
+          <div className="min-w-[1100px]">
+            <Table className="table-fixed">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="min-w-[40px] font-semibold"></TableHead>
-                  <TableHead className="min-w-[80px] font-semibold">
-                    ID
-                  </TableHead>
-                  <TableHead className="min-w-[250px] font-semibold">
+                  <TableHead className="w-[40px] font-semibold"></TableHead>
+                  <TableHead className="w-[160px] font-semibold">ID</TableHead>
+                  <TableHead className="w-[320px] font-semibold">
                     Name
                   </TableHead>
-                  <TableHead className="min-w-[150px] font-semibold">
+                  <TableHead className="w-[180px] font-semibold">
                     Industry
                   </TableHead>
-                  <TableHead className="min-w-[150px] font-semibold">
+                  <TableHead className="w-[180px] font-semibold">
                     Skills
                   </TableHead>
-                  <TableHead className="min-w-[100px] font-semibold">
+                  <TableHead className="w-[100px] font-semibold">
                     Experience
                   </TableHead>
-                  <TableHead className="min-w-[120px] font-semibold">
+                  <TableHead className="w-[120px] font-semibold">
                     Last Updated
                   </TableHead>
                   {showStatusColumn && (
-                    <TableHead className="min-w-[120px] font-semibold">
+                    <TableHead className="w-[120px] font-semibold">
                       Status
                     </TableHead>
                   )}
@@ -110,7 +79,7 @@ const TrainersTable = ({
                       onClick={(e) => handleRowClick(trainer, e)}
                       className="cursor-pointer hover:bg-gray-50 transition-colors"
                     >
-                      <TableCell className="text-center">
+                      <TableCell className="text-center w-[40px]">
                         <input
                           type="radio"
                           name="selectTrainer"
@@ -120,8 +89,13 @@ const TrainersTable = ({
                           className="w-4 h-4 text-primary-purple border-2 border-gray-300 focus:ring-2 focus:ring-primary-purple/50 focus:ring-offset-0 cursor-pointer appearance-none rounded-full checked:bg-primary-purple checked:border-primary-purple relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:transform before:-translate-x-1/2 before:-translate-y-1/2 before:w-2 before:h-2 before:bg-white before:rounded-full before:opacity-0 checked:before:opacity-100"
                         />
                       </TableCell>
-                      <TableCell>{trainer._id}</TableCell>
-                      <TableCell>
+                      <TableCell
+                        className="w-[160px] max-w-[160px] truncate"
+                        title={trainer._id}
+                      >
+                        {trainer._id}
+                      </TableCell>
+                      <TableCell className="w-[320px] max-w-[320px]">
                         <div className="flex items-center gap-3">
                           {trainer.profileImage ? (
                             <img
@@ -134,32 +108,52 @@ const TrainersTable = ({
                               <User className="h-5 w-5 text-gray-400" />
                             </div>
                           )}
-                          <div className="flex flex-col">
-                            <span className="font-medium text-gray-900">
+                          <div className="flex flex-col min-w-0">
+                            <span
+                              className="font-medium text-gray-900 truncate"
+                              title={
+                                trainer.name ||
+                                `${trainer.firstName || ""} ${
+                                  trainer.lastName || ""
+                                }`.trim() ||
+                                "N/A"
+                              }
+                            >
                               {trainer.name ||
                                 `${trainer.firstName || ""} ${
                                   trainer.lastName || ""
                                 }`.trim() ||
                                 "N/A"}
                             </span>
-                            <span className="text-sm text-gray-500">
+                            <span
+                              className="text-sm text-gray-500 truncate"
+                              title={trainer.email || "N/A"}
+                            >
                               {trainer.email || "N/A"}
                             </span>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell
+                        className="w-[180px] max-w-[180px] truncate"
+                        title={trainer.industryExperience || "N/A"}
+                      >
                         {trainer.industryExperience || "N/A"}
                       </TableCell>
-                      <TableCell>{trainer.expertiseAreas || "N/A"}</TableCell>
-                      <TableCell>
+                      <TableCell
+                        className="w-[180px] max-w-[180px] truncate"
+                        title={trainer.expertiseAreas || "N/A"}
+                      >
+                        {trainer.expertiseAreas || "N/A"}
+                      </TableCell>
+                      <TableCell className="w-[100px]">
                         {trainer.totalYearOfExperience || ""}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="w-[120px]">
                         {getRelativeTime(trainer.updatedAt)}
                       </TableCell>
                       {showStatusColumn && (
-                        <TableCell>
+                        <TableCell className="w-[120px]">
                           <AdminStatusBadge
                             status={trainer.approvalStatus || trainer.status}
                           />
@@ -193,7 +187,7 @@ const TrainersTable = ({
           side="right"
           className="
             w-full h-screen 
-            lg:max-w-[900px] 
+            lg:max-w-[750px] 
             md:max-w-full
             sm:max-w-full 
             border-transparent [&>button.absolute]:hidden"

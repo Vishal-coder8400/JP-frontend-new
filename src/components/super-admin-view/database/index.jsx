@@ -1,35 +1,38 @@
 import { databaseTabs } from "./utils";
 import useDatabaseTabStore from "./zustand";
-import CompaniesTabDatabase from "./tabs/companies";
-import CandidatesTab from "./tabs/candidates";
-import RecruitersTab from "./tabs/recruiters";
-import TrainersTabDatabase from "./tabs/trainers";
+
 import TabNavigation from "@/components/common/TabNavigation";
 import TabContent from "@/components/common/TabContent";
+import CompaniesTab from "../common/companies/CompaniesTab";
+import { TrainersTab } from "../common/trainers";
+import CandidatesTab from "../common/candidates/CandidatesTab";
+import RecruitersTab from "../common/recruiters/RecruitersTab";
 
 const SuperAdminDatabase = () => {
   const { activeTab, setActiveTab } = useDatabaseTabStore();
 
   const tabComponents = {
-    companies: CompaniesTabDatabase,
+    companies: CompaniesTab,
     candidates: CandidatesTab,
-    trainers: TrainersTabDatabase,
+    trainers: TrainersTab,
     recruiters: RecruitersTab,
   };
 
   return (
-    <div className="w-full space-y-6 min-w-0">
+    <div className="h-full space-y-6">
       <TabNavigation
         tabs={databaseTabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
-
-      <TabContent
-        activeTab={activeTab}
-        tabComponents={tabComponents}
-        defaultTab="companies"
-      />
+      <div>
+        <TabContent
+          activeTab={activeTab}
+          tabComponents={tabComponents}
+          defaultTab="companies"
+          className="overflow-auto"
+        />
+      </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,16 +16,40 @@ import {
   useDeleteAdmin,
 } from "@/hooks/super-admin/useAdminManagement";
 import ErrorDisplay from "@/components/common/ErrorDisplay";
+import { useDebounce } from "@/hooks/common/useDebounce";
 
 const SuperAdminAdminManagement = () => {
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [selectedAdmin, setSelectedAdmin] = useState(null);
+  const [searchText, setSearchText] = useState("");
 
-  // API hooks
+  const debouncedSearch = useDebounce(searchText, 500);
+
   const { data: adminsResponse, isLoading, error } = useGetAllAdmins();
   const deleteAdminMutation = useDeleteAdmin();
 
-  const admins = adminsResponse?.data?.data?.admins || [];
+  const allAdmins = adminsResponse?.data?.admins || [];
+
+  const admins = useMemo(() => {
+    if (!debouncedSearch) return allAdmins;
+
+    const searchLower = debouncedSearch.toLowerCase();
+    return allAdmins.filter((admin) => {
+      const firstName = admin.firstName?.toLowerCase() || "";
+      const lastName = admin.lastName?.toLowerCase() || "";
+      const fullName = `${firstName} ${lastName}`;
+      const email = admin.email?.toLowerCase() || "";
+      const phone = admin.phoneNumber?.toLowerCase() || "";
+
+      return (
+        firstName.includes(searchLower) ||
+        lastName.includes(searchLower) ||
+        fullName.includes(searchLower) ||
+        email.includes(searchLower) ||
+        phone.includes(searchLower)
+      );
+    });
+  }, [allAdmins, debouncedSearch]);
 
   const handleCreateAdmin = () => {
     setSelectedAdmin(null);
@@ -44,77 +68,81 @@ const SuperAdminAdminManagement = () => {
   };
 
   return (
-    <div className="p-6 w-full">
-      {error ? (
-        <ErrorDisplay error={error} title="Error loading admins" />
-      ) : (
-        <>
-          <div className="flex justify-between items-center mb-6 border-b pb-4 border-gray2">
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">
-                Admin Management
-              </h1>
-            </div>
-            <Button
-              className="flex items-center gap-2"
-              variant={"black"}
-              onClick={handleCreateAdmin}
-            >
-              <Plus className="h-4 w-4" />
-              Create Admin
-            </Button>
-          </div>
+    <div className="w-full space-y-6 flex-1">
+      {/* Header */}
+      <div className="flex justify-between items-center border-b pb-4 border-gray-200">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">Admin Management</h1>
+        </div>
+        <Button
+          className="flex items-center gap-2"
+          variant={"black"}
+          onClick={handleCreateAdmin}
+        >
+          <Plus className="h-4 w-4" />
+          Create Admin
+        </Button>
+      </div>
 
-          <div className="space-y-4">
-            <SearchComponent />
+      {/* Search */}
+      <div>
+        {error ? (
+          <ErrorDisplay error={error} title="Error loading admins" />
+        ) : (
+          <SearchComponent
+            value={searchText}
+            handleSearch={setSearchText}
+            placeholder={"Search by name, email, phone"}
+          />
+        )}
+      </div>
 
-            <div className="bg-white rounded-lg border shadow-sm">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-12">ID</TableHead>
-                    <TableHead className="min-w-[200px]">Owner</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Features</TableHead>
-                    <TableHead className="w-24">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isLoading ? (
-                    <TableRow>
-                      <td colSpan={6} className="text-center py-8">
-                        <div className="flex justify-center items-center">
-                          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                          <span className="ml-2">Loading admins...</span>
-                        </div>
-                      </td>
-                    </TableRow>
-                  ) : admins.length === 0 ? (
-                    <TableRow>
-                      <td
-                        colSpan={6}
-                        className="text-center py-8 text-gray-500"
-                      >
-                        No admins found
-                      </td>
-                    </TableRow>
-                  ) : (
-                    admins.map((admin) => (
-                      <AdminTableRow
-                        key={admin.id}
-                        admin={admin}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                      />
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-        </>
-      )}
+      {/* Table */}
+      <div className="bg-white rounded-lg border shadow-sm overflow-hidden">
+        {!error && (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">ID</TableHead>
+                <TableHead className="min-w-[200px]">Owner</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Phone</TableHead>
+                <TableHead>Features</TableHead>
+                <TableHead className="w-24">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <td colSpan={6} className="text-center py-8">
+                    <div className="flex justify-center items-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                      <span className="ml-2">Loading admins...</span>
+                    </div>
+                  </td>
+                </TableRow>
+              ) : admins.length === 0 ? (
+                <TableRow>
+                  <td colSpan={6} className="text-center py-8 text-gray-500">
+                    {debouncedSearch
+                      ? `No admins found matching "${debouncedSearch}"`
+                      : "No admins found"}
+                  </td>
+                </TableRow>
+              ) : (
+                admins.map((admin) => (
+                  <AdminTableRow
+                    key={admin.id}
+                    admin={admin}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                  />
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
+      </div>
 
       <EditAdminDrawer
         open={isEditDrawerOpen}

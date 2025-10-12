@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import EditRecruiterForm from "./EditRecruiterForm";
 import { updateRecruiter } from "@/api/super-admin/database";
@@ -61,7 +60,7 @@ const EditRecruiterDrawer = ({ isOpen, onClose, recruiter, onRevalidate }) => {
         side="right"
         className="
           w-full h-screen 
-          lg:max-w-[1000px] 
+          lg:max-w-[750px] 
           md:max-w-full
           sm:max-w-full 
           overflow-y-auto border-transparent [&>button.absolute]:hidden"

@@ -8,7 +8,6 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { useGetTrainingDetails } from "../../../../hooks/super-admin/useTraining";
-import { useQueryClient } from "@tanstack/react-query";
 import { formatApiError } from "../../../../utils/commonFunctions";
 import { useApprovals } from "../../../../hooks/super-admin/useApprovals";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
@@ -18,7 +17,7 @@ import ActionButtons from "../../shared/ActionButtons";
 
 const TrainingDetailsDrawer = ({
   trainingId,
-  context = "default", // "jobs-and-trainings", "approvals", "default"
+  context = "database", // "database", "approvals"
   areApprovalBtnsVisible = false,
   approvalId,
   approvalStatus,
@@ -28,8 +27,6 @@ const TrainingDetailsDrawer = ({
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showHoldModal, setShowHoldModal] = useState(false);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
-
-  const queryClient = useQueryClient();
 
   const {
     data: trainingData,
@@ -146,7 +143,7 @@ const TrainingDetailsDrawer = ({
     );
   }
 
-  if (!trainingData?.data?.data?.training) {
+  if (!trainingData?.data?.training) {
     return (
       <div className="min-h-screen flex flex-col bg-white p-6">
         <div className="flex justify-center items-center h-64">
@@ -156,14 +153,14 @@ const TrainingDetailsDrawer = ({
     );
   }
 
-  const displayTraining = trainingData.data.data.training;
+  const displayTraining = trainingData?.data?.training;
 
   const renderActionButtons = () => {
     const isApprovalsContext =
       context === "approvals" && areApprovalBtnsVisible;
-    const isJobsAndTrainingsContext = context === "jobs-and-trainings";
+    const isDatabaseContext = context === "database";
 
-    if (!isJobsAndTrainingsContext && !isApprovalsContext) {
+    if (!isDatabaseContext && !isApprovalsContext) {
       return null;
     }
 
@@ -264,8 +261,8 @@ const TrainingDetailsDrawer = ({
           )}
 
           {displayTraining.sessionFrequency && (
-            <div className="flex justify-between items-center py-2 border-b border-gray-100">
-              <span className="font-medium text-gray-900">
+            <div className="flex flex-col">
+              <span className="font-bold text-gray-700">
                 Session Frequency:
               </span>
               <span className="text-gray-700">
@@ -535,8 +532,8 @@ const TrainingDetailsDrawer = ({
         />
       )}
 
-      {/* Edit Training Drawer - For jobs-and-trainings and approvals contexts */}
-      {(context === "jobs-and-trainings" || context === "approvals") && (
+      {/* Edit Training Drawer - For database and approvals contexts */}
+      {(context === "database" || context === "approvals") && (
         <EditTrainingDrawer
           training={displayTraining}
           isOpen={isEditDrawerOpen}

@@ -18,6 +18,7 @@ import { setNestedValue } from "../../utils/commonFunctions";
 import { CalenderIcon } from "../../utils/icon";
 import { MultiSelectFilter } from "./multiselectFilter";
 import SalaryRangeFilter from "./rangeFilter";
+import DateRangeFilter from "./dateRangeFilter";
 
 export default function FilterComponent({
   formControls,
@@ -35,7 +36,8 @@ export default function FilterComponent({
 
   function renderInputsByComponentType(getControlItem) {
     let element = null;
-    const value = formData[getControlItem.name] || "";
+    const value =
+      formData[getControlItem.name] || getControlItem.defaultValue || "";
 
     switch (getControlItem.componentType) {
       case "input":
@@ -172,6 +174,16 @@ export default function FilterComponent({
             max={getControlItem.max}
             formData={formData}
             setFormData={setFormData}
+          />
+        );
+      case "date-range":
+        return (
+          <DateRangeFilter
+            key={getControlItem.name}
+            name={getControlItem.name}
+            formData={formData}
+            setFormData={setFormData}
+            label={getControlItem.label}
           />
         );
 

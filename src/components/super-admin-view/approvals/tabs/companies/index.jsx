@@ -1,4 +1,4 @@
-import CompaniesTab from "../../../common/CompaniesTab";
+import CompaniesTab from "../../../common/companies/CompaniesTab";
 
 const CompaniesTabApprovals = () => {
   return <CompaniesTab context="approvals" />;

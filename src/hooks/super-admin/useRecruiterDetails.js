@@ -1,18 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
 import { getRecruiterById } from "../../api/super-admin/database";
+import { useBaseDetailsQuery } from "./useBaseQuery";
+import { QUERY_KEYS } from "../../constants/super-admin/queryKeys";
 
-export const useRecruiterDetails = (recruiterId, { enabled = true } = {}) => {
-  const token = localStorage.getItem("token");
-
-  return useQuery({
-    queryKey: ["superAdmin-recruiter-details", token, recruiterId],
-    queryFn: ({ signal }) => getRecruiterById({ signal, id: recruiterId }),
-    enabled: enabled && !!recruiterId && !!token,
-    retry: (failureCount, error) => {
-      if (error?.response?.status === 401 || error?.status === 401) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-  });
+export const useRecruiterDetails = (recruiterId, options = {}) => {
+  return useBaseDetailsQuery(
+    QUERY_KEYS.recruiterDetails,
+    getRecruiterById,
+    recruiterId,
+    options
+  );
 };
