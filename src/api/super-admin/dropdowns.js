@@ -8,8 +8,8 @@ export const getDropdowns = async ({ signal }) => {
   return response.data;
 };
 
-export const getDropdownValues = async (dropdownId, { signal }) => {
-  const response = await api.get(`/dropdowns/${dropdownId}/values`, {
+export const getDropdownValues = async ({ signal, id }) => {
+  const response = await api.get(`/dropdowns/${id}/values`, {
     signal,
   });
   return response.data;
