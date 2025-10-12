@@ -23,6 +23,7 @@ const buttonVariants = cva(
           "bg-primary-purple text-white shadow-xs rounded-3xl hover:bg-primary-purple/90 focus-visible:ring-primary-purple/20 cursor-pointer",
         black:
           "bg-black text-white shadow-xs rounded-3xl hover:bg-black/90 focus-visible:ring-black/20 cursor-pointer",
+        gray: "bg-gray-200 text-gray-800 shadow-xs rounded-3xl hover:bg-gray-200/90 focus-visible:ring-gray-200/20 cursor-pointer",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

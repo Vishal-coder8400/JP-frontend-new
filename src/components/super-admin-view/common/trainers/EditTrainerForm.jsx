@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import CommonForm from "../../../common/form";
 import ButtonComponent from "../../../common/button";
-import { useUpload } from "../../../../hooks/common/useUpload";
+import { useUploadFile } from "../../../../hooks/super-admin/useUploadFile";
+import { useUpdateTrainer } from "../../../../hooks/super-admin/useTrainers";
 
 const trainerPersonalInfo = [
   {
@@ -43,6 +44,24 @@ const trainerPersonalInfo = [
   {
     row: [
       {
+        name: "fatherName",
+        label: "Father Name",
+        placeholder: "Enter father name",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "motherName",
+        label: "Mother Name",
+        placeholder: "Enter mother name",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  {
+    row: [
+      {
         name: "profileImage",
         label: "Profile Image",
         placeholder: "Upload Profile Image",
@@ -50,197 +69,342 @@ const trainerPersonalInfo = [
         accept: "image",
       },
       {
-        name: "location",
-        label: "Location",
-        placeholder: "Enter location",
-        componentType: "input",
-        type: "text",
+        name: "hasMedicalProblem",
+        label: "Any Medical Problem",
+        componentType: "select",
+        options: [
+          { label: "No", id: "false" },
+          { label: "Yes", id: "true" },
+        ],
       },
     ],
+  },
+  {
+    name: "currentAddress",
+    label: "Address",
+    placeholder: "Enter current address",
+    componentType: "textarea",
+    rows: 2,
+  },
+  {
+    name: "trainingImages",
+    label: "Training Images",
+    placeholder: "Upload Training Images",
+    componentType: "file",
+    accept: "image",
+    multiple: true,
+  },
+  {
+    name: "aadharImage",
+    label: "Adhaar Card",
+    placeholder: "Upload Adhaar Card",
+    componentType: "file",
+    accept: "image",
+  },
+  {
+    name: "panCardImage",
+    label: "PAN Card",
+    placeholder: "Upload PAN Card",
+    componentType: "file",
+    accept: "image",
+  },
+  {
+    name: "cancelledChequeImage",
+    label: "Cancel Cheque",
+    placeholder: "Upload Cancel Cheque",
+    componentType: "file",
+    accept: "image",
+  },
+  {
+    name: "relievingLetter",
+    label: "Relieving Letter",
+    placeholder: "Upload Relieving Letter",
+    componentType: "file",
+    accept: "pdf",
+  },
+  {
+    name: "resume",
+    label: "Resume",
+    placeholder: "Upload Resume",
+    componentType: "file",
+    accept: "pdf",
   },
 ];
 
 const trainerProfessionalInfo = [
   {
-    name: "bio",
-    label: "Bio",
-    placeholder: "Enter your bio",
-    componentType: "textarea",
-    rows: 4,
-  },
-  {
     row: [
       {
-        name: "specialization",
-        label: "Specialization",
-        placeholder: "Enter specialization",
-        componentType: "input",
-        type: "text",
-      },
-      {
-        name: "experience",
-        label: "Experience (years)",
+        name: "totalYearsExperience",
+        label: "Total Years Experience",
         placeholder: "Enter years of experience",
         componentType: "input",
         type: "number",
       },
-    ],
-  },
-  {
-    row: [
       {
-        name: "linkedinProfile",
-        label: "LinkedIn Profile",
+        name: "linkedin",
+        label: "LinkedIn",
         placeholder: "Enter LinkedIn profile URL",
         componentType: "input",
         type: "text",
       },
+    ],
+  },
+  {
+    row: [
       {
-        name: "portfolio",
-        label: "Portfolio",
-        placeholder: "Enter portfolio URL",
+        name: "latestQualification",
+        label: "Latest Qualification",
+        placeholder: "Enter latest qualification",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "lastOrganizationName",
+        label: "Last Organization Name",
+        placeholder: "Enter last organization name",
         componentType: "input",
         type: "text",
       },
     ],
   },
   {
-    name: "website",
-    label: "Website",
-    placeholder: "Enter website URL",
-    componentType: "input",
-    type: "text",
-  },
-  {
-    name: "expertise",
-    label: "Skills",
-    placeholder: "Enter skills separated by commas",
-    componentType: "input",
-    type: "text",
-  },
-];
-
-const trainerTrainingInfo = [
-  {
     row: [
       {
-        name: "teachingExperience",
-        label: "Teaching Experience (years)",
-        placeholder: "Enter teaching experience",
+        name: "lastDesignation",
+        label: "Designation in Last Organization",
+        placeholder: "Enter last designation",
         componentType: "input",
-        type: "number",
+        type: "text",
       },
       {
-        name: "hourlyRate",
-        label: "Hourly Rate",
-        placeholder: "Enter hourly rate",
+        name: "averageMonthlySessions",
+        label: "Average Monthly Sessions",
+        placeholder: "Enter average monthly sessions",
         componentType: "input",
         type: "number",
       },
     ],
   },
   {
-    name: "teachingStyle",
-    label: "Teaching Style",
-    placeholder: "Describe your teaching style",
+    name: "expertiseAreas",
+    label: "Expertise Areas",
+    placeholder: "Enter expertise areas separated by commas",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    name: "certifications",
+    label: "Certifications",
+    placeholder: "Enter certifications separated by commas",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    name: "professionalAchievements",
+    label: "Professional Achievements",
+    placeholder: "Enter professional achievements",
     componentType: "textarea",
     rows: 3,
   },
 ];
 
-const EditTrainerForm = ({ trainer, onClose, onSave }) => {
+const trainerAdditionalInfo = [
+  {
+    name: "whyProceedWithGigTraining",
+    label: "Why do you want to proceed with this Gig Training assignment?",
+    placeholder: "Enter your reason",
+    componentType: "textarea",
+    rows: 3,
+  },
+  {
+    name: "howDidYouKnowAboutOpportunity",
+    label: "How did you come to know about this opportunity?",
+    placeholder: "Enter your response",
+    componentType: "textarea",
+    rows: 2,
+  },
+];
+
+const EditTrainerForm = ({ trainer, onClose, onRevalidate }) => {
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { mutate: uploadFile } = useUpload();
+  const { mutate: uploadFile } = useUploadFile();
+  const { mutateAsync: updateTrainer } = useUpdateTrainer();
 
   useEffect(() => {
     if (trainer) {
+      const phoneNumber =
+        typeof trainer.phoneNumber === "object"
+          ? `${trainer.phoneNumber?.countryCode || ""} ${
+              trainer.phoneNumber?.number || ""
+            }`
+          : trainer.phoneNumber || "";
+
       setFormData({
         firstName: trainer.firstName || "",
         lastName: trainer.lastName || "",
         email: trainer.email || "",
-        phoneNumber: trainer.phoneNumber || trainer.phone || "",
-        profileImage: trainer.profileImage || trainer.profilePicture || "",
-        location: trainer.location || trainer.address || "",
-        bio: trainer.bio || "",
-        specialization: trainer.specialization || "",
-        experience: trainer.experience || "",
-        expertise: Array.isArray(trainer.expertise)
-          ? trainer.expertise.join(", ")
-          : trainer.expertise || "",
-        linkedinProfile: trainer.linkedinProfile || trainer.linkedin || "",
-        portfolio: trainer.portfolio || "",
-        website: trainer.website || "",
-        teachingExperience: trainer.teachingExperience || "",
-        teachingStyle: trainer.teachingStyle || "",
-        hourlyRate: trainer.hourlyRate || "",
+        phoneNumber: phoneNumber,
+        fatherName: trainer.fatherName || "",
+        motherName: trainer.motherName || "",
+        profileImage: trainer.profileImage || "",
+        hasMedicalProblem: trainer.hasMedicalProblem ? "true" : "false",
+        medicalProblemDetails: trainer.medicalProblemDetails || "",
+        currentAddress:
+          trainer.currentAddress || trainer.permanentAddress || "",
+        trainingImages: Array.isArray(trainer.trainingImages)
+          ? trainer.trainingImages
+          : [],
+        aadharImage: trainer.aadharImage || "",
+        panCardImage: trainer.panCardImage || "",
+        cancelledChequeImage: trainer.cancelledChequeImage || "",
+        relievingLetter: trainer.relievingLetter || "",
+        resume: trainer.resume || "",
+        totalYearsExperience: trainer.totalYearsExperience || "",
+        linkedin: trainer.linkedin || "",
+        latestQualification: trainer.latestQualification || "",
+        lastOrganizationName:
+          trainer.workingDetails?.lastOrganizationName || "",
+        lastDesignation: trainer.workingDetails?.lastDesignation || "",
+        averageMonthlySessions: trainer.averageMonthlySessions || "",
+        expertiseAreas: Array.isArray(trainer.expertiseAreas)
+          ? trainer.expertiseAreas.join(", ")
+          : "",
+        certifications: Array.isArray(trainer.certifications)
+          ? trainer.certifications.join(", ")
+          : "",
+        professionalAchievements: trainer.professionalAchievements || "",
+        whyProceedWithGigTraining: trainer.whyProceedWithGigTraining || "",
+        howDidYouKnowAboutOpportunity:
+          trainer.howDidYouKnowAboutOpportunity || "",
       });
     }
   }, [trainer]);
 
   const handleUpload = (file, callback) => {
-    uploadFile(file, {
-      onSuccess: (data) => {
-        const fileUrl = data?.data?.fileUrl;
-        const fileName = data?.data?.fileName;
-        if (callback) {
-          callback(fileUrl, fileName);
-        }
-      },
-      onError: (error) => {
-        console.error("Upload error:", error);
-      },
-    });
+    uploadFile(
+      { file, role: "super-admin", folder: "documents" },
+      {
+        onSuccess: (data) => {
+          const fileUrl = data?.data?.fileUrl;
+          const fileName = data?.data?.fileName;
+          if (callback) {
+            callback(fileUrl, fileName);
+          }
+        },
+        onError: (error) => {
+          console.error("Upload error:", error);
+        },
+      }
+    );
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Form submitted, setting isSubmitting to true");
     setIsSubmitting(true);
 
     try {
-      const payload = {
-        // Personal Information
-        firstName: formData.firstName || "",
-        lastName: formData.lastName || "",
-        email: formData.email || "",
-        phoneNumber: formData.phoneNumber || "",
-        profileImage: formData.profileImage || "",
-        location: formData.location || "",
+      console.log("Form data:", formData);
+      const payload = {};
 
-        // Professional Information
-        bio: formData.bio || "",
-        specialization: formData.specialization || "",
-        experience: formData.experience
-          ? parseInt(formData.experience)
-          : undefined,
-        skills: formData.expertise
-          ? formData.expertise
-              .split(",")
-              .map((item) => item.trim())
-              .filter(Boolean)
-          : [],
-        linkedinProfile: formData.linkedinProfile || "",
-        portfolio: formData.portfolio || "",
-        website: formData.website || "",
+      if (formData.firstName) payload.firstName = formData.firstName;
+      if (formData.lastName) payload.lastName = formData.lastName;
+      if (formData.email) payload.email = formData.email;
+      if (formData.phoneNumber) payload.phoneNumber = formData.phoneNumber;
+      if (formData.fatherName) payload.fatherName = formData.fatherName;
+      if (formData.motherName) payload.motherName = formData.motherName;
+      if (formData.profileImage) payload.profileImage = formData.profileImage;
+      if (formData.hasMedicalProblem !== undefined)
+        payload.hasMedicalProblem = formData.hasMedicalProblem === "true";
+      if (formData.medicalProblemDetails)
+        payload.medicalProblemDetails = formData.medicalProblemDetails;
+      if (formData.currentAddress)
+        payload.currentAddress = formData.currentAddress;
 
-        // Training Information
-        teachingExperience: formData.teachingExperience
-          ? parseInt(formData.teachingExperience)
-          : undefined,
-        teachingStyle: formData.teachingStyle || "",
-        hourlyRate: formData.hourlyRate
-          ? parseFloat(formData.hourlyRate)
-          : undefined,
-      };
+      if (
+        formData.trainingImages &&
+        Array.isArray(formData.trainingImages) &&
+        formData.trainingImages.length > 0
+      ) {
+        payload.trainingImages = formData.trainingImages;
+      }
 
-      // Remove undefined values to keep payload clean
-      Object.keys(payload).forEach((key) => {
-        if (payload[key] === undefined || payload[key] === "") {
-          delete payload[key];
-        }
+      if (formData.aadharImage) payload.aadharImage = formData.aadharImage;
+      if (formData.panCardImage) payload.panCardImage = formData.panCardImage;
+      if (formData.cancelledChequeImage)
+        payload.cancelledChequeImage = formData.cancelledChequeImage;
+      if (formData.relievingLetter)
+        payload.relievingLetter = formData.relievingLetter;
+      if (formData.resume) payload.resume = formData.resume;
+
+      if (formData.totalYearsExperience) {
+        payload.totalYearsExperience = parseInt(formData.totalYearsExperience);
+      }
+
+      if (formData.linkedin) payload.linkedin = formData.linkedin;
+      if (formData.latestQualification)
+        payload.latestQualification = formData.latestQualification;
+
+      if (formData.lastOrganizationName || formData.lastDesignation) {
+        payload.workingDetails = {};
+        if (formData.lastOrganizationName)
+          payload.workingDetails.lastOrganizationName =
+            formData.lastOrganizationName;
+        if (formData.lastDesignation)
+          payload.workingDetails.lastDesignation = formData.lastDesignation;
+      }
+
+      if (formData.averageMonthlySessions) {
+        payload.averageMonthlySessions = parseInt(
+          formData.averageMonthlySessions
+        );
+      }
+
+      if (formData.expertiseAreas) {
+        const areas = formData.expertiseAreas
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+        if (areas.length > 0) payload.expertiseAreas = areas;
+      }
+
+      if (formData.certifications) {
+        const certs = formData.certifications
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+        if (certs.length > 0) payload.certifications = certs;
+      }
+
+      if (formData.professionalAchievements)
+        payload.professionalAchievements = formData.professionalAchievements;
+      if (formData.whyProceedWithGigTraining)
+        payload.whyProceedWithGigTraining = formData.whyProceedWithGigTraining;
+      if (formData.howDidYouKnowAboutOpportunity)
+        payload.howDidYouKnowAboutOpportunity =
+          formData.howDidYouKnowAboutOpportunity;
+
+      console.log("Payload to send:", payload);
+      console.log("About to call updateTrainer with payload");
+
+      await updateTrainer({
+        id: trainer._id || trainer.id,
+        data: payload,
       });
 
-      await onSave(payload);
+      console.log("updateTrainer completed successfully");
+
+      // Revalidate the list data
+      if (onRevalidate) {
+        console.log("calling onRevalidate");
+        await onRevalidate();
+      }
+
+      // Close the drawer
+      console.log("closing drawer");
+      onClose();
     } catch (error) {
       console.error("Error updating trainer:", error);
     } finally {
@@ -291,14 +455,14 @@ const EditTrainerForm = ({ trainer, onClose, onSave }) => {
             </div>
           </div>
 
-          {/* Training Information */}
+          {/* Additional Information */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Training Information
+              Additional Information
             </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={trainerTrainingInfo}
+                formControls={trainerAdditionalInfo}
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}

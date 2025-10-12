@@ -3,6 +3,7 @@ import useAuthStore from "../stores/useAuthStore";
 
 const api = axios.create({
   baseURL: "https://srv938709.hstgr.cloud/api/v1", // change this
+  // baseURL: "http://127.0.0.1:8006/api/v1", // change this
 });
 
 // Automatically attach token from Zustand or localStorage

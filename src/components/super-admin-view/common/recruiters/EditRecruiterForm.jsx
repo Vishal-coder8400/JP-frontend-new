@@ -1,24 +1,208 @@
 import { useState, useEffect } from "react";
 import CommonForm from "../../../common/form";
 import ButtonComponent from "../../../common/button";
-import { useUpload } from "../../../../hooks/common/useUpload";
-import { setNestedValue } from "../../../../utils/commonFunctions";
-import {
-  basicInformation,
-  KycVerificationDetails,
-  sectoralFieldsForm,
-  sectoralFieldsForm2,
-} from "../../../../config";
+import { useUploadFile } from "../../../../hooks/super-admin/useUploadFile";
+import { INDUSTRIES } from "@/constants/super-admin";
 
 const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { mutate: uploadFile } = useUpload();
+  const { mutate: uploadFile } = useUploadFile();
+
+  const basicInfoFields = [
+    {
+      row: [
+        {
+          name: "firstName",
+          label: "First Name",
+          placeholder: "Enter First Name",
+          componentType: "input",
+          type: "text",
+          width: "2/3",
+        },
+        {
+          name: "lastName",
+          label: "Last Name",
+          placeholder: "Enter Last Name",
+          componentType: "input",
+          type: "text",
+          width: "2/3",
+        },
+        {
+          name: "profileImage",
+          label: "",
+          placeholder: "Profile Picture",
+          componentType: "file",
+          type: "file",
+          width: "1/3",
+          accept: "image",
+        },
+      ],
+    },
+    {
+      name: "email",
+      label: "Email",
+      placeholder: "Enter Email",
+      componentType: "input",
+      type: "email",
+    },
+    {
+      name: "phone",
+      label: "Contact Information",
+      placeholder: "Ex. XXXXX XXXXX",
+      componentType: "phone",
+      type: "number",
+    },
+    {
+      name: "currentAddress.address",
+      label: "Current Address",
+      placeholder: "Enter Address",
+      componentType: "textarea",
+      type: "text",
+    },
+    {
+      row: [
+        {
+          name: "currentAddress.city",
+          label: "",
+          placeholder: "Enter City",
+          componentType: "input",
+          type: "text",
+          width: "1/3",
+        },
+        {
+          name: "currentAddress.state",
+          label: "",
+          placeholder: "Enter State",
+          componentType: "input",
+          type: "text",
+          width: "1/3",
+        },
+        {
+          name: "currentAddress.pincode",
+          label: "",
+          placeholder: "Enter Pincode",
+          componentType: "input",
+          type: "text",
+          width: "1/3",
+        },
+      ],
+    },
+  ];
+
+  const documentsFields = [
+    {
+      name: "documents.panCard",
+      label: "PAN Card",
+      placeholder: "Upload PAN Card",
+      componentType: "file",
+      accept: "image",
+    },
+    {
+      name: "documents.aadharCard",
+      label: "Aadhar Card",
+      placeholder: "Upload Aadhar Card",
+      componentType: "file",
+      accept: "image",
+    },
+    {
+      name: "documents.cancelledCheque",
+      label: "Cancel Cheque",
+      placeholder: "Upload Cancel Cheque",
+      componentType: "file",
+      accept: "image",
+    },
+    {
+      name: "documents.relievingLetter",
+      label: "Relieving Letter",
+      placeholder: "Upload Relieving Letter",
+      componentType: "file",
+      accept: "pdf",
+    },
+    {
+      name: "latestQualification",
+      label: "Latest Qualification",
+      placeholder: "Upload Latest Qualification",
+      componentType: "file",
+      accept: "pdf",
+    },
+  ];
+
+  const professionalFields = [
+    {
+      name: "sectorSpecialization",
+      label: "Sectoral Specialization",
+      componentType: "multi-select",
+      max: 3,
+      options: INDUSTRIES,
+    },
+    {
+      name: "totalExperience",
+      label: "Total Years of Experience (In years)",
+      componentType: "input",
+      type: "number",
+      placeholder: "e.g. 5",
+    },
+    {
+      name: "experienceLevel",
+      label: "Expertise in",
+      componentType: "multi-select",
+      max: 3,
+      options: [
+        { id: "frontline", label: "Frontline Hirings" },
+        { id: "midlevel", label: "Mid Level Hirings" },
+        { id: "senior", label: "Senior Level Hirings" },
+      ],
+    },
+    {
+      name: "lastOrganization.name",
+      label: "Last Organization Name",
+      componentType: "input",
+      type: "text",
+      placeholder: "Enter Organization Name",
+    },
+    {
+      name: "lastOrganization.position",
+      label: "Designation in Last Organization",
+      componentType: "input",
+      type: "text",
+      placeholder: "Enter Designation",
+    },
+    {
+      name: "linkedinProfile",
+      label: "LinkedIn Profile URL",
+      componentType: "input",
+      type: "url",
+      placeholder: "Enter LinkedIn URL",
+    },
+  ];
+
+  const additionalInfoFields = [
+    {
+      name: "fatherName",
+      label: "Father's Name",
+      componentType: "input",
+      type: "text",
+      placeholder: "Enter Father's Name",
+    },
+    {
+      name: "motherName",
+      label: "Mother's Name",
+      componentType: "input",
+      type: "text",
+      placeholder: "Enter Mother's Name",
+    },
+    {
+      name: "medicalProblemDetails",
+      label: "Medical Problem Details",
+      componentType: "textarea",
+      placeholder: "Enter medical problem details or leave blank if none",
+    },
+  ];
 
   useEffect(() => {
     if (recruiter) {
       setFormData({
-        // Basic Information
         firstName: recruiter.firstName || "",
         lastName: recruiter.lastName || "",
         email: recruiter.email || "",
@@ -33,28 +217,12 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
           state: "",
           pincode: "",
         },
-        resume: recruiter.resume || "",
-
-        // KYC and Bank Details
-        cancelChequeOrPassbookImage:
-          recruiter.cancelChequeOrPassbookImage || "",
-        panDetails: recruiter.panDetails || {
-          number: "",
-          image: "",
+        documents: recruiter.documents || {
+          panCard: "",
+          aadharCard: "",
+          cancelledCheque: "",
+          relievingLetter: "",
         },
-        aadharDetails: recruiter.aadharDetails || {
-          number: "",
-          image: "",
-        },
-        bankDetails: recruiter.bankDetails || {
-          accountNumber: "",
-          accountHolderName: "",
-          bankName: "",
-          ifscCode: "",
-          accountType: "saving",
-        },
-
-        // Sectoral Information
         sectorSpecialization: recruiter.sectorSpecialization || [],
         totalExperience: recruiter.totalExperience || "",
         experienceLevel: recruiter.experienceLevel || [],
@@ -62,59 +230,35 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
           name: "",
           position: "",
         },
-        relievingLetter: recruiter.relievingLetter || "",
         linkedinProfile: recruiter.linkedinProfile || "",
-
-        // Additional Information
-        latestQualifications: recruiter.latestQualifications || "",
         latestQualification: recruiter.latestQualification || "",
-        joinReason: recruiter.joinReason || "",
-        monthlyClosures: recruiter.monthlyClosures || "",
-        jobSource: recruiter.jobSource || "",
         fatherName: recruiter.fatherName || "",
         motherName: recruiter.motherName || "",
-        hasMedicalProblem: recruiter.hasMedicalProblem || "no",
         medicalProblemDetails: recruiter.medicalProblemDetails || "",
-
-        // Permanent Address
-        permanentAddress: recruiter.permanentAddress || {
-          address: "",
-          city: "",
-          state: "",
-          pincode: "",
-        },
-
-        // References
-        references: recruiter.references || [
-          {
-            name: "",
-            contactNo: "",
-            organization: "",
-            designation: "",
-          },
-        ],
       });
     }
   }, [recruiter]);
 
   const handleUpload = (file, callback) => {
-    uploadFile(file, {
-      onSuccess: (data) => {
-        const fileUrl = data?.data?.fileUrl;
-        const fileName = data?.data?.fileName;
-        if (callback) {
-          callback(fileUrl, fileName);
-        }
-      },
-      onError: (error) => {
-        console.error("Upload error:", error);
-      },
-    });
+    uploadFile(
+      { file, role: "super-admin", folder: "documents" },
+      {
+        onSuccess: (data) => {
+          const fileUrl = data?.data?.fileUrl;
+          const fileName = data?.data?.fileName;
+          if (callback) {
+            callback(fileUrl, fileName);
+          }
+        },
+        onError: (error) => {
+          console.error("Upload error:", error);
+        },
+      }
+    );
   };
 
   const transformFormDataToPayload = (formData) => {
-    return {
-      // Personal Information
+    const payload = {
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
@@ -127,11 +271,8 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
         formData.currentAddress?.city && formData.currentAddress?.state
           ? `${formData.currentAddress.city}, ${formData.currentAddress.state}`
           : formData.currentAddress?.city || formData.currentAddress?.state,
-
-      // Professional Information
       companyName: formData.lastOrganization?.name,
       position: formData.lastOrganization?.position,
-      about: formData.joinReason,
       experience: formData.totalExperience,
       skills: formData.experienceLevel || [],
       specializations:
@@ -139,27 +280,25 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
           typeof item === "string" ? item : item.name || item.label
         ) || [],
       linkedinProfile: formData.linkedinProfile,
-
-      // Additional Information
-      certifications: formData.latestQualification
-        ? [
-            {
-              name: formData.latestQualification,
-              issuer: "Not specified",
-              date: new Date().toISOString().split("T")[0],
-            },
-          ]
-        : undefined,
-
-      // Password fields (if provided)
-      ...(formData.currentPassword &&
-        formData.newPassword &&
-        formData.confirmPassword && {
-          currentPassword: formData.currentPassword,
-          newPassword: formData.newPassword,
-          confirmPassword: formData.confirmPassword,
-        }),
     };
+
+    if (formData.documents) {
+      payload.documents = formData.documents;
+    }
+    if (formData.latestQualification) {
+      payload.latestQualification = formData.latestQualification;
+    }
+    if (formData.fatherName) {
+      payload.fatherName = formData.fatherName;
+    }
+    if (formData.motherName) {
+      payload.motherName = formData.motherName;
+    }
+    if (formData.medicalProblemDetails) {
+      payload.medicalProblemDetails = formData.medicalProblemDetails;
+    }
+
+    return payload;
   };
 
   const handleSubmit = async (e) => {
@@ -176,23 +315,7 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
     }
   };
 
-  // Build sector options from recruiter data to avoid extra fetches
-  const sectorOptionsFromRecruiter = Array.isArray(
-    recruiter?.sectorSpecialization
-  )
-    ? recruiter.sectorSpecialization.map((item) => ({
-        id: item?.id || item?._id || item?.name,
-        label: item?.name || item?.label || "",
-      }))
-    : [];
-
-  const updatedSectorFields = sectoralFieldsForm.map((field) =>
-    field.name === "sectorSpecialization"
-      ? { ...field, options: sectorOptionsFromRecruiter }
-      : field
-  );
-
-  // References section is intentionally removed in edit mode
+  const updatedProfessionalFields = professionalFields;
 
   return (
     <div className="w-full h-screen p-6 bg-white overflow-y-auto overscroll-contain">
@@ -207,14 +330,13 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Basic Information */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Basic Information
+              Personal Information
             </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={basicInformation}
+                formControls={basicInfoFields}
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
@@ -222,14 +344,13 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
             </div>
           </div>
 
-          {/* KYC and Bank Details */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              KYC & Bank Details
+              Documents
             </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={KycVerificationDetails}
+                formControls={documentsFields}
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
@@ -237,14 +358,13 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
             </div>
           </div>
 
-          {/* Sectoral Information */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Professional Information
+              Professional Details
             </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={updatedSectorFields}
+                formControls={updatedProfessionalFields}
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
@@ -252,14 +372,13 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
             </div>
           </div>
 
-          {/* Additional Details */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Additional Information
             </h3>
             <div className="space-y-4">
               <CommonForm
-                formControls={sectoralFieldsForm2}
+                formControls={additionalInfoFields}
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
@@ -267,9 +386,6 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
             </div>
           </div>
 
-          {/* References section removed */}
-
-          {/* Action Buttons */}
           <div className="flex justify-end space-x-4 pt-6">
             <ButtonComponent
               type="button"

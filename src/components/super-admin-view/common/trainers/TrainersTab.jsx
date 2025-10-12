@@ -2,14 +2,17 @@ import { TrainersTable } from "./index";
 import Pagination from "../../../common/pagination";
 import SearchComponent from "@/components/common/searchComponent";
 import FilterComponent from "../../../common/filterComponent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useGetAllTrainers } from "@/hooks/super-admin/useTrainers";
 import { useGetApprovalsTrainers } from "@/hooks/super-admin/useApprovals";
 import useApprovalsUIStore from "../../../../stores/useApprovalsUIStore";
-import { getApprovalFilters } from "../../approvals/utils";
-import { trainersFilters } from "../../database/tabs/trainers/utils";
+import {
+  createApprovalFilters,
+  createDatabaseFilters,
+} from "@/config/super-admin/filters";
 import StatusTabs from "../../approvals/common/StatusTabs";
 import ErrorDisplay from "@/components/common/ErrorDisplay";
+import { useDebounce } from "@/hooks/common/useDebounce";
 
 const TrainersTab = ({
   context = "database", // "database" or "approvals"
@@ -22,44 +25,91 @@ const TrainersTab = ({
     context === "approvals" ? approvalsUIStore.trainers : null;
 
   // Local state for database context
-  const [filters, setFilters] = useState(() => {
-    if (context === "approvals") {
-      return (
-        approvalsStore?.filters || {
-          search: "",
-          status: "pending",
-          location: [],
-          experience: [],
-          skills: [],
-          dateFrom: null,
-          dateTo: null,
-        }
-      );
-    } else {
-      return {
-        search: "",
-        skills: [],
-        industry: [],
-        experience: [],
-        location: [],
-        status: "active",
-        sortBy: "createdAt",
-        sortOrder: "desc",
-      };
-    }
+  const [localFilters, setLocalFilters] = useState({
+    search: "",
+    status: "active",
+    verification: "verified",
+    specialization: [],
+    sortBy: "createdAt",
+    sortOrder: "desc",
   });
-  const [currentPage, setCurrentPage] = useState(1);
+
+  const [localPage, setLocalPage] = useState(1);
+
+  // Use store values for approvals context, local state for database
+  const filters =
+    context === "approvals" ? approvalsStore?.filters : localFilters;
+  const currentPage =
+    context === "approvals" ? approvalsStore?.currentPage : localPage;
+  const setCurrentPage =
+    context === "approvals" ? approvalsStore?.setCurrentPage : setLocalPage;
+
   const [activeStatus, setActiveStatus] = useState(
     context === "approvals" ? "pending" : "active"
   );
   const itemsPerPage = 10;
+
+  // Handle filter updates
+  const setFormData = (newFormData) => {
+    if (context === "approvals" && approvalsStore) {
+      approvalsStore.setFilters(newFormData);
+    } else {
+      setLocalFilters((prevFilters) => ({
+        ...prevFilters,
+        ...(typeof newFormData === "function"
+          ? newFormData(prevFilters)
+          : newFormData),
+      }));
+      setLocalPage(1);
+    }
+  };
+
+  // Local search state for debouncing
+  const [searchText, setSearchText] = useState(filters.search || "");
+
+  // Debounce search text
+  const debouncedSearch = useDebounce(searchText, 500);
+
+  // Sync debounced search to filters
+  useEffect(() => {
+    if (debouncedSearch !== filters.search) {
+      setFormData({ search: debouncedSearch });
+    }
+  }, [debouncedSearch, filters.search]);
+
+  // Sync filters.search to searchText when filters change externally
+  useEffect(() => {
+    if (filters.search !== searchText) {
+      setSearchText(filters.search);
+    }
+  }, [filters.search]);
+
+  // Helper function to safely join array filters
+  const safeJoin = (value) => {
+    return Array.isArray(value) ? value.join(",") : value;
+  };
 
   // Database context: use hook for direct API call
   const {
     data: databaseData,
     isLoading: databaseLoading,
     error: databaseError,
-  } = useGetAllTrainers(context === "database");
+    refetch,
+  } = useGetAllTrainers(
+    {
+      page: currentPage,
+      limit: itemsPerPage,
+      search: filters.search,
+      status: filters.status,
+      ...(filters.verification && {
+        isVerified: filters.verification === "verified",
+      }),
+      specialization: safeJoin(filters.specialization),
+      sortBy: filters.sortBy,
+      sortOrder: filters.sortOrder,
+    },
+    context === "database"
+  );
 
   // Approvals context: use React Query hook
   const {
@@ -71,20 +121,19 @@ const TrainersTab = ({
     limit: itemsPerPage,
     search: filters.search,
     status: filters.status,
-    location: filters.location?.join(","),
-    experience: filters.experience?.join(","),
-    skills: filters.skills?.join(","),
-    dateFrom: filters.dateFrom,
-    dateTo: filters.dateTo,
+    dateFrom: filters.dateRange?.from,
+    dateTo: filters.dateRange?.to,
+    sortBy: filters.sortBy || "submittedAt",
+    sortOrder: filters.sortOrder || "desc",
     enabled: context === "approvals",
   });
 
   // Process approvals data
   const processApprovalsData = (data) => {
-    if (!data?.data?.data?.approvals) return { trainers: [], pagination: {} };
+    if (!data?.data?.approvals) return { trainers: [], pagination: {} };
 
-    const approvals = data.data.data.approvals;
-    const pagination = data.data.data.pagination || {};
+    const approvals = data.data.approvals;
+    const pagination = data.data.pagination || {};
 
     const trainers = approvals.map((approval) => {
       const trainer = approval.data || {};
@@ -142,48 +191,32 @@ const TrainersTab = ({
 
   const trainersData =
     context === "database"
-      ? databaseData?.data?.data?.trainers || []
+      ? databaseData?.data?.trainers || []
       : approvalsTrainers;
 
   const totalTrainers =
     context === "database"
-      ? databaseData?.data?.data?.pagination?.totalTrainers || 0
+      ? databaseData?.data?.pagination?.totalTrainers || 0
       : approvalsPagination?.totalApprovals || 0;
 
   const isLoading = context === "database" ? databaseLoading : approvalsLoading;
   const apiError = context === "database" ? databaseError : approvalsError;
 
-  // Handle filter updates
-  const setFormData = (newFormData) => {
-    if (context === "approvals" && approvalsStore) {
-      approvalsStore.setFilters(newFormData);
-    } else {
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        ...(typeof newFormData === "function"
-          ? newFormData(prevFilters)
-          : newFormData),
-      }));
-      setCurrentPage(1); // Reset to first page when filtering
-    }
-  };
-
   // Clear all filters
   const clearAllFilters = () => {
+    setSearchText("");
     if (context === "approvals" && approvalsStore) {
       approvalsStore.clearFilters();
     } else {
-      setFilters({
+      setLocalFilters({
         search: "",
-        skills: [],
-        industry: [],
-        experience: [],
-        location: [],
         status: "active",
+        verification: "verified",
+        specialization: [],
         sortBy: "createdAt",
         sortOrder: "desc",
       });
-      setCurrentPage(1);
+      setLocalPage(1);
     }
   };
 
@@ -197,27 +230,15 @@ const TrainersTab = ({
     }
   };
 
-  // Handle delete trainer (placeholder - implement actual delete logic)
-  const handleDeleteTrainer = (trainer) => {
-    // TODO: Implement actual delete logic here
-  };
-
-  // Get filter configuration based on context
   const getFilterConfig = () => {
     if (context === "approvals") {
-      return getApprovalFilters("trainers");
-    } else {
-      return trainersFilters;
+      return createApprovalFilters("trainers");
     }
+    return createDatabaseFilters("trainers");
   };
 
   // Calculate pagination
   const totalPages = Math.ceil(totalTrainers / itemsPerPage);
-
-  // Revalidation function for approvals context (no longer needed with React Query)
-  const handleRevalidate = () => {
-    // React Query handles revalidation automatically
-  };
 
   // Loading state
   if (isLoading) {
@@ -242,21 +263,22 @@ const TrainersTab = ({
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Trainers</h1>
+    <div className="h-full grid grid-rows-[auto,1fr] gap-6">
+      {/* Header - auto height */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Trainers</h1>
+        {context === "approvals" && (
+          <StatusTabs
+            activeStatus={activeStatus}
+            onStatusChange={handleStatusChange}
+          />
+        )}
+      </div>
 
-      {/* Status Tabs for approvals context */}
-      {context === "approvals" && (
-        <StatusTabs
-          activeStatus={activeStatus}
-          onStatusChange={handleStatusChange}
-        />
-      )}
-
-      {/* Main Content Layout */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Filters Section */}
-        <div className="w-full lg:w-64 flex-shrink-0">
+      {/* Content - filters + table using flex layout */}
+      <div className="flex gap-6 min-h-0 min-w-0">
+        {/* Filters - left sidebar */}
+        <div className="w-64 flex-shrink-0">
           <div className="bg-white rounded-lg border p-4">
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between">
@@ -279,38 +301,39 @@ const TrainersTab = ({
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 space-y-4">
-          {/* Search Bar */}
-          <div className="bg-white rounded-lg border p-4">
+        {/* Main content - right area */}
+        <div className="flex-1 min-w-0 flex flex-col gap-6 min-h-0">
+          <div className="w-full">
             <SearchComponent
-              placeholder="Search trainers..."
-              value={filters.search}
-              onChange={(value) => setFormData({ search: value })}
+              placeholder={
+                context === "database"
+                  ? "Search by name or email"
+                  : "Search by company, name, email, title"
+              }
+              value={searchText}
+              handleSearch={setSearchText}
             />
           </div>
-
-          {/* Trainers Table */}
-          <TrainersTable
-            paginatedTrainers={trainersData}
-            showStatusColumn={showStatusColumn || context === "approvals"}
-            areApprovalBtnsVisible={
-              areApprovalBtnsVisible || context === "approvals"
-            }
-            onRevalidate={handleRevalidate}
-            context={context}
-          />
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center">
+          <div className="flex-1 min-w-0 overflow-x-auto">
+            <TrainersTable
+              onRevalidate={refetch}
+              paginatedTrainers={trainersData}
+              showStatusColumn={showStatusColumn || context === "approvals"}
+              areApprovalBtnsVisible={
+                areApprovalBtnsVisible || context === "approvals"
+              }
+              context={context}
+            />
+          </div>
+          <div className="flex justify-center">
+            {totalPages > 1 && (
               <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}
                 onPageChange={setCurrentPage}
               />
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
     </div>

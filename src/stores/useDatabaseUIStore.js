@@ -6,8 +6,8 @@ const useDatabaseUIStore = create((set) => ({
   companies: {
     filters: {
       search: "",
-      status: [],
-      verification: [],
+      status: "active",
+      verification: "verified",
       industry: [],
       companySize: [],
       location: [],
@@ -37,8 +37,8 @@ const useDatabaseUIStore = create((set) => ({
           ...state.companies,
           filters: {
             search: "",
-            status: [],
-            verification: [],
+            status: "active",
+            verification: "verified",
             industry: [],
             companySize: [],
             location: [],
@@ -54,7 +54,7 @@ const useDatabaseUIStore = create((set) => ({
   trainers: {
     filters: {
       search: "",
-      status: [],
+      status: "active",
       industry: [],
       experience: [],
       location: [],
@@ -85,7 +85,7 @@ const useDatabaseUIStore = create((set) => ({
           ...state.trainers,
           filters: {
             search: "",
-            status: [],
+            status: "active",
             industry: [],
             experience: [],
             location: [],
@@ -102,7 +102,7 @@ const useDatabaseUIStore = create((set) => ({
   recruiters: {
     filters: {
       search: "",
-      status: [],
+      status: "active",
       industry: [],
       experience: [],
       location: [],
@@ -132,7 +132,7 @@ const useDatabaseUIStore = create((set) => ({
           ...state.recruiters,
           filters: {
             search: "",
-            status: [],
+            status: "active",
             industry: [],
             experience: [],
             location: [],
@@ -148,7 +148,7 @@ const useDatabaseUIStore = create((set) => ({
   candidates: {
     filters: {
       search: "",
-      status: [],
+      status: "active",
       industry: [],
       location: [],
       experience: [],
@@ -180,7 +180,7 @@ const useDatabaseUIStore = create((set) => ({
           ...state.candidates,
           filters: {
             search: "",
-            status: [],
+            status: "active",
             industry: [],
             location: [],
             experience: [],

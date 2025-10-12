@@ -4,6 +4,7 @@ import CompaniesTabApprovals from "./tabs/companies";
 import RecruitersTab from "./tabs/recruiters";
 import TrainersTabApprovals from "./tabs/trainers";
 import JobTrainingsTab from "./tabs/jobs-and-trainings";
+import CandidatesTabApprovals from "./tabs/candidates";
 import TabNavigation from "@/components/common/TabNavigation";
 import TabContent from "@/components/common/TabContent";
 
@@ -15,23 +16,25 @@ const Approvals = () => {
     jobTrainings: JobTrainingsTab,
     trainers: TrainersTabApprovals,
     recruiters: RecruitersTab,
+    // candidates: CandidatesTabApprovals,
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="h-full grid grid-rows-[auto,1fr] gap-6">
       <TabNavigation
         tabs={approvalTabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        containerClassName="w-full space-y-6"
+        containerClassName="w-full"
       />
-
-      <TabContent
-        activeTab={activeTab}
-        tabComponents={tabComponents}
-        defaultTab="companies"
-        className="w-full"
-      />
+      <div className="overflow-auto">
+        <TabContent
+          activeTab={activeTab}
+          tabComponents={tabComponents}
+          defaultTab="companies"
+          className="w-full"
+        />
+      </div>
     </div>
   );
 };

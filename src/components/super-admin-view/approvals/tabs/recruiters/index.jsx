@@ -1,4 +1,4 @@
-import RecruitersTab from "../../../common/RecruitersTab";
+import RecruitersTab from "../../../common/recruiters/RecruitersTab";
 
 const RecruitersTabApprovals = () => {
   return <RecruitersTab context="approvals" />;

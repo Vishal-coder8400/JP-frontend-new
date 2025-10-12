@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { YourImageIcon, YourPdfIcon } from "@/utils/icon";
 import {
   DownloadIcon,
+  LinkIcon,
   MailIcon,
   MapPin,
   PhoneCallIcon,
-  SquarePenIcon,
   UserIcon,
 } from "lucide-react";
 import { useState } from "react";
@@ -25,8 +25,9 @@ const TrainerDetailsDrawer = ({
   trainerId,
   onClose,
   onRevalidate,
+  buttonsLayout = "horizontal", // "horizontal" | "vertical"
+  approvalStatus,
 }) => {
-  const [hasApprovalAction, setHasApprovalAction] = useState(false);
   const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showHoldModal, setShowHoldModal] = useState(false);
@@ -43,11 +44,11 @@ const TrainerDetailsDrawer = ({
     isLoading: isLoadingTrainerDetails,
     error: trainerDetailsError,
     refetch: refetchTrainerDetails,
-  } = useGetTrainerDetails(trainerId || trainer?._id || trainer?.id, {
-    enabled: !!(trainerId || trainer?._id || trainer?.id),
+  } = useGetTrainerDetails(trainerId, {
+    enabled: !!trainerId,
   });
 
-  const displayTrainer = trainerDetails?.data?.data || trainer;
+  const displayTrainer = trainerDetails?.data || trainer;
   const isLoading = isLoadingTrainerDetails;
   const error = trainerDetailsError;
 
@@ -55,7 +56,6 @@ const TrainerDetailsDrawer = ({
   const handleApprove = async () => {
     try {
       await approveApplication(approvalId);
-      setHasApprovalAction(true);
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -74,7 +74,6 @@ const TrainerDetailsDrawer = ({
   const handleReject = async (rejectionReason) => {
     try {
       await rejectApplication(approvalId, rejectionReason);
-      setHasApprovalAction(true);
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -180,80 +179,133 @@ const TrainerDetailsDrawer = ({
     );
   }
 
-  const pdfFiles = displayTrainer?.qualificationDocuments || [];
+  const pdfObject = {
+    "Adhaar Card": "aadharImage",
+    "PAN Card": "panCardImage",
+    "Cancel Cheque": "cancelledChequeImage",
+    "Relieving Letter": "relievingLetter",
+    Resume: "resume",
+  };
+
+  const pdfFiles = Object.entries(pdfObject).reduce(
+    (acc, [customKey, path]) => {
+      const value = path
+        .split(".")
+        .reduce((obj, key) => obj?.[key], displayTrainer);
+
+      if (Array.isArray(value) && value.length > 0) {
+        value.forEach((doc, index) => {
+          acc[`${customKey} ${index + 1}`] = doc;
+        });
+      } else {
+        acc[customKey] = value || null;
+      }
+      return acc;
+    },
+    {}
+  );
 
   // Render action buttons based on context
   const renderActionButtons = () => {
     if (context === "approvals") {
-      // Get approval status from the trainer data
-      const approvalStatus =
-        displayTrainer?.approvalStatus || displayTrainer?.status;
+      const statusFromProps = approvalStatus;
+      const approvalStatusLocal =
+        statusFromProps ||
+        displayTrainer?.approvalStatus ||
+        displayTrainer?.status;
+      const normalizedStatus =
+        typeof approvalStatus === "string"
+          ? approvalStatusLocal.trim().toLowerCase()
+          : "";
+      const isApproved = normalizedStatus === "approved";
 
-      if (approvalStatus === "approved") {
-        return (
-          <div className="flex flex-col gap-2">
-            <AdminStatusBadge status={approvalStatus} />
-            {approvalStatus === "rejected" &&
-              displayTrainer?.rejectionReason && (
-                <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs">
-                  <strong>Rejection Reason:</strong>{" "}
-                  {displayTrainer.rejectionReason}
-                </div>
-              )}
-          </div>
-        );
-      }
-
-      // Show approval buttons in every case except approved and if no action has been taken
-      if (!hasApprovalAction) {
-        return (
-          <div className="flex items-center gap-4">
-            <Button
-              variant="purple"
-              onClick={handleApprove}
-              disabled={isApprovalLoading}
-            >
-              {isApprovalLoading ? "Processing..." : "Approve Trainer"}
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleRejectClick}
-              disabled={isApprovalLoading}
-            >
-              {isApprovalLoading ? "Processing..." : "Reject Trainer"}
-            </Button>
-            <Button
-              variant="black"
-              onClick={handleHoldClick}
-              disabled={isApprovalLoading}
-            >
-              {isApprovalLoading ? "Processing..." : "Hold Trainer"}
-            </Button>
-          </div>
-        );
-      }
+      const isVertical = buttonsLayout === "vertical";
+      return (
+        <div
+          className={`flex ${
+            isVertical ? "flex-col gap-3 w-full max-w-xs" : "items-center gap-4"
+          }`}
+        >
+          <Button
+            variant="gray"
+            onClick={handleEdit}
+            className={isVertical ? "w-full" : ""}
+          >
+            Edit
+          </Button>
+          {!isApproved ? (
+            <>
+              <Button
+                variant="purple"
+                onClick={handleApprove}
+                disabled={isApprovalLoading}
+                className={isVertical ? "w-full" : ""}
+              >
+                {isApprovalLoading ? "Processing..." : "Approve"}
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleRejectClick}
+                disabled={isApprovalLoading}
+                className={isVertical ? "w-full" : ""}
+              >
+                {isApprovalLoading ? "Processing..." : "Reject"}
+              </Button>
+              <Button
+                variant="black"
+                onClick={handleHoldClick}
+                disabled={isApprovalLoading}
+                className={isVertical ? "w-full" : ""}
+              >
+                {isApprovalLoading ? "Processing..." : "Hold"}
+              </Button>
+            </>
+          ) : (
+            <div className="flex flex-col gap-2">
+              <AdminStatusBadge status={approvalStatus} />
+              {approvalStatus === "rejected" &&
+                displayTrainer?.rejectionReason && (
+                  <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs">
+                    <strong>Rejection Reason:</strong>{" "}
+                    {displayTrainer.rejectionReason}
+                  </div>
+                )}
+            </div>
+          )}
+        </div>
+      );
     }
-    return null;
+
+    const isVertical = buttonsLayout === "vertical";
+    return (
+      <div
+        className={`flex ${
+          isVertical ? "flex-col gap-3 w-full max-w-xs" : "items-center gap-4"
+        }`}
+      >
+        <Button
+          variant="gray"
+          onClick={handleEdit}
+          className={isVertical ? "w-full" : ""}
+        >
+          Edit
+        </Button>
+      </div>
+    );
   };
 
   return (
     <div className="h-full overflow-y-auto">
       <div className="h-[186px] w-full bg-[url('/Group_1000005865.jpg')] bg-cover bg-center rounded-tl-2xl" />
-      <div className="w-4xl mx-auto flex items-center rounded-xl bg-white border border-gray2 p-4 -mt-8 shadow-lg relative">
+      <div className="w-[90%] mx-auto flex items-center rounded-xl bg-white border border-gray2 p-4 -mt-8 shadow-lg relative">
         <img
           src={displayTrainer?.profileImage || "/person.png"}
           alt={`${displayTrainer?.firstName} ${displayTrainer?.lastName}`}
-          className="w-28 h-auto aspect-square object-cover rounded-full absolute -top-[30%] left-[3%]"
+          className="w-24 h-auto aspect-square object-cover rounded-full absolute -top-[18%] left-[3%]"
         />
-        {context === "database" && (
-          <SquarePenIcon
-            className="absolute -bottom-[32%] left-[12%] text-primary-purple bg-white p-1.5 rounded cursor-pointer"
-            onClick={handleEdit}
-          />
-        )}
-        <div className="ml-36 flex items-center justify-between w-full">
+        <div className="ml-28 flex items-center justify-between w-full">
           <div>
-            <h1 className="text-xl font-semibold">
+            <h1 className="text-lg font-semibold">
               {displayTrainer?.firstName} {displayTrainer?.lastName}
             </h1>
           </div>
@@ -266,11 +318,11 @@ const TrainerDetailsDrawer = ({
         <h2 className="text-lg font-semibold mt-4">Personal Information</h2>
         <div className="grid grid-cols-4 gap-4 mt-4">
           <div className="p-4 rounded-lg border border-gray2">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 text-sm">
               <UserIcon className="w-4" />
               Experience
             </div>
-            <span className="text-gray1/50">
+            <span className="text-gray1/50 text-sm text-wrap">
               {displayTrainer?.totalYearsExperience
                 ? `${displayTrainer.totalYearsExperience} years`
                 : "Not specified"}
@@ -278,11 +330,11 @@ const TrainerDetailsDrawer = ({
           </div>
 
           <div className="p-4 rounded-lg border border-gray2">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 text-sm">
               <UserIcon className="w-4" />
               Expertise
             </div>
-            <div className="text-gray1/50">
+            <div className="text-gray1/50 text-sm text-wrap">
               {displayTrainer?.expertiseAreas &&
               displayTrainer.expertiseAreas.length > 0
                 ? displayTrainer.expertiseAreas.map((skill, index) => (
@@ -298,31 +350,31 @@ const TrainerDetailsDrawer = ({
           </div>
 
           <div className="p-4 rounded-lg border border-gray2">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 text-sm">
               <PhoneCallIcon className="w-4" />
               Contact Information
             </div>
-            <span className="text-gray1/50 inline-flex items-center gap-2">
+            <span className="text-gray1/50 inline-flex items-center gap-2 text-sm text-wrap">
               <PhoneCallIcon className="w-4" />
               {typeof displayTrainer?.phoneNumber === "object" &&
               displayTrainer?.phoneNumber?.countryCode
                 ? `${displayTrainer.phoneNumber.countryCode} ${displayTrainer.phoneNumber.number}`
                 : displayTrainer?.phoneNumber || "-"}
             </span>
-            <span className="text-gray1/50 inline-flex items-center gap-2">
+            <span className="text-gray1/50 inline-flex items-center gap-2 text-sm">
               <MailIcon className="w-4" />
-              <span className="truncate w-40">
+              <span className="break-all">
                 {displayTrainer?.email || "Not provided"}
               </span>
             </span>
           </div>
 
           <div className="p-4 rounded-lg border border-gray2">
-            <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-center gap-2 mb-2 text-sm">
               <MapPin className="w-4" />
               Address
             </div>
-            <span className="text-gray1/50">
+            <span className="text-gray1/50 text-sm text-wrap">
               {displayTrainer?.currentAddress ||
                 displayTrainer?.permanentAddress ||
                 "Not specified"}
@@ -334,24 +386,60 @@ const TrainerDetailsDrawer = ({
       {/* Documents */}
       <div className="px-6 pb-6">
         <h2 className="text-lg font-semibold">Documents</h2>
-        <div className="flex flex-wrap gap-3 mt-2">
-          {pdfFiles.length > 0 ? (
-            pdfFiles.map((doc, index) => (
-              <a
-                key={index}
-                href={doc}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline"
+        <div className="flex flex-wrap gap-3 mt-3">
+          {Object.entries(pdfFiles).map(([key, value]) => {
+            if (!value || typeof value !== "string") return null;
+            const isPdf =
+              key.includes("Qualification") ||
+              key.includes("Resume") ||
+              key.includes("Relieving Letter");
+            const fileName = value.split("/").pop();
+            const handleDownload = () => {
+              const link = document.createElement("a");
+              link.href = value;
+              link.target = "_blank";
+              link.download = fileName || `${key}.pdf`;
+              document.body.appendChild(link);
+              link.click();
+              document.body.removeChild(link);
+            };
+            return (
+              <div
+                key={key}
+                className="relative overflow-hidden p-3 w-[180px] h-[100px] flex flex-col bg-stone-50 rounded-lg gap-2"
               >
-                Qualification Document {index + 1}
-              </a>
-            ))
-          ) : (
-            <span className="text-gray-500">
-              No qualification documents available
-            </span>
-          )}
+                <div className="flex justify-between items-center w-full mb-2">
+                  <div className="flex items-center gap-1">
+                    {isPdf ? <YourPdfIcon /> : <YourImageIcon />}
+                    <div className="text-neutral-900 text-xs font-medium leading-none">
+                      {key}
+                    </div>
+                  </div>
+                  <div className="cursor-pointer" onClick={handleDownload}>
+                    <DownloadIcon className="w-4 h-4" />
+                  </div>
+                </div>
+                <div className="flex-1 w-full overflow-hidden rounded-sm mb-2">
+                  {isPdf ? (
+                    <iframe
+                      src={`${value}#toolbar=0&navpanes=0&scrollbar=0`}
+                      title={key}
+                      className="w-full h-full border-none no-scrollbar"
+                    />
+                  ) : (
+                    <img
+                      src={value}
+                      alt={key}
+                      className="w-full h-full object-cover rounded-sm"
+                    />
+                  )}
+                </div>
+                <div className="absolute bottom-0 left-0 w-full px-3 py-1 bg-stone-50 text-zinc-600 text-xs truncate border-t border-stone-200">
+                  {fileName}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -363,9 +451,13 @@ const TrainerDetailsDrawer = ({
               <span className="text-gray1/50 inline-block w-50 text-wrap">
                 LinkedIn
               </span>
-              <span className="font-medium">
-                {displayTrainer?.linkedin || "Not specified"}
-              </span>
+              <a
+                href={displayTrainer?.linkedin}
+                target="_blank"
+                className="font-medium flex items-center gap-1 text-blue-500"
+              >
+                <LinkIcon className="w-4 h-4" /> View
+              </a>
             </div>
             <div className="flex gap-8 border-b border-gray2 py-2 text-sm">
               <span className="text-gray1/50 inline-block w-50 text-wrap">
@@ -493,14 +585,50 @@ const TrainerDetailsDrawer = ({
             <div className="flex flex-wrap gap-3 mt-2">
               {displayTrainer?.trainingImages &&
               displayTrainer.trainingImages.length > 0 ? (
-                displayTrainer.trainingImages.map((img, i) => (
-                  <img
-                    key={i}
-                    src={img}
-                    alt={`Training ${i + 1}`}
-                    className="w-24 h-24 object-cover rounded-lg"
-                  />
-                ))
+                displayTrainer.trainingImages.map((img, i) => {
+                  if (!img || typeof img !== "string") return null;
+                  const fileName = img.split("/").pop();
+                  const handleDownload = () => {
+                    const link = document.createElement("a");
+                    link.href = img;
+                    link.target = "_blank";
+                    link.download = fileName || `Training-${i + 1}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  };
+                  return (
+                    <div
+                      key={i}
+                      className="relative overflow-hidden p-3 w-[180px] h-[100px] flex flex-col bg-stone-50 rounded-lg gap-2"
+                    >
+                      <div className="flex justify-between items-center w-full mb-2">
+                        <div className="flex items-center gap-1">
+                          <YourImageIcon />
+                          <div className="text-neutral-900 text-xs font-medium leading-none">
+                            Training {i + 1}
+                          </div>
+                        </div>
+                        <div
+                          className="cursor-pointer"
+                          onClick={handleDownload}
+                        >
+                          <DownloadIcon className="w-4 h-4" />
+                        </div>
+                      </div>
+                      <div className="flex-1 w-full overflow-hidden rounded-sm mb-2">
+                        <img
+                          src={img}
+                          alt={`Training ${i + 1}`}
+                          className="w-full h-full object-cover rounded-sm"
+                        />
+                      </div>
+                      <div className="absolute bottom-0 left-0 w-full px-3 py-1 bg-stone-50 text-zinc-600 text-xs truncate border-t border-stone-200">
+                        {fileName}
+                      </div>
+                    </div>
+                  );
+                })
               ) : (
                 <span className="text-gray-500">
                   No training images available

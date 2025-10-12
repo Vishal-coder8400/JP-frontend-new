@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import JobApprovalTab from "./JobApprovalTab";
-import TrainingApprovalTab from "./TrainingApprovalTab";
+import { useState, useRef } from "react";
+import JobsTab from "../../../common/jobs/JobsTab";
+import TrainingsTab from "../../../common/trainings/TrainingsTab";
 
 const JobTrainingsTab = () => {
   const [activeSubTab, setActiveSubTab] = useState("jobs");
@@ -34,22 +34,25 @@ const JobTrainingsTab = () => {
     switch (activeSubTab) {
       case "jobs":
         return (
-          <JobApprovalTab
+          <JobsTab
             ref={jobTabRef}
+            context="approvals"
             onError={(hasError) => setHasError(hasError)}
           />
         );
       case "trainings":
         return (
-          <TrainingApprovalTab
+          <TrainingsTab
             ref={trainingTabRef}
+            context="approvals"
             onError={(hasError) => setHasError(hasError)}
           />
         );
       default:
         return (
-          <JobApprovalTab
+          <JobsTab
             ref={jobTabRef}
+            context="approvals"
             onError={(hasError) => setHasError(hasError)}
           />
         );

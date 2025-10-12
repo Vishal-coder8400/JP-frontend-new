@@ -1,12 +1,20 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateApplicationStatus } from "../../api/super-admin/jobsAndTrainings";
+import {
+  updateJobApplicationStatus,
+  updateTrainingApplicationStatus,
+} from "../../api/super-admin/jobsAndTrainings";
 
-export const useApplicationApprovals = () => {
+export const useApplicationApprovals = (applicationType = "job") => {
   const queryClient = useQueryClient();
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ applicationId, data }) =>
-      updateApplicationStatus(applicationId, data),
+    mutationFn: ({ applicationId, data }) => {
+      const updateFn =
+        applicationType === "training"
+          ? updateTrainingApplicationStatus
+          : updateJobApplicationStatus;
+      return updateFn(applicationId, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["applications"] });
       queryClient.invalidateQueries({ queryKey: ["job-applications"] });
@@ -19,7 +27,6 @@ export const useApplicationApprovals = () => {
       applicationId,
       data: {
         status: "approved",
-        stage: "admin_review",
         notes,
         feedback,
       },
@@ -31,7 +38,6 @@ export const useApplicationApprovals = () => {
       applicationId,
       data: {
         status: "rejected",
-        stage: "admin_review",
         notes,
         feedback,
       },
@@ -43,7 +49,6 @@ export const useApplicationApprovals = () => {
       applicationId,
       data: {
         status: "hold",
-        stage: "admin_review",
         notes,
         feedback,
       },
@@ -55,7 +60,6 @@ export const useApplicationApprovals = () => {
       applicationId,
       data: {
         status: "shortlisted",
-        stage: "admin_review",
         notes,
         feedback,
       },
@@ -71,7 +75,6 @@ export const useApplicationApprovals = () => {
       applicationId,
       data: {
         status: "interview_scheduled",
-        stage: "admin_review",
         notes,
         feedback,
       },

@@ -1,31 +1,30 @@
 import api from "../../lib/axios";
+import { createUpload, createPost, createDelete } from "./baseApi";
 
-export const uploadProfileImageForAdmin = async (file) => {
-  const formData = new FormData();
-  formData.append("file", file);
+export const uploadProfileImageForAdmin = createUpload(
+  "/admin/upload/profile-images"
+);
 
-  const response = await api.post("/admin/upload/profile-images", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+export const createAdmin = createPost("/admin-management/create");
 
+export const getAllAdmins = async ({ signal } = {}) => {
+  const response = await api.get("/admin-management/list", { signal });
   return response.data;
 };
 
-export const createAdmin = (data) => api.post("/admin-management/create", data);
+export const getAdminById = async (adminId, { signal } = {}) => {
+  const response = await api.get(`/admin-management/${adminId}`, { signal });
+  return response.data;
+};
 
-export const getAllAdmins = () => api.get("/admin-management/list");
+export const updateAdmin = async (adminId, data) => {
+  const response = await api.put(`/admin-management/${adminId}`, data);
+  return response.data;
+};
 
-export const getAdminById = (adminId) =>
-  api.get(`/admin-management/${adminId}`);
+export const deleteAdmin = createDelete("/admin-management");
 
-export const updateAdmin = (adminId, data) =>
-  api.put(`/admin-management/${adminId}`, data);
-
-export const deleteAdmin = (adminId) =>
-  api.delete(`/admin-management/${adminId}`);
-
-export const getFeatures = () => {
-  return api.get("/admin-management/features");
+export const getFeatures = async ({ signal } = {}) => {
+  const response = await api.get("/admin-management/features", { signal });
+  return response.data;
 };

@@ -68,7 +68,7 @@ import SuperAdminJobsAndTrainingsPage from "./pages/super-admin-view/jobs-and-tr
 import SuperAdminApprovals from "./pages/super-admin-view/approvals";
 import SuperAdminAdminManagementPage from "./pages/super-admin-view/admin-management";
 import SuperAdminMasterDataPage from "./pages/super-admin-view/master-data";
-import SuperAdminCandidates from "./components/super-admin-view/jobs-and-trainings/applications/Applications";
+import ApplicationsTab from "./components/super-admin-view/common/applications/ApplicationsTab";
 import TrainerDashboard from "./pages/trainner-view/dashboard";
 import TrainerJobDescription from "./pages/trainner-view/job-description";
 import TrainerSearch from "./pages/trainner-view/search";
@@ -123,8 +123,16 @@ function App() {
             element={<SuperAdminJobsAndTrainingsPage />}
           />
           <Route
-            path="jobs-and-trainings/job/:id/candidates"
-            element={<SuperAdminCandidates />}
+            path="jobs-and-trainings/:id/candidates"
+            element={
+              <ApplicationsTab title="Job Applications" isBackBtnEnabled />
+            }
+          />
+          <Route
+            path="jobs-and-trainings/training/:id/candidates"
+            element={
+              <ApplicationsTab title="Training Applications" isBackBtnEnabled />
+            }
           />
           <Route path="approvals" element={<SuperAdminApprovals />} />
           <Route
