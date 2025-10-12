@@ -12,31 +12,101 @@ import z from "zod";
 import { validateFormData } from "../../utils/commonFunctions";
 import { useCorporateSignupStage2 } from "../../hooks/corporate/useAuth";
 import { useUpload } from "../../hooks/common/useUpload";
-const stage2Schema = z.object({
-  currentAddress: z.string().min(1, "Current address is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  pincode: z.string().regex(/^\d{6}$/, "Pincode must be a 6-digit number"),
-  industryType: z.string().optional(), // Only for private companies
-  panCardNumber: z.string().min(1, "PAN card number is required"),
-  panCardFile: z.string().min(1, "PAN card file is required"),
-  gstin: z.string().min(1, "GSTIN is required"),
-  bankName: z.string().min(1, "Bank name is required"),
-  bankAccountNumber: z.string().min(1, "Bank account number is required"),
-  ifscCode: z.string().min(1, "IFSC code is required"),
-  chequeOrStatementFile: z
-    .string()
-    .min(1, "Cancel cheque or statement file is required"),
+
+const optionalFileSchema = z
+  .string()
+  .optional()
+  .refine((val) => !val || /^https?:\/\/\S+$/.test(val), {
+    message: "Must be a valid URL",
+  });
+
+// Optional PAN details
+const panDetailsSchema = z
+  .object({
+    panCardNumber: z.string().optional(),
+    panCardFile: optionalFileSchema,
+  })
+  .optional();
+
+const bankDetailsSchema = z
+  .object({
+    bankName: z.string().optional(),
+    bankAccountNumber: z.string().optional(),
+    ifscCode: z.string().optional(),
+    chequeOrStatementFile: optionalFileSchema,
+  })
+  .optional();
+
+export const privateCompanySchema = z.object({
+  currentAddress: z
+    .string({ required_error: "Current address is required" }) // catches undefined
+    .min(1, "Current address cannot be empty"), // catches empty string
+  city: z
+    .string({ required_error: "City is required" }) // triggers if undefined or missing
+    .min(1, "City cannot be empty"), // triggers if ""
+  state: z
+    .string({ required_error: "State is required" })
+    .min(1, "State cannot be empty"),
+  pincode: z
+    .string({ required_error: "Pincode is required" })
+    .min(1, "Pincode cannot be empty"),
+  industryType: z
+    .string({ required_error: "Industry type is required" })
+    .min(1, "Industry type cannot be empty"),
+  gstin: z
+    .string({ required_error: "GSTIN is required" })
+    .min(1, "GSTIN cannot be empty"),
+
+  panDetails: panDetailsSchema,
+  bankDetails: bankDetailsSchema,
+});
+
+export const individualFormSchema = z.object({
+  currentAddress: z
+    .string({ required_error: "Current address is required" }) // catches undefined
+    .min(1, "Current address cannot be empty"),
+  city: z
+    .string({ required_error: "City is required" }) // triggers if undefined or missing
+    .min(1, "City cannot be empty"), // triggers if ""
+  state: z
+    .string({ required_error: "State is required" })
+    .min(1, "State cannot be empty"),
+  pincode: z
+    .string({ required_error: "Pincode is required" })
+    .min(1, "Pincode cannot be empty"),
+  gstin: z
+    .string({ required_error: "GSTIN is required" })
+    .min(1, "GSTIN cannot be empty"),
+
+  panDetails: panDetailsSchema,
+  aadharCardNumber: z
+    .string({ required_error: "Aadhar card number is required" })
+    .min(1, "Aadhar card number is required"),
+  aadharCardFile: z
+    .string({ required_error: "Aadhar card file is required" })
+    .min(1, "Aadhar card file is required")
+    .url("Aadhar card file must be a valid URL"),
+  bankDetails: bankDetailsSchema,
 });
 
 const FinalSetup = () => {
   const { user } = useAuthStore();
+  const [errorMessage, setErrorMessage] = useState({});
   const [formData, setFormData] = useState({});
   const { mutate, isPending } = useCorporateSignupStage2();
   const onSubmit = (e) => {
     e.preventDefault();
-    const isValid = validateFormData(stage2Schema, formData);
-    if (!isValid) return;
+    const schema =
+      user?.basicInformation?.companyType === "privateCompany"
+        ? privateCompanySchema
+        : individualFormSchema;
+    const { isValid, errors } = validateFormData(schema, formData);
+    if (!isValid) {
+      setErrorMessage(errors);
+      return;
+    }
+
+    setErrorMessage({});
     mutate(formData);
   };
   console.log(formData);
@@ -88,6 +158,7 @@ const FinalSetup = () => {
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
+                errors={errorMessage}
               />
             </div>
           </div>
@@ -104,6 +175,7 @@ const FinalSetup = () => {
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
+                errors={errorMessage}
               />
             </div>
           </div>

@@ -6,61 +6,54 @@ import { z } from "zod";
 import { validateFormData } from "../../utils/commonFunctions";
 import ButtonComponent from "../../components/common/button";
 import { useUpload } from "../../hooks/common/useUpload";
-import PrevButton from "../../components/common/prevButton";
 import Navbar from "../../components/recruiter-view/navbar";
 
-const referenceSchema = z.object({
-  name: z.string().min(1, "Reference name is required"),
-  contactNo: z
-    .string()
-    .min(10, "Contact number must be 10 digits")
-    .max(10, "Contact number must be 10 digits")
-    .regex(/^\d+$/, "Contact number must contain only digits"),
-  organization: z.string().min(1, "Organization is required"),
-  designation: z.string().min(1, "Designation is required"),
-});
-
-const formDataSchema = z
+export const employeeSchema = z
   .object({
-    latestQualification: z
+    latestQualification: z.string().min(1, "Latest qualification is required"),
+    latestQualificationName: z
       .string()
-      .min(1, "Qualification PDF is required")
-      .url("Must be a valid URL"),
-    joinReason: z
-      .string()
-      .min(1, "Join reason is required")
-      .refine((val) => val.trim().split(/\s+/).length <= 30, {
-        message: "Join reason must be within 30 words",
-      }),
-
+      .min(1, "Qualification name is required"),
+    joinReason: z.string().min(1, "Join reason is required"),
     monthlyClosures: z
-      .number()
-      .int()
-      .nonnegative("Monthly closures must be zero or more"),
+      .number({ invalid_type_error: "Monthly closures must be a number" })
+      .optional(),
     jobSource: z.string().min(1, "Job source is required"),
-    fatherName: z.string().min(1, "Father's name is required"),
-    motherName: z.string().min(1, "Mother's name is required"),
+    fatherName: z.string().min(1, "Father name is required"),
+    motherName: z.string().min(1, "Mother name is required"),
+
     references: z
-      .array(referenceSchema)
-      .length(2, "Exactly 2 references required"),
+      .array(
+        z.object({
+          name: z.string().min(1, "Reference name is required"),
+          contactNo: z.string().min(1, "Reference contact is required"),
+          organization: z.string().min(1, "Reference organization is required"),
+          designation: z.string().min(1, "Reference designation is required"),
+        })
+      )
+      .length(2, "Exactly 2 references are required"),
+
     hasMedicalProblem: z.boolean(),
     medicalProblemDetails: z.string().optional(),
   })
   .refine(
     (data) => {
-      // If hasMedicalProblem is true, medicalDetails must be non-empty
+      // If hasMedicalProblem is true, medicalProblemDetails must not be empty
       if (data.hasMedicalProblem) {
-        return data.medicalProblemDetails.trim().length > 0;
+        return (
+          data.medicalProblemDetails && data.medicalProblemDetails.trim() !== ""
+        );
       }
       return true;
     },
     {
-      message: "Medical details are required if there is a medical problem",
-      path: ["medicalDetails"],
+      message: "Medical problem details are required",
+      path: ["medicalProblemDetails"], // attach error to the field
     }
   );
 
 const QualificationDetails = () => {
+  const [errorMessage, setErrorMessage] = useState({});
   const [formData, setFormData] = useState({
     latestQualification: "",
     latestQualificationName: "",
@@ -83,7 +76,7 @@ const QualificationDetails = () => {
         designation: "",
       },
     ],
-    hasMedicalProblem: false,
+    hasMedicalProblem: "no",
     medicalProblemDetails: "",
   });
   const { mutate, isPending } = useSectoralDetails();
@@ -95,8 +88,13 @@ const QualificationDetails = () => {
       ...formData,
       hasMedicalProblem: formData.hasMedicalProblem === "yes" ? true : false,
     };
-    const isValid = validateFormData(formDataSchema, payLoad);
-    if (!isValid) return;
+    const { isValid, errors } = validateFormData(employeeSchema, payLoad);
+    if (!isValid) {
+      setErrorMessage(errors);
+      return;
+    }
+
+    setErrorMessage({});
     mutate(payLoad);
   };
   const handleUpload = (file, callback) => {
@@ -140,6 +138,7 @@ const QualificationDetails = () => {
             formData={formData}
             setFormData={setFormData}
             handleUpload={handleUpload}
+            errors={errorMessage}
           />
           {formData.references.map((item, index) => (
             <CommonForm
@@ -149,11 +148,12 @@ const QualificationDetails = () => {
               formData={formData}
               setFormData={setFormData}
               formType={"references"}
+              errors={errorMessage}
             />
           ))}
         </div>
-        <div className="self-stretch flex justify-between items-end gap-2.5">
-          <PrevButton link={"/recruiter/profile-setup/sectoral-details"} />
+        <div className="self-stretch flex justify-end items-end gap-2.5">
+          {/* <PrevButton link={"/recruiter/profile-setup/sectoral-details"} /> */}
           <ButtonComponent
             isPending={isPending}
             color={"#6945ED"}

@@ -13,7 +13,7 @@ import EditProfile from "./edit-profile";
 const Profile = () => {
   const { user } = useAuthStore();
   const [drawerOpen, setDrawerOpen] = useState(false);
-
+  console.log(user, "user");
   const pdfObject = {
     Resume: "resume",
     "PAN Card": "kycDetails.panDetails.image",
@@ -461,9 +461,9 @@ const Profile = () => {
                         Medical Problems
                       </div>
                       <div className="font-normal text-base text-[#61758A]">
-                        {user?.medicalProblemDetails === ""
-                          ? "None"
-                          : user?.medicalProblemDetails}
+                        {user?.hasMedicalProblem === true
+                          ? user?.medicalProblemDetails
+                          : "None"}
                       </div>
                     </div>
                   </div>

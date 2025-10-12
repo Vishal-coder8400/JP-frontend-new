@@ -9,49 +9,49 @@ import ButtonComponent from "../../components/common/button";
 import { useUpload } from "../../hooks/common/useUpload";
 import Navbar from "../../components/recruiter-view/navbar";
 
-const formSchema = z.object({
+export const profileSchema = z.object({
   sectorSpecialization: z
-    .array(z.string().min(1, "Sector name cannot be empty"))
-    .min(1, "At least one sector specialization is required"),
+    .array(z.string().min(1, "Sector specialization cannot be empty"))
+    .min(1, "At least 1 sector specialization is required")
+    .max(3, "You can select up to 3 sector specializations"),
 
   totalExperience: z
-    .number()
-    .min(0, "Total experience cannot be negative")
-    .optional(), // You can remove optional if it's required
+    .number({ invalid_type_error: "Total experience is required" })
+    .min(0, "Experience cannot be negative"),
 
   experienceLevel: z
-    .array(z.string().min(1))
-    .min(1, "At least 1 experience levels is required"),
-
-  permanentAddress: z.object({
-    address: z.string().min(1, "Permanent address is required"),
-    city: z.string().min(1, "City is required"),
-    state: z.string().min(1, "State is required"),
-    pincode: z.string().min(1, "Pincode is required"),
-  }),
+    .array(z.string().min(1, "Experience level cannot be empty"))
+    .min(1, "At least 1 experience level is required")
+    .max(2, "You can select up to 2 experience levels"),
 
   lastOrganization: z.object({
     name: z.string().min(1, "Organization name is required"),
     position: z.string().min(1, "Position is required"),
-    // employmentType: z.string().optional(),
-    // startYear: z.number().int().optional(),
+  }),
+
+  permanentAddress: z.object({
+    address: z.string().min(1, "Address is required"),
+    city: z.string().min(1, "City is required"),
+    pincode: z.string().min(1, "Pincode is required"),
+    state: z.string().min(1, "State is required"),
   }),
 
   relievingLetter: z
     .string()
-    .min(1, "Relieving Letter is required")
+    .min(1, "Relieving letter is required")
     .url("Relieving letter must be a valid URL"),
 
   linkedinProfile: z
     .string()
-    .url("Linkedin profile must be a valid URL")
-    .or(z.literal("")), // allow empty string or valid URL
+    .min(1, "LinkedIn profile is required")
+    .url("LinkedIn profile must be a valid URL"),
 });
 
 const SectoralDetails = () => {
+  const [errorMessage, setErrorMessage] = useState({});
   const [formData, setFormData] = useState({
     sectorSpecialization: [],
-    totalExperience: 0,
+    totalExperience: null,
     experienceLevel: [],
     lastOrganization: {
       name: "",
@@ -84,8 +84,13 @@ const SectoralDetails = () => {
       ),
       experienceLevel: formData.experienceLevel.map((ex) => ex.id),
     };
-    const isValid = validateFormData(formSchema, payload);
-    if (!isValid) return;
+    const { isValid, errors } = validateFormData(profileSchema, payload);
+    if (!isValid) {
+      setErrorMessage(errors);
+      return;
+    }
+
+    setErrorMessage({});
     mutate(payload);
   };
   const handleUpload = (file, callback) => {
@@ -99,6 +104,7 @@ const SectoralDetails = () => {
       },
     });
   };
+  console.log(formData);
   return (
     <div className="w-full self-stretch lg:px-36 lg:py-[0px] lg:pb-[32px] p-[20px] inline-flex flex-col justify-start items-start lg:gap-2 gap-[10px]">
       <Navbar onlySupport={true} />
@@ -128,6 +134,7 @@ const SectoralDetails = () => {
             formData={formData}
             setFormData={setFormData}
             handleUpload={handleUpload}
+            errors={errorMessage}
           />
         </div>
         <div className="self-stretch flex flex-col justify-end items-end gap-2.5">

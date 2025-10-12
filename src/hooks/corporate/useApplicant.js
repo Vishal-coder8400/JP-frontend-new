@@ -1,4 +1,5 @@
 import {
+  getApplicantCorporateDetails,
   getApplicantsById,
   updateStatusOfApplicant,
 } from "@/api/corporate/applicant";
@@ -14,15 +15,26 @@ export const useGetApplicantById = (id) => {
   });
 };
 
-export const useUpdateStatusOfApplicant = (applicationId, data) => {
+export const useUpdateStatusOfApplicant = () => {
   return useMutation({
-    mutationFn: () => updateStatusOfApplicant({ applicationId, data }),
+    mutationKey: ["updateApplicantStatus"],
+    mutationFn: updateStatusOfApplicant,
     onSuccess: () => {
-      // Invalidate and refetch
       toast.success("Applicant status updated successfully");
     },
     onError: (error) => {
-      console.error("Error updating applicant status:", error);
+      toast.error(
+        error?.response?.data?.message || "Failed to update applicant status"
+      );
     },
+  });
+};
+
+
+export const useGetApplicantCorporateDetails = () => {
+  return useQuery({
+    queryKey: ["applicantCorporateDetails"],
+    queryFn: () => getApplicantCorporateDetails(),
+    retry: false,
   });
 };

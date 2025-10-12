@@ -16,39 +16,92 @@ import ButtonComponent from "../../components/common/button";
 import { z } from "zod";
 import { useUpload } from "../../hooks/common/useUpload";
 
-export const TrainingSchema = z.object({
-  title: z.string().min(1, "Title is required"),
-  description: z.string().min(1, "Description is required"),
-  skills: z.array(z.string()).default([]),
-
-  // mode/frequency as free strings — change to z.enum([...]) if you have fixed options
-  trainingMode: z.string().optional().nullable().default(""),
-  sessionFrequency: z.string().optional().nullable().default(""),
-
-  // numeric fields — ints where applicable, non-negative
-  totalDurationDays: z.number().int().nonnegative().default(0),
-  hoursPerDay: z.number().nonnegative().default(0),
-
-  minimumExperience: z.string().optional().nullable().default(""),
-  subjectMatterExpertise: z.string().optional().nullable().default(""),
-
-  sessionsExpected: z.number().int().nonnegative().default(0),
-
-  travelRequired: z.boolean().default(false),
-  languagesFluent: z.array(z.string()).default([]),
-
-  participantsPerBatch: z.number().int().nonnegative().default(0),
-
-  studyMaterialsProvided: z.boolean().default(false),
-  demoSessionBeforeConfirming: z.boolean().default(false),
-});
+const trainingSchema = z
+  .object({
+    title: z.string().min(1, "Title is required"),
+    description: z.string().min(1, "Description is required"),
+    skills: z.array(z.string()).min(1, "At least one skill is required"),
+    trainingMode: z
+      .string()
+      .min(1, "Training mode is required")
+      .refine(
+        (val) =>
+          ["Virtual / Online", "Hybrid", "In-person / On-site"].includes(val),
+        "Invalid training mode"
+      ),
+    address: z.string().optional(),
+    city: z.string().optional(),
+    state: z.string().optional(),
+    pincode: z.string().optional(),
+    sessionFrequency: z.string().min(1, "Session frequency is required"),
+    totalDurationDays: z
+      .string({ invalid_type_error: "Total duration (days) is required" })
+      .min(1, "Total duration (days) must be greater than 0"),
+    hoursPerDay: z
+      .string({ invalid_type_error: "Hours per day is required" })
+      .min(1, "Hours per day must be greater than 0"),
+    minimumExperience: z.string().min(1, "Minimum experience is required"),
+    qualificationsRequired: z
+      .string()
+      .min(1, "Qualifications required field is mandatory"),
+    subjectMatterExpertise: z
+      .string()
+      .min(1, "Subject matter expertise is required"),
+    sessionsExpected: z
+      .number({ invalid_type_error: "Sessions expected is required" })
+      .min(1, "Sessions expected must be greater than 0"),
+    travelRequired: z.string().min(1, "Travel required field is mandatory"),
+    languagesFluent: z
+      .array(z.string())
+      .min(1, "At least one fluent language is required"),
+    participantsPerBatch: z
+      .string({ invalid_type_error: "Participants per batch is required" })
+      .min(1, "Participants per batch must be greater than 0"),
+    studyMaterialsProvided: z
+      .string()
+      .min(1, "Study materials provided field is mandatory"),
+    demoSessionBeforeConfirming: z
+      .string()
+      .min(1, "Demo session before confirming field is mandatory"),
+    budgetPerSession: z.string().min(1, "Budget per session is required"),
+  })
+  .refine(
+    (data) => {
+      if (
+        data.trainingMode === "In-person / On-site" ||
+        data.trainingMode === "Hybrid"
+      ) {
+        return (
+          data.address &&
+          data.city &&
+          data.state &&
+          data.pincode &&
+          data.address.trim() !== "" &&
+          data.city.trim() !== "" &&
+          data.state.trim() !== "" &&
+          data.pincode.trim() !== ""
+        );
+      }
+      return true;
+    },
+    {
+      message:
+        "Address, City, State, and Pincode are required for On-site or Hybrid training modes",
+      path: ["address"], // you can point to 'address' or leave blank for form-level error
+    }
+  );
 
 const TrainningPosting = () => {
+  const [errorMessage, setErrorMessage] = useState({});
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     skills: [],
     trainingMode: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
     sessionFrequency: "",
     totalDurationDays: 0,
     hoursPerDay: 0,
@@ -56,11 +109,11 @@ const TrainningPosting = () => {
     qualificationsRequired: "",
     subjectMatterExpertise: "",
     sessionsExpected: 0,
-    travelRequired: false,
+    travelRequired: "",
     languagesFluent: [],
     participantsPerBatch: 0,
-    studyMaterialsProvided: false,
-    demoSessionBeforeConfirming: false,
+    studyMaterialsProvided: "",
+    demoSessionBeforeConfirming: "",
     budgetPerSession: "",
   });
   const { mutate, isPending, isError, error } = useCorporateTrainingPost();
@@ -68,6 +121,12 @@ const TrainningPosting = () => {
 
   const onSubmit = (e) => {
     e.preventDefault();
+
+    const { isValid, errors } = validateFormData(trainingSchema, formData);
+    if (!isValid) {
+      setErrorMessage(errors);
+      return;
+    }
     let payload = { ...formData };
     payload.hoursPerDay = formData.hoursPerDay
       ? parseInt(formData.hoursPerDay)
@@ -87,8 +146,7 @@ const TrainningPosting = () => {
     booleanFields.forEach((field) => {
       payload[field] = formData[field] === "yes";
     });
-    const isValid = validateFormData(TrainingSchema, payload);
-    if (!isValid) return;
+    setErrorMessage({});
     mutate(payload);
   };
   const handleUpload = (file, callback) => {
@@ -139,12 +197,14 @@ const TrainningPosting = () => {
               formData={formData}
               setFormData={setFormData}
               handleUpload={handleUpload}
+              errors={errorMessage}
             />
             <CommonForm
               formControls={trainingMode}
               formData={formData}
               setFormData={setFormData}
               handleUpload={handleUpload}
+              errors={errorMessage}
             />
             {formData?.trainingMode === "In-person / On-site" ||
             formData.trainingMode === "Hybrid" ? (
@@ -153,6 +213,7 @@ const TrainningPosting = () => {
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
+                errors={errorMessage}
               />
             ) : null}
             <CommonForm
@@ -160,6 +221,7 @@ const TrainningPosting = () => {
               formData={formData}
               setFormData={setFormData}
               handleUpload={handleUpload}
+              errors={errorMessage}
             />
           </div>
         </div>
@@ -170,12 +232,14 @@ const TrainningPosting = () => {
               formData={formData}
               setFormData={setFormData}
               handleUpload={handleUpload}
+              errors={errorMessage}
             />
             <CommonForm
               formControls={trainingController4}
               formData={formData}
               setFormData={setFormData}
               handleUpload={handleUpload}
+              errors={errorMessage}
             />
           </div>
 

@@ -15,151 +15,166 @@ import { validateFormData } from "../../utils/commonFunctions";
 import { z } from "zod";
 import ButtonComponent from "../../components/common/button";
 
-const formSchema = z
+const jobSchema = z
   .object({
     jobTitle: z
       .string({ required_error: "Job title is required" })
-      .min(1, "Job title cannot be empty"),
-
-    jobType: z.enum(["Full-Time", "Part-Time", "Internship"], {
-      errorMap: () => ({ message: "Select a valid job type" }),
-    }),
-
+      .min(1, "Job title is required"),
+    jobType: z
+      .string({ required_error: "Job type is required" })
+      .min(1, "Job type is required"),
     workingHours: z
       .string({ required_error: "Working hours are required" })
-      .min(1, "Working hours cannot be empty"),
-
+      .min(1, "Working hours are required"),
     workingDays: z
       .string({ required_error: "Working days are required" })
-      .min(1, "Working days cannot be empty"),
-
-    isSundayWorking: z.boolean({
-      required_error: "Please specify if Sunday is working or not",
-    }),
-
+      .min(1, "Working days are required"),
+    isSundayWorking: z
+      .string({ required_error: "Please specify if Sunday is working" })
+      .min(1, " Please specify if Sunday is working"),
     officeLocation: z
       .string({ required_error: "Office location is required" })
-      .min(1, "Office location cannot be empty"),
-
+      .min(1, " Office location is required"),
     city: z
       .string({ required_error: "City is required" })
-      .min(1, "City cannot be empty"),
-
+      .min(1, "City is required"),
     state: z
       .string({ required_error: "State is required" })
-      .min(1, "State cannot be empty"),
-
+      .min(1, "State is required"),
     pincode: z
       .string({ required_error: "Pincode is required" })
-      .regex(/^\d{6}$/, "Pincode must be a 6-digit number"),
-
-    modeOfWork: z.enum(["Work from Office", "Work from Home", "Hybrid"], {
-      errorMap: () => ({ message: "Select a valid mode of work" }),
-    }),
-
+      .min(1, "Pincode is required"),
+    modeOfWork: z
+      .string({ required_error: "Mode of work is required" })
+      .min(1, "Mode of work is required"),
     experienceLevel: z
       .string({ required_error: "Experience level is required" })
-      .min(1, "Experience level cannot be empty"),
-
-    genderPreference: z.enum(["Male", "Female", "Any"], {
-      errorMap: () => ({ message: "Select a valid gender preference" }),
-    }),
-
+      .min(1, " Experience level is required"),
+    genderPreference: z
+      .string({ required_error: "Gender preference is required" })
+      .min(1, " Gender preference is required"),
     minimumEducation: z
       .string({ required_error: "Minimum education is required" })
-      .min(1, "Minimum education cannot be empty"),
-
-    englishLevel: z.enum(["basic", "moderate", "fluent"], {
-      errorMap: () => ({ message: "Select a valid English level" }),
+      .min(1, " Minimum education is required"),
+    englishLevel: z
+      .string({ required_error: "English level is required" })
+      .min(1, "English level is required"),
+    regionalLanguageRequired: z
+      .string({ required_error: "Specify if regional language is required" })
+      .min(1, "Specify if regional language is required"),
+    regionalLanguages: z.array(z.string()).optional(),
+    preferredAgeRange: z.string().optional(),
+    requiredSkills: z
+      .array(z.string({ required_error: "Skill name cannot be empty" }))
+      .min(1, "At least one skill is required"),
+    salaryRange: z.object({
+      min: z
+        .number({ required_error: "Minimum salary is required" })
+        .min(1, "Minimum salary is required"),
+      max: z
+        .number({ required_error: "Maximum salary is required" })
+        .min(1, "Maximum salary is required"),
     }),
-
-    regionalLanguageRequired: z.boolean({
-      required_error: "Please specify if regional language is required",
-    }),
-
-    preferredAgeRange: z
-      .string()
-      .optional()
-      .refine((val) => !val || /^\d{2}-\d{2}$/.test(val), {
-        message: "Age range must be in format 'xx-yy' (e.g., 22-35)",
-      }),
-
-    salaryRange: z
-      .object({
-        min: z.number().min(1, "Minimum salary is required"),
-        max: z.number().min(1, "Maximum salary is required"),
-      })
-      .refine((data) => parseInt(data.min, 10) <= parseInt(data.max, 10), {
-        message: "Minimum salary cannot be greater than maximum salary",
-        path: ["min"],
-      }),
-
-    twoWheelerMandatory: z.boolean({
-      required_error: "Please specify if two-wheeler is mandatory",
-    }),
-    noOfPositions: z
-      .string({ required_error: "Number of positions is required" })
-      .regex(/^[1-9]\d*$/, "Number of positions must be a positive integer"),
-
+    twoWheelerMandatory: z
+      .string({ required_error: "Specify if two-wheeler is mandatory" })
+      .min(1, " Specify if two-wheeler is mandatory"),
     jobDescription: z
       .string({ required_error: "Job description is required" })
-      .min(50, "Job description must be at least 50 characters"),
-
-    isWalkInInterview: z.boolean({
-      required_error: "Please specify if it's a walk-in interview",
-    }),
-
-    // These fields are optional by default
+      .min(1, "Job description is required"),
+    isWalkInInterview: z
+      .string({ required_error: "Specify if this is a walk-in interview" })
+      .min(1),
     walkInDate: z.string().optional(),
     walkInTime: z.string().optional(),
     walkInAddress: z.string().optional(),
     spocName: z.string().optional(),
     spocNumber: z.string().optional(),
+    noOfPositions: z
+      .string({ required_error: "Number of positions is required" })
+      .min(1, "Number of positions is required"),
   })
+  // ✅ Conditional validation for regional language
+  .refine(
+    (data) => {
+      if (data.regionalLanguageRequired.toLowerCase() === "yes") {
+        return data.regionalLanguages && data.regionalLanguages.length > 0;
+      }
+      return true;
+    },
+    {
+      message:
+        "Regional languages are required when 'Regional Language Required' is Yes",
+      path: ["regionalLanguages"],
+    }
+  )
+  // ✅ Conditional validation for walk-in interview
   .superRefine((data, ctx) => {
-    // Only validate these if isWalkInInterview is true
-    if (data.isWalkInInterview) {
-      if (!data.walkInDate?.trim()) {
+    // ✅ regionalLanguages check
+    if (data.regionalLanguageRequired.toLowerCase() === "yes") {
+      if (!data.regionalLanguages || data.regionalLanguages.length === 0) {
         ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message:
+            "Regional languages are required when 'Regional Language Required' is Yes",
+          path: ["regionalLanguages"],
+        });
+      }
+    }
+
+    // ✅ isWalkInInterview check — add error for each missing field
+    if (data.isWalkInInterview.toLowerCase() === "yes") {
+      const missingFields = [];
+
+      if (!data.walkInDate) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Walk-in date is required",
           path: ["walkInDate"],
-          message: "Date is required",
-          code: z.ZodIssueCode.custom,
         });
+        missingFields.push("walkInDate");
       }
-      if (!data.walkInTime?.trim()) {
+      if (!data.walkInTime) {
         ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Walk-in time is required",
           path: ["walkInTime"],
-          message: "Time is required",
-          code: z.ZodIssueCode.custom,
         });
+        missingFields.push("walkInTime");
       }
-      if (!data.walkInAddress?.trim()) {
+      if (!data.walkInAddress) {
         ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Walk-in address is required",
           path: ["walkInAddress"],
-          message: "Address is required",
-          code: z.ZodIssueCode.custom,
         });
+        missingFields.push("walkInAddress");
       }
-      if (!data.spocName?.trim()) {
+      if (!data.spocName) {
         ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "SPOC name is required",
           path: ["spocName"],
-          message: "Name is required",
-          code: z.ZodIssueCode.custom,
         });
+        missingFields.push("spocName");
       }
-      if (!/^\d{10}$/.test(data.spocNumber || "")) {
+      if (!data.spocNumber) {
         ctx.addIssue({
-          path: ["spocNumber"],
-          message: "Phone number must be exactly 10 digits",
           code: z.ZodIssueCode.custom,
+          message: "SPOC number is required",
+          path: ["spocNumber"],
         });
+        missingFields.push("spocNumber");
+      }
+
+      // If you want, you can log all missing fields together:
+      if (missingFields.length > 0) {
+        console.warn("Missing walk-in fields:", missingFields);
       }
     }
   });
 
 const JobPosting = () => {
-  // const [open1, setOpen1] = useState(false);
-  // const [open2, setOpen2] = useState(false);
+  const [errorMessage, setErrorMessage] = useState({});
   const [formData, setFormData] = useState({
     jobTitle: "",
     jobType: "",
@@ -180,8 +195,8 @@ const JobPosting = () => {
     preferredAgeRange: "",
     requiredSkills: [],
     salaryRange: {
-      min: "",
-      max: "",
+      min: 0,
+      max: 0,
     },
     twoWheelerMandatory: "",
     jobDescription: "",
@@ -193,9 +208,15 @@ const JobPosting = () => {
     spocNumber: "",
     noOfPositions: "",
   });
-  const { mutate, isPending, isError, error } = useCorporateJobPost();
+  const { mutate, isPending } = useCorporateJobPost();
   const onSubmit = (e) => {
     e.preventDefault();
+    const { isValid, errors } = validateFormData(jobSchema, formData);
+    if (!isValid) {
+      setErrorMessage(errors);
+      return;
+    }
+    setErrorMessage({});
     let payload = { ...formData };
     const booleanFields = [
       "isWalkInInterview",
@@ -206,8 +227,6 @@ const JobPosting = () => {
     booleanFields.forEach((field) => {
       payload[field] = formData[field] === "yes";
     });
-    const isValid = validateFormData(formSchema, payload);
-    if (!isValid) return;
     mutate(payload);
   };
 
@@ -246,6 +265,7 @@ const JobPosting = () => {
               formControls={jobController1}
               formData={formData}
               setFormData={setFormData}
+              errors={errorMessage}
             />
           </div>
         </div>
@@ -255,24 +275,28 @@ const JobPosting = () => {
               formControls={jobController2}
               formData={formData}
               setFormData={setFormData}
+              errors={errorMessage}
             />
             {formData?.regionalLanguageRequired === "yes" && (
               <CommonForm
                 formControls={regionalLanguage}
                 formData={formData}
                 setFormData={setFormData}
+                errors={errorMessage}
               />
             )}
             <CommonForm
               formControls={jobController3}
               formData={formData}
               setFormData={setFormData}
+              errors={errorMessage}
             />
             {formData?.isWalkInInterview === "yes" && (
               <CommonForm
                 formData={formData}
                 setFormData={setFormData}
                 formControls={walkinAdress}
+                errors={errorMessage}
               />
             )}
           </div>

@@ -16,6 +16,7 @@ export default function MultiSelectField({
   onChange,
   max = 3,
   placeholder,
+  errorMessage,
 }) {
   const [inputValue, setInputValue] = useState("");
   const [open, setOpen] = useState(false);
@@ -71,7 +72,11 @@ export default function MultiSelectField({
                   }, 150);
                 }}
                 placeholder={placeholder}
-                className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+                className={`flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 ${
+                  !errorMessage
+                    ? "focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2]"
+                    : "focus:border-1 focus:border-red-500 rounded-[4px] border-s-1 border-red-500"
+                } py-[10px] px-[16px] placeholder:text-[#9B959F]`}
               />
               <span className="absolute right-4 top-1/2 -translate-y-1/2">
                 <ArrowDown />

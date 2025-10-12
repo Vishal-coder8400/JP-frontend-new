@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import CommonForm from "../../common/form";
 import {
   candiadateCreationformControls,
@@ -110,7 +110,7 @@ const formDataSchema = z.object({
 });
 
 const Index = () => {
-  const fileInputRef = useRef(null);
+  const [formErrors, setFormErrors] = useState({});
   const [formData, setFormData] = useState({
     name: "",
     profilePicture: "",
@@ -149,8 +149,9 @@ const Index = () => {
   const { mutate, isPending } = useCreateApplicant();
   const { mutate: UploadImage } = useUpload();
   const onSubmit = (e) => {
-    localStorage.removeItem("seekerID");
     e.preventDefault();
+    localStorage.removeItem("seekerID");
+
     let payLoad = { ...formData };
     if (formData.sameAs) {
       payLoad = {
@@ -164,9 +165,14 @@ const Index = () => {
         },
       };
     }
-    const isValid = validateFormData(formDataSchema, payLoad);
-    if (!isValid) return;
 
+    const { isValid, errors } = validateFormData(formDataSchema, payLoad);
+    if (!isValid) {
+      setFormErrors(errors);
+      return;
+    }
+
+    setFormErrors({});
     mutate(payLoad);
   };
   const handleUpload = (file, callback) => {
@@ -224,6 +230,7 @@ const Index = () => {
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
+                errors={formErrors}
               />
             </div>
             <div className="w-full flex flex-col gap-[18px]">
@@ -336,6 +343,7 @@ const Index = () => {
                   i={index}
                   disabled={false}
                   formType={"education"}
+                  errors={formErrors}
                 />
               ))}
             </div>
@@ -379,7 +387,6 @@ const Index = () => {
                       {!fileName && (
                         <Input
                           type="file"
-                          ref={fileInputRef}
                           accept="application/pdf"
                           className="absolute inset-0 opacity-0 cursor-pointer z-0 h-full w-full"
                           onChange={(e) => {

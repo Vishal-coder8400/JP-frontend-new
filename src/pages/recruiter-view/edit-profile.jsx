@@ -9,21 +9,17 @@ import {
   sectoralFieldsForm2,
 } from "../../config";
 import { Input } from "../../components/ui/input";
-import { setNestedValue } from "../../utils/commonFunctions";
+import { setNestedValue, transformUserData } from "../../utils/commonFunctions";
 import { Slate } from "../../utils/icon";
 import { useSectorOptions } from "../../hooks/recruiter/useSectoralOption";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuthStore from "../../stores/useAuthStore";
 import { useUpdateUserDetails } from "../../hooks/recruiter/useProfile";
 import { useUpload } from "../../hooks/common/useUpload";
 
-const EditProfile = ({
-  handleRemoveFile,
-  handleUpload2,
-  fileName,
-  setFileName,
-}) => {
+const EditProfile = ({ setDrawerOpen }) => {
   const { user } = useAuthStore();
+
   const [formData, setFormData] = useState(user);
   const { data: sectorOptions = [], isLoading, error } = useSectorOptions();
   const updatedFields = sectoralFieldsForm.map((field) =>
@@ -35,9 +31,20 @@ const EditProfile = ({
   const { mutate: updateProfile, isPending } = useUpdateUserDetails();
   const onSubmit = (e) => {
     e.preventDefault();
-    updateProfile(formData);
-    setIsEditOpen(false);
+    const payload = {
+      ...formData,
+      sectorSpecialization: formData.sectorSpecialization.map(
+        (option) => option.id
+      ),
+      experienceLevel: formData.experienceLevel.map((ex) => ex.id),
+    };
+    updateProfile(payload);
+    setDrawerOpen(false);
   };
+  useEffect(() => {
+    setFormData(transformUserData(user));
+  }, []);
+
   const handleUpload = (file, callback) => {
     UploadImage(file, {
       onSuccess: (data) => {
@@ -70,15 +77,15 @@ const EditProfile = ({
                     <Slate className="h-full w-full" />
                   </div>
                   <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
-                    {fileName ? fileName : "Upload Resume"}
+                    {formData.resume ? formData.resume : "Upload Resume"}
                   </div>
                   <div className="w-4 h-4 relative overflow-hidden flex justify-center items-center">
-                    {fileName ? (
+                    {formData.resume ? (
                       <X
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation(); // stops file dialog from opening
-                          if (fileName !== "") handleRemoveFile();
+                          if (formData.resume !== "") handleRemoveFile();
                         }}
                         className="h-[15px] w-[15px] text-red-500 cursor-pointer"
                       />
@@ -86,7 +93,7 @@ const EditProfile = ({
                       <Upload className="h-full w-full" />
                     )}
                   </div>
-                  {!fileName && (
+                  {!formData.resume && (
                     <div>
                       <Input
                         // ref={fileInputRef}

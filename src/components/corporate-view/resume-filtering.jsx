@@ -109,14 +109,14 @@ const ResumeFiltering = ({
                         <TableCell className="px-[16px] py-[12px]">
                           <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
                             {item?.skills?.join(", ") ||
-                              item.applicantSkills.join(", ") ||
+                              item?.applicantSkills?.join(", ") ||
                               "N/A"}
                           </div>
                         </TableCell>
                         <TableCell className="px-[16px] py-[12px]">
                           <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
                             {convertMonthsToYearsAndMonths(
-                              item?.totalExperience || item.applicantExperience
+                              item?.totalExperience || item?.applicantExperience
                             )}
                           </div>
                         </TableCell>
@@ -127,10 +127,10 @@ const ResumeFiltering = ({
                                 Rejected
                               </div>
                             </div>
-                          ) : item.status === "Shortlisted" ? (
+                          ) : item.status === "approved" ? (
                             <div className="size- px-2 py-1 bg-lime-600/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
                               <div className="justify-start text-lime-600 text-xs font-medium leading-none">
-                                Shortlisted
+                                Approved
                               </div>
                             </div>
                           ) : (

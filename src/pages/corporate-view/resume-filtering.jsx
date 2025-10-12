@@ -3,10 +3,18 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import CorporateResumeFiltering from "../../components/corporate-view/resume-filtering";
 import CandidateProfiles from "../../components/recruiter-view/job-openings/candidate-profile";
 import Navbar from "../../components/recruiter-view/navbar";
+import {
+  useGetApplicantById,
+  useGetApplicantCorporateDetails,
+} from "@/hooks/corporate/useApplicant";
+import useJobSeekerProfileStore from "@/stores/useJobSeekerProfileStore";
 
 const ResumeFiltering = () => {
   const [formData, setFormData] = useState({ sortBy: "" });
+  const { jobSeekerProfile } = useJobSeekerProfileStore();
   const [open2, setOpen2] = useState(false);
+  const { data } = useGetApplicantCorporateDetails();
+  const { data: applicantData } = useGetApplicantById(jobSeekerProfile?._id);
   return (
     <div className="w-full">
       <Sheet open={open2} onOpenChange={setOpen2}>
@@ -20,7 +28,11 @@ const ResumeFiltering = () => {
             overflow-y-auto border-transparent"
         >
           <div className="w-full h-full">
-            <CandidateProfiles />
+            <CandidateProfiles
+              open={open2}
+              setOpen={setOpen2}
+              applicantData={applicantData}
+            />
           </div>
         </SheetContent>
       </Sheet>
@@ -29,6 +41,7 @@ const ResumeFiltering = () => {
         formData={formData}
         setFormData={setFormData}
         setOpen2={setOpen2}
+        candidateProfiles={data || []}
       />
     </div>
   );

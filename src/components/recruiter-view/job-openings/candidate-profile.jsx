@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import {
   CallIcon,
   ClockIcon,
@@ -14,9 +14,31 @@ import {
 } from "../../../utils/commonFunctions";
 import { useLocation } from "react-router-dom";
 import ResumeViewer from "../../common/ResumeViewer";
+import { useUpdateStatusOfApplicant } from "@/hooks/corporate/useApplicant";
 
-const CandidateProfile = ({ applicantData }) => {
+const CandidateProfile = ({ open, setOpen, applicantData }) => {
   const location = useLocation();
+  const [loadingId, setLoadingId] = useState(null);
+  const {
+    mutate: updateStatus,
+    isSuccess,
+    isPending,
+  } = useUpdateStatusOfApplicant();
+  const handleStatusUpdate = (status) => {
+    setLoadingId(status);
+    updateStatus({
+      id: applicantData?.data?._id,
+      status: status,
+      notes: "",
+      feedback: "",
+      stage: "corporate_review",
+    });
+
+    if (isSuccess) {
+      setOpen(false);
+    }
+  };
+
   return (
     <Fragment>
       <div className="min-h-screen w-full hidden self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 lg:inline-flex flex-col justify-start items-start gap-4">
@@ -81,19 +103,32 @@ const CandidateProfile = ({ applicantData }) => {
           </div>
           {location.pathname.includes("corporate") && (
             <div className="w-40 inline-flex flex-col justify-center items-start gap-2.5">
-              <div className="self-stretch px-5 py-2.5 bg-lime-600 rounded-3xl inline-flex justify-center items-center gap-2.5">
+              <div
+                onClick={() => handleStatusUpdate("approved")}
+                className="cursor-pointer self-stretch px-5 py-2.5 bg-lime-600 rounded-3xl inline-flex justify-center items-center gap-2.5"
+              >
                 <div className="justify-start text-white text-sm font-medium capitalize">
-                  Request Interview
+                  {loadingId === "approved" && isPending
+                    ? "Requesting..."
+                    : "Request Interview"}
                 </div>
               </div>
-              <div className="self-stretch px-5 py-2.5 bg-rose-600 rounded-3xl inline-flex justify-center items-center gap-2.5">
+              <div
+                onClick={() => handleStatusUpdate("rejected")}
+                className="cursor-pointer self-stretch px-5 py-2.5 bg-rose-600 rounded-3xl inline-flex justify-center items-center gap-2.5"
+              >
                 <div className="justify-start text-white text-sm font-medium capitalize">
-                  Reject
+                  {loadingId === "rejected" && isPending
+                    ? "Rejecting..."
+                    : "Reject"}
                 </div>
               </div>
-              <div className="self-stretch px-5 py-2.5 bg-black rounded-3xl outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5">
+              <div
+                onClick={() => handleStatusUpdate("hold")}
+                className="cursor-pointer self-stretch px-5 py-2.5 bg-black rounded-3xl outline-1 outline-offset-[-1px] outline-black inline-flex justify-center items-center gap-2.5"
+              >
                 <div className="justify-start text-white text-sm font-medium capitalize">
-                  Hold
+                  {loadingId === "hold" && isPending ? "Holding..." : "Hold"}
                 </div>
               </div>
             </div>

@@ -8,51 +8,65 @@ import ButtonComponent from "../../components/common/button";
 import { useUpload } from "../../hooks/common/useUpload";
 import Navbar from "../../components/recruiter-view/navbar";
 
-const formSchema = z.object({
+const bankDetailsSchema = z
+  .object({
+    accountNumber: z.string(),
+    accountHolderName: z.string(),
+    bankName: z.string(),
+    ifscCode: z.string(),
+    accountType: z.enum(["saving", "current"]).optional(),
+  })
+  .partial() // keys optional
+  .refine(
+    (data) => {
+      const anyFilled = Object.values(data).some(
+        (val) => val && val.trim() !== ""
+      );
+      if (!anyFilled) return true; // skip validation if completely empty
+      return Object.values(data).every((val) => val && val.trim() !== "");
+    },
+    {
+      message: "If you fill any bank field, all bank details are required",
+    }
+  )
+  .optional(); // whole bankDetails object optional
+
+// Full form schema
+export const formSchema = z.object({
   panDetails: z.object({
     number: z
       .string()
       .min(1, "PAN number is required")
-      // PAN format: 5 letters, 4 digits, 1 letter (e.g. ABCDE1234F)
       .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN number format"),
     image: z
       .string()
       .min(1, "PAN Image is required")
       .url("PAN image must be a valid URL"),
   }),
+
   aadharDetails: z.object({
     number: z
       .string()
       .min(1, "Aadhar number is required")
-      // Aadhar: 12 digits exactly
       .regex(/^\d{12}$/, "Aadhar number must be 12 digits"),
     image: z
       .string()
-      .min(1, "Adhaar Image is required")
+      .min(1, "Aadhar Image is required")
       .url("Aadhar image must be a valid URL"),
   }),
-  bankDetails: z.object({
-    accountNumber: z.string().min(1, "Account number is required"),
-    accountHolderName: z.string().min(1, "Account holder name is required"),
-    bankName: z.string().min(1, "Bank name is required"),
-    ifscCode: z
-      .string()
-      .min(1, "IFSC code is required")
-      // IFSC format: 4 letters + 0 + 6 digits/letters (e.g. HDFC0001234)
-      .regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC code format"),
-    accountType: z.enum(["saving", "current"], {
-      errorMap: () => ({
-        message: "Account type must be either 'saving' or 'current'",
-      }),
-    }),
-  }),
+
+  bankDetails: bankDetailsSchema,
+
   cancelChequeOrPassbookImage: z
     .string()
-    .min(1, "PAN number is required")
-    .url("Must be a valid URL"),
+    .optional()
+    .refine((val) => !val || /^https?:\/\/\S+$/.test(val), {
+      message: "Must be a valid URL",
+    }),
 });
 
 const KycVerification = () => {
+  const [errorMessage, setErrorMessage] = useState({});
   const [formData, setFormData] = useState({
     panDetails: {
       number: "",
@@ -67,17 +81,22 @@ const KycVerification = () => {
       accountHolderName: "",
       bankName: "",
       ifscCode: "",
-      accountType: "",
+      // accountType: "",
     },
     cancelChequeOrPassbookImage: "",
   });
-  const { mutate, isPending, isError, error } = useKycDetails();
+  const { mutate, isPending } = useKycDetails();
   const { mutate: UploadImage } = useUpload();
 
   const onSubmit = (e) => {
     e.preventDefault();
-    const isValid = validateFormData(formSchema, formData);
-    if (!isValid) return;
+    const { isValid, errors } = validateFormData(formSchema, formData);
+    if (!isValid) {
+      setErrorMessage(errors);
+      return;
+    }
+
+    setErrorMessage({});
     mutate(formData);
   };
   const handleUpload = (file, callback) => {
@@ -132,6 +151,7 @@ const KycVerification = () => {
                   formData={formData}
                   setFormData={setFormData}
                   handleUpload={handleUpload}
+                  errors={errorMessage}
                 />
               </div>
             </div>

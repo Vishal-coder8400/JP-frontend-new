@@ -90,20 +90,53 @@ export const getDurationBetweenDates = (startDateStr, endDateStr) => {
 };
 
 export const validateFormData = (validationSchema, formData) => {
-  if (!validationSchema) return true;
+  if (!validationSchema) return { isValid: true, errors: {} };
 
   const result = validationSchema.safeParse(formData);
 
   if (!result.success) {
-    const allErrors = result.error.flatten().fieldErrors;
-    const firstError = Object.values(allErrors)[0]?.[0];
+    const raw = result.error.format();
+    const flattened = flattenZodErrors(raw);
 
-    if (firstError) toast.error(firstError);
-    return false;
+    // ✅ Extract the first field and its first message
+    const firstKey = Object.keys(flattened)[0];
+    const firstMessage = flattened[firstKey]?.[0];
+
+    // ✅ Show toast for user
+    if (firstMessage) toast.error(firstMessage);
+
+    // ✅ Return only one error in the errors object
+    return {
+      isValid: false,
+      errors: firstKey ? { [firstKey]: [firstMessage] } : {},
+    };
   }
 
-  return true;
+  return { isValid: true, errors: {} };
 };
+
+function flattenZodErrors(obj, parentKey = "", result = {}) {
+  for (const key in obj) {
+    if (!obj.hasOwnProperty(key)) continue;
+    const value = obj[key];
+    const cleanedKey = key.replace("_errors", ""); // 🚀 remove "_errors"
+    const newKey = parentKey
+      ? Array.isArray(obj)
+        ? `${parentKey}[${key}]`
+        : `${parentKey}.${cleanedKey}`
+      : cleanedKey;
+
+    if (Array.isArray(value) && typeof value[0] === "string") {
+      // ✅ leaf error array
+      const normalizedKey = newKey.replace(/\._errors$/, "").replace(/\.$/, "");
+      result[normalizedKey] = value;
+    } else if (typeof value === "object" && value !== null) {
+      flattenZodErrors(value, newKey, result);
+    }
+  }
+  return result;
+}
+
 export const formatSalaryRange = (minSalary, maxSalary) => {
   const min = Number(minSalary);
   const max = Number(maxSalary);
@@ -208,4 +241,139 @@ export const formatApiError = (error) => {
   }
 
   return "An unexpected error occurred";
+};
+export const transformUserData = (apiData = {}) => {
+  const kyc = apiData.kycDetails || {};
+
+  return {
+    firstName: apiData.firstName || "",
+    lastName: apiData.lastName || "",
+    email: apiData.email || "",
+    password: "",
+    profileImage: apiData.profileImage || "",
+    phone: apiData.phone || { number: 0, countryCode: "" },
+
+    currentAddress: {
+      ...apiData.currentAddress,
+      state: apiData.currentAddress?.state || "",
+    },
+
+    resume: apiData.resume || "",
+    sectorSpecialization:
+      apiData.sectorSpecialization?.map((id) => ({
+        id: id._id,
+        label: id.name,
+      })) || [],
+
+    totalExperience: apiData.totalExperience || 0,
+
+    experienceLevel:
+      apiData.experienceLevel?.map((item) => ({
+        id: item,
+        label:
+          item === "frontline"
+            ? "Frontline Hirings"
+            : item === "midlevel"
+            ? "Mid Level Hirings"
+            : item === "senior"
+            ? "Senior Hirings"
+            : item,
+      })) || [],
+
+    lastOrganization: apiData.lastOrganization || { name: "", position: "" },
+
+    permanentAddress: {
+      ...apiData.permanentAddress,
+      state: apiData.permanentAddress?.state || "",
+    },
+
+    relievingLetter: apiData.relievingLetter || "",
+    linkedinProfile: apiData.linkedinProfile || "",
+
+    panDetails: {
+      number: kyc.panDetails?.number || "",
+      image: kyc.panDetails?.image || "",
+    },
+    aadharDetails: {
+      number: kyc.aadharDetails?.number || "",
+      image: kyc.aadharDetails?.image || "",
+    },
+    bankDetails: {
+      accountNumber: kyc.bankDetails?.accountNumber || "",
+      accountHolderName: kyc.bankDetails?.accountHolderName || "",
+      bankName: kyc.bankDetails?.bankName || "",
+      ifscCode: kyc.bankDetails?.ifscCode || "",
+      accountType: kyc.bankDetails?.accountType || "",
+    },
+    cancelChequeOrPassbookImage: kyc.cancelChequeOrPassbookImage || "",
+
+    latestQualification: apiData.latestQualification || "",
+    latestQualificationName: apiData.latestQualificationName || "",
+    joinReason: apiData.joinReason || "",
+    monthlyClosures: apiData.monthlyClosures || 0,
+    jobSource: apiData.jobSource || "",
+    fatherName: apiData.fatherName || "",
+    motherName: apiData.motherName || "",
+
+    references: [
+      {
+        name: apiData.references?.[0]?.name || "",
+        contactNo: apiData.references?.[0]?.contactNo || "",
+        organization: apiData.references?.[0]?.organization || "",
+        designation: apiData.references?.[0]?.designation || "",
+      },
+      {
+        name: apiData.references?.[1]?.name || "",
+        contactNo: apiData.references?.[1]?.contactNo || "",
+        organization: apiData.references?.[1]?.organization || "",
+        designation: apiData.references?.[1]?.designation || "",
+      },
+    ],
+
+    hasMedicalProblem: apiData.hasMedicalProblem ? "yes" : "no",
+    medicalProblemDetails: apiData.medicalProblemDetails || "",
+  };
+};
+export const transformCompanyData = (apiData = {}) => {
+  const safe = (obj, key, fallback = "") => obj?.[key] ?? fallback;
+
+  return {
+    basicInformation: {
+      companyName: safe(apiData.basicInformation, "companyName"),
+      companyLogo: safe(apiData.basicInformation, "companyLogo"),
+      companyContactNumber: apiData.basicInformation?.companyContactNumber || {
+        number: 0,
+        countryCode: "",
+      },
+      companyEmail: safe(apiData.basicInformation, "companyEmail"),
+      password: "",
+      confirmPassword: "",
+      websiteURL: safe(apiData.basicInformation, "websiteURL"),
+      companyType: safe(apiData.basicInformation, "companyType"),
+      companyDescription: safe(apiData.basicInformation, "companyDescription"),
+    },
+
+    spocInformation: {
+      fullName: safe(apiData.spocInformation, "fullName"),
+      contactNumber: apiData.spocInformation?.contactNumber || {
+        number: "",
+        countryCode: "",
+      },
+      email: safe(apiData.spocInformation, "email"),
+    },
+
+    bankAccountNumber: safe(apiData, "bankAccountNumber"),
+    ifscCode: safe(apiData, "ifscCode"),
+    bankName: safe(apiData, "bankName"),
+    city: safe(apiData, "city"),
+    currentAddress: safe(apiData, "currentAddress"),
+    pincode: safe(apiData, "pincode"),
+    state: safe(apiData, "state"),
+    industryType: safe(apiData, "industryType"),
+    panCardNumber: safe(apiData, "panCardNumber"),
+    panCardFile: safe(apiData, "panCardFile"),
+    gstin: safe(apiData, "gstin"),
+    aadharCardNumber: safe(apiData, "aadharCardNumber"),
+    aadharCardFile: safe(apiData, "aadharCardFile"),
+  };
 };

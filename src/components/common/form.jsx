@@ -31,7 +31,9 @@ export default function CommonForm({
   handleUpload,
   disabled = false,
   formType = null,
+  errors = {},
 }) {
+  console.log(errors);
   const [showPassword, setShowPassword] = useState(false);
   const [otherSelections, setOtherSelections] = useState({});
   function renderInputsByComponentType(getControlItem, index) {
@@ -40,6 +42,9 @@ export default function CommonForm({
       nameWithIndex = `${formType}.${i}.${getControlItem.name}`;
     }
     const value = getNestedValue(formData, nameWithIndex) || "";
+    const errorMessage =
+      errors?.[nameWithIndex]?.[0] || errors?.[nameWithIndex];
+    console.log(errorMessage, nameWithIndex, "errorMessage");
     const commonInputProps = {
       name: nameWithIndex,
       id: nameWithIndex,
@@ -55,8 +60,11 @@ export default function CommonForm({
               : event.target.value
           )
         ),
-      className:
-        "flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]",
+      className: `flex placeholder:translate-y-[1px] items-center justify-center text-black text-base rounded-[4px] border py-[10px] px-[16px] placeholder:text-[#9B959F] ${
+        errorMessage
+          ? "border-red-500 focus:border-red-500"
+          : "border-[#E2E2E2]"
+      } focus:outline-none focus-visible:ring-0`,
     };
 
     switch (getControlItem.componentType) {
@@ -106,9 +114,18 @@ export default function CommonForm({
           number: "",
           countryCode: "",
         };
+        const numberError =
+          errors && typeof errors === "object"
+            ? errors[`${nameWithIndex}.number`]
+            : null;
+
+        const codeError =
+          errors && typeof errors === "object"
+            ? errors[`${nameWithIndex}.countryCode`]
+            : null;
         const fullNumber =
           (phoneObject.countryCode || "") + (phoneObject.number || "");
-
+        // console.log(phoneObject, errorMessage[`${nameWithIndex}.number`]);
         return (
           <PhoneInput
             country={"in"}
@@ -123,8 +140,16 @@ export default function CommonForm({
                 })
               );
             }}
-            inputClass="!w-full !h-[44px] !rounded-[4px] !px-[16px] !text-sm !border !border-[#E2E2E2] !placeholder:text-[#9B959F] focus:!ring-1 focus:!ring-black focus:!outline-none"
-            buttonClass="!border-r !border-[#E2E2E2] !bg-white"
+            inputClass={`!w-full !h-[44px] !rounded-[4px] !px-[16px] !text-sm !border ${
+              numberError || codeError
+                ? "!border-red-500 focus:!border-red-500 focus:!ring-1 focus:!ring-red-500"
+                : "!border-[#E2E2E2] !bg-white focus:!ring-1 focus:!ring-black"
+            } !placeholder:text-[#9B959F]  focus:!outline-none`}
+            buttonClass={`!border-r ${
+              codeError || numberError
+                ? "!border-red-500 focus:!border-red-500"
+                : "!border-[#E2E2E2] !bg-white"
+            } !bg-white`}
             containerClass="!w-full"
             dropdownClass="!bg-white !text-sm !rounded-md !shadow-lg z-50"
             placeholder={getControlItem.placeholder || "Enter phone number"}
@@ -206,6 +231,9 @@ export default function CommonForm({
 
                   return updated;
                 });
+                setFormData((prev) =>
+                  setNestedValue(prev, "medicalProblemDetails", "")
+                );
 
                 setOtherSelections((prev) => ({
                   ...prev,
@@ -218,7 +246,13 @@ export default function CommonForm({
                   : selectedValue || ""
               }
             >
-              <SelectTrigger className="w-full flex placeholder:translate-y-[1px] items-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[20px] px-[16px] data-[placeholder]:text-[#9B959F]">
+              <SelectTrigger
+                className={`w-full flex placeholder:translate-y-[1px] items-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1  ${
+                  errorMessage
+                    ? "!border-red-500 focus:!border-red-500"
+                    : "!border-[#E2E2E2] !bg-white"
+                } py-[20px] px-[16px] data-[placeholder]:text-[#9B959F]`}
+              >
                 <SelectValue placeholder={getControlItem?.placeholder} />
               </SelectTrigger>
               <SelectContent className={"bg-white"}>
@@ -265,7 +299,11 @@ export default function CommonForm({
                     )
                   )
                 }
-                className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+                className={`flex placeholder:translate-y-[1px] items-center justify-center text-black text-base rounded-[4px] border py-[10px] px-[16px] placeholder:text-[#9B959F] ${
+                  errorMessage
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-[#E2E2E2]"
+                } focus:outline-none focus-visible:ring-0`}
               />
             )}
 
@@ -284,7 +322,11 @@ export default function CommonForm({
                     )
                   )
                 }
-                className="flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+                className={`flex placeholder:translate-y-[1px] items-center justify-center text-black text-base rounded-[4px] border py-[10px] px-[16px] placeholder:text-[#9B959F] ${
+                  errors["medicalProblemDetails"]
+                    ? "border-red-500 focus:border-red-500"
+                    : "border-[#E2E2E2]"
+                } focus:outline-none focus-visible:ring-0`}
               />
             )}
           </div>
@@ -368,7 +410,11 @@ export default function CommonForm({
                 setNestedValue(prev, nameWithIndex, event.target.value)
               )
             }
-            className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+            className={`bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 ${
+              errorMessage
+                ? "border-red-500 focus:border-red-500"
+                : "border-[#E2E2E2]"
+            } py-[10px] px-[16px] placeholder:text-[#9B959F]`}
           />
         );
       case "salary-range":
@@ -396,7 +442,11 @@ export default function CommonForm({
               value={minSalary}
               onChange={(e) => handleSalaryChange("min", e.target.value)}
               min={0}
-              className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+              className={`bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 ${
+                errors[`${nameWithIndex}.min`]
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-[#E2E2E2]"
+              } py-[10px] px-[16px] placeholder:text-[#9B959F]`}
             />
             <Input
               type="number"
@@ -404,7 +454,11 @@ export default function CommonForm({
               value={maxSalary}
               onChange={(e) => handleSalaryChange("max", e.target.value)}
               min={0}
-              className="bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 border-[#E2E2E2] py-[10px] px-[16px] placeholder:text-[#9B959F]"
+              className={`bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 ${
+                errors[`${nameWithIndex}.max`]
+                  ? "border-red-500 focus:border-red-500"
+                  : "border-[#E2E2E2]"
+              } py-[10px] px-[16px] placeholder:text-[#9B959F]`}
             />
           </div>
         );
@@ -471,7 +525,9 @@ export default function CommonForm({
               )}
               <Label
                 htmlFor={!fileName ? getControlItem.name : undefined}
-                className="flex items-center justify-between border border-[#E2E2E2] w-full rounded-[4px] py-[9px] px-[16px] cursor-pointer z-10"
+                className={`flex items-center justify-between border ${
+                  errorMessage ? "border-red-500" : "border-[#E2E2E2]"
+                } w-full rounded-[4px] py-[9px] px-[16px] cursor-pointer z-10`}
               >
                 <span
                   className={`${
@@ -513,7 +569,9 @@ export default function CommonForm({
             <PopoverTrigger asChild>
               <div
                 onClick={() => setIsOpen(true)}
-                className="self-stretch px-4 py-2.5 bg-white rounded outline outline-neutral-200 inline-flex justify-start items-center gap-2 cursor-pointer"
+                className={`self-stretch px-4 py-2.5 bg-white rounded outline ${
+                  errorMessage ? "outline-red-500" : "outline-neutral-200"
+                } inline-flex justify-start items-center gap-2 cursor-pointer`}
               >
                 <div className="flex-1 self-stretch flex justify-start items-start gap-2.5">
                   <div className="flex-1 justify-start text-neutral-400 text-sm font-normal leading-normal">
@@ -579,6 +637,7 @@ export default function CommonForm({
               )
             }
             placeholder={getControlItem.placeholder || "Select options..."}
+            errorMessage={errorMessage}
           />
         );
 
@@ -608,8 +667,11 @@ export default function CommonForm({
                       }`}
                     >
                       {item.label && (
-                        <Label className="text-base text-[#20102B] font-semibold">
+                        <Label className="text-base gap-1 text-[#20102B] font-semibold">
                           {item.label}
+                          {item.required && (
+                            <span className="text-red-500 text-[14px]">*</span>
+                          )}
                         </Label>
                       )}
                       {renderInputsByComponentType(item, i)}
@@ -627,8 +689,11 @@ export default function CommonForm({
                 }`}
               >
                 {controlItem.label && (
-                  <Label className="text-base text-[#20102B] font-semibold">
+                  <Label className="text-base gap-1 text-[#20102B] font-semibold">
                     {controlItem.label}
+                    {controlItem.required && (
+                      <span className="text-red-500 text-[14px]">*</span>
+                    )}
                   </Label>
                 )}
                 {renderInputsByComponentType(controlItem, index)}

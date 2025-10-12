@@ -13,69 +13,56 @@ import { useUpload } from "../../hooks/common/useUpload";
 import Navbar from "../../components/recruiter-view/navbar";
 
 // Define the schema for the phone number object (used in both companyContactNumber and contactNumber)
-const phoneNumberSchema = z.object({
-  number: z
-    .string()
-    .min(1, "Phone number is required")
-    .regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
-  countryCode: z
-    .string()
-    .min(1, "Country code is required")
-    .regex(
-      /^\+\d{1,3}$/,
-      "Country code must start with '+' followed by 1-3 digits"
-    ),
-});
-
-// Define the schema for basicInformation
-const basicInformationSchema = z
+const companySchema = z
   .object({
-    companyName: z.string().min(1, "Company name is required"),
-    companyLogo: z
-      .string()
-      .min(1, "Company logo URL is required")
-      .url("Company logo must be a valid URL"),
-    companyContactNumber: phoneNumberSchema,
-    companyEmail: z
-      .string()
-      .min(1, "Company email is required")
-      .email("Company email must be a valid email address"),
-    password: z
-      .string()
-      .min(8, "Password must be at least 8 characters long")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-      ),
-    confirmPassword: z.string().min(1, "confirm password field is required"),
-    websiteURL: z
-      .string()
-      .min(1, "Website URL is required")
-      .url("Website URL must be a valid URL"),
-    companyType: z.string().min(1, "Company type is required"),
+    basicInformation: z.object({
+      companyName: z.string().min(1, "Company name is required"),
+      companyLogo: z
+        .string()
+        .optional()
+        .refine((val) => !val || /^https?:\/\/\S+$/.test(val), {
+          message: "Company logo must be a valid URL",
+        }),
+      companyContactNumber: z.object({
+        number: z.string().min(1, "Contact number is required"),
+        countryCode: z.string().min(1, "Country code is required"),
+      }),
+      companyEmail: z
+        .string()
+        .min(1, "Company email is required")
+        .email("Company email must be a valid email"),
+      password: z.string().min(1, "Password is required"),
+      confirmPassword: z.string().min(1, "Confirm password is required"),
+      websiteURL: z
+        .string()
+        .min(1, "Website URL is required")
+        .url("Website must be a valid URL"),
+      companyType: z.string().min(1, "Company type is required"),
+      companyDescription: z.string().min(1, "Company description is required"),
+    }),
+    spocInformation: z.object({
+      fullName: z.string().min(1, "Full name is required"),
+      contactNumber: z.object({
+        number: z.string().min(1, "Contact number is required"),
+        countryCode: z.string().min(1, "Country code is required"),
+      }),
+      email: z
+        .string()
+        .min(1, "Email is required")
+        .email("Email must be a valid email"),
+    }),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"], // Error will be attached to confirmPassword field
-  });
-
-// Define the schema for spocInformation
-const spocInformationSchema = z.object({
-  fullName: z.string().min(1, "Full name is required"),
-  contactNumber: phoneNumberSchema,
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Email must be a valid email address"),
-});
-
-// Define the full formData schema
-const formDataSchema = z.object({
-  basicInformation: basicInformationSchema,
-  spocInformation: spocInformationSchema,
-});
+  .refine(
+    (data) =>
+      data.basicInformation.password === data.basicInformation.confirmPassword,
+    {
+      message: "Password and Confirm Password must match",
+      path: ["basicInformation", "confirmPassword"], // attach error to confirmPassword
+    }
+  );
 
 const CorporateBasicDetails = () => {
+  const [errorMessage, setErrorMessage] = useState({});
   const [formData, setFormData] = useState({
     basicInformation: {
       companyName: "",
@@ -89,7 +76,7 @@ const CorporateBasicDetails = () => {
       confirmPassword: "",
       websiteURL: "",
       companyType: "",
-      aboutCompany: "",
+      companyDescription: "",
     },
     spocInformation: {
       fullName: "",
@@ -100,7 +87,7 @@ const CorporateBasicDetails = () => {
       email: "",
     },
   });
-  const { mutate, isPending, isError, error } = useCorporateRegister();
+  const { mutate, isPending } = useCorporateRegister();
   const { mutate: UploadImage } = useUpload();
   const handleUpload = (file, callback) => {
     UploadImage(file, {
@@ -115,10 +102,16 @@ const CorporateBasicDetails = () => {
   };
   const onSubmit = (e) => {
     e.preventDefault();
-    const isValid = validateFormData(formDataSchema, formData);
-    if (!isValid) return;
+    const { isValid, errors } = validateFormData(companySchema, formData);
+    if (!isValid) {
+      setErrorMessage(errors);
+      return;
+    }
+
+    setErrorMessage({});
     mutate(formData);
   };
+  // console.log(formData)
   return (
     <form
       onSubmit={onSubmit}
@@ -147,6 +140,7 @@ const CorporateBasicDetails = () => {
                 formData={formData}
                 setFormData={setFormData}
                 handleUpload={handleUpload}
+                errors={errorMessage}
               />
             </div>
           </div>
@@ -162,6 +156,7 @@ const CorporateBasicDetails = () => {
                 formControls={basicInformationControls}
                 formData={formData}
                 setFormData={setFormData}
+                errors={errorMessage}
               />
             </div>
           </div>
@@ -178,6 +173,7 @@ const CorporateBasicDetails = () => {
               formControls={spocInformationControls}
               formData={formData}
               setFormData={setFormData}
+              errors={errorMessage}
             />
           </div>
         </div>

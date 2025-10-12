@@ -11,7 +11,7 @@ import { Input } from "../../components/ui/input";
 import { X } from "lucide-react";
 import Navbar from "../../components/recruiter-view/navbar";
 
-const formSchema = z
+export const formSchema = z
   .object({
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
@@ -23,11 +23,16 @@ const formSchema = z
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
         "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
       ),
-    confirmPassword: z.string().min(1, "confirm password field is required"),
+    confirmPassword: z.string().min(1, "Confirm password field is required"),
+
+    // 🟢 Profile image is optional now
     profileImage: z
       .string()
-      .min(1, "Profile Image is Required")
-      .url("Must be a valid URL"),
+      .optional()
+      .refine((val) => !val || /^https?:\/\/\S+$/.test(val), {
+        message: "Must be a valid URL",
+      }),
+
     phone: z.object({
       number: z.union([
         z.string().regex(/^\d{10}$/, {
@@ -44,21 +49,23 @@ const formSchema = z
         })
         .min(1, { message: "Country code cannot be empty" }),
     }),
+
     currentAddress: z.object({
       address: z.string().min(1, "Current address is required"),
       city: z.string().min(1, "City is required"),
       state: z.string().min(1, "State is required"),
       pincode: z.string().min(1, "Pincode is required"),
     }),
+
     resume: z.string().min(1, "Resume is Required").url("Must be a valid URL"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
     path: ["confirmPassword"],
   });
-
 const BasicDetails = () => {
   const fileInputRef = useRef(null);
+  const [errorMessage, setErrorMessage] = useState({});
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -79,7 +86,7 @@ const BasicDetails = () => {
   });
   const [fileName, setFileName] = useState("");
 
-  const { mutate, isPending, isError, error } = useRegister();
+  const { mutate, isPending } = useRegister();
   const { mutate: UploadImage } = useUpload();
   const handleUpload = (file, callback) => {
     UploadImage(file, {
@@ -105,10 +112,14 @@ const BasicDetails = () => {
   };
 
   const onSubmit = (e) => {
-    console.log("first");
     e.preventDefault();
-    const isValid = validateFormData(formSchema, formData);
-    if (!isValid) return;
+    const { isValid, errors } = validateFormData(formSchema, formData);
+    if (!isValid) {
+      setErrorMessage(errors);
+      return;
+    }
+
+    setErrorMessage({});
     mutate(formData);
   };
   const handleRemoveFile = () => {
@@ -159,10 +170,15 @@ const BasicDetails = () => {
                   formControls={recruiterSignUp}
                   formData={formData}
                   setFormData={setFormData}
+                  errors={errorMessage}
                 />
               </div>
             </div>
-            <div className="relative cursor-pointer p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4">
+            <div
+              className={`relative cursor-pointer p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] ${
+                errorMessage["resume"] ? "outline-red-300" : "outline-zinc-300"
+              } inline-flex flex-col justify-start items-start gap-4`}
+            >
               <div className="self-stretch inline-flex justify-center items-center gap-5">
                 <div className="w-4 h-4 relative overflow-hidden flex justify-center items-center">
                   <Slate className="h-full w-full" />
@@ -181,7 +197,10 @@ const BasicDetails = () => {
                       className="h-[15px] w-[15px] text-red-500 cursor-pointer"
                     />
                   ) : (
-                    <Upload className="h-full w-full" />
+                    <>
+                      <Upload className="h-full w-full" />
+                      <span className="text-red-500 text-[14px]">*</span>
+                    </>
                   )}
                 </div>
                 {!fileName && (
@@ -229,6 +248,7 @@ const BasicDetails = () => {
                   formData={formData}
                   setFormData={setFormData}
                   handleUpload={handleUpload}
+                  errors={errorMessage}
                 />
               </div>
             </div>

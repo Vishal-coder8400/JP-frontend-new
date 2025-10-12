@@ -1,23 +1,30 @@
 import ButtonComponent from "../../components/common/button";
 import CommonForm from "../../components/common/form";
 import {
-  basicCorporateInformation,
+  basicCorporateInformationUpdate,
   basicInformationControls,
   corporateFormControls,
   formControlsBankDetails,
   formControlsForIndividual,
   spocInformationControls,
 } from "../../config";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useAuthStore from "../../stores/useAuthStore";
 import { useUpdateCorporateProfile } from "../../hooks/corporate/useProfile";
 import { useUpload } from "../../hooks/common/useUpload";
+import { transformCompanyData } from "@/utils/commonFunctions";
 
 const EditProfile = ({ setIsEditOpen }) => {
   const { user } = useAuthStore();
+  // console.log(user);
   const [formData, setFormData] = useState(user);
   const { mutate: UploadImage } = useUpload();
   const { mutate: updateProfile, isPending } = useUpdateCorporateProfile();
+  useEffect(() => {
+    if (!user) return;
+    const reshaped = transformCompanyData(user);
+    setFormData(reshaped);
+  }, []);
   const onSubmit = (e) => {
     e.preventDefault();
     updateProfile(formData);
@@ -52,7 +59,7 @@ const EditProfile = ({ setIsEditOpen }) => {
               <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4">
                 <div className="w-full">
                   <CommonForm
-                    formControls={basicCorporateInformation}
+                    formControls={basicCorporateInformationUpdate}
                     formData={formData}
                     setFormData={setFormData}
                     handleUpload={handleUpload}

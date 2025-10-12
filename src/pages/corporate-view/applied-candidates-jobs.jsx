@@ -47,7 +47,11 @@ const AppliedCandidatesJobs = () => {
             overflow-y-auto border-transparent"
         >
           <div className="w-full h-full">
-            <CandidateProfiles applicantData={applicantData} />
+            <CandidateProfiles
+              open={open2}
+              setOpen={setOpen2}
+              applicantData={applicantData}
+            />
           </div>
         </SheetContent>
       </Sheet>
