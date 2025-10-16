@@ -466,7 +466,10 @@ export default function CommonForm({
 
       case "file":
         const fileUrl = getNestedValue(formData, nameWithIndex);
-        const fileName = fileUrl ? fileUrl.split("/").pop() : "";
+        const fileName =
+          fileUrl && typeof fileUrl === "string"
+            ? fileUrl.split("/").pop()
+            : "";
 
         const acceptType =
           getControlItem.accept === "image"
