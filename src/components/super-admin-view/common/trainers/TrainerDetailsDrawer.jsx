@@ -420,12 +420,15 @@ const TrainerDetailsDrawer = ({
                     <DownloadIcon className="w-4 h-4" />
                   </div>
                 </div>
-                <div className="flex-1 w-full overflow-hidden rounded-sm mb-2">
+                <div
+                  className="flex-1 w-full overflow-hidden rounded-sm mb-2 cursor-pointer"
+                  onClick={() => window.open(value, "_blank")}
+                >
                   {isPdf ? (
                     <iframe
                       src={`${value}#toolbar=0&navpanes=0&scrollbar=0`}
                       title={key}
-                      className="w-full h-full border-none no-scrollbar"
+                      className="w-full h-full border-none no-scrollbar pointer-events-none"
                     />
                   ) : (
                     <img
@@ -617,7 +620,10 @@ const TrainerDetailsDrawer = ({
                           <DownloadIcon className="w-4 h-4" />
                         </div>
                       </div>
-                      <div className="flex-1 w-full overflow-hidden rounded-sm mb-2">
+                      <div
+                        className="flex-1 w-full overflow-hidden rounded-sm mb-2 cursor-pointer"
+                        onClick={() => window.open(img, "_blank")}
+                      >
                         <img
                           src={img}
                           alt={`Training ${i + 1}`}

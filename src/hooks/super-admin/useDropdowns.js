@@ -39,7 +39,9 @@ export const useCreateDropdownValue = (dropdownId) => {
   return useBaseMutation(
     (payload) => createDropdownValue(dropdownId, payload),
     {
-      invalidateKeys: [["dropdownValues", dropdownId]],
+      // Invalidate by prefix to account for token in the query key
+      invalidateKeys: [["dropdownValues"]],
+      successMessage: "Value added successfully",
     }
   );
 };
@@ -48,14 +50,18 @@ export const useUpdateDropdownValue = (dropdownId) => {
   return useBaseMutation(
     (payload) => updateDropdownValue(dropdownId, payload),
     {
-      invalidateKeys: [["dropdownValues", dropdownId]],
+      // Invalidate by prefix to account for token in the query key
+      invalidateKeys: [["dropdownValues"]],
+      successMessage: "Value updated successfully",
     }
   );
 };
 
 export const useDeleteDropdownValue = (dropdownId) => {
   return useBaseMutation((value) => deleteDropdownValue(dropdownId, value), {
-    invalidateKeys: [["dropdownValues", dropdownId]],
+    // Invalidate by prefix to account for token in the query key
+    invalidateKeys: [["dropdownValues"]],
+    successMessage: "Value deleted successfully",
   });
 };
 

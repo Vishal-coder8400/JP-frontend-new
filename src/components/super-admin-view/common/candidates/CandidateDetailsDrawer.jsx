@@ -9,10 +9,12 @@ import {
 } from "@/hooks/super-admin/useApprovals";
 import { useGetCandidateDetails } from "@/hooks/super-admin/useApplicant";
 import { useApplicationApprovals } from "@/hooks/super-admin/useApplicationApprovals";
+import { useGetJobsByApplicant } from "@/hooks/super-admin/useJob";
 import AdminStatusBadge from "@/components/super-admin-view/shared/AdminStatusBadge";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import { toast } from "sonner";
+import JobsTable from "../jobs/JobsTable";
 
 const CandidateDetailsDrawer = ({
   candidateId,
@@ -40,6 +42,13 @@ const CandidateDetailsDrawer = ({
     useGetApprovalDetails(approvalId, {
       enabled: !!approvalId && context === "approvals",
     });
+
+  const { data: jobsData, isLoading: isLoadingJobs } = useGetJobsByApplicant(
+    candidateId,
+    {
+      enabled: !!candidateId,
+    }
+  );
 
   const applicationApprovals = useApplicationApprovals(applicationType);
   const approvals = useApprovals();
@@ -302,6 +311,12 @@ const CandidateDetailsDrawer = ({
         <div className="py-6">
           {activeTab === "aboutCandidate" && (
             <AboutCandidate candidate={candidate} />
+          )}
+          {activeTab === "jobsApplied" && (
+            <JobsTable
+              paginatedJobs={jobsData?.data.applications || []}
+              context="database"
+            />
           )}
         </div>
       </div>

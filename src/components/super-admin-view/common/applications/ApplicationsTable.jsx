@@ -58,6 +58,9 @@ const ApplicationsTable = ({
                   <TableHead className="min-w-[120px] font-semibold">
                     Source
                   </TableHead>
+                  <TableHead className="min-w-[220px] font-semibold">
+                    Recruiter Details
+                  </TableHead>
                   <TableHead className="min-w-[150px] font-semibold">
                     Status
                   </TableHead>
@@ -114,6 +117,16 @@ const ApplicationsTable = ({
                         </div>
                       </TableCell>
                       <TableCell>{application.source || "N/A"}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-gray-900">
+                            {application.recruiterInfo?.name || "Not coming"}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {application.recruiterInfo?.email || "Not coming"}
+                          </span>
+                        </div>
+                      </TableCell>
                       <TableCell>{application.status || "N/A"}</TableCell>
                       <TableCell>
                         {application.applicantType === "trainer"
@@ -133,7 +146,7 @@ const ApplicationsTable = ({
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8">
+                    <TableCell colSpan={8} className="text-center py-8">
                       <div className="flex flex-col items-center justify-center space-y-2">
                         <User className="h-8 w-8 text-gray-400" />
                         <span className="text-gray-500">

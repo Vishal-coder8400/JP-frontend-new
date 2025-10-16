@@ -124,18 +124,26 @@ const DynamicDropdownTab = ({ dropdown }) => {
       </div>
       <AddValueModal
         isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
+        onClose={() => {
+          setIsAddModalOpen(false);
+        }}
         dropdownId={dropdown?.dropdownId}
       />
       <EditValueModal
         isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedValue(null);
+        }}
         dropdownId={dropdown?.dropdownId}
         value={selectedValue}
       />
       <DeleteValueModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setSelectedValue(null);
+        }}
         dropdownId={dropdown?.dropdownId}
         value={selectedValue}
       />

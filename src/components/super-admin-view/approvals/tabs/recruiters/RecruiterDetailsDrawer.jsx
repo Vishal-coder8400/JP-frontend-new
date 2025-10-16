@@ -279,9 +279,32 @@ const RecruiterDetailsDrawer = ({
                     Latest Qualification
                   </div>
                 </div>
-                <div className="text-[#61758A] text-sm font-normal">
-                  {displayRecruiter?.latestQualification || "Not specified"}
-                </div>
+                {displayRecruiter?.latestQualification ? (
+                  <div className="flex flex-col gap-2">
+                    <div
+                      className="w-full h-[60px] rounded-sm overflow-hidden cursor-pointer bg-stone-50"
+                      onClick={() =>
+                        window.open(
+                          displayRecruiter.latestQualification,
+                          "_blank"
+                        )
+                      }
+                    >
+                      <iframe
+                        src={`${displayRecruiter.latestQualification}#toolbar=0&navpanes=0&scrollbar=0`}
+                        title="Latest Qualification"
+                        className="w-full h-full border-none no-scrollbar pointer-events-none"
+                      />
+                    </div>
+                    <div className="text-[11px] text-gray-500 truncate">
+                      {displayRecruiter.latestQualification?.split("/").pop()}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-[#61758A] text-sm font-normal">
+                    Not specified
+                  </div>
+                )}
               </div>
               <div className="max-w-[237px] w-full h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
                 <div className="flex items-center gap-[12px]">
@@ -364,13 +387,18 @@ const RecruiterDetailsDrawer = ({
                         </div>
                       )}
                     </div>
-                    <div className="flex-1 w-full overflow-hidden rounded-sm mb-2">
+                    <div
+                      className="flex-1 w-full overflow-hidden rounded-sm mb-2 cursor-pointer"
+                      onClick={() =>
+                        value?.trim() && window.open(value, "_blank")
+                      }
+                    >
                       {value?.trim() ? (
                         isPdf ? (
                           <iframe
                             src={`${value}#toolbar=0&navpanes=0&scrollbar=0`}
                             title={key}
-                            className="w-full h-full border-none no-scrollbar"
+                            className="w-full h-full border-none no-scrollbar pointer-events-none"
                           />
                         ) : (
                           <img

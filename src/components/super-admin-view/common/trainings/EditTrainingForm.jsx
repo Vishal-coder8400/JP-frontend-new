@@ -386,7 +386,8 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
         }
       });
 
-      const validationResult = validateFormData(payload, editTrainingSchema);
+      const validationResult = validateFormData(editTrainingSchema, payload);
+
       if (!validationResult.isValid) {
         setFieldErrors(validationResult.errors || {});
         toast.error("Please fix validation errors");
@@ -398,7 +399,6 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
         await onSave(payload);
       }
 
-      toast.success("Training updated successfully!");
       if (onClose) {
         onClose();
       }

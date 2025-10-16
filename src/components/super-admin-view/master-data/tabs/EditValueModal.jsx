@@ -42,8 +42,8 @@ const EditValueModal = ({ isOpen, onClose, dropdownId, value }) => {
     try {
       const generatedNewValue = generateValue(formData.label);
       const payload = {
-        value: value.value, // old value
-        newValue: generatedNewValue, // new value
+        value: value.value,
+        newValue: generatedNewValue,
         label: formData.label,
         description: formData.description,
       };

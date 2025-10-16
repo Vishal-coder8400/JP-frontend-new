@@ -1,10 +1,5 @@
 import api from "../../lib/axios";
-import {
-  createGetAll,
-  createGetById,
-  createUpdate,
-  createPatch,
-} from "./baseApi";
+import { createGetAll, createGetById, createPatch } from "./baseApi";
 
 export const getAllTrainings = createGetAll("/admin/trainings/list");
 export const getTrainingById = createGetById("/admin/trainings");
@@ -72,7 +67,10 @@ export const updateJob = async ({ id, data }) => {
   return response.data;
 };
 
-export const updateTraining = createUpdate("/admin/trainings");
+export const updateTraining = async ({ id, data }) => {
+  const response = await api.put(`/admin/trainings/${id}`, data);
+  return response.data;
+};
 
 export const updateJobStatus = async ({ id, status }) => {
   const response = await api.patch(`/admin/jobs/${id}/status`, { status });
