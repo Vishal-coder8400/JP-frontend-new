@@ -17,7 +17,6 @@ const Listing = ({
   setOpen1,
 }) => {
   const location = useLocation();
-  // console.log(jobPosts);
   const totalPages = Math.ceil(jobPosts?.pagination?.total / 10);
   return (
     <div className="w-full flex flex-col gap-[26px] lg:gap-6 max-sm:p-[20px]">

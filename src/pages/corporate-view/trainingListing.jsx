@@ -13,7 +13,6 @@ import {
 const TrainingListing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // console.log(jobPost)
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -31,7 +30,6 @@ const TrainingListing = () => {
     };
   });
   const { data: trainingPosts, isLoading: isLoading2 } = useTraining(filters);
-  //   console.log(trainingPosts);
 
   // 👇 Sync filters.search to searchText on mount
   useEffect(() => {

@@ -172,8 +172,6 @@ const RecruiterDetailsDrawer = ({
     );
   }
 
-  console.log("displayRecruiter", displayRecruiter);
-
   return (
     <div className="flex flex-col w-full gap-6">
       <div className="relative w-full bg-white rounded-t-[16px] overflow-hidden">
@@ -233,14 +231,14 @@ const RecruiterDetailsDrawer = ({
                         <AdminStatusBadge status={displayRecruiter?.status} />
                         {displayRecruiter?.status === "rejected" &&
                           displayRecruiter?.rejectionReason && (
-                            <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs">
+                            <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs break-words">
                               <strong>Rejection Reason:</strong>{" "}
                               {displayRecruiter.rejectionReason}
                             </div>
                           )}
                         {displayRecruiter?.status === "hold" &&
                           displayRecruiter?.holdReason && (
-                            <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs">
+                            <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs break-words">
                               <strong>Hold Reason:</strong>{" "}
                               {displayRecruiter.holdReason}
                             </div>
@@ -256,8 +254,8 @@ const RecruiterDetailsDrawer = ({
             <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
               Personal Information
             </div>
-            <div className="flex items-center justify-between w-full gap-[12px]">
-              <div className="max-w-[237px] w-full h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+              <div className="h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
                 <div className="flex items-center gap-[12px]">
                   <div>
                     <Briefcase className="w-5 h-4 text-[#121417]" />
@@ -270,7 +268,8 @@ const RecruiterDetailsDrawer = ({
                   {displayRecruiter?.totalExperience} YOE
                 </div>
               </div>
-              <div className="max-w-[237px] w-full h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
+
+              <div className="h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
                 <div className="flex items-center gap-[12px]">
                   <div>
                     <GraduationCap className="w-5 h-5 text-[#121417]" />
@@ -306,7 +305,8 @@ const RecruiterDetailsDrawer = ({
                   </div>
                 )}
               </div>
-              <div className="max-w-[237px] w-full h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
+
+              <div className="h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
                 <div className="flex items-center gap-[12px]">
                   <div>
                     <Phone className="w-5 h-5 text-[#121417]" />
@@ -327,7 +327,8 @@ const RecruiterDetailsDrawer = ({
                   <div>{displayRecruiter?.email}</div>
                 </div>
               </div>
-              <div className="max-w-[237px] w-full h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
+
+              <div className="h-[125px] flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px] md:col-span-2 lg:col-span-1">
                 <div className="flex items-center gap-[12px]">
                   <div>
                     <MapPin className="w-5 h-5 text-[#121417]" />
@@ -421,25 +422,25 @@ const RecruiterDetailsDrawer = ({
               })}
             </div>
           </div>
-          <div className="flex items-center justify-between w-full gap-[12px] mt-8">
-            <div className="w-[48%] inline-flex flex-col justify-start items-start gap-6">
+          <div className="flex flex-col lg:flex-row items-start justify-between w-full gap-[12px] mt-8">
+            <div className="w-full lg:w-[48%] inline-flex flex-col justify-start items-start gap-6">
               <div className="self-stretch justify-start text-gray-900 text-xl font-semibold leading-tight">
                 Professional Details
               </div>
               <div className="self-stretch flex flex-col justify-start items-start">
-                <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
-                  <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                <div className="self-stretch py-4 border-t border-b border-gray-200 flex flex-col lg:flex-row justify-start items-start lg:items-center gap-2 lg:gap-28">
+                  <div className="w-full lg:w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
                     Sectoral Specialization
                   </div>
-                  <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                  <div className="w-full lg:w-48 justify-start text-neutral-900 text-sm font-normal leading-tight break-words">
                     {displayRecruiter?.sectorSpecialization?.length > 0
                       ? displayRecruiter.sectorSpecialization.join(", ")
                       : displayRecruiter?.otherSectorSpecification ||
                         "Not specified"}
                   </div>
                 </div>
-                <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
-                  <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                <div className="self-stretch py-4 border-t border-b border-gray-200 flex flex-col lg:flex-row justify-start items-start lg:items-center gap-2 lg:gap-28">
+                  <div className="w-full lg:w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
                     LinkedIn
                   </div>
                   {displayRecruiter?.linkedinProfile ? (
@@ -447,7 +448,7 @@ const RecruiterDetailsDrawer = ({
                       to={displayRecruiter?.linkedinProfile}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-48 justify-start text-blue-500 text-sm font-normal leading-tight truncate flex items-center gap-2"
+                      className="w-full lg:w-48 justify-start text-blue-500 text-sm font-normal leading-tight truncate flex items-center gap-2"
                     >
                       <LinkIcon className="w-4 h-4" /> View
                     </Link>
@@ -455,36 +456,36 @@ const RecruiterDetailsDrawer = ({
                     <p>-</p>
                   )}
                 </div>
-                <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
-                  <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                <div className="self-stretch py-4 border-t border-b border-gray-200 flex flex-col lg:flex-row justify-start items-start lg:items-center gap-2 lg:gap-28">
+                  <div className="w-full lg:w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
                     Experience In
                   </div>
-                  <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                  <div className="w-full lg:w-48 justify-start text-neutral-900 text-sm font-normal leading-tight break-words">
                     {displayRecruiter?.experienceLevel?.join(", ") ||
                       "Not Specified"}
                   </div>
                 </div>
-                <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
-                  <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                <div className="self-stretch py-4 border-t border-b border-gray-200 flex flex-col lg:flex-row justify-start items-start lg:items-center gap-2 lg:gap-28">
+                  <div className="w-full lg:w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
                     Last Organization Name
                   </div>
-                  <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                  <div className="w-full lg:w-48 justify-start text-neutral-900 text-sm font-normal leading-tight break-words">
                     {displayRecruiter?.lastOrganization?.name ||
                       "Not Specified"}
                   </div>
                 </div>
-                <div className="self-stretch py-4 border-t border-b border-gray-200 inline-flex justify-start items-center gap-28">
-                  <div className="w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
+                <div className="self-stretch py-4 border-t border-b border-gray-200 flex flex-col lg:flex-row justify-start items-start lg:items-center gap-2 lg:gap-28">
+                  <div className="w-full lg:w-48 justify-start text-gray-500 text-sm font-normal leading-tight">
                     Designation in last Organization
                   </div>
-                  <div className="w-48 justify-start text-neutral-900 text-sm font-normal leading-tight">
+                  <div className="w-full lg:w-48 justify-start text-neutral-900 text-sm font-normal leading-tight break-words">
                     {displayRecruiter?.lastOrganization?.position ||
                       "Not Specified"}
                   </div>
                 </div>
               </div>
             </div>
-            <div className="w-[48%] h-full inline-flex flex-col justify-start items-start gap-6">
+            <div className="w-full lg:w-[48%] h-full inline-flex flex-col justify-start items-start gap-6 mt-6 lg:mt-0">
               <div className="self-stretch justify-start text-gray-900 text-xl font-semibold leading-tight">
                 Additional Information
               </div>

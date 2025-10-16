@@ -30,7 +30,6 @@ const JobSeekerDashboard = () => {
   const { data: trainerProgressData } = useGetTrainerProgress();
   const { data: allTrainingsData } = useGetAllTrainings(filters);
   const { mutate: applyForTraining } = useApplyForTraining();
-  console.log(allTrainingsData);
   const debouncedSearch = useDebounce(searchText, 500);
   const nextStagePath =
     trainerProgressData?.data?.currentStage === 2
@@ -46,7 +45,6 @@ const JobSeekerDashboard = () => {
     applyForTraining({
       trainingId: trainingId,
     });
-    console.log(`Applied to training with ID: ${trainingId}`);
   };
 
   useEffect(() => {

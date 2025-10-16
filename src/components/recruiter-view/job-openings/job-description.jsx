@@ -15,10 +15,6 @@ const JobDescription = ({ setOpen1, hook }) => {
   const { jobPost } = useJobPostStore();
 
   const { data } = hook(jobPost?._id);
-  // console.log(data);
-  // console.log(trainningDetails);
-
-  // console.log(data, "data");
 
   return (
     <Fragment>

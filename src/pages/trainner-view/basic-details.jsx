@@ -114,7 +114,6 @@ const BasicDetails = () => {
     },
     cancelChequeOrPassbookImage: "",
   });
-  // console.log(formData);
   const [fileName, setFileName] = useState("");
   const { mutate, isPending } = useTrainerRegisterationStage1();
   const { mutate: UploadImage } = useUpload();

@@ -31,8 +31,6 @@ const CandidateDetailsDrawer = ({
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showHoldModal, setShowHoldModal] = useState(false);
 
-  console.log("candidateId", candidateId);
-
   const { data: candidateDetails, isLoading: isLoadingCandidate } =
     useGetCandidateDetails(candidateId, {
       enabled: !!candidateId,

@@ -37,8 +37,6 @@ const TrainersTable = ({
     setDrawerOpen(true);
   };
 
-  console.log("paginatedTrainers", paginatedTrainers);
-
   return (
     <>
       <div className="bg-white rounded-lg border overflow-hidden">

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useApprovals } from "@/hooks/super-admin/useApprovals";
+import { useApplicationApprovals } from "@/hooks/super-admin/useApplicationApprovals";
 import { useGetTrainerDetails } from "@/hooks/super-admin/useTrainers";
 import EditTrainerDrawer from "./EditTrainerDrawer";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
@@ -20,7 +21,7 @@ import { toast } from "sonner";
 
 const TrainerDetailsDrawer = ({
   trainer,
-  context = "other", // "database", "approvals", or "other"
+  context = "other", // "database", "approvals", "application", or "other"
   approvalId,
   trainerId,
   onClose,
@@ -32,12 +33,24 @@ const TrainerDetailsDrawer = ({
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [showHoldModal, setShowHoldModal] = useState(false);
 
+  const approvalsHook = useApprovals();
+  const applicationApprovalsHook = useApplicationApprovals("training");
+
   const {
     isLoading: isApprovalLoading,
     approveApplication,
     rejectApplication,
     holdApplication,
-  } = useApprovals();
+  } = context === "application"
+    ? {
+        isLoading: applicationApprovalsHook.isLoading,
+        approveApplication: (id) => applicationApprovalsHook.handleApprove(id),
+        rejectApplication: (id, notes) =>
+          applicationApprovalsHook.handleReject(id, notes),
+        holdApplication: (id, notes) =>
+          applicationApprovalsHook.handleHold(id, notes),
+      }
+    : approvalsHook;
 
   const {
     data: trainerDetails,
@@ -52,8 +65,6 @@ const TrainerDetailsDrawer = ({
   const isLoading = isLoadingTrainerDetails;
   const error = trainerDetailsError;
 
-  console.log("displayTrainer", trainerId);
-  console.log("approvalId", approvalId);
   const handleApprove = async () => {
     try {
       await approveApplication(approvalId);
@@ -208,7 +219,7 @@ const TrainerDetailsDrawer = ({
 
   // Render action buttons based on context
   const renderActionButtons = () => {
-    if (context === "approvals") {
+    if (context === "approvals" || context === "application") {
       const statusFromProps = approvalStatus;
       const approvalStatusLocal =
         statusFromProps ||

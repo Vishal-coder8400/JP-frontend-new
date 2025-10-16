@@ -111,7 +111,6 @@ const CorporateBasicDetails = () => {
     setErrorMessage({});
     mutate(formData);
   };
-  // console.log(formData)
   return (
     <form
       onSubmit={onSubmit}

@@ -33,7 +33,6 @@ export const useApplySingle = () => {
       queryClient.invalidateQueries({ queryKey: ["applicants"] });
     },
     onError: (error) => {
-      console.log(error);
       toast.error(error.response.data.message);
     },
   });
@@ -51,7 +50,6 @@ export const useBulkApplySingle = () => {
       queryClient.invalidateQueries({ queryKey: ["applicants"] });
     },
     onError: (error) => {
-      console.log(error);
       toast.error(error.response.data.message);
     },
   });

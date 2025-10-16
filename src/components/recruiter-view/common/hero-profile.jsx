@@ -3,7 +3,6 @@ import useAuthStore from "../../../stores/useAuthStore";
 
 const HeroProfile = () => {
   const { user } = useAuthStore();
-  // console.log(user, "user");
   return (
     <Fragment>
       <div className="hidden lg:flex flex-col gap-[30px]">

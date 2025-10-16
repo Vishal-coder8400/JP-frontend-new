@@ -26,7 +26,6 @@ const EditCandidateForm = ({ candidate, onSave, onClose }) => {
 
   useEffect(() => {
     if (!candidate) return;
-    console.log("candidate", candidate.about);
 
     const birthDate = candidate?.dob || "";
     const formattedBirthDate = birthDate
@@ -283,19 +282,12 @@ const EditCandidateForm = ({ candidate, onSave, onClose }) => {
         typeof payload.currentAddress === "object"
       ) {
         const { address, city, state, pincode } = payload.currentAddress;
-        console.log("Current address fields:", {
-          address,
-          city,
-          state,
-          pincode,
-        });
         if (address || city || state || pincode) {
           backendPayload.address = {};
           if (address) backendPayload.address.street = address;
           if (city) backendPayload.address.city = city;
           if (state) backendPayload.address.state = state;
           if (pincode) backendPayload.address.zipCode = pincode;
-          console.log("Mapped address:", backendPayload.address);
         }
       }
 
@@ -370,7 +362,6 @@ const EditCandidateForm = ({ candidate, onSave, onClose }) => {
         {}
       );
 
-      console.log("Clean payload being sent:", cleanPayload);
       await onSave(cleanPayload);
     } catch (err) {
       console.error(err);

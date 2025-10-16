@@ -109,7 +109,6 @@ const FinalSetup = () => {
     setErrorMessage({});
     mutate(formData);
   };
-  console.log(formData);
   const { mutate: UploadImage } = useUpload();
 
   const handleUpload = (file, callback) => {

@@ -14,14 +14,12 @@ const TrainerJobDescription = () => {
   const { data: jobData } = useGetTrainingById(id);
   const { mutate: applyForTraining } = useApplyForTraining();
 
-  console.log(jobData);
   const handleApply = (e, trainingId) => {
     e.preventDefault();
     e.stopPropagation();
     applyForTraining({
       trainingId: trainingId,
     });
-    console.log(`Applied to training with ID: ${trainingId}`);
   };
 
   return (

@@ -292,11 +292,9 @@ const EditTrainerForm = ({ trainer, onClose, onRevalidate }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted, setting isSubmitting to true");
     setIsSubmitting(true);
 
     try {
-      console.log("Form data:", formData);
       const payload = {};
 
       if (formData.name) payload.name = formData.name;
@@ -375,24 +373,15 @@ const EditTrainerForm = ({ trainer, onClose, onRevalidate }) => {
         payload.howDidYouKnowAboutOpportunity =
           formData.howDidYouKnowAboutOpportunity;
 
-      console.log("Payload to send:", payload);
-      console.log("About to call updateTrainer with payload");
-
       await updateTrainer({
         id: trainer._id || trainer.id,
         data: payload,
       });
 
-      console.log("updateTrainer completed successfully");
-
-      // Revalidate the list data
       if (onRevalidate) {
-        console.log("calling onRevalidate");
         await onRevalidate();
       }
 
-      // Close the drawer
-      console.log("closing drawer");
       onClose();
     } catch (error) {
       console.error("Error updating trainer:", error);

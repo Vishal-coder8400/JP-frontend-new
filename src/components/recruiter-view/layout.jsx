@@ -83,7 +83,6 @@ const Layout = () => {
     navigate(`/${user?.role}/log-in`);
     logout();
   };
-  // console.log(user);
 
   return (
     <main className="w-full min-h-screen flex flex-col lg:flex-row">

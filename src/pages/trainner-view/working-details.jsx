@@ -102,7 +102,6 @@ const WorkingDetails = () => {
     mutate(payLoad);
   };
   const { data: profileProgress } = useGetTrainerProgress();
-  console.log(formData);
   return (
     <div className="w-full self-stretch px-[20px] py-[20px] lg:px-36 lg:py-[0px] lg:pb-[32px] inline-flex flex-col justify-start items-start gap-[18px] lg:gap-7">
       <Navbar onlySupport={true} />

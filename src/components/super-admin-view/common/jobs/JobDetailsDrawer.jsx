@@ -162,8 +162,6 @@ const JobDetailsDrawer = ({
     );
   };
 
-  console.log(job);
-
   return (
     <div className="h-full min-h-screen flex flex-col bg-white p-6">
       {/* Header */}

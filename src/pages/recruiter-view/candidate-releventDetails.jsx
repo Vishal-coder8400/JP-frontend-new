@@ -119,7 +119,6 @@ const CandidateReleventDetails = () => {
     variableTick: false,
     acceptTerms: false,
   });
-  // console.log(formData)
   const { mutate, isPending } = useUpdateApplicant();
   const onSubmit = (e) => {
     const id = localStorage.getItem("seekerID");

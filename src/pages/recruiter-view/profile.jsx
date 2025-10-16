@@ -13,7 +13,6 @@ import EditProfile from "./edit-profile";
 const Profile = () => {
   const { user } = useAuthStore();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  console.log(user, "user");
   const pdfObject = {
     Resume: "resume",
     "PAN Card": "kycDetails.panDetails.image",

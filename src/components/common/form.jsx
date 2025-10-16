@@ -33,7 +33,6 @@ export default function CommonForm({
   formType = null,
   errors = {},
 }) {
-  console.log(errors);
   const [showPassword, setShowPassword] = useState(false);
   const [otherSelections, setOtherSelections] = useState({});
   function renderInputsByComponentType(getControlItem, index) {
@@ -44,7 +43,6 @@ export default function CommonForm({
     const value = getNestedValue(formData, nameWithIndex) || "";
     const errorMessage =
       errors?.[nameWithIndex]?.[0] || errors?.[nameWithIndex];
-    console.log(errorMessage, nameWithIndex, "errorMessage");
     const commonInputProps = {
       name: nameWithIndex,
       id: nameWithIndex,
@@ -125,7 +123,6 @@ export default function CommonForm({
             : null;
         const fullNumber =
           (phoneObject.countryCode || "") + (phoneObject.number || "");
-        // console.log(phoneObject, errorMessage[`${nameWithIndex}.number`]);
         return (
           <PhoneInput
             country={"in"}

@@ -19,7 +19,6 @@ export const useTrainerRegisterationStage1 = () => {
     queryKey: ["trainerRegistrationStage1"],
     mutationFn: trainerRegistrationStage1,
     onSuccess: (data) => {
-      // console.log(data, "data");
       setToken(data.data.token);
       setIsAuthenticated(true);
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });

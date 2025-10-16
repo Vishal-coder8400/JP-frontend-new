@@ -99,7 +99,6 @@ const CandidatesTab = ({ context = "database" }) => {
         }) || []
       : data?.data?.jobSeekers || [];
 
-  console.log("paginatedCandidates", paginatedCandidates);
   const totalCount =
     context === "approvals"
       ? data?.data?.pagination?.totalApprovals || paginatedCandidates.length

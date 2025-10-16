@@ -120,9 +120,7 @@ const hiringFunnelData = [
 
 const Dashboard = () => {
   const { user } = useAuthStore();
-  console.log(user);
   const { data: profileData } = useCorporateProfileProgress();
-  console.log(profileData);
   const nextStagePath =
     profileData?.data?.currentStage === 2
       ? "/corporate/profile-setup/final-setup"

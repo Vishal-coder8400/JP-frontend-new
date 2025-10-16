@@ -16,7 +16,6 @@ import { transformCompanyData } from "@/utils/commonFunctions";
 
 const EditProfile = ({ setIsEditOpen }) => {
   const { user } = useAuthStore();
-  // console.log(user);
   const [formData, setFormData] = useState(user);
   const { mutate: UploadImage } = useUpload();
   const { mutate: updateProfile, isPending } = useUpdateCorporateProfile();

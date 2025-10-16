@@ -36,8 +36,6 @@ const ApplicationsTable = ({
     setDrawerOpen(true);
   };
 
-  console.log(paginatedApplications);
-
   return (
     <>
       <div className="bg-white rounded-lg border overflow-hidden">
@@ -178,7 +176,7 @@ const ApplicationsTable = ({
                 <TrainerDetailsDrawer
                   trainerId={selectedApplication.applicantId}
                   approvalId={selectedApplication._id}
-                  context="approvals"
+                  context="application"
                   approvalStatus={selectedApplication.status}
                   onRevalidate={onRevalidate}
                   onClose={() => setDrawerOpen(false)}

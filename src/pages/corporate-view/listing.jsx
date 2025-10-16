@@ -13,7 +13,6 @@ import { useDebounce } from "../../hooks/common/useDebounce";
 const Listing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // console.log(jobPost)
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const [searchText, setSearchText] = useState("");

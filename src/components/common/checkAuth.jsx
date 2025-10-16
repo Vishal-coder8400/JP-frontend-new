@@ -19,7 +19,6 @@ const CheckAuth = ({
     setUser,
   } = useAuthStore();
   const profile = fetchProfileHook ? fetchProfileHook() : null;
-  // console.log(profile, "profile in check auth");
 
   useEffect(() => {
     if (profile?.status === "success" && !profile.isLoading) {
@@ -32,7 +31,6 @@ const CheckAuth = ({
       });
 
       setIsAuthenticated(true);
-      // console.log("useEffect trigger");
     }
   }, [profile?.status, profile?.data?.data]);
 

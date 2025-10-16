@@ -143,7 +143,6 @@ const Index = () => {
     setFormErrors({});
     mutate(payLoad);
   };
-  console.log(formData, "formData");
   const handleUpload = (file, callback) => {
     UploadImage(file, {
       onSuccess: (data) => {

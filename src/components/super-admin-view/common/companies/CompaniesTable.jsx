@@ -22,7 +22,6 @@ const CompaniesTable = ({
   const [selectedCompanyId, setSelectedCompanyId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState(null);
-  console.log("selectedCompany", selectedCompany);
 
   const handleSelectCompany = (companyId) => {
     setSelectedCompanyId(companyId);
@@ -60,8 +59,6 @@ const CompaniesTable = ({
   const getColSpan = () => {
     return context === "approvals" ? 9 : 8;
   };
-
-  console.log("paginatedCompanies", paginatedCompanies);
 
   const renderDrawer = () => {
     return (
