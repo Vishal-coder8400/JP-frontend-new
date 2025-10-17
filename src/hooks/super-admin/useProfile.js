@@ -4,6 +4,7 @@ import tokenService from "../../services/super-admin/tokenService";
 import { QUERY_KEYS } from "../../constants/super-admin/queryKeys";
 import { handleMutationError } from "../../services/super-admin/errorHandler";
 import { createQueryConfig } from "../../services/super-admin/queryConfigFactory";
+import { getUserDetails } from "../../api/super-admin/user";
 
 export const useGetSuperAdminProfile = ({ enabled = true } = {}) => {
   const token = tokenService.getToken();
@@ -13,7 +14,7 @@ export const useGetSuperAdminProfile = ({ enabled = true } = {}) => {
 
   return useQuery({
     queryKey: QUERY_KEYS.profile(token),
-    // queryFn: ({ signal }) => getUserDetails({ signal }),
+    queryFn: ({ signal }) => getUserDetails({ signal }),
     ...config,
     onError: (error) => {
       handleMutationError(error, "Session expired. Please login again.");

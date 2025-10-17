@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import MobileNav from "./MobileNav";
 import Navbar from "./Navbar";
+import TopHeader from "./TopHeader";
 import { Dash } from "@/utils/icon";
 import { DASHBOARD_MENU_SUPER_ADMIN } from "./constants.jsx";
 import { useLogout } from "./utils";
@@ -15,6 +16,7 @@ const Layout = () => {
       <MobileNav />
       {/* desktop-view */}
       <Navbar />
+      <TopHeader />
 
       {/* mobile-view */}
       <div className="lg:hidden w-full p-6 pt-[84px] bg-gray-900 border-r border-zinc-300 inline-flex flex-col justify-start items-start gap-4 overflow-hidden">

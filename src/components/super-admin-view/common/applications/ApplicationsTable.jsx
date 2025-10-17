@@ -10,6 +10,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { User } from "lucide-react";
 import CandidateDetailsDrawer from "../candidates/CandidateDetailsDrawer";
 import TrainerDetailsDrawer from "../trainers/TrainerDetailsDrawer";
+import AdminStatusBadge from "../../shared/AdminStatusBadge";
 
 import { useState } from "react";
 
@@ -60,7 +61,10 @@ const ApplicationsTable = ({
                     Recruiter Details
                   </TableHead>
                   <TableHead className="min-w-[150px] font-semibold">
-                    Status
+                    Status by Admin
+                  </TableHead>
+                  <TableHead className="min-w-[150px] font-semibold">
+                    Status by Corporate
                   </TableHead>
                   <TableHead className="min-w-[100px] font-semibold">
                     Experience
@@ -125,7 +129,22 @@ const ApplicationsTable = ({
                           </span>
                         </div>
                       </TableCell>
-                      <TableCell>{application.status || "N/A"}</TableCell>
+                      <TableCell>
+                        {application.status ? (
+                          <AdminStatusBadge status={application.status} />
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {application.statusByCorporate ? (
+                          <AdminStatusBadge
+                            status={application.statusByCorporate}
+                          />
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
                       <TableCell>
                         {application.applicantType === "trainer"
                           ? application.teachingExperience ||
@@ -144,7 +163,7 @@ const ApplicationsTable = ({
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={9} className="text-center py-8">
                       <div className="flex flex-col items-center justify-center space-y-2">
                         <User className="h-8 w-8 text-gray-400" />
                         <span className="text-gray-500">
