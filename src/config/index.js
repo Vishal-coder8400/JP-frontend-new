@@ -1621,7 +1621,7 @@ export const jobController3 = [
   {
     name: "preferredAgeRange",
     componentType: "input",
-    label: "Preferred age range (if any)?",
+    label: "Preferred age range (if any in Years)?",
     placeholder: "e.g. 18-50",
     type: "text",
   },

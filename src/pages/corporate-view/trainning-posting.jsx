@@ -162,6 +162,11 @@ const TrainningPosting = () => {
     payload.totalDurationDays = formData.totalDurationDays
       ? parseInt(formData.totalDurationDays)
       : 0;
+    formData.trainingMode === "Virtual / Online" &&
+      (delete payload.address,
+      delete payload.city,
+      delete payload.state,
+      delete payload.pincode);
     const booleanFields = [
       "travelRequired",
       "studyMaterialsProvided",

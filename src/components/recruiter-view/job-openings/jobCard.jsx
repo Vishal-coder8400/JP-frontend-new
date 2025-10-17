@@ -46,13 +46,19 @@ const JobCard = ({ setOpen, item, setOpen1, setCandidateFilters }) => {
           <div className="flex items-center gap-[10px]">
             <div className="h-[24px] w-[24px] rounded-[4px] overflow-hidden">
               <img
-                src={item?.companyDetails?.companyLogo}
-                alt={item?.companyDetails?.companyName}
+                src={
+                  item?.companyDetails?.companyLogo ||
+                  item?.postedBy?.companyLogo
+                }
+                alt={
+                  item?.companyDetails?.companyName ||
+                  item?.postedBy?.companyName
+                }
                 className="h-full w-full object-cover"
               />
             </div>
             <div className="text-[#141414] text-md">
-              {item?.companyDetails?.companyName}
+              {item?.companyDetails?.companyName || item?.postedBy?.companyName}
             </div>
           </div>
           <div className="text-[#141414] text-lg font-medium">
@@ -64,12 +70,15 @@ const JobCard = ({ setOpen, item, setOpen1, setCandidateFilters }) => {
             2 Applied
           </span>
           <div className="flex flex-wrap items-center gap-[14px]">
-            <div className="flex gap-[6px] items-center">
-              <div className="flex items-center justify-center">
-                <LocationIcon className="h-[16px] w-[16px]" />
+            {((item?.title && item?.trainingMode !== "Virtual / Online") ||
+              item?.jobTitle) && (
+              <div className="flex gap-[6px] items-center">
+                <div className="flex items-center justify-center">
+                  <LocationIcon className="h-[16px] w-[16px]" />
+                </div>
+                <div className="text-[#141414] text-sm">{item?.city}</div>
               </div>
-              <div className="text-[#141414] text-sm">{item?.city}</div>
-            </div>
+            )}
             <div className="flex gap-[6px] items-center">
               <div className="flex items-center justify-center">
                 <ClockIcon className="h-[16px] w-[16px]" />
@@ -86,17 +95,24 @@ const JobCard = ({ setOpen, item, setOpen1, setCandidateFilters }) => {
                 {timeAgo(item?.createdAt)}
               </div>
             </div>{" "}
-            <div className="flex gap-[6px] items-center">
-              <div className="flex items-center justify-center">
-                <IndianRupee
-                  width={10}
-                  height={10}
-                  color="#141414"
-                  strokeWidth={1.5}
-                />
+            {item?.jobTitle && (
+              <div className="flex gap-[6px] items-center">
+                <div className="flex items-center justify-center">
+                  <IndianRupee
+                    width={10}
+                    height={10}
+                    color="#141414"
+                    strokeWidth={1.5}
+                  />
+                </div>
+                <div className="text-[#141414] text-sm">
+                  {formatSalaryRange(
+                    item?.salaryRange?.min,
+                    item?.salaryRange?.max
+                  )}
+                </div>
               </div>
-              <div className="text-[#141414] text-sm">{item?.salaryRange}</div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -108,9 +124,13 @@ const JobCard = ({ setOpen, item, setOpen1, setCandidateFilters }) => {
               <Fill className="h-[10px] w-[10px]" />
             </span>
           </div>
+        ) : item?.status === "pending" ? (
+          <div className="flex items-center justify-center gap-[13px] rounded-[8px] border border-[#FFB800] px-[12px] py-[8px]">
+            <span className="text-[#FFB800] text-sm">Pending</span>
+          </div>
         ) : (
-          <div className="flex items-center justify-center px-[12px] py-[9px] rounded-[8px] outline-1 outline-offset-[-1px] outline-stone-300">
-            <div className="text-stone-300 text-sm leading-tight">Ended</div>
+          <div className="flex items-center justify-center gap-[13px] rounded-[8px] border border-[#FF4D4F] px-[12px] py-[8px]">
+            <span className="text-[#FF4D4F] text-sm">Rejected</span>
           </div>
         )}
         <Button
@@ -201,7 +221,7 @@ const JobCard = ({ setOpen, item, setOpen1, setCandidateFilters }) => {
               <div className="flex justify-center items-center gap-1.5">
                 <LocationIcon className="h-[14px] w-[14px]" />
                 <div className="justify-start text-neutral-900/70 text-sm font-normal leading-none">
-                  {item?.location}
+                  {/* {item?.location} */}
                 </div>
               </div>
               <div className="flex justify-start items-center gap-1.5">

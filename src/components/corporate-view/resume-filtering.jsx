@@ -66,13 +66,13 @@ const ResumeFiltering = ({
                       {/* <Checkbox className="data-[state=checked]:text-white data-[state=checked]:bg-[#6945ED] h-[16px] w-[16px] rounded-[2px] flex items-center justify-center cursor-pointer" /> */}
                     </TableHead>
                     <TableHead className="px-[16px] py-[12px] w-[292px] text-sm text-[#101018] font-semibold">
-                      Owner
+                      Candidate Name
                     </TableHead>
                     <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
-                      Skills
+                      Job Appled for
                     </TableHead>
                     <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
-                      Experience
+                      Job Id
                     </TableHead>
                     <TableHead className="px-[16px] py-[12px] w-[164px] text-sm text-[#101018] font-semibold">
                       Status
@@ -110,9 +110,7 @@ const ResumeFiltering = ({
                         </TableCell>
                         <TableCell className="px-[16px] py-[12px]">
                           <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                            {item?.skills?.join(", ") ||
-                              item?.applicantSkills?.join(", ") ||
-                              "N/A"}
+                            {item._id}
                           </div>
                         </TableCell>
                         <TableCell className="px-[16px] py-[12px]">

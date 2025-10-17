@@ -21,8 +21,6 @@ export const updateStatusOfApplicant = async ({
   return response.data;
 };
 export const getApplicantCorporateDetails = async () => {
-  const response = await api.get(
-    `/corporate/applications/jobs?isCorporateApproved=true`
-  );
+  const response = await api.get(`/corporate/applications/jobs`);
   return response.data;
 };

@@ -4,11 +4,11 @@ import useJobPostStore from "../../../stores/useJobPostStore";
 import {
   CalenderIcon,
   ClockIcon,
-  CurrencyIcon,
+  // CurrencyIcon,
   LocationIcon,
 } from "../../../utils/icon";
 import { formatSalaryRange, timeAgo } from "../../../utils/commonFunctions";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import { IndianRupee } from "lucide-react";
 
 const JobDescription = ({ setOpen1, hook }) => {
@@ -58,15 +58,22 @@ const JobDescription = ({ setOpen1, hook }) => {
                   </div>
                 </div>
                 <div className="self-stretch py-0.5 inline-flex justify-start items-center gap-5 flex-wrap content-center">
-                  <div className="flex justify-start items-center gap-1.5">
-                    <div className="w-4 h-4 relative">
-                      <LocationIcon className="h-full w-full" />
-                    </div>
-                    <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      {data?.data?.city}, {data?.data?.state}
-                    </div>
-                  </div>
-                  <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
+                  {((data?.data?.title &&
+                    data?.data?.trainingMode !== "Virtual / Online") ||
+                    data?.data?.jobTitle) && (
+                    <>
+                      <div className="flex justify-start items-center gap-1.5">
+                        <div className="w-4 h-4 relative">
+                          <LocationIcon className="h-full w-full" />
+                        </div>
+                        <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
+                          {data?.data?.city}, {data?.data?.state}
+                        </div>
+                      </div>
+                      <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
+                    </>
+                  )}
+
                   <div className="flex justify-start items-center gap-1.5">
                     <div className="w-4 h-4 relative">
                       <ClockIcon className="h-full w-full" />
@@ -76,23 +83,28 @@ const JobDescription = ({ setOpen1, hook }) => {
                     </div>
                   </div>
                   <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
-                  <div className="flex justify-start items-center gap-1.5">
-                    <div className="w-4 h-4 relative flex items-center justify-center">
-                      <IndianRupee
-                        width={12}
-                        height={12}
-                        color="#141414"
-                        strokeWidth={1.5}
-                      />
-                    </div>
-                    <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                      {formatSalaryRange(
-                        data?.data?.salaryRange?.min,
-                        data?.data?.salaryRange?.max
-                      )}
-                    </div>
-                  </div>
-                  <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
+                  {data?.data?.jobTitle && (
+                    <>
+                      <div className="flex justify-start items-center gap-1.5">
+                        <div className="w-4 h-4 relative flex items-center justify-center">
+                          <IndianRupee
+                            width={12}
+                            height={12}
+                            color="#141414"
+                            strokeWidth={1.5}
+                          />
+                        </div>
+                        <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
+                          {formatSalaryRange(
+                            data?.data?.salaryRange?.min,
+                            data?.data?.salaryRange?.max
+                          )}
+                        </div>
+                      </div>
+                      <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
+                    </>
+                  )}
+
                   <div className="flex justify-start items-center gap-1.5">
                     <div className="w-4 h-4 relative">
                       <CalenderIcon className="h-full w-full" />
@@ -223,7 +235,7 @@ const JobDescription = ({ setOpen1, hook }) => {
                       {data?.data?.preferredAgeRange && (
                         <li>
                           <strong>Age Range:</strong>{" "}
-                          {data?.data?.preferredAgeRange}
+                          {data?.data?.preferredAgeRange} Yrs
                         </li>
                       )}
                       <li>
@@ -254,24 +266,28 @@ const JobDescription = ({ setOpen1, hook }) => {
                   </div>
                 </div>
 
-                <div>
-                  <h4 className="font-semibold">Location Details</h4>
-                  <ul className="space-y-1 mt-2">
-                    <li>
-                      <strong>Office Location:</strong>{" "}
-                      {data?.data?.officeLocation}
-                    </li>
-                    <li>
-                      <strong>City:</strong> {data?.data?.city}
-                    </li>
-                    <li>
-                      <strong>State:</strong> {data?.data?.state}
-                    </li>
-                    <li>
-                      <strong>Pincode:</strong> {data?.data?.pincode}
-                    </li>
-                  </ul>
-                </div>
+                {((data?.data?.title &&
+                  data?.data?.trainingMode !== "Virtual / Online") ||
+                  data?.data?.jobTitle) && (
+                  <div>
+                    <h4 className="font-semibold">Location Details</h4>
+                    <ul className="space-y-1 mt-2">
+                      <li>
+                        <strong>Office Location:</strong>{" "}
+                        {data?.data?.officeLocation}
+                      </li>
+                      <li>
+                        <strong>City:</strong> {data?.data?.city}
+                      </li>
+                      <li>
+                        <strong>State:</strong> {data?.data?.state}
+                      </li>
+                      <li>
+                        <strong>Pincode:</strong> {data?.data?.pincode}
+                      </li>
+                    </ul>
+                  </div>
+                )}
 
                 {data?.data?.requiredSkills &&
                   data?.data?.requiredSkills.length > 0 && (
@@ -301,9 +317,9 @@ const JobDescription = ({ setOpen1, hook }) => {
                   </div>
                 )}
               </div>
-              <div className="w-full inline-flex justify-start items-start gap-3 flex-wrap content-start">
-                {(data?.data?.requiredSkills || data?.data?.skillDetails)?.map(
-                  (item, i) => (
+              {data?.data?.skills && (
+                <div className="w-full inline-flex justify-start items-start gap-3 flex-wrap content-start">
+                  {data?.data?.skills?.map((item, i) => (
                     <div
                       key={i}
                       className="px-5 py-2.5 rounded-3xl outline outline-offset-[-1px] outline-neutral-500 flex justify-start items-start gap-2.5"
@@ -312,9 +328,9 @@ const JobDescription = ({ setOpen1, hook }) => {
                         {item?.skillName}
                       </div>
                     </div>
-                  )
-                )}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
           <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
@@ -324,26 +340,19 @@ const JobDescription = ({ setOpen1, hook }) => {
               </div>
               <div className="self-stretch justify-start">
                 <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                  Stimuler has helped over 3.5 Million people improve their
-                  conversational skills using its Audio AI technology. Our AI
-                  engines listen, provide detailed feedback on essential speech
-                  metrics, and offer guided practice for improvement. Awarded
-                  Google Play’s Best AI App and backed by some of the world’s
-                  best VC funds, our app has impacted users from over 200
-                  countries till date.
-                  <br />
+                  {data?.data?.postedBy?.basicInformation?.companyDescription}
                 </span>
-                <span className="text-neutral-900/70 text-base font-bold leading-normal">
-                  {" "}
-                  Company Info:
-                  <br />
-                </span>
-                <span className="text-neutral-900/70 text-base font-bold leading-normal">
-                  Address:{" "}
-                </span>
-                <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                  Jayanagar, Bangalore, Karnataka, India
-                </span>
+
+                <div className="text-neutral-900/70 text-base font-bold leading-normal">
+                  <span className="text-neutral-900/70 text-base font-bold leading-normal">
+                    Location:{" "}
+                  </span>
+                  <span className="text-neutral-900/70 text-base font-normal leading-normal">
+                    {data?.data?.postedBy?.currentAddress},{" "}
+                    {data?.data?.postedBy?.state} -{" "}
+                    {data?.data?.postedBy?.pincode}
+                  </span>
+                </div>
               </div>
               <div className="self-stretch h-0 outline outline-2 outline-offset-[-1px] outline-stone-300" />
             </div>
