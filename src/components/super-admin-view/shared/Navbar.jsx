@@ -1,4 +1,4 @@
-import { Bag, Cubed, Dash, LogoutIcon, SignOutIcon } from "../../../utils/icon";
+import { LogoutIcon, SignOutIcon } from "../../../utils/icon";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "../../ui/button";
 import {
@@ -24,34 +24,13 @@ const Navbar = () => {
     <aside className="fixed top-[18px] left-[19px] hidden w-[308px] bg-[#060606] lg:flex flex-col overflow-hidden rounded-[16px]">
       <div className="relative h-[90vh] w-full">
         <div className="flex-1 px-[18px] py-[24px] h-full flex flex-col gap-[35px] overflow-y-auto scrollbar-hide scroll-smooth">
-          <div className="self-stretch pl-3 inline-flex justify-start items-center gap-7">
-            <div className="flex-1 justify-start text-white text-2xl font-medium capitalize">
-              GHRIG Super Admin
-            </div>
-          </div>
-          {/* Profile Card */}
-          <Link
-            to="/super-admin/profile"
-            className="self-stretch px-5 py-4 relative bg-[#23344B] rounded-lg inline-flex justify-center items-center gap-4"
-          >
+          <div className="self-stretch pl-3 inline-flex justify-start items-center gap-3">
             <img
-              className="size-12 rounded-full border border-black object-cover"
-              src={profile?.profileImage || "/image.png"}
-              alt={
-                profile?.firstName
-                  ? `${profile.firstName} ${profile.lastName}`
-                  : "Super Admin"
-              }
+              src="/ghrig_logo.png"
+              alt="GHRIG Logo"
+              className="h-auto w-40 mx-auto"
             />
-            <div className="flex-1 inline-flex flex-col justify-center items-center gap-1.5">
-              <div className="self-stretch text-center justify-start text-white text-md2 font-medium capitalize">
-                {profile?.firstName && profile?.lastName
-                  ? `${profile.firstName} ${profile.lastName}`
-                  : profile?.name || "Super Admin"}
-              </div>
-            </div>
-            <div className="size-2.5 left-[52px] top-[50px] absolute bg-lime-600 rounded-full" />
-          </Link>
+          </div>
           <div className="inline-flex flex-col justify-start items-start gap-2.5">
             <div className="justify-start text-stone-500 text-xs font-semibold leading-none tracking-widest">
               MENU

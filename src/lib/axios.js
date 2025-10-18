@@ -6,21 +6,21 @@ const api = axios.create({
   // baseURL: "http://127.0.0.1:8006/api/v1", // change this
 });
 
-// Automatically attach token from Zustand or localStorage
+// Automatically attach token from Zustand or sessionStorage
 api.interceptors.request.use((config) => {
   // First try to get token from Zustand store
   let token = useAuthStore.getState().token;
 
-  // If not found in store, try localStorage (for super-admin users)
+  // If not found in store, try sessionStorage (for super-admin users)
   if (!token) {
-    token = localStorage.getItem("token");
+    token = sessionStorage.getItem("token");
   }
 
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else {
     console.warn(
-      "No token found in auth store or localStorage for request to:",
+      "No token found in auth store or sessionStorage for request to:",
       config.url
     );
   }

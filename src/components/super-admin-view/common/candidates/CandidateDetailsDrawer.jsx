@@ -242,6 +242,13 @@ const CandidateDetailsDrawer = ({
           )}
           {areApprovalBtnsVisible && (
             <>
+              <Button
+                variant={"gray"}
+                onClick={() => setIsEditOpen(true)}
+                disabled={isApprovalLoading}
+              >
+                Edit
+              </Button>
               {candidateStatus !== "approved" ? (
                 <>
                   <Button
@@ -251,20 +258,24 @@ const CandidateDetailsDrawer = ({
                   >
                     {isApprovalLoading ? "Processing..." : "Approve"}
                   </Button>
-                  <Button
-                    variant={"destructive"}
-                    onClick={handleRejectClick}
-                    disabled={isApprovalLoading}
-                  >
-                    {isApprovalLoading ? "Processing..." : "Reject"}
-                  </Button>
-                  <Button
-                    variant={"black"}
-                    onClick={handleHoldClick}
-                    disabled={isApprovalLoading}
-                  >
-                    {isApprovalLoading ? "Processing..." : "Hold"}
-                  </Button>
+                  {candidateStatus !== "rejected" && (
+                    <Button
+                      variant={"destructive"}
+                      onClick={handleRejectClick}
+                      disabled={isApprovalLoading}
+                    >
+                      {isApprovalLoading ? "Processing..." : "Reject"}
+                    </Button>
+                  )}
+                  {candidateStatus !== "hold" && (
+                    <Button
+                      variant={"black"}
+                      onClick={handleHoldClick}
+                      disabled={isApprovalLoading}
+                    >
+                      {isApprovalLoading ? "Processing..." : "Hold"}
+                    </Button>
+                  )}
                 </>
               ) : (
                 <div className="flex flex-col gap-2">

@@ -80,7 +80,7 @@ import AppliedCandidatesTrainings from "./pages/corporate-view/applied-candidate
 function App() {
   useEffect(() => {
     const token =
-      localStorage.getItem("token") || sessionStorage.getItem("token");
+      sessionStorage.getItem("token") || localStorage.getItem("token");
 
     const store = useAuthStore.getState();
 

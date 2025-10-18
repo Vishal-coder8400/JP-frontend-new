@@ -35,6 +35,8 @@ export const QUERY_KEYS = {
 
   profile: (token) => ["superAdmin-user-profile", token],
 
+  notifications: (token, params) => ["superAdmin-notifications", token, params],
+
   approvals: {
     corporate: (token, params) => ["approvals-companies", token, params],
     trainer: (token, params) => ["approvals-trainers", token, params],

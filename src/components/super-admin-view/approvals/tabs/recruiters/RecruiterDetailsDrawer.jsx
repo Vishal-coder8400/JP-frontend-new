@@ -211,20 +211,24 @@ const RecruiterDetailsDrawer = ({
                         >
                           {isLoading ? "Processing..." : "Approve"}
                         </Button>
-                        <Button
-                          variant={"destructive"}
-                          onClick={handleRejectClick}
-                          disabled={isLoading}
-                        >
-                          {isLoading ? "Processing..." : "Reject"}
-                        </Button>
-                        <Button
-                          variant={"black"}
-                          onClick={handleHoldClick}
-                          disabled={isLoading}
-                        >
-                          {isLoading ? "Processing..." : "Hold"}
-                        </Button>
+                        {displayRecruiter.status !== "rejected" && (
+                          <Button
+                            variant={"destructive"}
+                            onClick={handleRejectClick}
+                            disabled={isLoading}
+                          >
+                            {isLoading ? "Processing..." : "Reject"}
+                          </Button>
+                        )}
+                        {displayRecruiter.status !== "hold" && (
+                          <Button
+                            variant={"black"}
+                            onClick={handleHoldClick}
+                            disabled={isLoading}
+                          >
+                            {isLoading ? "Processing..." : "Hold"}
+                          </Button>
+                        )}
                       </>
                     ) : (
                       <div className="flex flex-col gap-2">

@@ -24,6 +24,8 @@ const ActionButtons = ({
       ? approvalStatus.trim().toLowerCase()
       : undefined;
   const isApproved = isApprovalsContext && normalizedStatus === "approved";
+  const isRejected = isApprovalsContext && normalizedStatus === "rejected";
+  const isHold = isApprovalsContext && normalizedStatus === "hold";
 
   const layoutClass = layout === "vertical" ? "flex-col" : "items-center";
   const gapClass = layout === "vertical" ? "space-y-3" : "gap-2";
@@ -50,24 +52,28 @@ const ActionButtons = ({
           >
             {isLoading ? "Processing..." : `Approve ${entityName}`}
           </Button>
-          <Button
-            variant="destructive"
-            size={editButtonSize}
-            onClick={onReject}
-            disabled={isLoading}
-            className={layout === "vertical" ? "w-full" : ""}
-          >
-            {isLoading ? "Processing..." : `Reject ${entityName}`}
-          </Button>
-          <Button
-            variant="black"
-            size={editButtonSize}
-            onClick={onHold}
-            disabled={isLoading}
-            className={layout === "vertical" ? "w-full" : ""}
-          >
-            {isLoading ? "Processing..." : `Hold ${entityName}`}
-          </Button>
+          {!isRejected && (
+            <Button
+              variant="destructive"
+              size={editButtonSize}
+              onClick={onReject}
+              disabled={isLoading}
+              className={layout === "vertical" ? "w-full" : ""}
+            >
+              {isLoading ? "Processing..." : `Reject ${entityName}`}
+            </Button>
+          )}
+          {!isHold && (
+            <Button
+              variant="black"
+              size={editButtonSize}
+              onClick={onHold}
+              disabled={isLoading}
+              className={layout === "vertical" ? "w-full" : ""}
+            >
+              {isLoading ? "Processing..." : `Hold ${entityName}`}
+            </Button>
+          )}
         </>
       )}
       {isApproved && (

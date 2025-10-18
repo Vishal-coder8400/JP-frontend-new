@@ -18,6 +18,11 @@ export const useLogin = () => {
       tokenService.setToken(data.data.token);
       tokenService.setUserRole("super-admin");
 
+      // Store profile data if available in login response
+      if (data.data.user) {
+        tokenService.setProfile(data.data.user);
+      }
+
       setTimeout(() => {
         navigate("/super-admin/database");
       }, 100);

@@ -1,6 +1,7 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import MobileNav from "./MobileNav";
 import Navbar from "./Navbar";
+import TopHeader from "./TopHeader";
 import { Dash } from "@/utils/icon";
 import { DASHBOARD_MENU_SUPER_ADMIN } from "./constants.jsx";
 import { useLogout } from "./utils";
@@ -66,8 +67,11 @@ const Layout = () => {
           ))}
         </div>
       </div>
-      <section className="lg:ml-[327px] h-screen grid grid-rows-[1fr] overflow-hidden flex-1">
-        <div className="h-full overflow-auto p-6">
+      <section className="lg:ml-[327px] h-screen grid grid-rows-[auto_1fr] overflow-hidden flex-1">
+        <div className="p-6 pb-0">
+          <TopHeader />
+        </div>
+        <div className="h-full overflow-auto p-6 pt-0">
           <Outlet />
         </div>
       </section>

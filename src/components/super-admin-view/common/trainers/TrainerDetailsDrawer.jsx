@@ -226,10 +226,12 @@ const TrainerDetailsDrawer = ({
         displayTrainer?.approvalStatus ||
         displayTrainer?.status;
       const normalizedStatus =
-        typeof approvalStatus === "string"
+        typeof approvalStatusLocal === "string"
           ? approvalStatusLocal.trim().toLowerCase()
           : "";
       const isApproved = normalizedStatus === "approved";
+      const isRejected = normalizedStatus === "rejected";
+      const isHold = normalizedStatus === "hold";
 
       const isVertical = buttonsLayout === "vertical";
       return (
@@ -255,22 +257,26 @@ const TrainerDetailsDrawer = ({
               >
                 {isApprovalLoading ? "Processing..." : "Approve"}
               </Button>
-              <Button
-                variant="destructive"
-                onClick={handleRejectClick}
-                disabled={isApprovalLoading}
-                className={isVertical ? "w-full" : ""}
-              >
-                {isApprovalLoading ? "Processing..." : "Reject"}
-              </Button>
-              <Button
-                variant="black"
-                onClick={handleHoldClick}
-                disabled={isApprovalLoading}
-                className={isVertical ? "w-full" : ""}
-              >
-                {isApprovalLoading ? "Processing..." : "Hold"}
-              </Button>
+              {!isRejected && (
+                <Button
+                  variant="destructive"
+                  onClick={handleRejectClick}
+                  disabled={isApprovalLoading}
+                  className={isVertical ? "w-full" : ""}
+                >
+                  {isApprovalLoading ? "Processing..." : "Reject"}
+                </Button>
+              )}
+              {!isHold && (
+                <Button
+                  variant="black"
+                  onClick={handleHoldClick}
+                  disabled={isApprovalLoading}
+                  className={isVertical ? "w-full" : ""}
+                >
+                  {isApprovalLoading ? "Processing..." : "Hold"}
+                </Button>
+              )}
             </>
           ) : (
             <div className="flex flex-col gap-2">
@@ -310,16 +316,20 @@ const TrainerDetailsDrawer = ({
     <div className="h-full overflow-y-auto">
       <div className="h-[186px] w-full bg-[url('/Group_1000005865.jpg')] bg-cover bg-center rounded-tl-2xl" />
       <div className="w-[90%] mx-auto flex items-center rounded-xl bg-white border border-gray2 p-4 -mt-8 shadow-lg relative">
-        <img
-          src={displayTrainer?.profileImage || "/person.png"}
-          alt={`${displayTrainer?.firstName} ${displayTrainer?.lastName}`}
-          className="w-24 h-auto aspect-square object-cover rounded-full absolute -top-[18%] left-[3%]"
-        />
+        {displayTrainer?.profileImage ? (
+          <img
+            src={displayTrainer?.profileImage}
+            alt={displayTrainer?.name}
+            className="w-24 h-auto aspect-square object-cover rounded-full absolute -top-[18%] left-[3%]"
+          />
+        ) : (
+          <div className="w-24 h-auto aspect-square object-cover rounded-full absolute -top-[18%] left-[3%] bg-gray-300 flex items-center justify-center">
+            <UserIcon className="w-10 h-10 text-gray-400" />
+          </div>
+        )}
         <div className="ml-28 flex items-center justify-between w-full">
           <div>
-            <h1 className="text-lg font-semibold">
-              {displayTrainer?.firstName} {displayTrainer?.lastName}
-            </h1>
+            <h1 className="text-lg font-semibold">{displayTrainer?.name}</h1>
           </div>
           {renderActionButtons()}
         </div>
