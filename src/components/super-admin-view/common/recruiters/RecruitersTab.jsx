@@ -96,17 +96,19 @@ const RecruitersTab = ({ context = "database" }) => {
 
   const { data, isLoading, error, refetch } =
     context === "approvals" ? approvalsQuery : databaseQuery;
+  console.log(data);
 
   // Process the data based on context
   const paginatedRecruiters =
     context === "approvals"
       ? data?.data?.approvals?.map((approval) => {
           const recruiter = approval.data || {};
+          const applicantDetails = approval.applicantDetails || {};
           return {
             id: approval._id,
             recruiterId: recruiter._id,
-            name: recruiter.name || "N/A",
-            email: recruiter.email || "N/A",
+            name: applicantDetails?.name || "N/A",
+            email: applicantDetails?.email || "N/A",
             contact: recruiter.phone
               ? `${recruiter.phone.countryCode} ${recruiter.phone.number}`
               : "N/A",
@@ -143,7 +145,7 @@ const RecruitersTab = ({ context = "database" }) => {
             status: recruiter.status,
             references: recruiter.references,
             kycDetails: recruiter.kycDetails,
-            profileImage: recruiter.profileImage,
+            profileImage: applicantDetails?.profileImage,
           };
         }) || []
       : data?.data?.recruiters || [];

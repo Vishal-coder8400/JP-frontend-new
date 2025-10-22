@@ -17,7 +17,7 @@ const TopHeader = () => {
   const storedProfile = tokenService.getProfile() || {};
   const profile = { ...storedProfile, ...apiProfile };
 
-  const unreadCount = notificationsData?.data?.data?.length || 0;
+  const unreadCount = notificationsData?.data?.unreadCount || 0;
 
   return (
     <>
