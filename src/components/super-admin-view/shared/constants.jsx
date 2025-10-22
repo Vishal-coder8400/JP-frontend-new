@@ -1,4 +1,4 @@
-import { BriefcaseIcon } from "lucide-react";
+import { BriefcaseIcon, BellIcon } from "lucide-react";
 
 export const DASHBOARD_MENU_SUPER_ADMIN = [
   {
@@ -30,5 +30,10 @@ export const DASHBOARD_MENU_SUPER_ADMIN = [
     name: "Master Data",
     link: "/super-admin/master-data",
     icon: <BriefcaseIcon className="h-5 w-5 text-white" />,
+  },
+  {
+    name: "Notifications",
+    link: "/super-admin/notifications",
+    icon: <BellIcon className="h-5 w-5 text-white" />,
   },
 ];

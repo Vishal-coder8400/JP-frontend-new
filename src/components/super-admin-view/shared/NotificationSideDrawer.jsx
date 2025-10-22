@@ -12,7 +12,7 @@ const NotificationSideDrawer = () => {
   });
   const markAsReadMutation = useMarkNotificationAsRead();
 
-  const notifications = notificationsData?.data?.data || [];
+  const notifications = notificationsData?.data?.notifications || [];
 
   const groupNotificationsByTime = (notifications) => {
     const now = new Date();
@@ -65,31 +65,33 @@ const NotificationSideDrawer = () => {
           >
             <img
               className="size-10 rounded-full object-cover"
-              src={notification.senderImage || "/person.png"}
-              alt={notification.senderName || "User"}
+              src="/person.png"
+              alt="System"
             />
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-2">
               <div className="justify-start text-gray-600 text-sm font-medium">
-                {notification.message}
+                {notification.messageContent || "Notification"}
               </div>
               <div className="self-stretch inline-flex justify-between items-center">
                 <div className="justify-start text-neutral-400 text-xs font-medium lowercase">
-                  {getRelativeTime(notification.createdAt)}
+                  {notification.timeAgo ||
+                    getRelativeTime(notification.createdAt)}
                 </div>
-                {notification.link && (
+                <div className="flex justify-start items-center gap-1">
                   <div
-                    className="flex justify-start items-center gap-1 cursor-pointer"
-                    onClick={() => {
-                      handleMarkAsRead(notification._id);
-                      window.location.href = notification.link;
-                    }}
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      notification.notificationType === "info"
+                        ? "bg-blue-100 text-blue-800"
+                        : notification.notificationType === "warning"
+                        ? "bg-yellow-100 text-yellow-800"
+                        : notification.notificationType === "error"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-gray-100 text-gray-800"
+                    }`}
                   >
-                    <div className="justify-start text-violet-600 text-xs font-medium">
-                      Check now
-                    </div>
-                    <ArrowRight className="w-3 h-3 text-violet-600" />
+                    {notification.notificationType || "info"}
                   </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
