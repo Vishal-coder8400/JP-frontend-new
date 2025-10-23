@@ -31,9 +31,4 @@ export const DASHBOARD_MENU_SUPER_ADMIN = [
     link: "/super-admin/master-data",
     icon: <BriefcaseIcon className="h-5 w-5 text-white" />,
   },
-  {
-    name: "Notifications",
-    link: "/super-admin/notifications",
-    icon: <BellIcon className="h-5 w-5 text-white" />,
-  },
 ];

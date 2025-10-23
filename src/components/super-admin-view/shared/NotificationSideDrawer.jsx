@@ -4,7 +4,6 @@ import {
   useMarkNotificationAsRead,
 } from "../../../hooks/super-admin/useNotifications";
 import { getRelativeTime } from "../../../utils/relativeTime";
-import { ArrowRight } from "lucide-react";
 
 const NotificationSideDrawer = () => {
   const { data: notificationsData, isLoading } = useGetNotifications({
