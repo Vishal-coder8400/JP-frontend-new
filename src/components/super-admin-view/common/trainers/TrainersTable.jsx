@@ -124,15 +124,37 @@ const TrainersTable = ({
                       </TableCell>
                       <TableCell
                         className="w-[180px] max-w-[180px] truncate"
-                        title={trainer.industryExperience || "N/A"}
+                        title={
+                          Array.isArray(trainer.industryExperience)
+                            ? trainer.industryExperience
+                                .map(
+                                  (industry) => industry.name || industry._id
+                                )
+                                .join(", ")
+                            : trainer.industryExperience || "N/A"
+                        }
                       >
-                        {trainer.industryExperience || "N/A"}
+                        {Array.isArray(trainer.industryExperience)
+                          ? trainer.industryExperience
+                              .map((industry) => industry.name || industry._id)
+                              .join(", ")
+                          : trainer.industryExperience || "N/A"}
                       </TableCell>
                       <TableCell
                         className="w-[180px] max-w-[180px] truncate"
-                        title={trainer.expertiseAreas || "N/A"}
+                        title={
+                          Array.isArray(trainer.expertiseAreas)
+                            ? trainer.expertiseAreas
+                                .map((area) => area.name || area._id)
+                                .join(", ")
+                            : trainer.expertiseAreas || "N/A"
+                        }
                       >
-                        {trainer.expertiseAreas || "N/A"}
+                        {Array.isArray(trainer.expertiseAreas)
+                          ? trainer.expertiseAreas
+                              .map((area) => area.name || area._id)
+                              .join(", ")
+                          : trainer.expertiseAreas || "N/A"}
                       </TableCell>
                       <TableCell className="w-[100px]">
                         {trainer.totalYearOfExperience || ""}
