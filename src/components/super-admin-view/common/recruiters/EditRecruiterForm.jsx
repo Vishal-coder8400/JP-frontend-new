@@ -127,6 +127,13 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
 
   const documentsFields = [
     {
+      name: "documents.resume",
+      label: "Resume",
+      placeholder: "Upload Resume",
+      componentType: "file",
+      accept: "pdf",
+    },
+    {
       name: "documents.panCard",
       label: "PAN Card",
       placeholder: "Upload PAN Card",
@@ -314,6 +321,7 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
           pincode: "",
         },
         documents: recruiter.documents || {
+          resume: "",
           panCard: "",
           aadharCard: "",
           cancelledCheque: "",
@@ -373,11 +381,11 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
       firstName: formData.firstName,
       lastName: formData.lastName,
       email: formData.email,
-      phoneNumber:
-        formData.phone?.countryCode && formData.phone?.number
-          ? `${formData.phone.countryCode}${formData.phone.number}`
-          : undefined,
-      profilePicture: formData.profileImage,
+      phone: formData.phone || {
+        number: "",
+        countryCode: "+91",
+      },
+      profileImage: formData.profileImage,
       location:
         formData.currentAddress?.city && formData.currentAddress?.state
           ? `${formData.currentAddress.city}, ${formData.currentAddress.state}`
