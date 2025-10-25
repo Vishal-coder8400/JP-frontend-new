@@ -2,56 +2,52 @@ import { useState, useEffect } from "react";
 import CommonForm from "../../../common/form";
 import ButtonComponent from "../../../common/button";
 import { useUploadFile } from "../../../../hooks/super-admin/useUploadFile";
-import { COMPANY_TYPES, INDUSTRY_TYPES } from "@/constants/super-admin";
+import { useGetDropdownValues } from "../../../../hooks/super-admin/useDropdowns";
+import { COMPANY_TYPES } from "@/constants/super-admin";
 
 const EditCompanyForm = ({ company, onSave, onClose }) => {
   const [formData, setFormData] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { mutate: uploadFile } = useUploadFile();
-
+  const { data: industriesDropdown } = useGetDropdownValues("industries");
+  const industryOptions =
+    industriesDropdown?.data?.values?.map((item) => ({
+      id: item.value,
+      label: item.label,
+    })) || [];
   useEffect(() => {
     if (company) {
       setFormData({
         basicInformation: {
-          companyName:
-            company.basicInformation?.companyName || company.companyName || "",
-          websiteURL:
-            company.basicInformation?.websiteURL || company.websiteURL || "",
-          companyType:
-            company.basicInformation?.companyType || company.companyType || "",
+          companyName: company.basicInformation?.companyName || "",
+          websiteURL: company.basicInformation?.websiteURL || "",
+          companyType: company.basicInformation?.companyType || "",
+          companyLogo: company.basicInformation?.companyLogo || "",
+          companyEmail: company.basicInformation?.companyEmail || "",
         },
         spocInformation: {
-          fullName: company.spocInformation?.fullName || company.spocName || "",
-          contactNumber: company.spocInformation?.contactNumber ||
-            company.spocContactNumber || {
-              number: "",
-              countryCode: "+91",
-            },
+          fullName: company.spocInformation?.fullName || "",
+          contactNumber: company.spocInformation?.contactNumber || {
+            number: "",
+            countryCode: "+91",
+          },
+          email: company.spocInformation?.email || "",
         },
         companyDetails: {
-          currentAddress:
-            company.companyDetails?.currentAddress ||
-            company.currentAddress ||
-            "",
+          currentAddress: company.companyDetails?.currentAddress || "",
+          city: company.companyDetails?.city || "",
+          state: company.companyDetails?.state || "",
+          pincode: company.companyDetails?.pincode || "",
           industryType:
             company.companyDetails?.industryType || company.industryType || "",
-          panCardNumber:
-            company.companyDetails?.panCardNumber ||
-            company.panCardNumber ||
-            "",
-          gstin: company.companyDetails?.gstin || company.gstin || "",
-          bankName:
-            company.companyDetails?.bankName ||
-            company.bankDetails?.bankName ||
-            "",
-          bankAccountNumber:
-            company.companyDetails?.bankAccountNumber ||
-            company.bankDetails?.accountNumber ||
-            "",
+          panCardNumber: company.companyDetails?.panCardNumber || "",
+          panCardFile: company.companyDetails?.panCardFile || "",
+          gstin: company.companyDetails?.gstin || "",
+          bankName: company.companyDetails?.bankName || "",
+          bankAccountNumber: company.companyDetails?.bankAccountNumber || "",
+          ifscCode: company.companyDetails?.ifscCode || "",
           chequeOrStatementFile:
-            company.companyDetails?.chequeOrStatementFile ||
-            company.cancelChequeOrPassbookImage ||
-            "",
+            company.companyDetails?.chequeOrStatementFile || "",
         },
       });
     }
@@ -110,6 +106,21 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
       placeholder: "Select a type",
       options: COMPANY_TYPES,
     },
+    {
+      name: "basicInformation.companyLogo",
+      label: "Company Logo",
+      placeholder: "Upload company logo",
+      componentType: "file",
+      accept: "image",
+      formats: "PNG, JPG",
+    },
+    {
+      name: "basicInformation.companyEmail",
+      label: "Company Email",
+      placeholder: "Enter company email",
+      componentType: "input",
+      type: "email",
+    },
   ];
 
   const spocControls = [
@@ -126,6 +137,13 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
       componentType: "phone",
       placeholder: "Ex. XXXXXXXXXX",
     },
+    {
+      name: "spocInformation.email",
+      label: "Email",
+      componentType: "input",
+      type: "email",
+      placeholder: "Enter email",
+    },
   ];
 
   const companyDetailsControls = [
@@ -136,11 +154,32 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
       componentType: "textarea",
     },
     {
+      label: "City",
+      name: "companyDetails.city",
+      placeholder: "Enter city",
+      componentType: "input",
+      type: "text",
+    },
+    {
+      label: "State",
+      name: "companyDetails.state",
+      placeholder: "Enter state",
+      componentType: "input",
+      type: "text",
+    },
+    {
+      label: "Pincode",
+      name: "companyDetails.pincode",
+      placeholder: "Enter pincode",
+      componentType: "input",
+      type: "text",
+    },
+    {
       label: "Industry Type",
       name: "companyDetails.industryType",
       placeholder: "Select industry type",
       componentType: "select",
-      options: INDUSTRY_TYPES,
+      options: industryOptions,
     },
     {
       label: "PAN Card Number",
@@ -148,6 +187,14 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
       placeholder: "Enter PAN Card Number",
       componentType: "input",
       type: "text",
+    },
+    {
+      label: "PAN Card Image",
+      name: "companyDetails.panCardFile",
+      placeholder: "Upload PAN Card Image",
+      componentType: "file",
+      accept: "image",
+      formats: "PNG, JPG",
     },
     {
       label: "GSTIN",
@@ -174,11 +221,18 @@ const EditCompanyForm = ({ company, onSave, onClose }) => {
       type: "text",
     },
     {
+      label: "IFSC Code",
+      name: "companyDetails.ifscCode",
+      placeholder: "Enter IFSC Code",
+      componentType: "input",
+      type: "text",
+    },
+    {
       label: "Cancel Cheque / Account Statement",
       name: "companyDetails.chequeOrStatementFile",
       placeholder: "Upload Cheque / Statement",
       componentType: "file",
-      accept: "document",
+      accept: "pdf",
       formats: "PDF",
     },
   ];
