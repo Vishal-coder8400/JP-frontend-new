@@ -117,9 +117,9 @@ export const INTERVIEW_MODES = [
 ];
 
 export const GENDER_OPTIONS = [
-  { id: "male", label: "Male" },
-  { id: "female", label: "Female" },
-  { id: "others", label: "Others" },
+  { id: "Male", label: "Male" },
+  { id: "Female", label: "Female" },
+  { id: "Others", label: "Others" },
 ];
 
 export const STATUS_OPTIONS = {

@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
+import { Checkbox } from "../ui/checkbox";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import {
@@ -645,6 +646,27 @@ export default function CommonForm({
             placeholder={getControlItem.placeholder || "Select options..."}
             errorMessage={errorMessage}
           />
+        );
+
+      case "checkbox":
+        return (
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id={getControlItem.name}
+              checked={value || false}
+              onCheckedChange={(checked) =>
+                setFormData((prev) =>
+                  setNestedValue(prev, nameWithIndex, checked)
+                )
+              }
+            />
+            <Label
+              htmlFor={getControlItem.name}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {getControlItem.label}
+            </Label>
+          </div>
         );
 
       default:

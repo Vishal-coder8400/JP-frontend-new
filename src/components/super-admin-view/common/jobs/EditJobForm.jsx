@@ -5,6 +5,7 @@ import FieldError from "../../../common/FieldError";
 import { z } from "zod";
 import { toast } from "sonner";
 import { PlusIcon, XIcon } from "lucide-react";
+import { useGetDropdownValues } from "../../../../hooks/super-admin/useDropdowns";
 import {
   JOB_TYPES,
   EDUCATION_LEVELS,
@@ -148,11 +149,78 @@ const jobAdditionalInfo = [
     rows: 2,
   },
   {
-    name: "contactEmail",
-    label: "Contact Email",
-    placeholder: "Enter contact email",
+    name: "spocName",
+    label: "Contact Person Name",
+    placeholder: "Enter contact person name",
     componentType: "input",
-    type: "email",
+    type: "text",
+  },
+  {
+    name: "spocNumber",
+    label: "Contact Person Number",
+    placeholder: "Enter contact person number",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    name: "workingDays",
+    label: "Working Days",
+    placeholder: "e.g. Monday to Friday",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    name: "isSundayWorking",
+    label: "Is Sunday Working",
+    componentType: "checkbox",
+  },
+  {
+    name: "englishLevel",
+    label: "English Level",
+    componentType: "select",
+    placeholder: "Select English level",
+    options: [], // Will be populated dynamically
+  },
+  {
+    name: "preferredAgeRange",
+    label: "Preferred Age Range",
+    placeholder: "e.g. 25-35",
+    componentType: "input",
+    type: "text",
+  },
+  {
+    name: "twoWheelerMandatory",
+    label: "Two Wheeler Mandatory",
+    componentType: "checkbox",
+  },
+  {
+    name: "isWalkInInterview",
+    label: "Is Walk-In Interview",
+    componentType: "checkbox",
+  },
+  {
+    row: [
+      {
+        name: "walkInDate",
+        label: "Walk-In Date",
+        componentType: "input",
+        type: "date",
+      },
+      {
+        name: "walkInTime",
+        label: "Walk-In Time",
+        placeholder: "e.g. 10:00 AM",
+        componentType: "input",
+        type: "text",
+      },
+    ],
+  },
+  {
+    name: "walkInAddress",
+    label: "Walk-In Address",
+    placeholder: "Enter walk-in address",
+    componentType: "textarea",
+    rows: 2,
   },
 ];
 
@@ -195,8 +263,28 @@ const EditJobForm = ({ job, onClose, onSave }) => {
     genderPreference: "",
     regionalLanguageRequired: false,
     requiredSkills: "",
-    contactEmail: "",
+    spocName: "",
+    spocNumber: "",
+    workingDays: "",
+    isSundayWorking: false,
+    englishLevel: "",
+    preferredAgeRange: "",
+    twoWheelerMandatory: false,
+    isWalkInInterview: false,
+    walkInDate: "",
+    walkInTime: "",
+    walkInAddress: "",
   });
+
+  // Fetch language proficiency dropdown values
+  const { data: languageProficiencyDropdown } = useGetDropdownValues(
+    "language-proficiency-level"
+  );
+  const languageProficiencyOptions =
+    languageProficiencyDropdown?.data?.values?.map((item) => ({
+      id: item.value,
+      label: item.label,
+    })) || [];
 
   const [keyResponsibilitiesList, setKeyResponsibilitiesList] = useState([]);
   const [currentResponsibility, setCurrentResponsibility] = useState("");
@@ -205,14 +293,44 @@ const EditJobForm = ({ job, onClose, onSave }) => {
   const [fieldErrors, setFieldErrors] = useState({});
 
   // Clear field error when user starts typing
-  const handleFieldChange = (fieldName, value) => {
-    setFormData((prev) => ({ ...prev, [fieldName]: value }));
-    if (fieldErrors[fieldName]) {
-      setFieldErrors((prev) => {
-        const newErrors = { ...prev };
-        delete newErrors[fieldName];
-        return newErrors;
+  const handleFieldChange = (fieldNameOrUpdater, value) => {
+    // Handle both function updater and direct field updates
+    if (typeof fieldNameOrUpdater === "function") {
+      // This is the function updater from CommonForm
+      setFormData((prev) => {
+        const newData = fieldNameOrUpdater(prev);
+
+        // Check if isWalkInInterview was set to false and clear related fields
+        if (newData.isWalkInInterview === false) {
+          newData.walkInDate = "";
+          newData.walkInTime = "";
+          newData.walkInAddress = "";
+        }
+
+        return newData;
       });
+    } else {
+      // This is direct field update
+      setFormData((prev) => {
+        const newData = { ...prev, [fieldNameOrUpdater]: value };
+
+        // If isWalkInInterview is set to false, clear walk-in related fields
+        if (fieldNameOrUpdater === "isWalkInInterview" && !value) {
+          newData.walkInDate = "";
+          newData.walkInTime = "";
+          newData.walkInAddress = "";
+        }
+
+        return newData;
+      });
+
+      if (fieldErrors[fieldNameOrUpdater]) {
+        setFieldErrors((prev) => {
+          const newErrors = { ...prev };
+          delete newErrors[fieldNameOrUpdater];
+          return newErrors;
+        });
+      }
     }
   };
 
@@ -254,7 +372,17 @@ const EditJobForm = ({ job, onClose, onSave }) => {
         requiredSkills: Array.isArray(job.requiredSkills)
           ? job.requiredSkills.join(", ")
           : job.requiredSkills || "",
-        contactEmail: job.contactEmail || "",
+        spocName: job.spocName || "",
+        spocNumber: job.spocNumber || "",
+        workingDays: job.workingDays || "",
+        isSundayWorking: job.isSundayWorking || false,
+        englishLevel: job.englishLevel || "",
+        preferredAgeRange: job.preferredAgeRange || "",
+        twoWheelerMandatory: job.twoWheelerMandatory || false,
+        isWalkInInterview: job.isWalkInInterview || false,
+        walkInDate: job.walkInDate || "",
+        walkInTime: job.walkInTime || "",
+        walkInAddress: job.walkInAddress || "",
       });
 
       // Populate responsibilities list
@@ -266,36 +394,6 @@ const EditJobForm = ({ job, onClose, onSave }) => {
     }
   }, [job]);
 
-  const transformFormDataToPayload = (formData) => {
-    return {
-      jobTitle: formData.jobTitle || undefined,
-      jobType: formData.jobType || undefined,
-      jobDescription: formData.jobDescription || undefined,
-      keyResponsibilities:
-        keyResponsibilitiesList.length > 0
-          ? keyResponsibilitiesList
-          : undefined,
-      minimumEducation: formData.minimumEducation || undefined,
-      experienceLevel: formData.experienceLevel || undefined,
-      modeOfWork: formData.modeOfWork || undefined,
-      modeOfInterview: formData.modeOfInterview || undefined,
-      officeLocation: formData.officeLocation || undefined,
-      city: formData.city || undefined,
-      state: formData.state || undefined,
-      salaryRange: formData.salaryRange || undefined,
-      workingHours: formData.workingHours || undefined,
-      genderPreference: formData.genderPreference || undefined,
-      regionalLanguageRequired: formData.regionalLanguageRequired,
-      requiredSkills: formData.requiredSkills
-        ? formData.requiredSkills
-            .split(",")
-            .map((skill) => skill.trim())
-            .filter((skill) => skill)
-        : undefined,
-      contactEmail: formData.contactEmail || undefined,
-    };
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -304,9 +402,22 @@ const EditJobForm = ({ job, onClose, onSave }) => {
       // Clear previous errors
       setFieldErrors({});
 
-      const payload = transformFormDataToPayload(formData);
+      // Prepare payload with responsibilities
+      const payload = {
+        ...formData,
+        keyResponsibilities:
+          keyResponsibilitiesList.length > 0
+            ? keyResponsibilitiesList
+            : undefined,
+        requiredSkills: formData.requiredSkills
+          ? formData.requiredSkills
+              .split(",")
+              .map((skill) => skill.trim())
+              .filter((skill) => skill)
+          : undefined,
+      };
 
-      // Remove undefined values to keep payload clean
+      // Remove empty/undefined values to keep payload clean
       Object.keys(payload).forEach((key) => {
         if (payload[key] === undefined || payload[key] === "") {
           delete payload[key];
@@ -402,7 +513,7 @@ const EditJobForm = ({ job, onClose, onSave }) => {
                       <CommonForm
                         formControls={[control]}
                         formData={formData}
-                        setFormData={setFormData}
+                        setFormData={handleFieldChange}
                       />
                       <FieldError error={fieldErrors[control.name]} />
                     </div>
@@ -434,7 +545,7 @@ const EditJobForm = ({ job, onClose, onSave }) => {
                             <CommonForm
                               formControls={[item]}
                               formData={formData}
-                              setFormData={setFormData}
+                              setFormData={handleFieldChange}
                             />
                             <FieldError error={fieldErrors[item.name]} />
                           </div>
@@ -448,7 +559,7 @@ const EditJobForm = ({ job, onClose, onSave }) => {
                       <CommonForm
                         formControls={[control]}
                         formData={formData}
-                        setFormData={setFormData}
+                        setFormData={handleFieldChange}
                       />
                       <FieldError error={fieldErrors[control.name]} />
                     </div>
@@ -464,16 +575,73 @@ const EditJobForm = ({ job, onClose, onSave }) => {
               Additional Information
             </h3>
             <div className="space-y-4">
-              {jobAdditionalInfo.map((control, index) => (
-                <div key={control.name} className="flex flex-col gap-2">
-                  <CommonForm
-                    formControls={[control]}
-                    formData={formData}
-                    setFormData={setFormData}
-                  />
-                  <FieldError error={fieldErrors[control.name]} />
-                </div>
-              ))}
+              {jobAdditionalInfo.map((control, index) => {
+                // Handle row controls (like walk-in date/time)
+                if (control.row) {
+                  const isWalkInRow = control.row.some(
+                    (item) =>
+                      item.name === "walkInDate" ||
+                      item.name === "walkInTime" ||
+                      item.name === "walkInAddress"
+                  );
+                  const isDisabled = isWalkInRow && !formData.isWalkInInterview;
+
+                  return (
+                    <div
+                      key={index}
+                      className={`flex gap-[8px] w-full flex-wrap justify-end items-end ${
+                        isDisabled ? "opacity-50 pointer-events-none" : ""
+                      }`}
+                    >
+                      {control.row.map((item, i) => (
+                        <div
+                          key={item.name}
+                          className="gap-[8px] flex-2/3 lg:flex-1"
+                        >
+                          <div className="flex flex-col gap-[8px]">
+                            <CommonForm
+                              formControls={[item]}
+                              formData={formData}
+                              setFormData={handleFieldChange}
+                            />
+                            <FieldError error={fieldErrors[item.name]} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                }
+
+                // Handle individual controls
+                const isWalkInField =
+                  control.name === "walkInDate" ||
+                  control.name === "walkInTime" ||
+                  control.name === "walkInAddress";
+                const isDisabled = isWalkInField && !formData.isWalkInInterview;
+
+                // Update englishLevel control with dynamic options
+                const updatedControl =
+                  control.name === "englishLevel"
+                    ? { ...control, options: languageProficiencyOptions }
+                    : control;
+
+                return (
+                  <div key={control.name} className="flex flex-col gap-2">
+                    <div
+                      className={
+                        isDisabled ? "opacity-50 pointer-events-none" : ""
+                      }
+                    >
+                      <CommonForm
+                        formControls={[updatedControl]}
+                        formData={formData}
+                        setFormData={handleFieldChange}
+                      />
+                    </div>
+                    <FieldError error={fieldErrors[control.name]} />
+                  </div>
+                );
+              })}
             </div>
           </div>
 

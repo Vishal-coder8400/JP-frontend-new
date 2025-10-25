@@ -14,6 +14,7 @@ import { useGetJobDetails } from "../../../../hooks/super-admin/useJob";
 import { formatApiError } from "../../../../utils/commonFunctions";
 import { useApprovals } from "../../../../hooks/super-admin/useApprovals";
 import ActionButtons from "../../shared/ActionButtons";
+import dayjs from "dayjs";
 
 const JobDetailsDrawer = ({
   jobId,
@@ -333,6 +334,78 @@ const JobDetailsDrawer = ({
                   </span>
                 </li>
               )}
+              {job.workingDays && (
+                <li className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-gray-700">
+                    <strong>Working Days:</strong> {job.workingDays}
+                  </span>
+                </li>
+              )}
+
+              <li className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700">
+                  <strong>Is Sunday Working:</strong>{" "}
+                  {job?.isSundayWorking === true ? "Yes" : "No"}
+                </span>
+              </li>
+              {job.englishLevel && (
+                <li className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-gray-700">
+                    <strong>English Level:</strong> {job.englishLevel}
+                  </span>
+                </li>
+              )}
+
+              <li className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700">
+                  <strong>Number of Openings:</strong> Not coming
+                </span>
+              </li>
+
+              {job.preferredAgeRange && (
+                <li className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-gray-700">
+                    <strong>Preferred Age Range:</strong>{" "}
+                    {job.preferredAgeRange} Yrs
+                  </span>
+                </li>
+              )}
+              {job.requiredSkills && (
+                <li className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-gray-700">
+                    <strong>Required Skills:</strong>{" "}
+                    {job.requiredSkills.join(", ") || "-"}
+                  </span>
+                </li>
+              )}
+              {job.twoWheelerMandatory && (
+                <li className="flex items-start gap-2">
+                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                  <span className="text-gray-700">
+                    <strong>Two Wheeler Mandatory:</strong>{" "}
+                    {job.twoWheelerMandatory === true ? "Yes" : "No"}
+                  </span>
+                </li>
+              )}
+
+              <li className="flex items-start gap-2">
+                <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
+                <span className="text-gray-700">
+                  <strong>Is Walk-In Interview:</strong>{" "}
+                  {job.isWalkInInterview === true
+                    ? `${dayjs(job.walkInDate).format("DD/MM/YYYY")} ${
+                        job.walkInTime
+                      } at ${job.walkInAddress}`
+                    : "No"}
+                </span>
+              </li>
+
               {job.genderPreference && (
                 <li className="flex items-start gap-2">
                   <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
@@ -388,12 +461,23 @@ const JobDetailsDrawer = ({
 
       <div className="p-6 border-1 border-gray2 rounded-lg mt-6">
         <h4 className="font-bold text-gray-700">About the Company</h4>
-        <p className="text-gray-700">
-          {job.postedBy?.companyDescription || "-"}
+        <p className="text-gray-700 mb-2">
+          {job.postedBy?.companyDescription ||
+            "No company description provided"}
         </p>
         {job.postedBy?.currentAddress && (
           <p className="text-gray-700">
             <strong>Address:</strong> {job.postedBy?.currentAddress}
+          </p>
+        )}
+        {job.spocName && (
+          <p className="text-gray-700">
+            <strong>Contact Person Name:</strong> {job.spocName}
+          </p>
+        )}
+        {job.spocNumber && (
+          <p className="text-gray-700">
+            <strong>Contact Person Number:</strong> {job.spocNumber}
           </p>
         )}
       </div>
