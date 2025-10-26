@@ -18,6 +18,9 @@ const Index = ({
   const buttonName = localStorage.getItem("seekerID")
     ? "Update Candidate"
     : "Create Candidate";
+  const link = localStorage.getItem("seekerID")
+    ? `/recruiter/candidates/relevent-details`
+    : "/recruiter/candidates/candidate-create";
   return (
     <Fragment>
       <div className="w-full hidden lg:flex flex-col gap-[51px] justify-start items-start">
@@ -43,7 +46,7 @@ const Index = ({
           >
             <div className="w-full flex items-center justify-between">
               <Link
-                to="/recruiter/candidates/candidate-create"
+                to={link}
                 className="px-5 py-4 bg-gray-900 rounded-3xl gap-2.5"
               >
                 <div className="justify-start text-white text-sm font-semibold leading-none">

@@ -12,6 +12,7 @@ import useJobSeekerProfileStore from "@/stores/useJobSeekerProfileStore";
 const ResumeFiltering = () => {
   const [formData, setFormData] = useState({ sortBy: "" });
   const { jobSeekerProfile } = useJobSeekerProfileStore();
+  console.log(jobSeekerProfile);
   const [open2, setOpen2] = useState(false);
   const { data } = useGetApplicantCorporateDetails();
   const { data: applicantData } = useGetApplicantById(jobSeekerProfile?._id);

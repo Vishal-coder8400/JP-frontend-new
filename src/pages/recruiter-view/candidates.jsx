@@ -20,15 +20,15 @@ const Candidates = () => {
     return {
       page: params.page ? parseInt(params.page) : 1,
       limit: 10,
-      status: params.status || "",
+      designation: params.designation || "",
       search: params.search || "",
-      skills: params.skills || "",
-      location: params.location || "",
+      currentSector: params.currentSector || "",
+      lastOrganization: params.lastOrganization || "",
+      degree: params.degree || "",
+      noticePeriod: params.noticePeriod || "",
       salaryRange: params.salaryRange || "",
-      experienceRange: params.experienceRange || "",
-      currentWorkingStatus: params.currentWorkingStatus || "",
+      experienceLevel: params.experienceLevel || "",
       gender: params.gender || "",
-      // isVerified: params.isVerified || false,
     };
   });
   const { data, isLoading, isError, error } = useGetAllApplicant(filters);
@@ -45,14 +45,15 @@ const Candidates = () => {
       ...prev,
       page: 1,
       limit: 10,
-      status: "",
+      designation: "",
       search: "",
-      skills: "",
-      location: "",
-      salaryRange: "",
-      experienceRange: "",
-      currentWorkingStatus: "",
       gender: "",
+      currentSector: "",
+      lastOrganization: "",
+      experienceLevel: "",
+      degree: "",
+      salaryRange: "",
+      noticePeriod: "",
     }));
     setSearchText("");
   };

@@ -1,5 +1,3 @@
-
-
 export const KycVerificationDetails = [
   {
     name: "cancelChequeOrPassbookImage",
@@ -1046,7 +1044,7 @@ export const CandidatesFilters = [
     label: "Current Sector",
     componentType: "multi-select",
     placeholder: "Enter Sector",
-    name: "jobLocation",
+    name: "currentSector",
     options: [
       {
         id: "active",
@@ -1060,7 +1058,7 @@ export const CandidatesFilters = [
     label: "Last Organization",
     componentType: "input",
     placeholder: "Enter Last Organization",
-    name: "currentOrganisation",
+    name: "lastOrganization",
   },
   {
     label: "Experience Level",
@@ -1086,7 +1084,7 @@ export const CandidatesFilters = [
     label: "Degree",
     componentType: "multi-select",
     placeholder: "Enter Degree",
-    name: "departmentArea",
+    name: "degree",
     options: [
       {
         id: "10th Pass",
@@ -1107,16 +1105,9 @@ export const CandidatesFilters = [
   },
   {
     label: "Notice Period",
-    componentType: "select",
     placeholder: "Select Notice Period",
     name: "noticePeriod",
-    options: [
-      {
-        id: "male",
-        label: "Male",
-      },
-      { id: "female", label: "Female" },
-    ],
+    componentType: "input",
   },
 ];
 export const trainingController1 = [
@@ -1635,6 +1626,13 @@ export const jobController3 = [
     maxChars: 300,
     width: "full",
     required: true,
+  },
+  {
+    name: "jobDescriptionFile",
+    label: "Or Upload Job Description File",
+    componentType: "file",
+    accept: "document",
+    placeholder: "Upload file",
   },
   {
     name: "isWalkInInterview",

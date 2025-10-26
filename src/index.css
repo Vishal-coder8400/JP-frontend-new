@@ -245,3 +245,7 @@ body {
   );
   border-image-slice: 1;
 }
+[data-state="checked"] > span,
+[data-state="unchecked"] > span {
+  background-color: white !important;
+}

@@ -23,7 +23,13 @@ const optionalFileSchema = z
 // Optional PAN details
 const panDetailsSchema = z
   .object({
-    panCardNumber: z.string().optional(),
+    panCardNumber: z
+      .string()
+      .optional()
+      .or(z.literal(""))
+      .refine((val) => !val || /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(val), {
+        message: "Invalid PAN number format",
+      }),
     panCardFile: optionalFileSchema,
   })
   .optional();
@@ -55,7 +61,11 @@ export const privateCompanySchema = z.object({
     .min(1, "Industry type cannot be empty"),
   gstin: z
     .string({ required_error: "GSTIN is required" })
-    .min(1, "GSTIN cannot be empty"),
+    .min(1, "GSTIN cannot be empty")
+    .regex(
+      /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
+      "Invalid GSTIN format"
+    ),
 
   panDetails: panDetailsSchema,
   bankDetails: bankDetailsSchema,
@@ -76,12 +86,19 @@ export const individualFormSchema = z.object({
     .min(1, "Pincode cannot be empty"),
   gstin: z
     .string({ required_error: "GSTIN is required" })
-    .min(1, "GSTIN cannot be empty"),
+    .min(1, "GSTIN cannot be empty")
+    .regex(
+      /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
+      "Invalid GSTIN format"
+    ),
 
   panDetails: panDetailsSchema,
   aadharCardNumber: z
-    .string({ required_error: "Aadhar card number is required" })
-    .min(1, "Aadhar card number is required"),
+    .string()
+    .regex(/^\d{12}$/, "Aadhar card must be 12 digits")
+    .optional()
+    .or(z.literal("")),
+
   aadharCardFile: z
     .string({ required_error: "Aadhar card file is required" })
     .min(1, "Aadhar card file is required")

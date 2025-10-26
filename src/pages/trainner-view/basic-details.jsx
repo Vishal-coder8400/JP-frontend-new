@@ -49,12 +49,12 @@ const candidateProfileSchema = z
 
     panDetails: z.object({
       number: z.string().min(1, "PAN number is required"),
-      image: z.string().min(1, "PAN image is required"),
+      image: z.string().optional(),
     }),
 
     aadharDetails: z.object({
       number: z.string().min(1, "Aadhar number is required"),
-      image: z.string().min(1, "Aadhar image is required"),
+      image: z.string().optional(),
     }),
 
     bankDetails: z.object({
@@ -64,9 +64,7 @@ const candidateProfileSchema = z
       ifscCode: z.string().min(1, "IFSC code is required"),
     }),
 
-    cancelChequeOrPassbookImage: z
-      .string()
-      .min(1, "Cancel cheque or passbook image is required"),
+    cancelChequeOrPassbookImage: z.string().optional(),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",
