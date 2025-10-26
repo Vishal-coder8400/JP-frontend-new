@@ -30,13 +30,19 @@ const editTrainingSchema = z.object({
   travelRequired: z.boolean().optional(),
   contactEmail: z.string().email().optional().or(z.literal("")),
   requiredSkills: z.array(z.string()).optional(),
-  skills: z.array(z.string()).optional(),
-  technicalSkills: z.array(z.string()).optional(),
   languagesFluent: z.array(z.string()).optional(),
   sessionsExpected: z.number().optional(),
   studyMaterialsProvided: z.boolean().optional(),
   demoSessionBeforeConfirming: z.boolean().optional(),
   recommendationsFromPastClients: z.boolean().optional(),
+  postedBy: z
+    .object({
+      currentAddress: z.string().optional(),
+      city: z.string().optional(),
+      state: z.string().optional(),
+      pincode: z.string().optional(),
+    })
+    .optional(),
 });
 
 // Form controllers for the simplified training form
@@ -181,22 +187,8 @@ const trainingAdditionalInfo = [
   },
   {
     name: "requiredSkills",
-    label: "Required Skills (comma separated)",
+    label: "What skills should the trainer have?",
     placeholder: "Enter required skills separated by commas",
-    componentType: "textarea",
-    rows: 2,
-  },
-  {
-    name: "skills",
-    label: "Skills (comma separated)",
-    placeholder: "Enter skills separated by commas",
-    componentType: "textarea",
-    rows: 2,
-  },
-  {
-    name: "technicalSkills",
-    label: "Technical Skills (comma separated)",
-    placeholder: "Enter technical skills separated by commas",
     componentType: "textarea",
     rows: 2,
   },
@@ -213,6 +205,41 @@ const trainingAdditionalInfo = [
     placeholder: "Enter contact email",
     componentType: "input",
     type: "email",
+  },
+];
+
+const trainingAddressInfo = [
+  {
+    name: "currentAddress",
+    label: "Address",
+    placeholder: "Enter address",
+    componentType: "textarea",
+    rows: 2,
+  },
+  {
+    row: [
+      {
+        name: "city",
+        label: "City",
+        placeholder: "Enter city",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "state",
+        label: "State",
+        placeholder: "Enter state",
+        componentType: "input",
+        type: "text",
+      },
+      {
+        name: "pincode",
+        label: "Pin Code",
+        placeholder: "Enter pin code",
+        componentType: "input",
+        type: "text",
+      },
+    ],
   },
 ];
 
@@ -237,9 +264,11 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
     recommendationsFromPastClients: false,
     contactEmail: "",
     requiredSkills: "",
-    skills: "",
-    technicalSkills: "",
     languagesFluent: "",
+    currentAddress: "",
+    city: "",
+    state: "",
+    pincode: "",
   });
 
   const [responsibilitiesList, setResponsibilitiesList] = useState([]);
@@ -308,15 +337,13 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
         requiredSkills: Array.isArray(training.requiredSkills)
           ? training.requiredSkills.join(", ")
           : training.requiredSkills || "",
-        skills: Array.isArray(training.skills)
-          ? training.skills.join(", ")
-          : training.skills || "",
-        technicalSkills: Array.isArray(training.technicalSkills)
-          ? training.technicalSkills.join(", ")
-          : training.technicalSkills || "",
         languagesFluent: Array.isArray(training.languagesFluent)
           ? training.languagesFluent.join(", ")
           : training.languagesFluent || "",
+        currentAddress: training.postedBy?.currentAddress || "",
+        city: training.postedBy?.city || "",
+        state: training.postedBy?.state || "",
+        pincode: training.postedBy?.pincode || "",
       });
 
       if (Array.isArray(training.responsibilities)) {
@@ -329,29 +356,21 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setIsSubmitting(true);
 
     try {
       setFieldErrors({});
 
+      const { currentAddress, city, state, pincode, ...restFormData } =
+        formData;
+
       const payload = {
-        ...formData,
+        ...restFormData,
         responsibilities:
           responsibilitiesList.length > 0 ? responsibilitiesList : undefined,
         requiredSkills: formData.requiredSkills
           ? formData.requiredSkills
-              .split(",")
-              .map((skill) => skill.trim())
-              .filter((skill) => skill)
-          : [],
-        skills: formData.skills
-          ? formData.skills
-              .split(",")
-              .map((skill) => skill.trim())
-              .filter((skill) => skill)
-          : [],
-        technicalSkills: formData.technicalSkills
-          ? formData.technicalSkills
               .split(",")
               .map((skill) => skill.trim())
               .filter((skill) => skill)
@@ -374,6 +393,12 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
         sessionsExpected: formData.sessionsExpected
           ? Number(formData.sessionsExpected)
           : undefined,
+        postedBy: {
+          ...(currentAddress && { currentAddress }),
+          ...(city && { city }),
+          ...(state && { state }),
+          ...(pincode && { pincode }),
+        },
       };
 
       Object.keys(payload).forEach((key) => {
@@ -385,6 +410,10 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
           delete payload[key];
         }
       });
+
+      if (Object.keys(payload.postedBy || {}).length === 0) {
+        delete payload.postedBy;
+      }
 
       const validationResult = validateFormData(editTrainingSchema, payload);
 
@@ -560,9 +589,6 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
                   .filter((control) => control.componentType === "checkbox")
                   .map((control) => (
                     <div key={control.name} className="flex flex-col gap-2">
-                      <label className="text-base text-[#20102B] font-semibold">
-                        {control.label}
-                      </label>
                       <CommonForm
                         formControls={[control]}
                         formData={formData}
@@ -586,6 +612,52 @@ const EditTrainingForm = ({ training, onClose, onSave }) => {
                     <FieldError error={fieldErrors[control.name]} />
                   </div>
                 ))}
+            </div>
+          </div>
+
+          {/* Address Information */}
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Address Information
+            </h3>
+            <div className="space-y-4">
+              {trainingAddressInfo.map((control, index) => {
+                if (control.row) {
+                  return (
+                    <div
+                      key={index}
+                      className="flex gap-[8px] w-full flex-wrap justify-end items-end"
+                    >
+                      {control.row.map((item) => (
+                        <div
+                          key={item.name}
+                          className="gap-[8px] flex-2/3 lg:flex-1"
+                        >
+                          <div className="flex flex-col gap-[8px]">
+                            <CommonForm
+                              formControls={[item]}
+                              formData={formData}
+                              setFormData={setFormData}
+                            />
+                            <FieldError error={fieldErrors[item.name]} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <div key={control.name} className="flex flex-col gap-2">
+                      <CommonForm
+                        formControls={[control]}
+                        formData={formData}
+                        setFormData={setFormData}
+                      />
+                      <FieldError error={fieldErrors[control.name]} />
+                    </div>
+                  );
+                }
+              })}
             </div>
           </div>
 

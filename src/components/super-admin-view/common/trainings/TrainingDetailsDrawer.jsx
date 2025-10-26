@@ -508,6 +508,15 @@ const TrainingDetailsDrawer = ({
             <strong>Address:</strong> {displayTraining.postedBy?.currentAddress}
           </p>
         )}
+        <p className="text-gray-700">
+          <strong>City:</strong> {displayTraining.postedBy?.city}
+        </p>
+        <p className="text-gray-700">
+          <strong>State:</strong> {displayTraining.postedBy?.state}
+        </p>
+        <p className="text-gray-700">
+          <strong>Pin Code:</strong> {displayTraining.postedBy?.pincode}
+        </p>
       </div>
 
       {/* Rejection Reason Modal - Only for approvals context */}

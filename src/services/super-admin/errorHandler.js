@@ -1,6 +1,8 @@
 import { toast } from "sonner";
 
 export class ErrorHandler {
+  static recentToastCache = new Map();
+
   static extractErrorMessage(error) {
     if (error?.response?.data?.message) {
       return error.response.data.message;
@@ -26,7 +28,16 @@ export class ErrorHandler {
 
   static handleMutationSuccess(data, defaultMessage) {
     const message = data?.message || defaultMessage;
-    toast.success(message);
+    const now = Date.now();
+
+    if (
+      !this.recentToastCache.has(message) ||
+      now - this.recentToastCache.get(message) > 1000
+    ) {
+      this.recentToastCache.set(message, now);
+      toast.success(message);
+    }
+
     return message;
   }
 
