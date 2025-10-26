@@ -96,7 +96,6 @@ const RecruitersTab = ({ context = "database" }) => {
 
   const { data, isLoading, error, refetch } =
     context === "approvals" ? approvalsQuery : databaseQuery;
-  console.log(data);
 
   // Process the data based on context
   const paginatedRecruiters =
@@ -197,11 +196,6 @@ const RecruitersTab = ({ context = "database" }) => {
       });
     }
     setCurrentPage(1);
-  };
-
-  const handleDeleteRecruiter = (recruiter) => {
-    // TODO: Implement delete logic
-    console.log("Delete recruiter:", recruiter);
   };
 
   return (

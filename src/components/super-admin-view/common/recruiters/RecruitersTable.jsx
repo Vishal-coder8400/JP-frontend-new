@@ -175,20 +175,25 @@ const RecruitersTable = ({
             overflow-y-auto border-transparent [&>button.absolute]:hidden"
         >
           <div className="w-full">
-            {context === "approvals" ? (
-              <RecruiterDetailsDrawer
-                recruiterId={selectedRecruiter?.recruiterId}
-                areApprovalBtnsVisible={true}
-                approvalId={selectedRecruiter?.id}
-                onClose={() => setDrawerOpen(false)}
-                onRevalidate={onRevalidate}
-              />
-            ) : (
-              <RecruiterDetailsDrawer
-                recruiterId={selectedRecruiter?._id}
-                onRevalidate={onRevalidate}
-              />
-            )}
+            <RecruiterDetailsDrawer
+              recruiterId={
+                context === "approvals"
+                  ? selectedRecruiter?.recruiterId
+                  : selectedRecruiter?._id
+              }
+              context={context}
+              approvalId={
+                context === "approvals" ? selectedRecruiter?.id : undefined
+              }
+              approvalStatus={
+                context === "approvals"
+                  ? selectedRecruiter?.approvalStatus ||
+                    selectedRecruiter?.status
+                  : undefined
+              }
+              onClose={() => setDrawerOpen(false)}
+              onRevalidate={onRevalidate}
+            />
           </div>
         </SheetContent>
       </Sheet>

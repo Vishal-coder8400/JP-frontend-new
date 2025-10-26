@@ -12,20 +12,21 @@ const ActionButtons = ({
   entityName = "Item",
   editButtonVariant = "outline",
   editButtonSize = "sm",
-  showApprovalButtons = true,
   layout = "horizontal",
   className = "",
   approvalStatus,
 }) => {
   const isApprovalsContext =
-    (context === "approvals" || context === "approval") && showApprovalButtons;
+    context === "approvals" ||
+    context === "approval" ||
+    context === "application";
   const normalizedStatus =
     typeof approvalStatus === "string"
       ? approvalStatus.trim().toLowerCase()
-      : undefined;
+      : "";
   const isApproved = isApprovalsContext && normalizedStatus === "approved";
-  const isRejected = isApprovalsContext && normalizedStatus === "rejected";
-  const isHold = isApprovalsContext && normalizedStatus === "hold";
+  const isRejected = normalizedStatus === "rejected";
+  const isHold = normalizedStatus === "hold";
 
   const layoutClass = layout === "vertical" ? "flex-col" : "items-center";
   const gapClass = layout === "vertical" ? "space-y-3" : "gap-2";

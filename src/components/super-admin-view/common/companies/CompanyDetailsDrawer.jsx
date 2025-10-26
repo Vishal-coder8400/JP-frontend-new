@@ -12,8 +12,9 @@ import CompanyStats from "./CompanyStats";
 
 const CompanyDetailsDrawer = ({
   companyId,
-  context = "database", // "database", "approvals", or "other"
+  context = "other", // "approvals", "database", or "other"
   approvalId,
+  approvalStatus,
   onClose,
   onRevalidate,
 }) => {
@@ -145,8 +146,6 @@ const CompanyDetailsDrawer = ({
   }
 
   const renderActionButtons = () => {
-    const approvalStatus = company?.status;
-
     return (
       <ActionButtons
         context={context}
@@ -155,7 +154,7 @@ const CompanyDetailsDrawer = ({
         onReject={handleRejectClick}
         onHold={handleHoldClick}
         isLoading={isLoading}
-        approvalStatus={approvalStatus}
+        approvalStatus={approvalStatus || company?.status}
         entityName="Company"
         editButtonVariant="gray"
         editButtonSize="sm"
@@ -225,15 +224,13 @@ const CompanyDetailsDrawer = ({
         />
       )}
 
-      {/* Edit Company Drawer - For database and approvals contexts */}
-      {(context === "database" || context === "approvals") && (
-        <EditCompanyDrawer
-          isOpen={showEditDrawer}
-          onClose={handleEditClose}
-          company={company}
-          onRevalidate={handleCompanyUpdate}
-        />
-      )}
+      {/* Edit Company Drawer */}
+      <EditCompanyDrawer
+        isOpen={showEditDrawer}
+        onClose={handleEditClose}
+        company={company}
+        onRevalidate={handleCompanyUpdate}
+      />
     </div>
   );
 };

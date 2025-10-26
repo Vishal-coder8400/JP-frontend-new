@@ -68,9 +68,11 @@ const CompaniesTable = ({
             ? selectedCompany?.companyId
             : selectedCompany?._id
         }
-        company={selectedCompany}
         context={context}
-        approvalId={context === "approvals" ? selectedCompany?.id : null}
+        approvalId={context === "approvals" ? selectedCompany?.id : undefined}
+        approvalStatus={
+          context === "approvals" ? selectedCompany?.approvalStatus : undefined
+        }
         onClose={() => setDrawerOpen(false)}
         onRevalidate={onRevalidate}
       />

@@ -7,6 +7,7 @@ import AdminStatusBadge from "@/components/super-admin-view/shared/AdminStatusBa
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import EditRecruiterDrawer from "../../../common/recruiters/EditRecruiterDrawer";
+import ActionButtons from "@/components/super-admin-view/shared/ActionButtons";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -18,12 +19,14 @@ import {
   Briefcase,
   Stethoscope,
   LinkIcon,
+  UserIcon,
 } from "lucide-react";
 
 const RecruiterDetailsDrawer = ({
   recruiterId,
-  areApprovalBtnsVisible = false,
+  context = "other", // "approvals" or "other"
   approvalId,
+  approvalStatus,
   onClose,
   onRevalidate,
 }) => {
@@ -180,11 +183,15 @@ const RecruiterDetailsDrawer = ({
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-6">
                 <div className="absolute -top-3 left-4">
-                  <img
-                    className="size-24 object-cover rounded-full outline-2 outline-white"
-                    src={displayRecruiter?.profileImage || "/person.png"}
-                    alt={displayRecruiter?.name}
-                  />
+                  {displayRecruiter?.profileImage ? (
+                    <img
+                      className="size-24 object-cover rounded-full outline-2 outline-white"
+                      src={displayRecruiter?.profileImage}
+                      alt={displayRecruiter?.name}
+                    />
+                  ) : (
+                    <UserIcon className="size-24 object-cover rounded-full outline-2 outline-white bg-gray-200 p-5 text-gray-600" />
+                  )}
                 </div>
                 <div className="flex flex-col gap-2 pl-24">
                   <div className="text-lg font-medium capitalize">
@@ -193,64 +200,32 @@ const RecruiterDetailsDrawer = ({
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <Button
-                  onClick={() => setShowEditDrawer(true)}
-                  variant={"gray"}
-                >
-                  Edit
-                </Button>
-                {areApprovalBtnsVisible && (
-                  <>
-                    {displayRecruiter.status !== "approved" ? (
-                      <>
-                        <Button
-                          variant={"purple"}
-                          onClick={handleApprove}
-                          disabled={isLoading}
-                        >
-                          {isLoading ? "Processing..." : "Approve"}
-                        </Button>
-                        {displayRecruiter.status !== "rejected" && (
-                          <Button
-                            variant={"destructive"}
-                            onClick={handleRejectClick}
-                            disabled={isLoading}
-                          >
-                            {isLoading ? "Processing..." : "Reject"}
-                          </Button>
-                        )}
-                        {displayRecruiter.status !== "hold" && (
-                          <Button
-                            variant={"black"}
-                            onClick={handleHoldClick}
-                            disabled={isLoading}
-                          >
-                            {isLoading ? "Processing..." : "Hold"}
-                          </Button>
-                        )}
-                      </>
-                    ) : (
-                      <div className="flex flex-col gap-2">
-                        <AdminStatusBadge status={displayRecruiter?.status} />
-                        {displayRecruiter?.status === "rejected" &&
-                          displayRecruiter?.rejectionReason && (
-                            <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs break-words">
-                              <strong>Rejection Reason:</strong>{" "}
-                              {displayRecruiter.rejectionReason}
-                            </div>
-                          )}
-                        {displayRecruiter?.status === "hold" &&
-                          displayRecruiter?.holdReason && (
-                            <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs break-words">
-                              <strong>Hold Reason:</strong>{" "}
-                              {displayRecruiter.holdReason}
-                            </div>
-                          )}
-                      </div>
-                    )}
-                  </>
-                )}
+                <ActionButtons
+                  context={context}
+                  onEdit={() => setShowEditDrawer(true)}
+                  onApprove={handleApprove}
+                  onReject={handleRejectClick}
+                  onHold={handleHoldClick}
+                  isLoading={isLoading}
+                  approvalStatus={approvalStatus || displayRecruiter?.status}
+                  entityName="Recruiter"
+                  editButtonVariant="gray"
+                  editButtonSize="sm"
+                />
               </div>
+              {displayRecruiter?.status === "rejected" &&
+                displayRecruiter?.rejectionReason && (
+                  <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs break-words">
+                    <strong>Rejection Reason:</strong>{" "}
+                    {displayRecruiter.rejectionReason}
+                  </div>
+                )}
+              {displayRecruiter?.status === "hold" &&
+                displayRecruiter?.holdReason && (
+                  <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs break-words">
+                    <strong>Hold Reason:</strong> {displayRecruiter.holdReason}
+                  </div>
+                )}
             </div>
           </div>
           <div className="self-stretch inline-flex flex-col justify-start items-start gap-6 mt-8">
@@ -663,23 +638,27 @@ const RecruiterDetailsDrawer = ({
         </div>
       </div>
 
-      {/* Rejection Reason Modal */}
-      <RejectionReasonModal
-        isOpen={showRejectionModal}
-        onClose={() => setShowRejectionModal(false)}
-        onConfirm={handleReject}
-        isLoading={isLoading}
-        entityType="recruiter"
-      />
+      {/* Rejection Reason Modal - Only for approvals context */}
+      {context === "approvals" && (
+        <RejectionReasonModal
+          isOpen={showRejectionModal}
+          onClose={() => setShowRejectionModal(false)}
+          onConfirm={handleReject}
+          isLoading={isLoading}
+          entityType="recruiter"
+        />
+      )}
 
-      {/* Hold Reason Modal */}
-      <HoldReasonModal
-        isOpen={showHoldModal}
-        onClose={() => setShowHoldModal(false)}
-        onConfirm={handleHold}
-        isLoading={isLoading}
-        entityType="recruiter"
-      />
+      {/* Hold Reason Modal - Only for approvals context */}
+      {context === "approvals" && (
+        <HoldReasonModal
+          isOpen={showHoldModal}
+          onClose={() => setShowHoldModal(false)}
+          onConfirm={handleHold}
+          isLoading={isLoading}
+          entityType="recruiter"
+        />
+      )}
 
       {/* Edit Recruiter Drawer */}
       <EditRecruiterDrawer

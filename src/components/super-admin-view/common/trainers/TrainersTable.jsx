@@ -208,9 +208,13 @@ const TrainersTable = ({
             } w-full h-full`}
           >
             <TrainerDetailsDrawer
-              trainer={selectedTrainer}
               context={context}
               approvalId={context === "approvals" ? selectedTrainer?.id : null}
+              approvalStatus={
+                context === "approvals"
+                  ? selectedTrainer?.approvalStatus || selectedTrainer?.status
+                  : undefined
+              }
               trainerId={
                 context === "approvals"
                   ? selectedTrainer?.trainerId

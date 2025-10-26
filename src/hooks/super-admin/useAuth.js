@@ -13,7 +13,7 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: login,
     onSuccess: async (data) => {
-      handleMutationSuccess(data?.data, data?.data?.message);
+      handleMutationSuccess(data?.data, "Logged in successfully!");
 
       tokenService.setToken(data.data.token);
       tokenService.setUserRole("super-admin");
