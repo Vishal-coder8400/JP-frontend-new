@@ -9,11 +9,15 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useGetTrainingDetails } from "../../../../hooks/super-admin/useTraining";
 import { formatApiError } from "../../../../utils/commonFunctions";
-import { useApprovals } from "../../../../hooks/super-admin/useApprovals";
+import {
+  useApprovals,
+  useGetApprovalDetails,
+} from "../../../../hooks/super-admin/useApprovals";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import EditTrainingDrawer from "./EditTrainingDrawer";
 import ActionButtons from "../../shared/ActionButtons";
+import StatusReasonAlert from "@/components/common/StatusReasonAlert";
 
 const TrainingDetailsDrawer = ({
   trainingId,
@@ -37,6 +41,10 @@ const TrainingDetailsDrawer = ({
     enabled: !!trainingId,
   });
 
+  const { data: approvalDetails } = useGetApprovalDetails(approvalId, {
+    enabled: !!approvalId && context === "approvals",
+  });
+
   const {
     isLoading: isApprovalActionLoading,
     approveApplication,
@@ -46,6 +54,7 @@ const TrainingDetailsDrawer = ({
 
   const isLoading = isLoadingDetails;
   const error = detailsError;
+  const statusReason = approvalDetails?.data?.reviewerNotes;
 
   const handleApprove = async () => {
     try {
@@ -497,6 +506,13 @@ const TrainingDetailsDrawer = ({
           <div className="shrink-0">{renderActionButtons()}</div>
         </div>
       </div>
+
+      {/* Status Reason Display */}
+      <StatusReasonAlert
+        statusReason={statusReason}
+        status={approvalStatus}
+        className="mt-6"
+      />
 
       {/* Content */}
       <div className="p-6 border-1 border-gray2 rounded-lg mt-6">

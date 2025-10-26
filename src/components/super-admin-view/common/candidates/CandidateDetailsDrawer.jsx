@@ -15,6 +15,7 @@ import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import { toast } from "sonner";
 import JobsTable from "../jobs/JobsTable";
+import StatusReasonAlert from "@/components/common/StatusReasonAlert";
 
 const CandidateDetailsDrawer = ({
   candidateId,
@@ -80,6 +81,12 @@ const CandidateDetailsDrawer = ({
   const displayCandidate = candidate?.data;
   const candidateStatus =
     context === "approvals" ? candidate?.status : displayCandidate?.status;
+  const statusReason =
+    context === "approvals"
+      ? approvalDetails?.data?.reviewerNotes ||
+        candidate?.rejectionReason ||
+        candidate?.holdReason
+      : undefined;
 
   const handleApprove = async () => {
     try {
@@ -298,6 +305,13 @@ const CandidateDetailsDrawer = ({
           )}
         </div>
       </div>
+
+      {/* Status Reason Display */}
+      <StatusReasonAlert
+        statusReason={statusReason}
+        status={candidateStatus}
+        className="px-6 mb-6"
+      />
 
       <div className="px-6">
         {/* Tab Navigation */}

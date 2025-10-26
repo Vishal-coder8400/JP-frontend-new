@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { DownloadIcon, YourImageIcon, YourPdfIcon } from "@/utils/icon";
 import { Link } from "react-router-dom";
-import { useApprovals } from "@/hooks/super-admin/useApprovals";
+import {
+  useApprovals,
+  useGetApprovalDetails,
+} from "@/hooks/super-admin/useApprovals";
 import { useRecruiterDetails } from "@/hooks/super-admin/useRecruiterDetails";
 import AdminStatusBadge from "@/components/super-admin-view/shared/AdminStatusBadge";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
@@ -10,6 +13,7 @@ import EditRecruiterDrawer from "../../../common/recruiters/EditRecruiterDrawer"
 import ActionButtons from "@/components/super-admin-view/shared/ActionButtons";
 import { useState } from "react";
 import { toast } from "sonner";
+import StatusReasonAlert from "@/components/common/StatusReasonAlert";
 import {
   Mail,
   User,
@@ -49,8 +53,16 @@ const RecruiterDetailsDrawer = ({
     enabled: !!recruiterId,
   });
 
+  const { data: approvalDetails } = useGetApprovalDetails(approvalId, {
+    enabled: !!approvalId && context === "approvals",
+  });
+
   // Get recruiter data from the hook response
   const displayRecruiter = recruiterDetails?.data?.recruiter;
+  const statusReason =
+    approvalDetails?.data?.reviewerNotes ||
+    displayRecruiter?.rejectionReason ||
+    displayRecruiter?.holdReason;
   const isLoading = isLoadingDetails;
   const error = detailsError;
 
@@ -213,22 +225,17 @@ const RecruiterDetailsDrawer = ({
                   editButtonSize="sm"
                 />
               </div>
-              {displayRecruiter?.status === "rejected" &&
-                displayRecruiter?.rejectionReason && (
-                  <div className="text-xs text-red-600 bg-red-50 p-2 rounded border max-w-xs break-words">
-                    <strong>Rejection Reason:</strong>{" "}
-                    {displayRecruiter.rejectionReason}
-                  </div>
-                )}
-              {displayRecruiter?.status === "hold" &&
-                displayRecruiter?.holdReason && (
-                  <div className="text-xs text-orange-600 bg-orange-50 p-2 rounded border max-w-xs break-words">
-                    <strong>Hold Reason:</strong> {displayRecruiter.holdReason}
-                  </div>
-                )}
             </div>
           </div>
-          <div className="self-stretch inline-flex flex-col justify-start items-start gap-6 mt-8">
+
+          {/* Status Reason Display */}
+          <StatusReasonAlert
+            statusReason={statusReason}
+            status={approvalStatus || displayRecruiter?.status}
+            className="mt-8"
+          />
+
+          <div className="self-stretch inline-flex flex-col justify-start items-start gap-6 mt-4">
             <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
               Personal Information
             </div>

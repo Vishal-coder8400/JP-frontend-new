@@ -16,7 +16,7 @@ export const getApprovalsList = async (type, { signal, ...params } = {}) => {
   return response.data;
 };
 
-export const getApprovalDetails = async (approvalId, { signal } = {}) => {
-  const response = await api.get(`/admin/approvals/${approvalId}`, { signal });
+export const getApprovalDetails = async ({ signal, id }) => {
+  const response = await api.get(`/admin/approvals/${id}`, { signal });
   return response.data;
 };

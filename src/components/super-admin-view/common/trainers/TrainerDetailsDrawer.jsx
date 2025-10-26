@@ -10,7 +10,10 @@ import {
   UserIcon,
 } from "lucide-react";
 import { useState } from "react";
-import { useApprovals } from "@/hooks/super-admin/useApprovals";
+import {
+  useApprovals,
+  useGetApprovalDetails,
+} from "@/hooks/super-admin/useApprovals";
 import { useApplicationApprovals } from "@/hooks/super-admin/useApplicationApprovals";
 import { useGetTrainerDetails } from "@/hooks/super-admin/useTrainers";
 import EditTrainerDrawer from "./EditTrainerDrawer";
@@ -19,6 +22,7 @@ import HoldReasonModal from "@/components/common/HoldReasonModal";
 import AdminStatusBadge from "../../shared/AdminStatusBadge";
 import ActionButtons from "../../shared/ActionButtons";
 import { toast } from "sonner";
+import StatusReasonAlert from "@/components/common/StatusReasonAlert";
 
 const TrainerDetailsDrawer = ({
   context = "other", // "database", "approvals", "application", or "other"
@@ -61,7 +65,12 @@ const TrainerDetailsDrawer = ({
     enabled: !!trainerId,
   });
 
+  const { data: approvalDetails } = useGetApprovalDetails(approvalId, {
+    enabled: !!approvalId && context === "approvals",
+  });
+
   const displayTrainer = trainerDetails?.data;
+  const statusReason = approvalDetails?.data?.reviewerNotes;
   const isLoading = isLoadingTrainerDetails;
   const error = trainerDetailsError;
 
@@ -271,9 +280,16 @@ const TrainerDetailsDrawer = ({
         </div>
       </div>
 
+      {/* Status Reason Display */}
+      <StatusReasonAlert
+        statusReason={statusReason}
+        status={approvalStatus}
+        className="mt-10 mx-6"
+      />
+
       {/* Personal Information */}
       <div className="p-6">
-        <h2 className="text-lg font-semibold mt-4">Personal Information</h2>
+        <h2 className="text-lg font-semibold">Personal Information</h2>
         <div className="grid grid-cols-4 gap-4 mt-4">
           <div className="p-4 rounded-lg border border-gray2">
             <div className="flex items-center gap-2 mb-2 text-sm">

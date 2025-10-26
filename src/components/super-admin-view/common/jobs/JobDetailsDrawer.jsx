@@ -12,9 +12,13 @@ import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import { useGetJobDetails } from "../../../../hooks/super-admin/useJob";
 import { formatApiError } from "../../../../utils/commonFunctions";
-import { useApprovals } from "../../../../hooks/super-admin/useApprovals";
+import {
+  useApprovals,
+  useGetApprovalDetails,
+} from "../../../../hooks/super-admin/useApprovals";
 import ActionButtons from "../../shared/ActionButtons";
 import dayjs from "dayjs";
+import StatusReasonAlert from "@/components/common/StatusReasonAlert";
 
 const JobDetailsDrawer = ({
   jobId,
@@ -30,12 +34,18 @@ const JobDetailsDrawer = ({
 
   const { data: jobData, isLoading, error, refetch } = useGetJobDetails(jobId);
 
+  const { data: approvalDetails } = useGetApprovalDetails(approvalId, {
+    enabled: !!approvalId && context === "approvals",
+  });
+
   const {
     isLoading: isLoadingApprovals,
     approveApplication,
     rejectApplication,
     holdApplication,
   } = useApprovals();
+
+  const statusReason = approvalDetails?.data?.reviewerNotes;
 
   const handleApprove = async () => {
     try {
@@ -234,6 +244,13 @@ const JobDetailsDrawer = ({
           <div className="shrink-0">{renderButtons()}</div>
         </div>
       </div>
+
+      {/* Status Reason Display */}
+      <StatusReasonAlert
+        statusReason={statusReason}
+        status={approvalStatus}
+        className="mt-6"
+      />
 
       {/* Content */}
       <div className="p-6 border-1 border-gray2 rounded-lg mt-6">

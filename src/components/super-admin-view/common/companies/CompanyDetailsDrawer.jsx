@@ -1,7 +1,10 @@
 import { Building2 } from "lucide-react";
 import { useState } from "react";
 import CompanyClientDetails from "./CompanyClientDetails";
-import { useApprovals } from "@/hooks/super-admin/useApprovals";
+import {
+  useApprovals,
+  useGetApprovalDetails,
+} from "@/hooks/super-admin/useApprovals";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import EditCompanyDrawer from "./EditCompanyDrawer";
@@ -9,6 +12,7 @@ import { toast } from "sonner";
 import ActionButtons from "../../shared/ActionButtons";
 import { useGetCompanyDetails } from "@/hooks/super-admin/useCompanies";
 import CompanyStats from "./CompanyStats";
+import StatusReasonAlert from "@/components/common/StatusReasonAlert";
 
 const CompanyDetailsDrawer = ({
   companyId,
@@ -31,7 +35,12 @@ const CompanyDetailsDrawer = ({
     refetch,
   } = useGetCompanyDetails(companyId);
 
+  const { data: approvalDetails } = useGetApprovalDetails(approvalId, {
+    enabled: !!approvalId && context === "approvals",
+  });
+
   const company = companyData?.data?.corporate;
+  const statusReason = approvalDetails?.data?.reviewerNotes;
   // Handle approval actions
   const handleApprove = async () => {
     try {
@@ -165,7 +174,7 @@ const CompanyDetailsDrawer = ({
   };
 
   return (
-    <div className="w-full h-full p-10 bg-white rounded-l-2xl inline-flex flex-col gap-8 overflow-y-auto">
+    <div className="w-full h-full p-10 bg-white rounded-l-2xl inline-flex flex-col gap-6 overflow-y-auto">
       {/* Header */}
       <div className="w-full border-1 border-gray2 p-4 rounded-lg grid grid-cols-12 gap-4 items-start">
         <div className="col-span-1 flex justify-center">
@@ -197,6 +206,9 @@ const CompanyDetailsDrawer = ({
 
         <div className="col-span-3 space-y-3">{renderActionButtons()}</div>
       </div>
+
+      {/* Status Reason Display */}
+      <StatusReasonAlert statusReason={statusReason} status={approvalStatus} />
 
       <CompanyStats company={company} />
 
