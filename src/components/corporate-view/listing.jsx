@@ -58,7 +58,9 @@ const Listing = ({
         <div className="flex-1 p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4">
           <div className="self-stretch inline-flex justify-between items-center">
             <div className="justify-start text-gray-900 lg:text-xl text-lg font-semibold leading-tight">
-              Job Listings{" "}
+              {location.pathname.includes("job-posting")
+                ? "Job Listings"
+                : "Training Listings"}
             </div>
           </div>
           <div className="self-stretch h-0 outline-1 outline-offset-[-0.50px] outline-neutral-200"></div>

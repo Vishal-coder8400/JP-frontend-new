@@ -63,6 +63,7 @@ export default function CommonForm({
           )
         );
       },
+      onWheel: (e) => e.currentTarget.blur(),
 
       className: `flex placeholder:translate-y-[1px] items-center justify-center text-black text-base rounded-[4px] border py-[10px] px-[16px] placeholder:text-[#9B959F] ${
         errorMessage
@@ -429,7 +430,15 @@ export default function CommonForm({
           getNestedValue(formData, `${nameWithIndex}.max`) || "";
 
         const handleSalaryChange = (type, value) => {
-          let num = value.replace(/\D/g, ""); // Allow only numbers
+          // Remove all non-digits
+          let num = value.replace(/\D/g, "");
+
+          // Limit to 3 digits only
+          if (num.length > 3) {
+            num = num.slice(0, 3);
+          }
+
+          // Convert to number if not empty
           num = num ? Number(num) : "";
 
           setFormData((prev) => {
@@ -447,6 +456,7 @@ export default function CommonForm({
               value={minSalary}
               onChange={(e) => handleSalaryChange("min", e.target.value)}
               min={0}
+              onWheel={(e) => e.currentTarget.blur()}
               className={`bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 ${
                 errors[`${nameWithIndex}.min`]
                   ? "border-red-500 focus:border-red-500"
@@ -459,6 +469,7 @@ export default function CommonForm({
               value={maxSalary}
               onChange={(e) => handleSalaryChange("max", e.target.value)}
               min={0}
+              onWheel={(e) => e.currentTarget.blur()}
               className={`bg-background appearance-none [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none flex placeholder:translate-y-[1px] items-center justify-center text-black text-base focus:outline-none focus-visible:ring-0 focus:border-1 focus:border-black rounded-[4px] border-s-1 ${
                 errors[`${nameWithIndex}.max`]
                   ? "border-red-500 focus:border-red-500"

@@ -38,8 +38,9 @@ export const profileSchema = z.object({
 
   relievingLetter: z
     .string()
-    .min(1, "Relieving letter is required")
-    .url("Relieving letter must be a valid URL"),
+    .url("Relieving letter must be a valid URL")
+    .optional()
+    .or(z.literal("")),
 
   linkedinProfile: z
     .string()
@@ -63,7 +64,6 @@ const SectoralDetails = () => {
       pincode: "",
       state: "",
     },
-    relievingLetter: "",
     linkedinProfile: "",
   });
 

@@ -10,7 +10,12 @@ import Navbar from "../../components/recruiter-view/navbar";
 
 export const employeeSchema = z
   .object({
-    latestQualification: z.string().min(1, "Latest qualification is required"),
+    latestQualification: z
+      .string()
+      .min(1, "Latest qualification is required")
+      .optional()
+      .or(z.literal("")),
+
     latestQualificationName: z
       .string()
       .min(1, "Qualification name is required"),
@@ -55,7 +60,6 @@ export const employeeSchema = z
 const QualificationDetails = () => {
   const [errorMessage, setErrorMessage] = useState({});
   const [formData, setFormData] = useState({
-    latestQualification: "",
     latestQualificationName: "",
     joinReason: "",
     monthlyClosures: 0,

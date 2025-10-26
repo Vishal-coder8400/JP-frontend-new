@@ -19,7 +19,7 @@ const educationSchema = z.object({
         // studyType: z.string().min(1, "Study type is required"),
         startDate: z.string().min(1, "Start date is required"),
         endDate: z.string().min(1, "End date is required"),
-        document: z.string().min(1, "Education document is required"),
+        document: z.string().optional(),
       })
     )
     .min(1, "At least one education record is required"),

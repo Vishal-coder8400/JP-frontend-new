@@ -30,11 +30,13 @@ const JobDescription = ({ setOpen1, hook }) => {
               className="w-16 h-16 relative rounded object-cover overflow-hidden"
               src={
                 data?.data?.company?.companyLogo ||
-                data?.data?.postedBy?.basicInformation?.companyLogo
+                data?.data?.postedBy?.basicInformation?.companyLogo ||
+                data?.data?.postedByDetails?.[0]?.basicInformation?.companyLogo
               }
               alt={
                 data?.data?.company?.companyName ||
-                data?.data?.postedBy?.basicInformation?.companyName
+                data?.data?.postedBy?.basicInformation?.companyName ||
+                data?.data?.postedByDetails?.[0]?.basicInformation?.companyName
               }
             />
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-3">
@@ -43,18 +45,20 @@ const JobDescription = ({ setOpen1, hook }) => {
                   <div className="inline-flex justify-start items-center gap-3">
                     <div className="justify-start text-neutral-900 text-md2 font-normal leading-relaxed">
                       {data?.data?.company?.companyName ||
-                        data?.data?.postedBy?.basicInformation?.companyName}
+                        data?.data?.postedBy?.basicInformation?.companyName ||
+                        data?.data?.postedByDetails?.[0]?.basicInformation
+                          ?.companyName}
                     </div>
                   </div>
                   <div className="flex flex-col justify-start items-start gap-3">
                     <div className="justify-start text-neutral-900 text-xl font-medium leading-9">
                       {data?.data?.jobTitle || data?.data?.title}
                     </div>
-                    <div className="px-1.5 py-0.5 bg-[#7D5AE21A] rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
+                    {/* <div className="px-1.5 py-0.5 bg-[#7D5AE21A] rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
                       <div className="justify-start text-[#7D5AE2] text-xs font-medium leading-none">
                         2 applied
                       </div>
-                    </div>
+                    </div> */}
                   </div>
                 </div>
                 <div className="self-stretch py-0.5 inline-flex justify-start items-center gap-5 flex-wrap content-center">
@@ -95,10 +99,13 @@ const JobDescription = ({ setOpen1, hook }) => {
                           />
                         </div>
                         <div className="justify-start text-neutral-900/70 text-base font-normal leading-normal">
-                          {formatSalaryRange(
-                            data?.data?.salaryRange?.min,
+                          {`${
+                            data?.data?.salary?.salaryRange?.min ||
+                            data?.data?.salaryRange?.min
+                          }-${
+                            data?.data?.salary?.salaryRange?.max ||
                             data?.data?.salaryRange?.max
-                          )}
+                          } LPA`}
                         </div>
                       </div>
                       <div className="w-0.5 h-0.5 bg-neutral-900/70 rounded-full" />
@@ -340,7 +347,9 @@ const JobDescription = ({ setOpen1, hook }) => {
               </div>
               <div className="self-stretch justify-start">
                 <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                  {data?.data?.postedBy?.basicInformation?.companyDescription}
+                  {data?.data?.postedBy?.basicInformation?.companyDescription ||
+                    data?.data?.postedByDetails?.[0]?.basicInformation
+                      ?.companyDescription}
                 </span>
 
                 <div className="text-neutral-900/70 text-base font-bold leading-normal">
@@ -348,9 +357,14 @@ const JobDescription = ({ setOpen1, hook }) => {
                     Location:{" "}
                   </span>
                   <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                    {data?.data?.postedBy?.currentAddress},{" "}
-                    {data?.data?.postedBy?.state} -{" "}
-                    {data?.data?.postedBy?.pincode}
+                    {data?.data?.postedBy?.currentAddress ||
+                      data?.data?.postedByDetails?.[0]?.currentAddress}
+                    ,{" "}
+                    {data?.data?.postedBy?.state ||
+                      data?.data?.postedByDetails?.[0]?.state}{" "}
+                    -{" "}
+                    {data?.data?.postedBy?.pincode ||
+                      data?.data?.postedByDetails?.[0]?.pincode}
                   </span>
                 </div>
               </div>

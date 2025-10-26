@@ -38,10 +38,7 @@ export const formSchema = z.object({
       .string()
       .min(1, "PAN number is required")
       .regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, "Invalid PAN number format"),
-    image: z
-      .string()
-      .min(1, "PAN Image is required")
-      .url("PAN image must be a valid URL"),
+    image: z.string().url("PAN image must be a valid URL").optional(),
   }),
 
   aadharDetails: z.object({
@@ -51,8 +48,9 @@ export const formSchema = z.object({
       .regex(/^\d{12}$/, "Aadhar number must be 12 digits"),
     image: z
       .string()
-      .min(1, "Aadhar Image is required")
-      .url("Aadhar image must be a valid URL"),
+      .url("PAN image must be a valid URL")
+      .optional()
+      .or(z.literal("")),
   }),
 
   bankDetails: bankDetailsSchema,
@@ -70,11 +68,9 @@ const KycVerification = () => {
   const [formData, setFormData] = useState({
     panDetails: {
       number: "",
-      image: "",
     },
     aadharDetails: {
       number: "",
-      image: "",
     },
     bankDetails: {
       accountNumber: "",

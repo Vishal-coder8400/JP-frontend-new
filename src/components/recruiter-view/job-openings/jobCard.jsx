@@ -106,10 +106,11 @@ const JobCard = ({ setOpen, item, setOpen1, setCandidateFilters }) => {
                   />
                 </div>
                 <div className="text-[#141414] text-sm">
-                  {formatSalaryRange(
-                    item?.salaryRange?.min,
-                    item?.salaryRange?.max
-                  )}
+                  {`${
+                    item?.salary?.salaryRange?.min || item?.salaryRange?.min
+                  }-${
+                    item?.salary?.salaryRange?.max || item?.salaryRange?.max
+                  } LPA`}
                 </div>
               </div>
             )}

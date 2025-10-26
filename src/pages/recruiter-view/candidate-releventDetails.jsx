@@ -140,7 +140,7 @@ const CandidateReleventDetails = () => {
     queryClient.invalidateQueries({ queryKey: ["applicants"] });
   };
   useEffect(() => {
-    if (localStorage.getItem("seekerID")) {
+    if (!localStorage.getItem("seekerID")) {
       return navigate("/recruiter/candidates/candidate-create");
     }
     return setShowPage(true);
@@ -202,7 +202,7 @@ const CandidateReleventDetails = () => {
                       className={`min-w-[100px] flex-1 px-4 py-2.5 bg-white rounded outline-2 outline-offset-[-1px] ${
                         formData.currentWorkingStatus === "working"
                           ? "outline-[#6945ED]"
-                          : "outline-neutral-200"
+                          : "outline-[#000]/30"
                       } flex justify-between items-center gap-2 cursor-pointer min-h-[44px]`}
                     >
                       <span className="text-sm text-neutral-400 truncate whitespace-nowrap overflow-hidden max-w-[80%]">
@@ -228,7 +228,7 @@ const CandidateReleventDetails = () => {
                         formData.currentWorkingStatus ===
                         "serving-notice-period"
                           ? "outline-[#6945ED]"
-                          : "outline-neutral-200"
+                          : "outline-[#000]/30"
                       } flex justify-between items-center gap-2 cursor-pointer min-h-[44px]`}
                     >
                       <span className="text-sm text-neutral-400 truncate whitespace-nowrap overflow-hidden max-w-[80%]">
@@ -246,6 +246,7 @@ const CandidateReleventDetails = () => {
                         setFormData((prev) => ({
                           ...prev,
                           currentWorkingStatus: "not-working",
+                          noticePeriod: null,
                           experienceDetails: prev.experienceDetails.map(
                             (item) => ({ ...item, currentlyWorking: false })
                           ),
@@ -254,7 +255,7 @@ const CandidateReleventDetails = () => {
                       className={`min-w-[100px] flex-1 px-4 py-2.5 bg-white rounded outline-2 outline-offset-[-1px] ${
                         formData.currentWorkingStatus === "not-working"
                           ? "outline-[#6945ED]"
-                          : "outline-neutral-200"
+                          : "outline-[#000]/30"
                       } flex justify-between items-center gap-2 cursor-pointer min-h-[44px]`}
                     >
                       <span className="text-sm text-neutral-400 truncate whitespace-nowrap overflow-hidden max-w-[80%]">
@@ -309,7 +310,7 @@ const CandidateReleventDetails = () => {
                     className={`max-sm:min-w-[150px] flex-1 h-11 px-4 py-2.5 bg-white rounded outline-1 ${
                       formData.noticePeriod === 0
                         ? "outline-[#6945ED]"
-                        : "outline-neutral-200"
+                        : "outline-[#000]/30"
                     }  flex justify-center items-center gap-2`}
                   >
                     <div className="self-stretch flex justify-center items-center gap-2.5">
@@ -330,7 +331,7 @@ const CandidateReleventDetails = () => {
                     className={`max-sm:min-w-[150px] flex-1 h-11 px-4 py-2.5 bg-white rounded outline-1 ${
                       formData.noticePeriod === 15
                         ? "outline-[#6945ED]"
-                        : "outline-neutral-200"
+                        : "outline-[#000]/30"
                     }  flex justify-center items-center gap-2`}
                   >
                     <div className="self-stretch flex justify-center items-center gap-2.5">
@@ -351,7 +352,7 @@ const CandidateReleventDetails = () => {
                     className={`max-sm:min-w-[150px] flex-1 h-11 px-4 py-2.5 bg-white rounded outline-1 ${
                       formData.noticePeriod === 30
                         ? "outline-[#6945ED]"
-                        : "outline-neutral-200"
+                        : "outline-[#000]/30"
                     }  flex justify-center items-center gap-2`}
                   >
                     <div className="self-stretch flex justify-center items-center gap-2.5">
@@ -363,14 +364,16 @@ const CandidateReleventDetails = () => {
                       <div className="w-2 h-2 bg-white rounded-full outline-4 outline-offset-[-2px] outline-[#6945ED]" />
                     )}
                   </button>
-                  <div
+                  <button
+                    type="button"
+                    disabled={formData?.currentWorkingStatus === "not-working"}
                     onClick={() =>
                       setFormData((prev) => ({ ...prev, noticePeriod: 45 }))
                     }
                     className={`max-sm:min-w-[150px] flex-1 h-11 px-4 py-2.5 bg-white rounded outline-1 ${
                       formData.noticePeriod === 45
                         ? "outline-[#6945ED]"
-                        : "outline-neutral-200"
+                        : "outline-[#000]/30"
                     }  flex justify-center items-center gap-2`}
                   >
                     <div className="self-stretch flex justify-center items-center gap-2.5">
@@ -381,10 +384,10 @@ const CandidateReleventDetails = () => {
                     {formData.noticePeriod === 45 && (
                       <div className="w-2 h-2 bg-white rounded-full outline-4 outline-offset-[-2px] outline-[#6945ED]" />
                     )}
-                  </div>
-                  <div className="relative flex-1 h-11 bg-white rounded outline outline-neutral-200">
+                  </button>
+                  <div className="relative flex-1 h-11 bg-white rounded outline-1 outline-[#000]/30">
                     <Input
-                      value={formData.noticePeriod}
+                      value={formData.noticePeriod || ""}
                       onChange={(e) => {
                         let inputVal = e.target.value;
 

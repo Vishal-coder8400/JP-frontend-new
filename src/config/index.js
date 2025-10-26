@@ -1,5 +1,3 @@
-
-
 export const KycVerificationDetails = [
   {
     name: "cancelChequeOrPassbookImage",
@@ -990,7 +988,7 @@ export const formControlsForIndividual = [
     componentType: "file",
     formats: "JPG, PNG, PDF.",
     accept: "image",
-    required: true,
+    // required: true,
   },
 ];
 export const jobOpeningFilters = [
@@ -1046,7 +1044,7 @@ export const CandidatesFilters = [
     label: "Current Sector",
     componentType: "multi-select",
     placeholder: "Enter Sector",
-    name: "jobLocation",
+    name: "currentSector",
     options: [
       {
         id: "active",
@@ -1060,7 +1058,7 @@ export const CandidatesFilters = [
     label: "Last Organization",
     componentType: "input",
     placeholder: "Enter Last Organization",
-    name: "currentOrganisation",
+    name: "lastOrganization",
   },
   {
     label: "Experience Level",
@@ -1086,7 +1084,7 @@ export const CandidatesFilters = [
     label: "Degree",
     componentType: "multi-select",
     placeholder: "Enter Degree",
-    name: "departmentArea",
+    name: "degree",
     options: [
       {
         id: "10th Pass",
@@ -1107,16 +1105,9 @@ export const CandidatesFilters = [
   },
   {
     label: "Notice Period",
-    componentType: "select",
     placeholder: "Select Notice Period",
     name: "noticePeriod",
-    options: [
-      {
-        id: "male",
-        label: "Male",
-      },
-      { id: "female", label: "Female" },
-    ],
+    componentType: "input",
   },
 ];
 export const trainingController1 = [
@@ -1637,6 +1628,13 @@ export const jobController3 = [
     required: true,
   },
   {
+    name: "jobDescriptionFile",
+    label: "Or Upload Job Description File",
+    componentType: "file",
+    accept: "document",
+    placeholder: "Upload file",
+  },
+  {
     name: "isWalkInInterview",
     label: "Is this a walk-in interview?",
     componentType: "select",
@@ -1856,7 +1854,7 @@ export const jobSeekerEducationFormControls = [
     placeholder: "Upload Profile Picture",
     componentType: "file",
     accept: "image", // only allow images
-    required: true,
+    // required: true,
   },
 ];
 export const workExperienceFormControls = [
@@ -2438,7 +2436,7 @@ export const kycBankFormControls = [
     placeholder: "Upload Aadhar Card",
     componentType: "file",
     accept: "image",
-    required: true,
+    // required: true,
   },
   {
     name: "aadharDetails.number",
@@ -2454,7 +2452,7 @@ export const kycBankFormControls = [
     placeholder: "Upload PAN Card",
     componentType: "file",
     accept: "image",
-    required: true,
+    // required: true,
   },
   {
     name: "panDetails.number",
@@ -2506,7 +2504,7 @@ export const kycBankFormControls = [
     placeholder: "",
     componentType: "file",
     accept: "image", // you can also use "pdf" if needed
-    required: true,
+    // required: true,
   },
 ];
 // experienceFormControls.js

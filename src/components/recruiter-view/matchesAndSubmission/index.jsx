@@ -89,6 +89,7 @@ const Index = ({
       lastUpdate: "2 Days ago",
     },
   ];
+  // const [openMenuIndex, setOpenMenuIndex] = useState(null);
   return (
     <Fragment>
       <div className="hidden lg:flex flex-col gap-[51px] w-full">
@@ -160,9 +161,14 @@ const Index = ({
                         {item.experience || "N/A"}
                       </div>
                     </TableCell>
-                    <TableCell className="px-[16px] py-[12px]">
+                    <TableCell className="relative px-[16px] py-[12px]">
                       {item.status === "active" ? (
-                        <div className="px-2 py-1 bg-lime-600/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
+                        <div
+                          // onClick={() =>
+                          //   setOpenMenuIndex(openMenuIndex === i ? null : i)
+                          // }
+                          className="px-2 py-1 bg-lime-600/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden"
+                        >
                           <div className="justify-start text-lime-600 text-md font-medium leading-none">
                             Active
                           </div>
@@ -174,6 +180,28 @@ const Index = ({
                           </div>
                         </div>
                       )}
+                      {/* {openMenuIndex === i && (
+                        <div className="absolute top-10 left-0 mt-1 bg-white border border-gray-200 shadow-lg rounded-md w-max z-10">
+                          <button
+                            className="px-3 py-1 hover:bg-green-100 text-green-600 text-sm block text-left w-full"
+                            onClick={() => console.log("Approved", index)}
+                          >
+                            Approve
+                          </button>
+                          <button
+                            className="px-3 py-1 hover:bg-red-100 text-red-600 text-sm block text-left w-full"
+                            onClick={() => console.log("Reject", index)}
+                          >
+                            Reject
+                          </button>
+                          <button
+                            className="px-3 py-1 hover:bg-yellow-100 text-yellow-600 text-sm block text-left w-full"
+                            onClick={() => console.log("Hold", index)}
+                          >
+                            Hold
+                          </button>
+                        </div>
+                      )} */}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -259,20 +287,50 @@ const Index = ({
                         {item.experience || "N/A"}
                       </div>
                     </TableCell>
-                    <TableCell className="px-[16px] py-[12px]">
-                      {item.status === "active" ? (
-                        <div className="px-2 py-1 bg-lime-600/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
-                          <div className="justify-start text-lime-600 text-md font-medium leading-none">
-                            Active
-                          </div>
+                    <TableCell className="px-[16px] py-[12px] relative">
+                      <div
+                        onClick={() =>
+                          setOpenMenuIndex(
+                            openMenuIndex === index ? null : index
+                          )
+                        }
+                        className="inline-block relative"
+                      >
+                        {/* Status Badge */}
+                        <div
+                          className={`px-2 py-1 rounded-[3px] inline-flex items-center gap-1 cursor-pointer ${
+                            item.status === "active"
+                              ? "bg-lime-600/10 text-lime-600"
+                              : "bg-amber-600/10 text-amber-600"
+                          }`}
+                        >
+                          {item.status === "active" ? "Active" : "Pending"}
                         </div>
-                      ) : (
-                        <div className="px-2 py-1 bg-amber-600/10 rounded-[3px] inline-flex justify-start items-center gap-1 overflow-hidden">
-                          <div className="justify-start text-amber-600 text-md font-medium leading-none">
-                            Pending
+
+                        {/* Hover Menu */}
+                        {/* {openMenuIndex === index && (
+                          <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 shadow-lg rounded-md w-max z-10">
+                            <button
+                              className="px-3 py-1 hover:bg-green-100 text-green-600 text-sm block text-left w-full"
+                              onClick={() => console.log("Approved", index)}
+                            >
+                              Approve
+                            </button>
+                            <button
+                              className="px-3 py-1 hover:bg-red-100 text-red-600 text-sm block text-left w-full"
+                              onClick={() => console.log("Reject", index)}
+                            >
+                              Reject
+                            </button>
+                            <button
+                              className="px-3 py-1 hover:bg-yellow-100 text-yellow-600 text-sm block text-left w-full"
+                              onClick={() => console.log("Hold", index)}
+                            >
+                              Hold
+                            </button>
                           </div>
-                        </div>
-                      )}
+                        )} */}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}

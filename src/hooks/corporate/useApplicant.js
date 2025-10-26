@@ -24,6 +24,9 @@ export const useUpdateStatusOfApplicant = (setOpen) => {
       toast.success("Applicant status updated successfully");
       setOpen(false);
       queryClient.invalidateQueries({ queryKey: ["candidatesByJobId"] });
+      queryClient.invalidateQueries({
+        queryKey: ["applicantCorporateDetails"],
+      });
     },
     onError: (error) => {
       toast.error(
