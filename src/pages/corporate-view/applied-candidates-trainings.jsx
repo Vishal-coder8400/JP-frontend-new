@@ -4,9 +4,11 @@ import CorporateResumeFiltering from "../../components/corporate-view/resume-fil
 import CandidateProfiles from "../../components/recruiter-view/job-openings/candidate-profile";
 import Navbar from "../../components/recruiter-view/navbar";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useGetApplicantById } from "../../hooks/recruiter/useApplicant";
 import useJobSeekerProfileStore from "../../stores/useJobSeekerProfileStore";
-import { useGetCandidatesByTrainingId } from "../../hooks/corporate/useTraining";
+import {
+  useGetCandidatesByTrainingId,
+  useGetTrainningById,
+} from "../../hooks/corporate/useTraining";
 
 const AppliedCandidatesTrainings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,7 +23,7 @@ const AppliedCandidatesTrainings = () => {
     };
   });
   const [open2, setOpen2] = useState(false);
-  const { data: applicantData } = useGetApplicantById(jobSeekerProfile?._id);
+  const { data: applicantData } = useGetTrainningById(jobSeekerProfile?._id);
 
   const { data: candidateProfiles, isLoading: isLoading3 } =
     useGetCandidatesByTrainingId(trainingID, candidateListFilters);
@@ -46,7 +48,10 @@ const AppliedCandidatesTrainings = () => {
             overflow-y-auto border-transparent"
         >
           <div className="w-full h-full">
-            <CandidateProfiles applicantData={applicantData} />
+            <CandidateProfiles
+              applicantData={applicantData}
+              setOpen={setOpen2}
+            />
           </div>
         </SheetContent>
       </Sheet>

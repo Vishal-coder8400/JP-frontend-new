@@ -11,12 +11,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "../ui/checkbox";
-import { convertMonthsToYearsAndMonths } from "../../utils/commonFunctions";
 import useJobSeekerProfileStore from "../../stores/useJobSeekerProfileStore";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
-import { useState } from "react";
 import { MoveLeftIcon } from "lucide-react";
 
 const ResumeFiltering = ({
@@ -24,6 +22,8 @@ const ResumeFiltering = ({
   formData,
   setFormData,
   setOpen2,
+  setSwitchState,
+  switchState,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -37,7 +37,6 @@ const ResumeFiltering = ({
   const handleBackClick = () => {
     navigate(link);
   };
-  const [isJob, setIsJob] = useState(true);
   const { setJobSeekerProfile } = useJobSeekerProfileStore();
   const handleOpen = (i, id) => {
     setJobSeekerProfile({ _id: i, id });
@@ -84,22 +83,24 @@ const ResumeFiltering = ({
             <div className="flex-1 justify-start text-gray-900 text-lg font-semibold leading-tight">
               Candidate List
             </div>
-            <div className="flex items-center space-x-2">
-              <Label htmlFor="airplane-mode">
-                {isJob ? "Job" : "Training"}
-              </Label>
-              <Switch
-                id="job-training"
-                checked={!isJob}
-                onCheckedChange={(checked) => setIsJob(!checked)}
-                className="data-[state=checked]:bg-[#6945ED] data-[state=unchecked]:bg-gray-400 relative"
-              >
-                <span
-                  className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200
+            {location.pathname.includes("corporate/resume-filtering") && (
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="airplane-mode">
+                  {!switchState ? "Job" : "Training"}
+                </Label>
+                <Switch
+                  id="job-training"
+                  checked={switchState}
+                  onCheckedChange={(checked) => setSwitchState(checked)}
+                  className="data-[state=checked]:bg-[#6945ED] data-[state=unchecked]:bg-gray-400 relative"
+                >
+                  <span
+                    className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200
                data-[state=checked]:translate-x-5"
-                ></span>
-              </Switch>
-            </div>
+                  ></span>
+                </Switch>
+              </div>
+            )}
           </div>
           <div className="self-stretch h-0 outline-1 outline-offset-[-0.50px] outline-neutral-200"></div>
           <SearchComponent />
@@ -147,7 +148,8 @@ const ResumeFiltering = ({
                               src={
                                 item?.profilePicture ||
                                 item.applicant?.profilePicture ||
-                                item?.applicantImage
+                                item?.applicantImage ||
+                                item?.applicant?.profileImage
                               }
                               alt={
                                 item?.name ||
@@ -167,12 +169,12 @@ const ResumeFiltering = ({
                         </TableCell>
                         <TableCell className="px-[16px] py-[12px]">
                           <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                            {item?.job?.jobTitle}
+                            {item?.job?.jobTitle || item?.training?.title}
                           </div>
                         </TableCell>
                         <TableCell className="px-[16px] py-[12px]">
                           <div className="self-stretch justify-start text-[#35353A] text-sm font-normal leading-tight">
-                            {item._id}
+                            {item?.job?._id || item?.training?._id}
                           </div>
                         </TableCell>
                         <TableCell className="px-[16px] py-[12px]">

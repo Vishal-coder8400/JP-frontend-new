@@ -10,7 +10,7 @@ export const corporateTrainingPost = (data) =>
   api.post("/corporate/training", data);
 
 export const corporateTrainingById = async (id) => {
-  const result = await api.get(`/corporate/training/${id}`);
+  const result = await api.get(`/corporate/trainer/${id}`);
   return result.data;
 };
 
@@ -22,4 +22,8 @@ export const getCandidatesByTrainingId = async ({ queryKey }) => {
     `/corporate/applications/trainings/${id}?${params}`
   );
   return res.data;
+};
+export const getTrainingCorporateDetails = async () => {
+  const response = await api.get(`/corporate/applications/trainings`);
+  return response.data;
 };

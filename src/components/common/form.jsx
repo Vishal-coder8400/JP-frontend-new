@@ -648,7 +648,7 @@ export default function CommonForm({
         return (
           <MultiSelectField
             value={selectedItems}
-            max={getControlItem.max || 3}
+            max={getControlItem.max}
             options={getControlItem.options || []}
             onChange={(updatedItems) =>
               setFormData((prev) =>

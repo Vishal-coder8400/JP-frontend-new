@@ -303,10 +303,10 @@ const JobDescription = ({ setOpen1, hook }) => {
                       <div className="flex flex-wrap gap-2 mt-2">
                         {data?.data?.requiredSkills.map((skill, index) => (
                           <span
-                            key={index}
+                            key={skill._id}
                             className="inline-block px-3 py-1 text-xs font-medium bg-light-purple text-primary-purple rounded-full"
                           >
-                            {skill}
+                            {skill?.skillName}
                           </span>
                         ))}
                       </div>

@@ -27,6 +27,7 @@ export const useUpdateStatusOfApplicant = (setOpen) => {
       queryClient.invalidateQueries({
         queryKey: ["applicantCorporateDetails"],
       });
+      queryClient.invalidateQueries({ queryKey: ["candidatesByTrainingId"] });
     },
     onError: (error) => {
       toast.error(

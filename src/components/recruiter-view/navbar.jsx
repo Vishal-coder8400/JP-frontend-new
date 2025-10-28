@@ -43,7 +43,7 @@ const Navbar = ({ onlySupport }) => {
                 <ContactUsIcon />
                 <div className="size- inline-flex flex-col justify-center items-start gap-[5px]">
                   <div className="text-center justify-start text-gray-900 text-xs font-medium leading-none">
-                    Contact Us
+                    Email us at connect@ghrig.in
                   </div>
                 </div>
               </div>
@@ -51,7 +51,7 @@ const Navbar = ({ onlySupport }) => {
               <div className="size- inline-flex justify-start items-center gap-2">
                 <WhatsappIcon />
                 <div className="w-28 h-2 justify-start text-gray-900 text-xs font-medium leading-none">
-                  Chat on Whatsapp
+                  +91 97118 25377
                 </div>
               </div>
             </div>

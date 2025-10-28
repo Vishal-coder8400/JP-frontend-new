@@ -24,7 +24,7 @@ export default function MultiSelectField({
   const handleSelect = (item) => {
     if (value.find((s) => s.id === item.id)) return;
 
-    const updated = value.length >= 3 ? value : [...value, item];
+    const updated = value.length >= max ? value : [...value, item];
     onChange(updated);
     setInputValue("");
   };

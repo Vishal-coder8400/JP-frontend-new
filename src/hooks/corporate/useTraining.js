@@ -4,6 +4,7 @@ import {
   corporateTrainingById,
   corporateTrainingPost,
   getCandidatesByTrainingId,
+  getTrainingCorporateDetails,
   getTrainingList,
 } from "../../api/corporate/training";
 import { useNavigate } from "react-router-dom";
@@ -46,6 +47,7 @@ export const useGetTrainningById = (id) => {
     queryKey: ["corporateTrainingById", id],
     queryFn: () => corporateTrainingById(id),
     retry: false,
+    enabled: !!id,
   });
 };
 
@@ -54,6 +56,14 @@ export const useGetCandidatesByTrainingId = (id, filters) => {
     queryKey: ["candidatesByTrainingId", id, filters],
     queryFn: getCandidatesByTrainingId,
     enabled: !!id,
+    retry: false,
+  });
+};
+
+export const useGetTrainingCorporateDetails = () => {
+  return useQuery({
+    queryKey: ["trainingCorporateDetails"],
+    queryFn: () => getTrainingCorporateDetails(),
     retry: false,
   });
 };

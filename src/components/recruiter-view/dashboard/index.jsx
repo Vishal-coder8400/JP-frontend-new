@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { useGetUserProgress } from "../../../hooks/recruiter/useProfile";
 import PendingApprove from "@/components/common/pending-approve";
+import ApprovedUi from "@/components/common/approved-ui";
 
 const data = [
   { company: "ABC Tech", submitted: 32, shortlisted: 18, hired: 18 },
@@ -89,6 +90,8 @@ const Index = () => {
           </div>
         ) : user?.status === "pending" ? (
           <PendingApprove />
+        ) : user?.status === "active" ? (
+          <ApprovedUi />
         ) : null}
         <div className="w-full self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-6 overflow-hidden">
           <div className="self-stretch inline-flex justify-start items-start gap-[662px]">

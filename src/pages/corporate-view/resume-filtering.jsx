@@ -8,14 +8,20 @@ import {
   useGetApplicantCorporateDetails,
 } from "@/hooks/corporate/useApplicant";
 import useJobSeekerProfileStore from "@/stores/useJobSeekerProfileStore";
+import {
+  useGetTrainingCorporateDetails,
+  useGetTrainningById,
+} from "@/hooks/corporate/useTraining";
 
 const ResumeFiltering = () => {
   const [formData, setFormData] = useState({ sortBy: "" });
+  const [switchState, setSwitchState] = useState(false);
   const { jobSeekerProfile } = useJobSeekerProfileStore();
-  console.log(jobSeekerProfile);
   const [open2, setOpen2] = useState(false);
   const { data } = useGetApplicantCorporateDetails();
+  const { data: Training } = useGetTrainingCorporateDetails();
   const { data: applicantData } = useGetApplicantById(jobSeekerProfile?._id);
+  const { data: trainingData } = useGetTrainningById(jobSeekerProfile?._id);
   return (
     <div className="w-full">
       <Sheet open={open2} onOpenChange={setOpen2}>
@@ -32,7 +38,7 @@ const ResumeFiltering = () => {
             <CandidateProfiles
               open={open2}
               setOpen={setOpen2}
-              applicantData={applicantData}
+              applicantData={switchState ? trainingData : applicantData}
             />
           </div>
         </SheetContent>
@@ -42,7 +48,9 @@ const ResumeFiltering = () => {
         formData={formData}
         setFormData={setFormData}
         setOpen2={setOpen2}
-        candidateProfiles={data || []}
+        candidateProfiles={switchState ? Training : data || []}
+        setSwitchState={setSwitchState}
+        switchState={switchState}
       />
     </div>
   );
