@@ -400,7 +400,16 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
           },
         },
         monthlyClosures: recruiter.monthlyClosures || "",
-        references: recruiter.references || [],
+        references: (() => {
+          const existingRefs = recruiter.references || [];
+          const emptyRef = {
+            name: "",
+            contactNo: "",
+            organization: "",
+            designation: "",
+          };
+          return [existingRefs[0] || emptyRef, existingRefs[1] || emptyRef];
+        })(),
         whyYouWantToJoin: recruiter.whyYouWantToJoin || "",
         howDidYouKnowAboutThisJob: recruiter.howDidYouKnowAboutThisJob || "",
       });
@@ -425,83 +434,213 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
     );
   };
 
+  const updateReference = (index, field, value) => {
+    setFormData((prev) => {
+      const currentRefs = prev.references || [];
+      const updatedRefs = [...currentRefs];
+      while (updatedRefs.length < 2) {
+        updatedRefs.push({
+          name: "",
+          contactNo: "",
+          organization: "",
+          designation: "",
+        });
+      }
+      updatedRefs[index] = {
+        ...updatedRefs[index],
+        [field]: value,
+      };
+      return {
+        ...prev,
+        references: updatedRefs.slice(0, 2),
+      };
+    });
+  };
+
+  const getValueOrNull = (value) => {
+    if (value === null || value === undefined) return null;
+    if (typeof value === "string" && value.trim() === "") return null;
+    if (Array.isArray(value) && value.length === 0) return null;
+    return value;
+  };
+
   const transformFormDataToPayload = (formData) => {
     const payload = {
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      email: formData.email,
-      phone: formData.phone || {
-        number: "",
-        countryCode: "+91",
-      },
-      profileImage: formData.profileImage,
+      firstName: getValueOrNull(formData.firstName) ?? null,
+      lastName: getValueOrNull(formData.lastName) ?? null,
+      email: getValueOrNull(formData.email) ?? null,
+      phone: formData.phone
+        ? {
+            number: getValueOrNull(formData.phone.number) ?? null,
+            countryCode: formData.phone.countryCode || "+91",
+          }
+        : { number: null, countryCode: "+91" },
+      profileImage: getValueOrNull(formData.profileImage) ?? null,
       location:
         formData.currentAddress?.city && formData.currentAddress?.state
           ? `${formData.currentAddress.city}, ${formData.currentAddress.state}`
-          : formData.currentAddress?.city || formData.currentAddress?.state,
+          : formData.currentAddress?.city ||
+            formData.currentAddress?.state ||
+            null,
       lastOrganization: {
-        name: formData.lastOrganization?.name,
-        position: formData.lastOrganization?.position,
+        name: getValueOrNull(formData.lastOrganization?.name) ?? null,
+        position: getValueOrNull(formData.lastOrganization?.position) ?? null,
       },
-      totalExperience: formData.totalExperience,
-      experienceLevel: formData.experienceLevel || [],
+      totalExperience:
+        formData.totalExperience && formData.totalExperience !== ""
+          ? typeof formData.totalExperience === "string"
+            ? parseFloat(formData.totalExperience)
+            : formData.totalExperience
+          : null,
+      experienceLevel:
+        formData.experienceLevel && formData.experienceLevel.length > 0
+          ? formData.experienceLevel.map((item) =>
+              typeof item === "string" ? item : item.id || item.value
+            )
+          : null,
       sectorSpecialization:
-        formData.sectorSpecialization?.map((item) =>
-          typeof item === "string" ? item : item.id || item.value
-        ) || [],
-      linkedinProfile: formData.linkedinProfile,
-      monthlyClosures: formData.monthlyClosures,
+        formData.sectorSpecialization &&
+        formData.sectorSpecialization.length > 0
+          ? formData.sectorSpecialization.map((item) =>
+              typeof item === "string" ? item : item.id || item.value
+            )
+          : null,
+      linkedinProfile: getValueOrNull(formData.linkedinProfile) ?? null,
+      monthlyClosures:
+        formData.monthlyClosures && formData.monthlyClosures !== ""
+          ? typeof formData.monthlyClosures === "string"
+            ? parseInt(formData.monthlyClosures, 10)
+            : formData.monthlyClosures
+          : null,
+      currentAddress: formData.currentAddress
+        ? {
+            address: getValueOrNull(formData.currentAddress.address) ?? null,
+            city: getValueOrNull(formData.currentAddress.city) ?? null,
+            state: getValueOrNull(formData.currentAddress.state) ?? null,
+            pincode: getValueOrNull(formData.currentAddress.pincode) ?? null,
+          }
+        : {
+            address: null,
+            city: null,
+            state: null,
+            pincode: null,
+          },
+      permanentAddress: formData.permanentAddress
+        ? {
+            address: getValueOrNull(formData.permanentAddress.address) ?? null,
+            city: getValueOrNull(formData.permanentAddress.city) ?? null,
+            state: getValueOrNull(formData.permanentAddress.state) ?? null,
+            pincode: getValueOrNull(formData.permanentAddress.pincode) ?? null,
+          }
+        : {
+            address: null,
+            city: null,
+            state: null,
+            pincode: null,
+          },
+      documents: formData.documents
+        ? {
+            resume: getValueOrNull(formData.documents.resume) ?? null,
+            panCard: getValueOrNull(formData.documents.panCard) ?? null,
+            aadharCard: getValueOrNull(formData.documents.aadharCard) ?? null,
+            cancelledCheque:
+              getValueOrNull(formData.documents.cancelledCheque) ?? null,
+            relievingLetter:
+              getValueOrNull(formData.documents.relievingLetter) ?? null,
+            latestQualification:
+              getValueOrNull(formData.latestQualification) ?? null,
+          }
+        : {
+            resume: null,
+            panCard: null,
+            aadharCard: null,
+            cancelledCheque: null,
+            relievingLetter: null,
+            latestQualification: null,
+          },
+      fatherName: getValueOrNull(formData.fatherName) ?? null,
+      motherName: getValueOrNull(formData.motherName) ?? null,
+      medicalProblemDetails:
+        formData.medicalProblemDetails && formData.medicalProblemDetails.trim()
+          ? formData.medicalProblemDetails
+          : null,
+      howDidYouKnowAboutThisJob:
+        getValueOrNull(formData.howDidYouKnowAboutThisJob) ?? null,
+      whyYouWantToJoin: getValueOrNull(formData.whyYouWantToJoin) ?? null,
+      kycDetails: formData.kycDetails
+        ? {
+            panDetails: {
+              number:
+                getValueOrNull(formData.kycDetails.panDetails?.number) ?? null,
+            },
+            aadharDetails: {
+              number:
+                getValueOrNull(formData.kycDetails.aadharDetails?.number) ??
+                null,
+            },
+            bankDetails: formData.kycDetails.bankDetails
+              ? {
+                  accountNumber:
+                    getValueOrNull(
+                      formData.kycDetails.bankDetails.accountNumber
+                    ) ?? null,
+                  accountHolderName:
+                    getValueOrNull(
+                      formData.kycDetails.bankDetails.accountHolderName
+                    ) ?? null,
+                  bankName:
+                    getValueOrNull(formData.kycDetails.bankDetails.bankName) ??
+                    null,
+                  ifscCode:
+                    getValueOrNull(formData.kycDetails.bankDetails.ifscCode) ??
+                    null,
+                  accountType:
+                    getValueOrNull(
+                      formData.kycDetails.bankDetails.accountType
+                    ) ?? null,
+                }
+              : {
+                  accountNumber: null,
+                  accountHolderName: null,
+                  bankName: null,
+                  ifscCode: null,
+                  accountType: null,
+                },
+          }
+        : {
+            panDetails: {
+              number: null,
+            },
+            aadharDetails: {
+              number: null,
+            },
+            bankDetails: {
+              accountNumber: null,
+              accountHolderName: null,
+              bankName: null,
+              ifscCode: null,
+              accountType: null,
+            },
+          },
+      references: (() => {
+        const refs = formData.references || [];
+        const paddedRefs = [...refs];
+        while (paddedRefs.length < 2) {
+          paddedRefs.push({
+            name: null,
+            contactNo: null,
+            organization: null,
+            designation: null,
+          });
+        }
+        return paddedRefs.slice(0, 2).map((ref) => ({
+          name: getValueOrNull(ref?.name) ?? null,
+          contactNo: getValueOrNull(ref?.contactNo) ?? null,
+          organization: getValueOrNull(ref?.organization) ?? null,
+          designation: getValueOrNull(ref?.designation) ?? null,
+        }));
+      })(),
     };
-
-    // Add current address details
-    if (formData.currentAddress) {
-      payload.currentAddress = formData.currentAddress;
-    }
-
-    // Add permanent address details
-    if (formData.permanentAddress) {
-      payload.permanentAddress = formData.permanentAddress;
-    }
-
-    // Add documents
-    if (formData.documents) {
-      payload.documents = formData.documents;
-    }
-    if (formData.latestQualification) {
-      payload.latestQualification = formData.latestQualification;
-    }
-
-    // Add additional information
-    if (formData.fatherName) {
-      payload.fatherName = formData.fatherName;
-    }
-    if (formData.motherName) {
-      payload.motherName = formData.motherName;
-    }
-    if (
-      formData.medicalProblemDetails &&
-      formData.medicalProblemDetails.trim()
-    ) {
-      payload.medicalProblemDetails = formData.medicalProblemDetails;
-    }
-    if (formData.howDidYouKnowAboutThisJob) {
-      payload.howDidYouKnowAboutThisJob = formData.howDidYouKnowAboutThisJob;
-    }
-
-    // Add whyYouWantToJoin to professional details
-    if (formData.whyYouWantToJoin) {
-      payload.whyYouWantToJoin = formData.whyYouWantToJoin;
-    }
-
-    // Add KYC and bank details
-    if (formData.kycDetails) {
-      payload.kycDetails = formData.kycDetails;
-    }
-
-    // Add references
-    if (formData.references && formData.references.length > 0) {
-      payload.references = formData.references;
-    }
 
     return payload;
   };
@@ -620,129 +759,67 @@ const EditRecruiterForm = ({ recruiter, onSave, onClose }) => {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                References
-              </h3>
-              <button
-                type="button"
-                onClick={() => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    references: [
-                      ...prev.references,
-                      {
-                        name: "",
-                        contactNo: "",
-                        organization: "",
-                        designation: "",
-                      },
-                    ],
-                  }));
-                }}
-                className="px-3 py-1 bg-primary-purple text-white text-sm rounded-full hover:bg-primary-purple/80"
-              >
-                + Add Reference
-              </button>
-            </div>
-            {formData.references && formData.references.length > 0 ? (
-              <div className="space-y-4">
-                {formData.references.map((ref, index) => (
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              References
+            </h3>
+            <div className="space-y-4">
+              {[0, 1].map((index) => {
+                const ref = formData.references?.[index] || {
+                  name: "",
+                  contactNo: "",
+                  organization: "",
+                  designation: "",
+                };
+                return (
                   <div
                     key={index}
                     className="p-4 border border-gray-200 rounded-lg space-y-3"
                   >
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className="text-sm font-semibold text-gray-700">
-                        Reference #{index + 1}
-                      </h4>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            references: prev.references.filter(
-                              (_, i) => i !== index
-                            ),
-                          }));
-                        }}
-                        className="px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600"
-                      >
-                        Remove
-                      </button>
-                    </div>
+                    <h4 className="text-sm font-semibold text-gray-700">
+                      Reference #{index + 1}
+                    </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                       <input
                         type="text"
                         placeholder="Name"
                         value={ref.name || ""}
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            references: prev.references.map((r, i) =>
-                              i === index ? { ...r, name: e.target.value } : r
-                            ),
-                          }));
-                        }}
+                        onChange={(e) =>
+                          updateReference(index, "name", e.target.value)
+                        }
                         className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-blue-500"
                       />
                       <input
                         type="text"
                         placeholder="Contact No"
                         value={ref.contactNo || ""}
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            references: prev.references.map((r, i) =>
-                              i === index
-                                ? { ...r, contactNo: e.target.value }
-                                : r
-                            ),
-                          }));
-                        }}
+                        onChange={(e) =>
+                          updateReference(index, "contactNo", e.target.value)
+                        }
                         className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-blue-500"
                       />
                       <input
                         type="text"
                         placeholder="Organization"
                         value={ref.organization || ""}
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            references: prev.references.map((r, i) =>
-                              i === index
-                                ? { ...r, organization: e.target.value }
-                                : r
-                            ),
-                          }));
-                        }}
+                        onChange={(e) =>
+                          updateReference(index, "organization", e.target.value)
+                        }
                         className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-blue-500"
                       />
                       <input
                         type="text"
                         placeholder="Designation"
                         value={ref.designation || ""}
-                        onChange={(e) => {
-                          setFormData((prev) => ({
-                            ...prev,
-                            references: prev.references.map((r, i) =>
-                              i === index
-                                ? { ...r, designation: e.target.value }
-                                : r
-                            ),
-                          }));
-                        }}
+                        onChange={(e) =>
+                          updateReference(index, "designation", e.target.value)
+                        }
                         className="w-full px-3 py-2 border border-gray-200 rounded text-sm focus:outline-none focus:border-blue-500"
                       />
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-gray-500 text-sm">
-                No references added yet
-              </div>
-            )}
+                );
+              })}
+            </div>
           </div>
 
           <div className="flex justify-end space-x-4 pt-6">

@@ -304,53 +304,6 @@ const RecruiterDetailsDrawer = ({
                   <div>{displayRecruiter?.email}</div>
                 </div>
               </div>
-
-              <div className="h-48 flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px] md:col-span-2 lg:col-span-1">
-                <div className="flex items-center gap-[12px]">
-                  <div>
-                    <MapPin className="w-5 h-5 text-[#121417]" />
-                  </div>
-                  <div className="text-[#121417] text-sm font-semibold">
-                    Address
-                  </div>
-                </div>
-                <div className="text-[#61758A] text-sm">
-                  <div>{displayRecruiter?.currentAddress?.address || "-"}</div>
-                  <div className="mt-1">
-                    City: {displayRecruiter?.currentAddress?.city || "-"}
-                  </div>
-                  <div>
-                    State: {displayRecruiter?.currentAddress?.state || "-"}
-                  </div>
-                  <div>
-                    Pincode: {displayRecruiter?.currentAddress?.pincode || "-"}
-                  </div>
-                </div>
-              </div>
-
-              <div className="h-48 flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px] md:col-span-2 lg:col-span-1">
-                <div className="flex items-center gap-[12px]">
-                  <div>
-                    <MapPin className="w-5 h-5 text-[#121417]" />
-                  </div>
-                  <div className="text-[#121417] text-sm font-semibold">
-                    Permanent Address
-                  </div>
-                </div>
-                <div className="text-[#61758A] text-sm">
-                  <div>{displayRecruiter?.permanentAddress?.address}</div>
-                  <div className="mt-1">
-                    City: {displayRecruiter?.permanentAddress?.city || "-"}
-                  </div>
-                  <div>
-                    State: {displayRecruiter?.permanentAddress?.state || "-"}
-                  </div>
-                  <div>
-                    Pincode:{" "}
-                    {displayRecruiter?.permanentAddress?.pincode || "-"}
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
           <div className="self-stretch inline-flex flex-col justify-start items-start gap-6 mt-8">
@@ -693,6 +646,59 @@ const RecruiterDetailsDrawer = ({
                 No references available
               </div>
             )}
+          </div>
+          <div className="self-stretch inline-flex flex-col justify-start items-start gap-6 mt-8">
+            <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
+              Address Information
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div className="h-48 flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
+                <div className="flex items-center gap-[12px]">
+                  <div>
+                    <MapPin className="w-5 h-5 text-[#121417]" />
+                  </div>
+                  <div className="text-[#121417] text-sm font-semibold">
+                    Address
+                  </div>
+                </div>
+                <div className="text-[#61758A] text-sm">
+                  <div>{displayRecruiter?.currentAddress?.address || "-"}</div>
+                  <div className="mt-1">
+                    City: {displayRecruiter?.currentAddress?.city || "-"}
+                  </div>
+                  <div>
+                    State: {displayRecruiter?.currentAddress?.state || "-"}
+                  </div>
+                  <div>
+                    Pincode: {displayRecruiter?.currentAddress?.pincode || "-"}
+                  </div>
+                </div>
+              </div>
+
+              <div className="h-48 flex flex-col p-[16px] gap-[12px] rounded-[8px] border-[#DBE0E5] border-[1px]">
+                <div className="flex items-center gap-[12px]">
+                  <div>
+                    <MapPin className="w-5 h-5 text-[#121417]" />
+                  </div>
+                  <div className="text-[#121417] text-sm font-semibold">
+                    Permanent Address
+                  </div>
+                </div>
+                <div className="text-[#61758A] text-sm">
+                  <div>{displayRecruiter?.permanentAddress?.address}</div>
+                  <div className="mt-1">
+                    City: {displayRecruiter?.permanentAddress?.city || "-"}
+                  </div>
+                  <div>
+                    State: {displayRecruiter?.permanentAddress?.state || "-"}
+                  </div>
+                  <div>
+                    Pincode:{" "}
+                    {displayRecruiter?.permanentAddress?.pincode || "-"}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
