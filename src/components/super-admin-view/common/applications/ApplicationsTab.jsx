@@ -44,6 +44,77 @@ const ApplicationsTab = ({ isBackBtnEnabled = false }) => {
   const totalPages = Math.ceil(totalCount / itemsPerPage);
   const filteredCount = totalCount;
 
+  const processApplications = (applications) => {
+    return applications.map((application) => {
+      const baseFields = {
+        _id: application._id,
+        applicantId: application.applicantId,
+        applicantImage: application.applicantImage,
+        applicantName: application.applicantName,
+        status: application.status,
+        statusByCorporate: application.statusByCorporate,
+        applicantType: application.applicantType,
+        applicationDate: application.applicationDate,
+      };
+
+      if (type === "job") {
+        return {
+          ...baseFields,
+          source: application.source,
+          recruiterInfo: application.applierRecruiterInfo
+            ? {
+                name:
+                  application.applierRecruiterInfo.firstName +
+                  " " +
+                  application.applierRecruiterInfo.lastName,
+                email: application.applierRecruiterInfo.email,
+              }
+            : application.profileCreatorRecruiterInfo
+            ? {
+                name:
+                  application.profileCreatorRecruiterInfo.firstName +
+                  " " +
+                  application.profileCreatorRecruiterInfo.lastName,
+                email: application.profileCreatorRecruiterInfo.email,
+              }
+            : null,
+          recruiterId: application.applierRecruiterId,
+          applicantExperience: application.applicantExperience,
+        };
+      }
+
+      const sectorSpecialization = application.applicant?.sectorSpecialization
+        ? Array.isArray(application.applicant.sectorSpecialization)
+          ? application.applicant.sectorSpecialization
+              .map((sector) =>
+                typeof sector === "object" ? sector.name || sector._id : sector
+              )
+              .join(", ")
+          : application.applicant.sectorSpecialization
+        : null;
+
+      const expertiseAreas = application.applicant?.expertiseAreas
+        ? Array.isArray(application.applicant.expertiseAreas)
+          ? application.applicant.expertiseAreas
+              .map((area) =>
+                typeof area === "object" ? area.name || area._id : area
+              )
+              .join(", ")
+          : application.applicant.expertiseAreas
+        : null;
+
+      return {
+        ...baseFields,
+        teachingExperience: application.teachingExperience,
+        relevantExperience: application.relevantExperience,
+        sectorSpecialization,
+        expertiseAreas,
+      };
+    });
+  };
+
+  const processedApplications = processApplications(paginatedApplications);
+
   const handleBackClick = () => {
     navigate(-1);
   };
@@ -141,7 +212,7 @@ const ApplicationsTab = ({ isBackBtnEnabled = false }) => {
           {!loading && (
             <div className="min-w-0 overflow-x-auto">
               <ApplicationsTable
-                paginatedApplications={paginatedApplications}
+                paginatedApplications={processedApplications}
                 onRevalidate={refetch}
                 currentType={type}
               />

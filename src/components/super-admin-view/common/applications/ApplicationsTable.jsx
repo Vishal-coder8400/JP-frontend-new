@@ -119,26 +119,24 @@ const ApplicationsTable = ({
                           </div>
                           <div className="flex flex-col">
                             <span className="font-medium text-gray-900">
-                              {application.applicantName || "N/A"}
+                              {application.applicantName || "-"}
                             </span>
                             <span className="text-sm text-gray-500">
-                              {application.applicantId || "N/A"}
+                              {application.applicantId || "-"}
                             </span>
                           </div>
                         </div>
                       </TableCell>
                       {currentType === "job" ? (
                         <>
-                          <TableCell>{application.source || "N/A"}</TableCell>
+                          <TableCell>{application.source || "-"}</TableCell>
                           <TableCell>
                             <div className="flex flex-col">
                               <span className="font-medium text-gray-900">
-                                {application.recruiterInfo?.name || "N/A"}
+                                {application.recruiterInfo?.name || "-"}
                               </span>
                               <span className="text-sm text-gray-500">
-                                {application.recruiterId ||
-                                  application.recruiterInfo?._id ||
-                                  "N/A"}
+                                {application.recruiterInfo?.email || "-"}
                               </span>
                             </div>
                           </TableCell>
@@ -146,34 +144,10 @@ const ApplicationsTable = ({
                       ) : (
                         <>
                           <TableCell>
-                            {application.applicant?.sectorSpecialization
-                              ? Array.isArray(
-                                  application.applicant.sectorSpecialization
-                                )
-                                ? application.applicant.sectorSpecialization
-                                    .map((sector) =>
-                                      typeof sector === "object"
-                                        ? sector.name || sector._id
-                                        : sector
-                                    )
-                                    .join(", ")
-                                : application.applicant.sectorSpecialization
-                              : "N/A"}
+                            {application.sectorSpecialization || "-"}
                           </TableCell>
                           <TableCell>
-                            {application.applicant?.expertiseAreas
-                              ? Array.isArray(
-                                  application.applicant.expertiseAreas
-                                )
-                                ? application.applicant.expertiseAreas
-                                    .map((area) =>
-                                      typeof area === "object"
-                                        ? area.name || area._id
-                                        : area
-                                    )
-                                    .join(", ")
-                                : application.applicant.expertiseAreas
-                              : "N/A"}
+                            {application.expertiseAreas || "-"}
                           </TableCell>
                         </>
                       )}
@@ -197,15 +171,15 @@ const ApplicationsTable = ({
                         {application.applicantType === "trainer"
                           ? application.teachingExperience ||
                             application.relevantExperience ||
-                            "N/A"
-                          : application.applicantExperience || "N/A"}
+                            "-"
+                          : application.applicantExperience || "-"}
                       </TableCell>
                       <TableCell>
                         {application.applicationDate
                           ? new Date(
                               application.applicationDate
                             ).toLocaleDateString()
-                          : "N/A"}
+                          : "-"}
                       </TableCell>
                     </TableRow>
                   ))
