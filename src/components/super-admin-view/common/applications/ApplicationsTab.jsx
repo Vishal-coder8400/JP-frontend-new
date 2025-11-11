@@ -53,6 +53,10 @@ const ApplicationsTab = ({ isBackBtnEnabled = false }) => {
         applicantName: application.applicantName,
         status: application.status,
         statusByCorporate: application.statusByCorporate,
+        statusByCorporateFeedback: application.statusByCorporateFeedback,
+        statusByCorporateNotes: application.statusByCorporateNotes,
+        statusFeedback: application.statusFeedback,
+        statusNotes: application.statusNotes,
         applicantType: application.applicantType,
         applicationDate: application.applicationDate,
       };

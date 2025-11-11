@@ -227,6 +227,16 @@ const ApplicationsTable = ({
                   onRevalidate={onRevalidate}
                   context="application"
                   applicationStatus={selectedApplication.status}
+                  statusByCorporateFeedback={
+                    selectedApplication.statusByCorporateFeedback
+                  }
+                  statusByCorporateNotes={
+                    selectedApplication.statusByCorporateNotes
+                  }
+                  statusFeedback={selectedApplication.statusFeedback}
+                  statusNotes={selectedApplication.statusNotes}
+                  status={selectedApplication.status}
+                  statusByCorporate={selectedApplication.statusByCorporate}
                 />
               )}
             </div>

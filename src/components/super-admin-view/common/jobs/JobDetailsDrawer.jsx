@@ -406,15 +406,6 @@ const JobDetailsDrawer = ({
                   </span>
                 </li>
               )}
-              {job.requiredSkills && (
-                <li className="flex items-start gap-2">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
-                  <span className="text-gray-700">
-                    <strong>Required Skills:</strong>{" "}
-                    {job.requiredSkills.join(", ") || "-"}
-                  </span>
-                </li>
-              )}
               {job.twoWheelerMandatory && (
                 <li className="flex items-start gap-2">
                   <span className="w-2 h-2 bg-gray-400 rounded-full mt-2 flex-shrink-0"></span>
@@ -473,7 +464,7 @@ const JobDetailsDrawer = ({
           </div>
 
           {/* Skills/Tags */}
-          {job.requiredSkills && job.requiredSkills.length > 0 && (
+          {job?.requiredSkills && job?.requiredSkills?.length > 0 && (
             <div className="mt-6">
               <div className="flex flex-wrap gap-2">
                 {job.requiredSkills.map((skill, index) => (
@@ -481,7 +472,7 @@ const JobDetailsDrawer = ({
                     key={index}
                     className="px-3 py-1 text-sm font-medium bg-gray-100 text-gray-700 rounded-full border"
                   >
-                    {skill}
+                    {skill?.label}
                   </span>
                 ))}
               </div>

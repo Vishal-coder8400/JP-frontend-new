@@ -1,5 +1,5 @@
 import api from "../../lib/axios";
-import { createGetAll, createGetById, createPatch } from "./baseApi";
+import { createGetAll, createGetById } from "./baseApi";
 
 export const getAllTrainings = createGetAll("/admin/trainings/list");
 export const getTrainingById = createGetById("/admin/trainings");
@@ -21,8 +21,9 @@ export const getJobApplications = async ({ signal, id, ...params }) => {
   }
 
   const paramsString = new URLSearchParams(queryParams).toString();
+  const baseUrl = `/admin/applications/jobs/${id}?corporateReviewStatus=all`;
   const response = await api.get(
-    `/admin/applications/jobs/${id}?${paramsString}`,
+    paramsString ? `${baseUrl}&${paramsString}` : baseUrl,
     {
       signal,
     }
