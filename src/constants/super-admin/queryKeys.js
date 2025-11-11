@@ -43,7 +43,6 @@ export const QUERY_KEYS = {
     trainers: (token, params) => ["approvals-trainers", token, params],
     recruiter: (token, params) => ["approvals-recruiters", token, params],
     recruiters: (token, params) => ["approvals-recruiters", token, params],
-    candidates: (token, params) => ["approvals-candidates", token, params],
     job: (token, params) => ["approvals-jobs", token, params],
     training: (token, params) => ["approvals-trainings", token, params],
     jobsAndTrainings: (token, params) => [

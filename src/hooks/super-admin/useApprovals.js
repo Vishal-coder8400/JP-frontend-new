@@ -33,10 +33,6 @@ export const useGetApprovalsRecruiters = (params = {}) => {
   return createApprovalsListQuery("recruiter", params);
 };
 
-export const useGetApprovalsCandidates = (params = {}) => {
-  return createApprovalsListQuery("candidates", params);
-};
-
 export const useGetApprovalsJobs = (params = {}) => {
   return createApprovalsListQuery("job", params);
 };

@@ -17,12 +17,10 @@ const CandidatesTable = ({
   paginatedCandidates,
   onRevalidate,
   showStatusColumn = false,
-  context = "database",
 }) => {
   const [selectedCandidateId, setSelectedCandidateId] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [candidateIdForDrawer, setCandidateIdForDrawer] = useState(null);
-  const [approvalIdForDrawer, setApprovalIdForDrawer] = useState(null);
 
   const handleSelectCandidate = (candidateId) => {
     setSelectedCandidateId(candidateId);
@@ -33,17 +31,12 @@ const CandidatesTable = ({
       return;
     }
 
-    const candidateId =
-      context === "approvals" ? candidate.candidateId : candidate._id;
-    const approvalId = context === "approvals" ? candidate.id : undefined;
-
-    setCandidateIdForDrawer(candidateId);
-    setApprovalIdForDrawer(approvalId);
+    setCandidateIdForDrawer(candidate._id);
     setDrawerOpen(true);
   };
 
   const getCandidateStatus = (candidate) => {
-    return candidate.approvalStatus || candidate.jobStatus;
+    return candidate.jobStatus || candidate.status;
   };
 
   const colSpan = showStatusColumn ? 8 : 7;
@@ -94,29 +87,29 @@ const CandidatesTable = ({
                   </TableCell>
                   <TableCell
                     className="w-[160px] max-w-[160px] truncate"
-                    title={candidate?._id || "N/A"}
+                    title={candidate?._id || "-"}
                   >
-                    {candidate?._id || "N/A"}
+                    {candidate?._id || "-"}
                   </TableCell>
                   <TableCell className="w-[250px] max-w-[250px]">
                     <span
                       className="font-medium text-gray-900"
-                      title={candidate?.name || "N/A"}
+                      title={candidate?.name || "-"}
                     >
-                      {candidate?.name || "N/A"}
+                      {candidate?.name || "-"}
                     </span>
                   </TableCell>
                   <TableCell
                     className="w-[200px] max-w-[200px] truncate"
-                    title={candidate?.email || "N/A"}
+                    title={candidate?.email || "-"}
                   >
-                    {candidate?.email || "N/A"}
+                    {candidate?.email || "-"}
                   </TableCell>
                   <TableCell
                     className="w-[180px] max-w-[180px] truncate"
-                    title={candidate?.contactNumber || "N/A"}
+                    title={candidate?.contactNumber || "-"}
                   >
-                    {candidate?.contactNumber || "N/A"}
+                    {candidate?.contactNumber || "-"}
                   </TableCell>
                   <TableCell className="w-[140px]">
                     {(candidate?.totalExperience !== undefined ||
@@ -171,10 +164,8 @@ const CandidatesTable = ({
           <div className="w-full h-full">
             <CandidateDetailsDrawer
               candidateId={candidateIdForDrawer}
-              approvalId={approvalIdForDrawer}
-              context={context}
+              context="database"
               onRevalidate={onRevalidate}
-              areApprovalBtnsVisible={context === "approvals"}
               onClose={() => setDrawerOpen(false)}
             />
           </div>

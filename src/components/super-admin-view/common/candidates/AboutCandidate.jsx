@@ -145,9 +145,9 @@ const AboutCandidate = ({ candidate }) => {
                 skills.map((skill, index) => (
                   <Badge
                     key={index}
-                    className="bg-gray2 text-gray1 px-3 py-1 rounded-full"
+                    className="bg-gray2 text-gray1 px-3 py-1 rounded-full text-xs"
                   >
-                    {skill}
+                    {skill?.label}
                   </Badge>
                 ))
               ) : (

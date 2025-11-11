@@ -133,20 +133,6 @@ export const createDatabaseFilters = (type) => {
 
     case "candidates":
       filters.push(
-        createFilter({
-          label: "Status",
-          componentType: "select",
-          name: "status",
-          options: STATUS_OPTIONS.candidate,
-          defaultValue: "active",
-        }),
-        createFilter({
-          label: "Verification",
-          componentType: "select",
-          name: "verification",
-          options: STATUS_OPTIONS.verification,
-          defaultValue: "verified",
-        }),
         BASE_FILTERS.sortBy(SORT_OPTIONS.candidate),
         BASE_FILTERS.sortOrder
       );

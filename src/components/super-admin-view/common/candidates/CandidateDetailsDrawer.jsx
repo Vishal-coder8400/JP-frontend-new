@@ -3,14 +3,9 @@ import { useState } from "react";
 import AboutCandidate from "./AboutCandidate";
 import { Button } from "@/components/ui/button";
 import EditCandidateDrawer from "@/components/super-admin-view/common/candidates/EditCandidateDrawer";
-import {
-  useApprovals,
-  useGetApprovalDetails,
-} from "@/hooks/super-admin/useApprovals";
 import { useGetCandidateDetails } from "@/hooks/super-admin/useApplicant";
 import { useApplicationApprovals } from "@/hooks/super-admin/useApplicationApprovals";
 import { useGetJobsByApplicant } from "@/hooks/super-admin/useJob";
-import AdminStatusBadge from "@/components/super-admin-view/shared/AdminStatusBadge";
 import RejectionReasonModal from "@/components/common/RejectionReasonModal";
 import HoldReasonModal from "@/components/common/HoldReasonModal";
 import { toast } from "sonner";
@@ -21,12 +16,17 @@ import ActionButtons from "@/components/super-admin-view/shared/ActionButtons";
 const CandidateDetailsDrawer = ({
   applicationStatus,
   candidateId,
-  approvalId,
   applicationId,
   applicationType,
   context = "database",
   onRevalidate,
   onClose,
+  statusByCorporateFeedback,
+  statusByCorporateNotes,
+  statusFeedback,
+  statusNotes,
+  status,
+  statusByCorporate,
 }) => {
   const [activeTab, setActiveTab] = useState("aboutCandidate");
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -38,66 +38,29 @@ const CandidateDetailsDrawer = ({
       enabled: !!candidateId,
     });
 
-  const { data: approvalDetails, isLoading: isLoadingApproval } =
-    useGetApprovalDetails(approvalId, {
-      enabled: !!approvalId && context === "approvals",
-    });
-
-  const { data: jobsData, isLoading: isLoadingJobs } = useGetJobsByApplicant(
-    candidateId,
-    {
-      enabled: !!candidateId,
-    }
-  );
+  const { data: jobsData } = useGetJobsByApplicant(candidateId, {
+    enabled: !!candidateId,
+  });
 
   const applicationApprovals = useApplicationApprovals(applicationType);
-  const approvals = useApprovals();
+  const isApplicationContext = context === "application" && applicationId;
+  const isApprovalLoading = isApplicationContext
+    ? applicationApprovals.isLoading
+    : false;
 
-  const {
-    isLoading: isApprovalLoading,
-    approveApplication,
-    rejectApplication,
-    holdApplication,
-  } = applicationId
-    ? {
-        isLoading: applicationApprovals.isLoading,
-        approveApplication: applicationApprovals.handleApprove,
-        rejectApplication: applicationApprovals.handleReject,
-        holdApplication: applicationApprovals.handleHold,
-      }
-    : approvals;
+  const isLoading = isLoadingCandidate;
 
-  const isLoading = isLoadingCandidate || isLoadingApproval;
-
-  const candidate =
-    context === "approvals" && candidateDetails && approvalDetails
-      ? {
-          ...candidateDetails,
-          status: approvalDetails?.data?.approvalStatus,
-          rejectionReason: approvalDetails?.data?.reviewerNotes,
-          holdReason: approvalDetails?.data?.reviewerNotes,
-        }
-      : candidateDetails;
+  const candidate = candidateDetails;
 
   const displayCandidate = candidate?.data;
-  const candidateStatus =
-    context === "approvals" ? candidate?.status : displayCandidate?.status;
-  const statusReason =
-    context === "approvals"
-      ? approvalDetails?.data?.reviewerNotes ||
-        candidate?.rejectionReason ||
-        candidate?.holdReason
-      : undefined;
+  const candidateStatus = displayCandidate?.status;
+  const statusReason = displayCandidate?.statusReason;
 
   const handleApprove = async () => {
+    if (!isApplicationContext) return;
     try {
-      if (applicationId) {
-        await approveApplication(applicationId);
-        toast.success("Application approved successfully");
-      } else {
-        await approveApplication(approvalId);
-        toast.success("Candidate approved successfully");
-      }
+      await applicationApprovals.handleApprove(applicationId);
+      toast.success("Application approved successfully");
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -119,14 +82,10 @@ const CandidateDetailsDrawer = ({
   };
 
   const handleReject = async (rejectionReason) => {
+    if (!isApplicationContext) return;
     try {
-      if (applicationId) {
-        await rejectApplication(applicationId, rejectionReason);
-        toast.success("Application rejected successfully");
-      } else {
-        await rejectApplication(approvalId, rejectionReason);
-        toast.success("Candidate rejected successfully");
-      }
+      await applicationApprovals.handleReject(applicationId, rejectionReason);
+      toast.success("Application rejected successfully");
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -148,14 +107,10 @@ const CandidateDetailsDrawer = ({
   };
 
   const handleHold = async (holdReason) => {
+    if (!isApplicationContext) return;
     try {
-      if (applicationId) {
-        await holdApplication(applicationId, holdReason);
-        toast.success("Application put on hold successfully");
-      } else {
-        await holdApplication(approvalId, holdReason);
-        toast.success("Candidate put on hold successfully");
-      }
+      await applicationApprovals.handleHold(applicationId, holdReason);
+      toast.success("Application put on hold successfully");
       if (onRevalidate) {
         await onRevalidate();
       }
@@ -175,8 +130,6 @@ const CandidateDetailsDrawer = ({
       );
     }
   };
-
-  console.log(applicationStatus);
 
   const tabs = [
     {
@@ -240,7 +193,7 @@ const CandidateDetailsDrawer = ({
             onReject={() => setShowRejectionModal(true)}
             onHold={() => setShowHoldModal(true)}
             isLoading={isApprovalLoading}
-            entityName="Application"
+            entityName={context === "database" ? "Candidate" : "Application"}
             approvalStatus={applicationStatus}
             editButtonVariant="gray"
             editButtonSize="sm"
@@ -256,6 +209,53 @@ const CandidateDetailsDrawer = ({
       />
 
       <div className="px-6">
+        {context === "application" && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-sm text-gray-500">Status (Admin)</p>
+              <p className="text-gray-900 font-medium capitalize">
+                {status || "-"}
+              </p>
+              {(statusNotes || statusFeedback) && (
+                <div className="mt-2 space-y-1">
+                  {statusNotes && (
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Notes:</span> {statusNotes}
+                    </p>
+                  )}
+                  {statusFeedback && (
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Feedback:</span>{" "}
+                      {statusFeedback}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+            <div className="bg-gray-50 rounded-lg p-4">
+              <p className="text-sm text-gray-500">Status (Corporate)</p>
+              <p className="text-gray-900 font-medium capitalize">
+                {statusByCorporate || "-"}
+              </p>
+              {(statusByCorporateNotes || statusByCorporateFeedback) && (
+                <div className="mt-2 space-y-1">
+                  {statusByCorporateNotes && (
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Notes:</span>{" "}
+                      {statusByCorporateNotes}
+                    </p>
+                  )}
+                  {statusByCorporateFeedback && (
+                    <p className="text-sm text-gray-600">
+                      <span className="font-medium">Feedback:</span>{" "}
+                      {statusByCorporateFeedback}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
         {/* Tab Navigation */}
         <div className="flex gap-4 justify-end">
           {tabs.map((tab) => {
@@ -279,7 +279,7 @@ const CandidateDetailsDrawer = ({
           )}
           {activeTab === "jobsApplied" && (
             <JobsTable
-              paginatedJobs={jobsData?.data.applications || []}
+              paginatedJobs={jobsData?.data?.applications || []}
               context="database"
             />
           )}
