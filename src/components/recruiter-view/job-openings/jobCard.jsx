@@ -1,4 +1,6 @@
 import { Fragment } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CalenderIcon,
   ClockIcon,
@@ -18,8 +20,14 @@ import { IndianRupee } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import useAuthStore from "../../../stores/useAuthStore";
 
+
+
+
+
 const JobCard = ({ setOpen, item, setOpen1, setCandidateFilters }) => {
   const { setJobPost } = useJobPostStore();
+  const [openManageModal, setOpenManageModal] = useState(false);
+const navigate = useNavigate();
   const { user } = useAuthStore();
   const location = useLocation();
   const isClickable = location.pathname.includes("corporate");
@@ -27,6 +35,29 @@ const JobCard = ({ setOpen, item, setOpen1, setCandidateFilters }) => {
   //   setOpen1((prev) => !prev);
   //   setJobPost(item);
   // };
+const isOwner =
+  user?.role === "corporate" &&
+  (item?.postedBy?._id === user?._id ||
+    item?.companyDetails?._id === user?.companyId);
+
+  const handleEditJob = () => {
+  setOpenManageModal(false);
+
+  if (trainingPath) {
+    navigate(`/corporate/training/edit/${item?._id}`);
+  } else {
+    navigate(`/corporate/job-posting/edit/${item?._id}`);
+  }
+};
+
+const handleEndJob = () => {
+  setOpenManageModal(false);
+  // call API / store action here
+  // endJob(item?._id);
+};
+
+
+  console.log("user role in job card:", item);
   const trainingPath = location.pathname.includes("training-listing");
   const handleJob = (e, job) => {
     e.preventDefault();
@@ -143,8 +174,10 @@ const JobCard = ({ setOpen, item, setOpen1, setCandidateFilters }) => {
             <RightArrow className="h-[16px] w-[16px]" />
           </div>
         </Button>
+        
       </div>
     </>
+    
   );
   return (
     <Fragment>

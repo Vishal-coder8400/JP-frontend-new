@@ -1635,35 +1635,59 @@ export const jobController3 = [
     placeholder: "Upload file",
   },
   {
-    name: "isWalkInInterview",
-    label: "Is this a walk-in interview?",
+  name: "isWalkInInterview",
+  label: "Is this a walk-in / in-person interview?",
+  componentType: "select",
+  placeholder: "Select",
+  options: [
+    { id: "yes", label: "Yes" },
+    { id: "no", label: "No" },
+  ],
+  required: true,
+}
+];
+export const interviewTypeController = [
+  {
+    name: "interviewType",
+    label: "Type of Interview",
     componentType: "select",
-    placeholder: "Select",
+    placeholder: "Select interview type",
     options: [
-      { id: "yes", label: "Yes" },
-      { id: "no", label: "No" },
+      { id: "walkin", label: "Walk-in" },
+      { id: "inperson", label: "In-Person" },
     ],
     required: true,
   },
 ];
+
 export const walkinAdress = [
   {
     name: "walkInDate",
     label: "",
     componentType: "calendar",
     placeholder: "Select Date",
+    required: true,
   },
   {
-    name: "walkInTime",
+    name: "walkInStartTime",
     label: "",
     componentType: "time",
-    placeholder: "Enter Time",
+    placeholder: "Start Time",
+    required: true,
+  },
+  {
+    name: "walkInEndTime",
+    label: "",
+    componentType: "time",
+    placeholder: "End Time",
+    required: true,
   },
   {
     name: "walkInAddress",
     label: "Address",
     componentType: "textarea",
     placeholder: "Enter your address",
+    required: true,
   },
   {
     name: "spocName",
@@ -1671,6 +1695,7 @@ export const walkinAdress = [
     componentType: "input",
     type: "text",
     placeholder: "Enter name",
+    required: true,
   },
   {
     name: "spocNumber",
@@ -1678,8 +1703,10 @@ export const walkinAdress = [
     componentType: "input",
     type: "text",
     placeholder: "Enter number",
+    required: true,
   },
 ];
+
 export const jobSeekerBasicDetails = [
   {
     row: [

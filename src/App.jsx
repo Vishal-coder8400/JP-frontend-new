@@ -298,7 +298,7 @@ function App() {
           }
         >
           <Route path="log-in" element={<CorporateLogIn />} />
-          <Route path="trainning-posting" element={<TrainningPosting />} />
+          <Route path="training-posting" element={<TrainningPosting />} />
           <Route path="job-posting" element={<JobPosting />} />
         </Route>
         <Route

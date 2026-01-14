@@ -1,5 +1,9 @@
 import { Fragment } from "react";
 import { Button } from "../../ui/button";
+import { useState } from "react";
+import { Pencil } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import EditJobDrawer from "@/components/super-admin-view/common/jobs/EditJobDrawer";
 import useJobPostStore from "../../../stores/useJobPostStore";
 import {
   CalenderIcon,
@@ -14,18 +18,51 @@ import { IndianRupee } from "lucide-react";
 const JobDescription = ({ setOpen1, hook }) => {
   const { jobPost } = useJobPostStore();
 
-  const { data } = hook(jobPost?._id);
+   const location = useLocation();
 
+  const { data } = hook(jobPost?._id);
+    const [isEditDrawerOpen, setIsEditDrawerOpen] = useState(false);
+
+
+  
   return (
     <Fragment>
       {/* desktop-view */}
+      <EditJobDrawer
+      isOpen={isEditDrawerOpen}
+      onClose={() => setIsEditDrawerOpen(false)}
+      job={data?.data}
+      onRevalidate={() => {
+        setIsEditDrawerOpen(false);
+        // optionally refetch job here
+      }}
+    />
       <div
         aria-labelledby="dialog-title"
         aria-describedby="dialog-desc"
         className="hidden p-6 w-full bg-white outline outline-offset-[-1px] outline-neutral-400 lg:inline-flex flex-col justify-start items-center overflow-hidden min-h-screen"
       >
         <div className="self-stretch flex-1 flex flex-col justify-start items-start gap-8">
-          <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
+         <div className="relative self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 inline-flex justify-start items-start gap-6">
+            {location.pathname.includes("corporate") && (
+  <Button
+    onClick={() => setIsEditDrawerOpen(true)}
+    variant="outline"
+    size="sm"
+    className="
+      absolute top-4 right-4
+      flex items-center gap-2
+      border-gray-500
+      text-gray-700
+      cursor-pointer
+      hover:bg-[#6945ED]/10
+    "
+  >
+    <Pencil size={14} />
+    Edit
+  </Button>
+)}
+
             <img
               className="w-16 h-16 relative rounded object-cover overflow-hidden"
               src={
@@ -357,14 +394,10 @@ const JobDescription = ({ setOpen1, hook }) => {
                     Location:{" "}
                   </span>
                   <span className="text-neutral-900/70 text-base font-normal leading-normal">
-                    {data?.data?.postedBy?.currentAddress ||
-                      data?.data?.postedByDetails?.[0]?.currentAddress}
-                    ,{" "}
-                    {data?.data?.postedBy?.state ||
-                      data?.data?.postedByDetails?.[0]?.state}{" "}
-                    -{" "}
-                    {data?.data?.postedBy?.pincode ||
-                      data?.data?.postedByDetails?.[0]?.pincode}
+                  {data?.data?.city},{" "}
+                    {data?.data?.state}
+                    -
+                    {data?.data?.pincode}
                   </span>
                 </div>
               </div>

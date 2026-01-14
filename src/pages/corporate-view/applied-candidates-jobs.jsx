@@ -34,6 +34,7 @@ const AppliedCandidatesJobs = () => {
     }
     setSearchParams(updatedParams);
   }, [candidateListFilters, setSearchParams]);
+  console.log("applicantData", applicantData);
   return (
     <div className="w-full">
       <Sheet open={open2} onOpenChange={setOpen2}>

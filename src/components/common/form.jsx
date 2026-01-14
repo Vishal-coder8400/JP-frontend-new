@@ -545,11 +545,12 @@ if (lower.includes("agerange") || lower.includes("age")) {
             : "";
 
         const acceptType =
-          getControlItem.accept === "image"
-            ? "image/*"
-            : getControlItem.accept === "pdf"
-            ? "application/pdf"
-            : "";
+  getControlItem.accept === "image"
+    ? "image/*"
+    : getControlItem.accept === "document"
+    ? ".pdf,.doc,.docx"
+    : "";
+
 
         const removeFile = () => {
           setFormData((prev) => setNestedValue(prev, nameWithIndex, ""));
@@ -568,19 +569,32 @@ if (lower.includes("agerange") || lower.includes("age")) {
                     if (!file) return;
 
                     const isImage = file.type.startsWith("image/");
-                    const isPdf = file.type === "application/pdf";
+const isPdf = file.type === "application/pdf";
+const isDoc = file.type === "application/msword";
+const isDocx =
+  file.type ===
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+
                     const isValidSize = file.size <= 5 * 1024 * 1024;
 
                     let isValidType = false;
-                    if (getControlItem.accept === "image") isValidType = isImage;
-                    if (getControlItem.accept === "pdf") isValidType = isPdf;
+
+if (getControlItem.accept === "image") {
+  isValidType = isImage;
+}
+
+if (getControlItem.accept === "document") {
+  isValidType = isPdf || isDoc || isDocx;
+}
+
 
                     if (!isValidType) {
                       alert(
-                        getControlItem.accept === "image"
-                          ? "Only images allowed."
-                          : "Only PDF allowed."
-                      );
+  getControlItem.accept === "image"
+    ? "Only images allowed."
+    : "Only PDF or Word documents allowed."
+);
+
                       return;
                     }
 
@@ -624,7 +638,11 @@ if (lower.includes("agerange") || lower.includes("age")) {
             </div>
 
             <div className="text-xs text-[#655F5F] absolute bottom-[-18px]">
-              Supported: {getControlItem.accept === "image" ? "Images" : "PDF"}, Max 5MB
+              Supported:{" "}
+{getControlItem.accept === "image"
+  ? "Images"
+  : "PDF, DOC, DOCX"}, Max 5MB
+
             </div>
           </div>
         );

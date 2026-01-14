@@ -4,6 +4,7 @@ import {
   jobController1,
   jobController2,
   jobController3,
+  interviewTypeController,
   regionalLanguage,
   walkinAdress,
 } from "../../config";
@@ -11,7 +12,7 @@ import Navbar from "../../components/recruiter-view/navbar";
 import { PostJobIcon } from "../../utils/icon";
 import { useCorporateJobPost } from "../../hooks/corporate/useJob";
 import { validateFormData } from "../../utils/commonFunctions";
-
+import api from "../../lib/axios";
 import { z } from "zod";
 import ButtonComponent from "../../components/common/button";
 import { useDropDown } from "@/hooks/common/useDropDown";
@@ -83,8 +84,12 @@ const jobSchema = z
     isWalkInInterview: z
       .string({ required_error: "Specify if this is a walk-in interview" })
       .min(1),
+      interviewType: z
+  .string()
+  .optional(),
     walkInDate: z.string().optional(),
-    walkInTime: z.string().optional(),
+    walkInStartTime: z.string().optional(),
+walkInEndTime: z.string().optional(),
     walkInAddress: z.string().optional(),
     spocName: z.string().optional(),
     spocNumber: z.string().optional(),
@@ -107,70 +112,87 @@ const jobSchema = z
     }
   )
   // ✅ Conditional validation for walk-in interview
-  .superRefine((data, ctx) => {
-    // ✅ regionalLanguages check
-    if (data.regionalLanguageRequired.toLowerCase() === "yes") {
-      if (!data.regionalLanguages || data.regionalLanguages.length === 0) {
+.superRefine((data, ctx) => {
+  // ✅ Regional language check
+  if (data.regionalLanguageRequired.toLowerCase() === "yes") {
+    if (!data.regionalLanguages || data.regionalLanguages.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message:
+          "Regional languages are required when 'Regional Language Required' is Yes",
+        path: ["regionalLanguages"],
+      });
+    }
+  }
+
+  // ✅ Walk-in / In-person validation
+  if (data.isWalkInInterview.toLowerCase() === "yes") {
+    // common fields
+    if (!data.walkInDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Interview date is required",
+        path: ["walkInDate"],
+      });
+    }
+
+    if (!data.walkInAddress) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Interview address is required",
+        path: ["walkInAddress"],
+      });
+    }
+
+    if (!data.spocName) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "SPOC name is required",
+        path: ["spocName"],
+      });
+    }
+
+    if (!data.spocNumber) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "SPOC number is required",
+        path: ["spocNumber"],
+      });
+    }
+
+    // ✅ ONLY for Walk-in interview type
+    if (data.interviewType === "walkin") {
+      if (!data.walkInStartTime) {
         ctx.addIssue({
+          path: ["walkInStartTime"],
+          message: "Start time is required",
           code: z.ZodIssueCode.custom,
-          message:
-            "Regional languages are required when 'Regional Language Required' is Yes",
-          path: ["regionalLanguages"],
+        });
+      }
+
+      if (!data.walkInEndTime) {
+        ctx.addIssue({
+          path: ["walkInEndTime"],
+          message: "End time is required",
+          code: z.ZodIssueCode.custom,
+        });
+      }
+
+      if (
+        data.walkInStartTime &&
+        data.walkInEndTime &&
+        data.walkInEndTime <= data.walkInStartTime
+      ) {
+        ctx.addIssue({
+          path: ["walkInEndTime"],
+          message: "End time must be after start time",
+          code: z.ZodIssueCode.custom,
         });
       }
     }
+  }
+});
 
-    // ✅ isWalkInInterview check — add error for each missing field
-    if (data.isWalkInInterview.toLowerCase() === "yes") {
-      const missingFields = [];
-
-      if (!data.walkInDate) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Walk-in date is required",
-          path: ["walkInDate"],
-        });
-        missingFields.push("walkInDate");
-      }
-      if (!data.walkInTime) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Walk-in time is required",
-          path: ["walkInTime"],
-        });
-        missingFields.push("walkInTime");
-      }
-      if (!data.walkInAddress) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Walk-in address is required",
-          path: ["walkInAddress"],
-        });
-        missingFields.push("walkInAddress");
-      }
-      if (!data.spocName) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "SPOC name is required",
-          path: ["spocName"],
-        });
-        missingFields.push("spocName");
-      }
-      if (!data.spocNumber) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "SPOC number is required",
-          path: ["spocNumber"],
-        });
-        missingFields.push("spocNumber");
-      }
-
-      // If you want, you can log all missing fields together:
-      if (missingFields.length > 0) {
-        console.warn("Missing walk-in fields:", missingFields);
-      }
-    }
-  });
 
 const JobPosting = () => {
   const [errorMessage, setErrorMessage] = useState({});
@@ -200,8 +222,10 @@ const JobPosting = () => {
     twoWheelerMandatory: "",
     jobDescription: "",
     isWalkInInterview: "",
+    interviewType: "",
     walkInDate: "",
-    walkInTime: "",
+    walkInStartTime: "",
+  walkInEndTime: "",
     walkInAddress: "",
     spocName: "",
     spocNumber: "",
@@ -221,6 +245,36 @@ const JobPosting = () => {
         }
       : field
   );
+
+const handleUpload = async (file, callback) => {
+  if (!file) return;
+
+  const formData = new FormData();
+  formData.append("file", file); // MUST match multer.single("file")
+
+  try {
+    const res = await api.post(
+      "/corporate/upload/job-details",
+      formData
+    );
+    // assuming backend returns { url: "..." }
+    const uploadedUrl = res.data?.data?.fileUrl;
+
+    if (!uploadedUrl) {
+      throw new Error("Upload succeeded but no URL returned");
+    }
+
+    callback(uploadedUrl);
+  } catch (error) {
+    console.error(
+      "Upload failed:",
+      error.isApiError ? error.message : error
+    );
+  }
+};
+
+
+
   const updatedFields2 = regionalLanguage.map((field) =>
     field.name === "regionalLanguages"
       ? {
@@ -307,6 +361,7 @@ const JobPosting = () => {
               formData={formData}
               setFormData={setFormData}
               errors={errorMessage}
+              
             />
             {formData?.regionalLanguageRequired === "yes" && (
               <CommonForm
@@ -321,15 +376,29 @@ const JobPosting = () => {
               formData={formData}
               setFormData={setFormData}
               errors={errorMessage}
+              handleUpload={handleUpload}
             />
-            {formData?.isWalkInInterview === "yes" && (
-              <CommonForm
-                formData={formData}
-                setFormData={setFormData}
-                formControls={walkinAdress}
-                errors={errorMessage}
-              />
-            )}
+            {/* Interview Type */}
+{formData?.isWalkInInterview === "yes" && (
+  <CommonForm
+    formControls={interviewTypeController}
+    formData={formData}
+    setFormData={setFormData}
+    errors={errorMessage}
+  />
+)}
+
+{/* Interview Details */}
+{formData?.isWalkInInterview === "yes" &&
+  formData?.interviewType && (
+    <CommonForm
+      formControls={walkinAdress}
+      formData={formData}
+      setFormData={setFormData}
+      errors={errorMessage}
+    />
+)}
+
           </div>
           <div className="self-stretch flex flex-col justify-start items-end gap-10">
             <ButtonComponent
