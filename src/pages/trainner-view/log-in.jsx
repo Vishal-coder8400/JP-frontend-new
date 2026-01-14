@@ -1,0 +1,30 @@
+import { useState } from "react";
+import LogInComponent from "../../components/recruiter-view/log-in";
+import { useTrainerLogin } from "../../hooks/trainer/useAuth";
+
+const Login = () => {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    rememberme: false,
+  });
+  const signUpLink = "/trainer/profile-setup/basic-details";
+  const { mutate, isPending } = useTrainerLogin();
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    mutate(formData);
+  };
+  return (
+    <div className="flex flex-col w-full">
+      <LogInComponent
+        formData={formData}
+        handleSubmit={handleSubmit}
+        setFormData={setFormData}
+        isPending={isPending}
+        signUpLink={signUpLink}
+      />
+    </div>
+  );
+};
+
+export default Login;
