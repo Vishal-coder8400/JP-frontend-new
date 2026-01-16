@@ -31,10 +31,10 @@ const Index = () => {
     progress?.data?.currentStage === 2
       ? "/recruiter/profile-setup/kyc-verification"
       : progress?.data?.currentStage === 3
-      ? "/recruiter/profile-setup/sectoral-details"
-      : progress?.data?.currentStage === 4
-      ? "/recruiter/profile-setup/qualification-details"
-      : "/recruiter/dashboard";
+        ? "/recruiter/profile-setup/sectoral-details"
+        : progress?.data?.currentStage === 4
+          ? "/recruiter/profile-setup/qualification-details"
+          : "/recruiter/dashboard";
 
   return (
     <Fragment>
@@ -61,11 +61,10 @@ const Index = () => {
                   }).map((_, index) => (
                     <div
                       key={index}
-                      className={`flex-1 h-2 ${
-                        progress?.data?.completedStages.includes(index + 1)
+                      className={`flex-1 h-2 ${progress?.data?.completedStages.includes(index + 1)
                           ? "bg-lime-600"
                           : "bg-zinc-300"
-                      } rounded-xl`}
+                        } rounded-xl`}
                     />
                   ))}
                 </div>
@@ -93,102 +92,47 @@ const Index = () => {
         ) : user?.status === "active" ? (
           <ApprovedUi />
         ) : null}
-        <div className="w-full self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-6 overflow-hidden">
-          <div className="self-stretch inline-flex justify-start items-start gap-[662px]">
-            <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
-              Reports & Insights
-            </div>
+        <div className="w-full self-stretch backdrop-blur-sm bg-white/30 rounded-2xl border border-white/40 shadow-lg p-10 flex flex-col items-center justify-center gap-6 min-h-[400px] relative overflow-hidden">
+
+          {/* Background Pattern from Option 2 */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-64 h-64 bg-blue-500 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-purple-500 rounded-full translate-x-1/3 translate-y-1/3"></div>
           </div>
-          <div className="self-stretch h-0 outline outline-offset-[-0.50px] outline-neutral-200"></div>
-          {/* <SearchComponent /> */}
-          <div className="w-full self-stretch grid md:grid-cols-3 lg:grid-cols-4 gap-2">
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex items-center justify-center flex-col gap-4">
-              <div className="self-stretch inline-flex justify-center items-center gap-5">
-                <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
-                  Total Candidates
-                  <br />
-                  Submitted
-                </div>
-                <div className="justify-start text-gray-900 text-3xl font-semibold leading-7">
-                  120
-                </div>
+
+          {/* Option 1 Content */}
+          <div className="relative z-10">
+            {/* Animated Icon Container from Option 1 */}
+            <div className="relative">
+              <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg animate-pulse">
+                <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
               </div>
-            </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex  flex-col justify-center items-center gap-4">
-              <div className="self-stretch inline-flex justify-center items-center gap-5">
-                <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
-                  Total Candidates
-                  <br /> Selected
-                </div>
-                <div className="justify-start text-gray-900 text-3xl font-semibold leading-7">
-                  120
-                </div>
-              </div>
-            </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center gap-4">
-              <div className="self-stretch inline-flex justify-center items-center gap-5">
-                <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
-                  Offered
-                </div>
-                <div className="justify-start text-gray-900 text-3xl font-semibold leading-7">
-                  120
-                </div>
-              </div>
-            </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center gap-4">
-              <div className="self-stretch inline-flex justify-center items-center gap-5">
-                <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
-                  Joined
-                </div>
-                <div className="justify-start text-gray-900 text-3xl font-semibold leading-7">
-                  120
-                </div>
-              </div>
-            </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-center items-center gap-4">
-              <div className="self-stretch inline-flex justify-center items-center gap-5">
-                <div className="justify-start text-gray-900 text-sm font-semibold leading-none">
-                  HOLD
-                </div>
-                <div className="justify-start text-gray-900 text-3xl font-semibold leading-7">
-                  120
-                </div>
+              <div className="absolute -top-2 -right-2 w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center animate-bounce">
+                <span className="text-white text-sm font-bold">🎯</span>
               </div>
             </div>
           </div>
-          <div className="w-full inline-flex justify-start items-start gap-6">
-            <div className="w-full inline-flex flex-col justify-start items-start gap-7">
-              <div className="inline-flex justify-start items-start gap-60">
-                <div className="justify-start text-gray-900 text-xl font-semibold leading-tight">
-                  Top Hiring Companies
-                </div>
-              </div>
-              <div className="w-full rounded-[8px] border bg-white">
-                <Table>
-                  <TableHeader className="[&_th]:font-semibold [&_th]:px-[16px]  [&_th]:py-[4px] [&_th]:text-sm">
-                    <TableRow>
-                      <TableHead>Job</TableHead>
-                      <TableHead>Company</TableHead>
-                      <TableHead>Sumitted</TableHead>
-                      <TableHead>Selected</TableHead>
-                      <TableHead>Offered</TableHead>
-                      <TableHead>Joined</TableHead>
-                      <TableHead>Hold</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody className="[&_td]:text-base [&_td]:px-[16px] [&_td]:py-[12px]">
-                    {data.map((item, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{item.company}</TableCell>
-                        <TableCell>{item.submitted}</TableCell>
-                        <TableCell>{item.shortlisted}</TableCell>
-                        <TableCell>{item.hired}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+
+          {/* Option 1 Content Text */}
+          <div className="relative z-10 text-center space-y-3">
+            <h3 className="text-3xl font-bold text-gray-900">
+              Reports & Analytics
+            </h3>
+            <p className="text-gray-700 text-lg max-w-md">
+              We're crafting powerful insights to help you make data-driven decisions.
+            </p>
+
+            {/* Progress Bar from Option 1 */}
+            <div className="w-64 h-2 bg-gray-200/50 rounded-full overflow-hidden mt-6 mx-auto">
+              <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full w-3/4 animate-progress"></div>
+            </div>
+
+            {/* Status Indicator from Option 1 */}
+            <div className="flex items-center justify-center gap-2 text-gray-600 text-sm mt-4">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <span>In Development • Launching Soon</span>
             </div>
           </div>
         </div>
@@ -234,89 +178,47 @@ const Index = () => {
             </Link>
           </div>
         )}
-        <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline outline-offset-[-1px] outline-zinc-300 flex flex-col justify-start items-start gap-4 overflow-hidden">
-          <div className="self-stretch inline-flex justify-start items-start">
-            <div className="flex-1 justify-start text-gray-900 text-lg font-semibold leading-tight">
-              Reports & Insights
-            </div>
+        <div className="w-full self-stretch backdrop-blur-sm bg-white/30 rounded-2xl border border-white/40 shadow-lg p-10 flex flex-col items-center justify-center gap-6 min-h-[400px] relative overflow-hidden">
+
+          {/* Background Pattern from Option 2 */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-64 h-64 bg-blue-500 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 right-0 w-80 h-80 bg-purple-500 rounded-full translate-x-1/3 translate-y-1/3"></div>
           </div>
-          <div className="self-stretch h-0 outline outline-offset-[-0.50px] outline-neutral-200"></div>
-          <SearchComponent />
-          <div className="self-stretch flex flex-col justify-start items-start gap-1.5">
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4">
-              <div className="self-stretch inline-flex justify-center items-center gap-5">
-                <div className="justify-start text-gray-900 text-xs font-semibold leading-3">
-                  Total Candidates
-                  <br />
-                  Submitted
-                </div>
-                <div className="justify-start text-gray-900 text-3xl font-semibold leading-7">
-                  120
-                </div>
+
+          {/* Option 1 Content */}
+          <div className="relative z-10">
+            {/* Animated Icon Container from Option 1 */}
+            <div className="relative">
+              <div className="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg animate-pulse">
+                <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
               </div>
-            </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4">
-              <div className="self-stretch inline-flex justify-center items-center gap-5">
-                <div className="justify-start text-gray-900 text-xs font-semibold leading-3">
-                  Hired Candidates
-                </div>
-                <div className="justify-start text-gray-900 text-3xl font-semibold leading-7">
-                  120
-                </div>
-              </div>
-            </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4">
-              <div className="self-stretch inline-flex justify-center items-center gap-5">
-                <div className="justify-start text-gray-900 text-xs font-semibold leading-3">
-                  Shortlisted by
-                  <br /> Employers
-                </div>
-                <div className="justify-start text-gray-900 text-3xl font-semibold leading-7">
-                  120
-                </div>
-              </div>
-            </div>
-            <div className="self-stretch p-6 bg-white rounded-lg shadow-[0px_1px_2px_0px_rgba(0,0,0,0.03)] outline-1 outline-offset-[-1px] outline-zinc-300 inline-flex flex-col justify-start items-start gap-4">
-              <div className="self-stretch inline-flex justify-center items-center gap-5">
-                <div className="justify-start text-gray-900 text-xs font-semibold leading-3">
-                  Interviews <br /> Scheduled
-                </div>
-                <div className="justify-start text-gray-900 text-3xl font-semibold leading-7">
-                  120
-                </div>
+              <div className="absolute -top-2 -right-2 w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center animate-bounce">
+                <span className="text-white text-sm font-bold">🎯</span>
               </div>
             </div>
           </div>
-          <div className="self-stretch flex flex-col justify-start items-start gap-7">
-            <div className="inline-flex justify-start items-start gap-60">
-              <div className="justify-start text-gray-900 text-lg font-semibold leading-tight">
-                Top Hiring Companies
-              </div>
+
+          {/* Option 1 Content Text */}
+          <div className="relative z-10 text-center space-y-3">
+            <h3 className="text-3xl font-bold text-gray-900">
+              Reports & Analytics
+            </h3>
+            <p className="text-gray-700 text-lg max-w-md">
+              We're crafting powerful insights to help you make data-driven decisions.
+            </p>
+
+            {/* Progress Bar from Option 1 */}
+            <div className="w-64 h-2 bg-gray-200/50 rounded-full overflow-hidden mt-6 mx-auto">
+              <div className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full w-3/4 animate-progress"></div>
             </div>
-            <div className="w-full rounded-[8px] border bg-white">
-              <Table>
-                <TableHeader className="[&_th]:font-semibold [&_th]:px-[16px]  [&_th]:py-[4px] [&_th]:text-sm">
-                  <TableRow>
-                    <TableHead>Company</TableHead>
-                    <TableHead>
-                      Candidates
-                      <br /> Submitted
-                    </TableHead>
-                    <TableHead>Shortlisted</TableHead>
-                    <TableHead>Hired</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="[&_td]:text-base [&_td]:px-[16px] [&_td]:py-[12px]">
-                  {data.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{item.company}</TableCell>
-                      <TableCell>{item.submitted}</TableCell>
-                      <TableCell>{item.shortlisted}</TableCell>
-                      <TableCell>{item.hired}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+
+            {/* Status Indicator from Option 1 */}
+            <div className="flex items-center justify-center gap-2 text-gray-600 text-sm mt-4">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <span>In Development • Launching Soon</span>
             </div>
           </div>
         </div>
