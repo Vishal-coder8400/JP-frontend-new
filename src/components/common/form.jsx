@@ -28,6 +28,7 @@ export default function CommonForm({
   formControls,
   formData,
   setFormData,
+  variant = "default",
   i,
   handleUpload,
   disabled = false,
@@ -213,10 +214,19 @@ if (lower.includes("agerange") || lower.includes("age")) {
 
       onWheel: (e) => e.currentTarget.blur(),
 
-      className: `flex placeholder:translate-y-[1px] items-center justify-center text-black text-base rounded-[4px] border py-[10px] px-[16px] 
-          placeholder:text-[#9B959F] ${
-            errorMessage ? "border-red-500" : "border-[#E2E2E2]"
-          } focus:outline-none focus-visible:ring-0`,
+     className: `
+  flex items-center text-base
+  ${
+    variant === "login"
+      ? "bg-white text-[#6B6B6B] rounded-[10px] h-[48px]"
+      : "bg-white text-black rounded-[4px]"
+  }
+  border py-[10px] px-[16px]
+  placeholder:text-[#9B959F]
+  ${errorMessage ? "border-red-500" : "border-[#E2E2E2]"}
+  focus:outline-none focus-visible:ring-0
+`,
+
     };
 
     // -----------------------------------------
@@ -324,7 +334,8 @@ if (lower.includes("agerange") || lower.includes("age")) {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9B959F]"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#9B959F]"
+
               >
                 {showPassword ? "Hide" : "Show"}
               </button>
@@ -369,11 +380,13 @@ if (lower.includes("agerange") || lower.includes("age")) {
               }}
               value={showOther ? "other" : selectedValue}
             >
-              <SelectTrigger
-                className={`w-full rounded-[4px] border ${
-                  errorMessage ? "border-red-500" : "border-[#E2E2E2]"
-                } py-[20px] px-[16px]`}
-              >
+            <SelectTrigger
+  className={`w-full rounded-[10px] border py-[14px] px-[16px]
+    ${variant === "login" ? "bg-white" : "bg-white"}
+    ${errorMessage ? "border-red-500" : "border-[#E2E2E2]"}
+  `}
+>
+
                 <SelectValue placeholder={getControlItem.placeholder} />
               </SelectTrigger>
 
@@ -637,12 +650,13 @@ if (lower.includes("agerange") || lower.includes("age")) {
         return (
           <Popover open={isOpen} onOpenChange={setIsOpen}>
             <PopoverTrigger asChild>
-              <div
-                className={`px-4 py-2.5 bg-white rounded outline ${
-                  errorMessage ? "outline-red-500" : "outline-neutral-200"
-                } cursor-pointer flex justify-between items-center`}
-                onClick={() => setIsOpen(true)}
-              >
+             <div
+  className={`px-4 py-2.5 rounded cursor-pointer flex justify-between items-center
+    ${variant === "login" ? "bg-white" : "bg-white"}
+    ${errorMessage ? "outline-red-500" : "outline-neutral-200"}
+  `}
+>
+
                 <span className="text-neutral-400 text-sm">
                   {isValidDate
                     ? new Date(value).toLocaleDateString("en-US")
@@ -735,7 +749,14 @@ if (lower.includes("agerange") || lower.includes("age")) {
                       }`}
                     >
                       {item.label && (
-                        <Label className="text-base text-[#20102B] font-semibold">
+                        <Label
+                          className={`text-sm font-medium ${
+                            variant === "login"
+                              ? "text-white"
+                              : "text-[#20102B]"
+                          }`}
+                        >
+
                           {item.label}
                           {item.required && (
                             <span className="text-red-500 text-[14px]">*</span>
@@ -763,7 +784,14 @@ if (lower.includes("agerange") || lower.includes("age")) {
               }`}
             >
               {controlItem.label && (
-                <Label className="text-base text-[#20102B] font-semibold">
+                <Label
+  className={`text-sm font-medium ${
+    variant === "login"
+      ? "text-white"
+      : "text-[#20102B]"
+  }`}
+>
+
                   {controlItem.label}
                   {controlItem.required && (
                     <span className="text-red-500 text-[14px]">*</span>
